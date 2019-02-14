@@ -19,6 +19,7 @@ from selfdrive.controls.lib.longitudinal_mpc import libmpc_py
 from selfdrive.controls.lib.speed_smoother import speed_smoother
 from selfdrive.controls.lib.longcontrol import LongCtrlState, MIN_CAN_SPEED
 from selfdrive.controls.lib.radar_helpers import _LEAD_ACCEL_TAU
+from scipy import interpolate
 
 # Max lateral acceleration, used to caclulate how much to slow down in turns
 A_Y_MAX = 1.85  # m/s^2
@@ -156,8 +157,10 @@ class LongitudinalMpc(object):
     self.prev_lead_status = False
     self.prev_lead_x = 0.0
     self.new_lead = False
-    self.lastTR = 2
+    self.lastTR = 0
     self.last_cloudlog_t = 0.0
+    self.last_cost = 0
+    self.speed_list = []
 
   def send_mpc_solution(self, qp_iterations, calculation_time):
     qp_iterations = max(0, qp_iterations)
@@ -189,6 +192,50 @@ class LongitudinalMpc(object):
   def set_cur_state(self, v, a):
     self.cur_state[0].v_ego = v
     self.cur_state[0].a_ego = a
+  
+  def get_average(self, numbers):
+    try:
+      return float(sum(numbers)) / len(numbers)
+    except ZeroDivisionError:
+      return 0.0
+
+  def split_list(self, a_list):
+    half = len(a_list) // 2
+    return a_list[:half], a_list[half:]
+
+  def acceleration_status(self):
+    s = self.split_list(self.speed_list)
+    percentage_change = abs(abs(self.get_average(s[0]) - self.get_average(s[1])) / self.get_average([self.get_average(s[0]), self.get_average(s[1])]))
+
+    if self.get_average(s[0]) < self.get_average(s[1]) and percentage_change > 0.01663919826514882: # this is .5 mph/second, returns true if car is accelerating at .5mph/s in two second period
+      return 1 # accelerating
+    elif self.get_average(s[0]) > self.get_average(s[1]) and percentage_change > 0.01663919826514882:
+      return -1 # decelerating
+    else:
+      return 0 # constant speed
+
+  def generateTR(self, speed):
+    acceleration_code = self.acceleration_status()
+    if acceleration_code == 1:
+      x = [0, 20, 60, 70, 90]
+      y = [.9, 1.2, 1.4, 1.9, 2.2]
+    elif acceleration_code == -1:
+      x = [0, 10, 20, 40, 60, 70, 90]
+      y = [1.2, 1.8, 1.7, 1.8, 1.8, 2.2, 2.5]
+    else: # constant speed
+      x = [0, 20, 60, 70, 90]
+      y = [1.2, 1.6, 1.8, 2.0, 2.5]
+    # return round(np.interp(speed, x, y), 2)
+    f = interpolate.interp1d(x, y, fill_value='extrapolate') # interpolate above array
+    return round(float(f(speed)[()]), 2)
+
+  def generate_cost(self, distance):
+    x = [.9, 1.8, 2.7]
+    y = [1.0, .1, .05]
+
+    diff = [abs(i - distance) for i in x]
+    return y[diff.index(min(diff))] # find closest cost, should fix beow
+    #return round(float(np.interp(distance, x, y)), 2) # caused stuttering issues when changing speed
 
   def update(self, CS, lead, v_cruise_setpoint):
     # Setup current mpc state
@@ -245,12 +292,16 @@ class LongitudinalMpc(object):
           self.libmpc.init(MPC_COST_LONG.TTC, 1.0, MPC_COST_LONG.ACCELERATION, MPC_COST_LONG.JERK)
           self.lastTR = CS.readdistancelines
       elif CS.readdistancelines == 3:
-        if CS.readdistancelines == self.lastTR:
-          TR=2.7
-        else:
-          TR=2.7 # 30m at 40km/hr
-          self.libmpc.init(MPC_COST_LONG.TTC, 0.05, MPC_COST_LONG.ACCELERATION, MPC_COST_LONG.JERK)
-          self.lastTR = CS.readdistancelines
+        if len(self.speed_list) > 400 and len(self.speed_list) != 0:
+          self.speed_list.pop(0)
+        self.speed_list.append(CS.vEgo * 2.236936)
+
+        generatedTR = self.generateTR(CS.vEgo * 2.236936)
+        TR = generatedTR
+
+        if self.last_cost != self.generate_cost(generatedTR):
+          self.libmpc.init(MPC_COST_LONG.TTC, self.generate_cost(generatedTR), MPC_COST_LONG.ACCELERATION, MPC_COST_LONG.JERK)
+          self.last_cost = self.generate_cost(generatedTR)
       else:
         TR=1.8 # if readdistancelines = 0
     #print TR
