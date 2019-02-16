@@ -291,6 +291,8 @@ class CarInterface(object):
         self.CS.lkMode = True
         
     if self.CS.distance_button and self.CS.distance_button != self.CS.prev_distance_button:
+      if self.CS.follow_level == 4:
+        self.CS.follow_level -= 1
       self.CS.follow_level -= 1
       if self.CS.follow_level < 1:
         self.CS.follow_level = 3
