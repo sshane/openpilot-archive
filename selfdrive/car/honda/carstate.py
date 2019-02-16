@@ -156,9 +156,9 @@ class CarState(object):
     self.alcaLabels = ["MadMax","Normal","Wifey"]
     self.visionLabels = ["normal","wiggly"]
     self.visionMode = 0
-    self.trLabels = ["0.9","1.8","2.7"]
+    self.trLabels = ["0.9","1.8","2.7","dyn"]
     self.alcaMode = 0
-    self.trMode = 1
+    self.trMode = 3
     #if (CP.carFingerprint == CAR.MODELS):
     # ALCA PARAMS
     # max REAL delta angle for correction vs actuator
@@ -197,7 +197,7 @@ class CarState(object):
     self.CL_WAIT_BEFORE_START = 1
     #END OF ALCA PARAMS
     
-    self.read_distance_lines_prev = 4
+    self.read_distance_lines_prev = 3
     
     self.CP = CP
     self.can_define = CANDefine(DBC[CP.carFingerprint]['pt'])
@@ -276,7 +276,7 @@ class CarState(object):
         
       elif (id == 4) and (btn_status == 0) and self.cstm_btns.btns[id].btn_name=="tr":
           if self.cstm_btns.btns[id].btn_label2 == self.trLabels[self.trMode]:
-            self.trMode = (self.trMode + 1 ) % 3
+            self.trMode = (self.trMode + 1 ) % 4
           else:
             self.trMode = 0
           self.cstm_btns.btns[id].btn_label2 = self.trLabels[self.trMode]
