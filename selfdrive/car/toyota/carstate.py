@@ -196,7 +196,7 @@ class CarState(object):
     self.includeradius = 22
     self.blind_spot_on = bool(0)
     self.distance_toggle_prev = 2
-    self.read_distance_lines_prev = 3
+    self.read_distance_lines_prev = 4
     self.lane_departure_toggle_on_prev = True
     self.acc_slow_on_prev = False
     #BB UIEvents
@@ -374,6 +374,8 @@ class CarState(object):
       if self.read_distance_lines == 2:
         self.UE.custom_alert_message(2,"Following distance set to 1.8s",200,3)
       if self.read_distance_lines == 3:
+        self.UE.custom_alert_message(2,"Following distance set to 2.7s",200,3)
+      if self.read_distance_lines == 4:
         self.UE.custom_alert_message(2,"Dynamic following distance",200,3)
       self.read_distance_lines_prev = self.read_distance_lines
     
