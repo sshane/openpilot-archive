@@ -128,6 +128,7 @@ def get_cam_can_parser(CP):
 
 class CarState(object):
   def __init__(self, CP):
+    self.trfix = False
     self.Angles = np.zeros(250)
     self.Angles_later = np.zeros(250)
     self.Angle_counter = 0
@@ -196,7 +197,7 @@ class CarState(object):
     self.includeradius = 22
     self.blind_spot_on = bool(0)
     self.distance_toggle_prev = 2
-    self.read_distance_lines_prev = 4
+    self.read_distance_lines_prev = 3
     self.lane_departure_toggle_on_prev = True
     self.acc_slow_on_prev = False
     #BB UIEvents
@@ -361,7 +362,12 @@ class CarState(object):
         self.lane_departure_toggle_on = True
       
     self.distance_toggle = cp.vl["JOEL_ID"]['ACC_DISTANCE']
-    self.read_distance_lines = cp.vl["PCM_CRUISE_SM"]['DISTANCE_LINES']
+    if cp.vl["PCM_CRUISE_SM"]['DISTANCE_LINES'] == 2:
+      self.trfix = True
+    if self.trfix:
+      self.read_distance_lines = cp.vl["PCM_CRUISE_SM"]['DISTANCE_LINES']
+    else:
+      self.read_distance_lines = 4
     if self.distance_toggle <> self.distance_toggle_prev:
       if self.read_distance_lines == self.distance_toggle:
         self.distance_toggle_prev = self.distance_toggle
