@@ -205,12 +205,13 @@ class LongitudinalMpc(object):
 
   def acceleration_status(self):
     s = self.split_list(self.speed_list)
+    percentage_value = 0.01663919826514882  # this is .5 mph/second
     percentage_change = abs(abs(self.get_average(s[0]) - self.get_average(s[1])) / self.get_average([self.get_average(s[0]), self.get_average(s[1])]))
 
-    if self.get_average(s[0]) < self.get_average(s[1]) and percentage_change > 0.01663919826514882: # this is .5 mph/second, returns true if car is accelerating at .5mph/s in two second period
-      return 1 # accelerating
-    elif self.get_average(s[0]) > self.get_average(s[1]) and percentage_change > 0.01663919826514882:
+    if (self.get_average(s[0]) > self.get_average(s[1]) and percentage_change > percentage_value) or self.lead_1.vRel <= -6.710808: # should increase following distance sooner than detecting car's own deceleration, -6.7... is -3mph
       return -1 # decelerating
+    elif self.get_average(s[0]) < self.get_average(s[1]) and percentage_change > percentage_value: # true if car is accelerating at .5mph/s in latest two second period
+      return 1 # accelerating
     else:
       return 0 # constant speed
 
