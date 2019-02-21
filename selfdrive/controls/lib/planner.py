@@ -218,13 +218,13 @@ class LongitudinalMpc(object):
     acceleration_code = self.acceleration_status()
     if acceleration_code == 1:
       x = [0, 20, 60, 70, 90]
-      y = [1.8, 1.2, 1.4, 1.9, 2.2]
+      y = [1.0, 1.2, 1.8, 2.0, 2.2]
     elif acceleration_code == -1:
-      x = [0, 20, 40, 60, 70, 90]
-      y = [1.8, 1.7, 1.8, 1.8, 2.2, 2.5]
+      x = [0, 5, 20, 60, 70, 90]
+      y = [1.6, 1.8, 1.9, 1.8, 2.2, 2.7]
     else: # constant speed
       x = [0, 20, 60, 70, 90]
-      y = [1.8, 1.6, 1.8, 2.0, 2.5]
+      y = [1.6, 1.4, 1.8, 2.0, 2.5]
     # return round(np.interp(speed, x, y), 2)
     f = interpolate.interp1d(x, y, fill_value='extrapolate') # interpolate above array
     return round(float(f(speed)[()]), 2)
@@ -233,9 +233,9 @@ class LongitudinalMpc(object):
     x = [.9, 1.8, 2.7]
     y = [1.0, .1, .05]
 
-    diff = [abs(i - distance) for i in x]
-    return y[diff.index(min(diff))] # find closest cost, should fix beow
-    #return round(float(np.interp(distance, x, y)), 2) # caused stuttering issues when changing speed
+    #diff = [abs(i - distance) for i in x]
+    #return y[diff.index(min(diff))] # find closest cost, should fix beow
+    return round(float(np.interp(distance, x, y)), 2) # used to cause stuttering, but now we're doing a percentage change check before changing
 
   def update(self, CS, lead, v_cruise_setpoint):
     # Setup current mpc state
@@ -306,7 +306,7 @@ class LongitudinalMpc(object):
         generatedTR = self.generateTR(CS.vEgo * 2.236936)
         TR = generatedTR
 
-        if self.last_cost != self.generate_cost(generatedTR):
+        if abs(self.generate_cost(generatedTR)-self.last_cost) > .2:
           self.libmpc.init(MPC_COST_LONG.TTC, self.generate_cost(generatedTR), MPC_COST_LONG.ACCELERATION, MPC_COST_LONG.JERK)
           self.last_cost = self.generate_cost(generatedTR)
       else:
