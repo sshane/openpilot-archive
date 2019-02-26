@@ -214,7 +214,7 @@ class LongitudinalMpc(object):
 
     if (self.get_average(s[0]) > self.get_average(s[1]) and percentage_change > percentage_value) or self.rel_vel <= -6.710808: # should increase following distance sooner than detecting car's own deceleration, -6.7... is -3mph
       return -1 # decelerating
-    elif self.get_average(s[0]) < self.get_average(s[1]) and percentage_change > percentage_value: # true if car is accelerating at .5mph/s in latest two second period
+    elif self.get_average(s[0]) < self.get_average(s[1]) and percentage_change > percentage_value or self.rel_vel >= 6.710808: # true if car is accelerating at .5mph/s in latest two second period
       return 1 # accelerating
     else:
       return 0 # constant speed
