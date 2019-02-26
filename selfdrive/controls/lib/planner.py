@@ -496,7 +496,10 @@ class Planner(object):
       self.lead_1 = l20.live20.leadOne
       self.lead_2 = l20.live20.leadTwo
 
-      LongitudinalMpc.get_velocity(self.lead_1.vRel)
+      try:
+        LongitudinalMpc.get_velocity(self.lead_1.vRel)
+      except:
+        None
 
       enabled = (LoC.long_control_state == LongCtrlState.pid) or (LoC.long_control_state == LongCtrlState.stopping)
       following = self.lead_1.status and self.lead_1.dRel < 45.0 and self.lead_1.vLeadK > CS.vEgo and self.lead_1.aLeadK > 0.0
