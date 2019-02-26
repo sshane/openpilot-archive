@@ -161,7 +161,7 @@ class LongitudinalMpc(object):
     self.last_cloudlog_t = 0.0
     self.last_cost = 0
     self.speed_list = []
-    self.lead_1 = None
+    self.rel_vel = 0
 
   def send_mpc_solution(self, qp_iterations, calculation_time):
     qp_iterations = max(0, qp_iterations)
@@ -204,15 +204,15 @@ class LongitudinalMpc(object):
     half = len(a_list) // 2
     return a_list[:half], a_list[half:]
 
-  def get_lead_1(self, l):
-    self.lead_1 = l
+  def get_velocity(self, l):
+    self.rel_vel = l
 
   def acceleration_status(self):
     s = self.split_list(self.speed_list)
     percentage_value = 0.01663919826514882  # this is .5 mph/second
     percentage_change = abs(abs(self.get_average(s[0]) - self.get_average(s[1])) / self.get_average([self.get_average(s[0]), self.get_average(s[1])]))
 
-    if (self.get_average(s[0]) > self.get_average(s[1]) and percentage_change > percentage_value) or self.lead_1.vRel <= -6.710808: # should increase following distance sooner than detecting car's own deceleration, -6.7... is -3mph
+    if (self.get_average(s[0]) > self.get_average(s[1]) and percentage_change > percentage_value) or self.rel_vel <= -6.710808: # should increase following distance sooner than detecting car's own deceleration, -6.7... is -3mph
       return -1 # decelerating
     elif self.get_average(s[0]) < self.get_average(s[1]) and percentage_change > percentage_value: # true if car is accelerating at .5mph/s in latest two second period
       return 1 # accelerating
@@ -391,7 +391,6 @@ class Planner(object):
 
     self.lead_1 = None
     self.lead_2 = None
-    self.sent_lead_1 = False
 
     self.longitudinalPlanSource = 'cruise'
     self.fcw = False
@@ -497,7 +496,7 @@ class Planner(object):
       self.lead_1 = l20.live20.leadOne
       self.lead_2 = l20.live20.leadTwo
 
-      LongitudinalMpc.get_lead_1(self.lead_1)
+      LongitudinalMpc.get_velocity(self.lead_1.vRel)
 
       enabled = (LoC.long_control_state == LongCtrlState.pid) or (LoC.long_control_state == LongCtrlState.stopping)
       following = self.lead_1.status and self.lead_1.dRel < 45.0 and self.lead_1.vLeadK > CS.vEgo and self.lead_1.aLeadK > 0.0
