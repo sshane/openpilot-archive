@@ -158,7 +158,7 @@ class CarState(object):
     self.visionMode = 0
     self.trLabels = ["0.9","1.8","2.7","dyn"]
     self.alcaMode = 0
-    self.trMode = 3
+    self.trMode = 1
     #if (CP.carFingerprint == CAR.MODELS):
     # ALCA PARAMS
     # max REAL delta angle for correction vs actuator
@@ -276,7 +276,7 @@ class CarState(object):
         
       elif (id == 4) and (btn_status == 0) and self.cstm_btns.btns[id].btn_name=="tr":
           if self.cstm_btns.btns[id].btn_label2 == self.trLabels[self.trMode]:
-            self.trMode = (self.trMode + 1 ) % 4
+            self.trMode = (self.trMode + 1 ) % 3
           else:
             self.trMode = 0
           self.cstm_btns.btns[id].btn_label2 = self.trLabels[self.trMode]
@@ -421,8 +421,6 @@ class CarState(object):
     self.hud_lead = cp.vl["ACC_HUD"]['HUD_LEAD']
     if self.cruise_setting == 3:
       if cp.vl["SCM_BUTTONS"]["CRUISE_SETTING"] == 0:
-        if self.trMode == 3:
-          self.trMode = 1
         self.trMode = (self.trMode + 1 ) % 3
         self.cstm_btns.btns[4].btn_label2 = self.trLabels[self.trMode]
     self.prev_cruise_setting = self.cruise_setting
@@ -432,11 +430,9 @@ class CarState(object):
       if self.read_distance_lines == 1:
         self.UE.custom_alert_message(2,"Following distance set to 0.9s",200,3)
       if self.read_distance_lines == 2:
-        self.UE.custom_alert_message(2,"Following distance set to 1.8s",200,3)
+        self.UE.custom_alert_message(2,"Dynamic following distance",200,3)
       if self.read_distance_lines == 3:
         self.UE.custom_alert_message(2,"Following distance set to 2.7s",200,3)
-      if self.read_distance_lines == 4:
-        self.UE.custom_alert_message(2,"Dynamic following distance",200,3)
       self.read_distance_lines_prev = self.read_distance_lines
 
 # carstate standalone tester
