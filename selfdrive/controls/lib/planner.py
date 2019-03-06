@@ -222,14 +222,14 @@ class LongitudinalMpc(object):
   def generateTR(self, speed):
     acceleration_code = self.acceleration_status()
     if acceleration_code == 1:
-      x = [0, 20, 60, 70, 90]
+      x = [0, 20, 75, 85, 90]
       y = [1.0, 1.2, 1.8, 2.0, 2.2]
     elif acceleration_code == -1:
       x = [0, 5, 20, 60, 70, 90]
-      y = [1.6, 1.8, 1.9, 1.8, 2.2, 2.7]
+      y = [1.6, 1.8, 1.9, 1.8, 2.2, 2.5]
     else: # constant speed
-      x = [0, 20, 60, 70, 90]
-      y = [1.6, 1.4, 1.8, 2.0, 2.5]
+      x = [0, 20, 70, 80, 90]
+      y = [1.6, 1.4, 1.8, 1.9, 2.2]
     # return round(np.interp(speed, x, y), 2)
     f = interpolate.interp1d(x, y, fill_value='extrapolate') # interpolate above array
     return round(float(f(speed)[()]), 2)
