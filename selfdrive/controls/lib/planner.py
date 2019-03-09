@@ -498,10 +498,10 @@ class Planner(object):
       self.lead_2 = l20.live20.leadTwo
 
       try:
-        LongitudinalMpc.get_relative_velocity(self.lead_1.vRel)
+        LongitudinalMpc().get_relative_velocity(self.lead_1.vRel)
       except:
         try:
-         LongitudinalMpc.get_relative_velocity(0)
+         LongitudinalMpc().get_relative_velocity(0)
         except TypeError:
          None
 
