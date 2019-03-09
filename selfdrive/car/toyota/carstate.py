@@ -143,7 +143,7 @@ class CarState(object):
     # ALCA PARAMS
     # max REAL delta angle for correction vs actuator
     self.CL_MAX_ANGLE_DELTA_BP = [10., 15., 32., 44.]#[10., 44.]
-    self.CL_MAX_ANGLE_DELTA = [2.0, 1.75, 0.96, 0.4]
+    self.CL_MAX_ANGLE_DELTA = [2.0, 1.65, 0.96, 0.4]
      # adjustment factor for merging steer angle to actuator; should be over 4; the higher the smoother
     self.CL_ADJUST_FACTOR_BP = [10., 44.]
     self.CL_ADJUST_FACTOR = [16. , 8.]
@@ -367,7 +367,7 @@ class CarState(object):
     if self.trfix:
       self.read_distance_lines = cp.vl["PCM_CRUISE_SM"]['DISTANCE_LINES']
     else:
-      self.read_distance_lines = 4
+      self.read_distance_lines = 2
     if self.distance_toggle <> self.distance_toggle_prev:
       if self.read_distance_lines == self.distance_toggle:
         self.distance_toggle_prev = self.distance_toggle
@@ -378,11 +378,9 @@ class CarState(object):
       if self.read_distance_lines == 1:
         self.UE.custom_alert_message(2,"Following distance set to 0.9s",200,3)
       if self.read_distance_lines == 2:
-        self.UE.custom_alert_message(2,"Following distance set to 1.8s",200,3)
+        self.UE.custom_alert_message(2,"Dynamic following distance",200,3)
       if self.read_distance_lines == 3:
         self.UE.custom_alert_message(2,"Following distance set to 2.7s",200,3)
-      if self.read_distance_lines == 4:
-        self.UE.custom_alert_message(2,"Dynamic following distance",200,3)
       self.read_distance_lines_prev = self.read_distance_lines
     
     if bool(cp.vl["JOEL_ID"]['ACC_SLOW']) <> self.acc_slow_on_prev:
