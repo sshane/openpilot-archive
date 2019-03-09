@@ -20,7 +20,16 @@ class UIButton:
 
 class UIButtons:
     def write_buttons_labels_to_file(self):
-        fo = open(self.buttons_labels_path, buttons_file_rw)
+        try:
+          fo = open(self.buttons_labels_path, buttons_file_rw)
+        execpt IOError:
+          directory = os.path.dirname(self.buttons_labels_path)
+          try:
+            os.makedirs(directory)
+          except OSError:
+            fo = open(self.buttons_labels_path, buttons_file_rw)
+            pass 
+        
         for btn in self.btns:
             fo.write(struct.pack(btn_msg_struct,btn.btn_name,btn.btn_label,btn.btn_label2))
         fo.close()
