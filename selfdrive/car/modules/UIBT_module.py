@@ -22,7 +22,7 @@ class UIButtons:
     def write_buttons_labels_to_file(self):
         try:
           fo = open(self.buttons_labels_path, buttons_file_rw)
-        execpt IOError:
+        except IOError:
           directory = os.path.dirname(self.buttons_labels_path)
           try:
             os.makedirs(directory)
