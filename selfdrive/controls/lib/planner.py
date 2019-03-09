@@ -51,6 +51,8 @@ _A_TOTAL_MAX_BP = [0., 25., 40.]
 _FCW_A_ACT_V = [-3., -2.]
 _FCW_A_ACT_BP = [0., 30.]
 
+relative_velocity = 0.0 #lead car velocity
+
 
 def calc_cruise_accel_limits(v_ego, following):
   a_cruise_min = interp(v_ego, _A_CRUISE_MIN_BP, _A_CRUISE_MIN_V)
@@ -239,12 +241,9 @@ class LongitudinalMpc(object):
     self.cur_state[0].v_ego = v
     self.cur_state[0].a_ego = a
 
-  def get_relative_velocity(self, l):
-    self.rel_vel = l
-
   def generateTR(self, velocity): # in m/s
     neural_network = FDistanceNet()
-    return round(neural_network.think(np.array([velocity, self.rel_vel])), 2)
+    return round(neural_network.think(np.array([velocity, relative_velocity])), 2)
 
   def generate_cost(self, distance):
     x = [.9, 1.8, 2.7]
@@ -348,6 +347,7 @@ class LongitudinalMpc(object):
       self.prev_lead_status = False
 
 
+
 class Planner(object):
   def __init__(self, CP, fcw_enabled):
     context = zmq.Context()
@@ -443,6 +443,7 @@ class Planner(object):
 
   # this runs whenever we get a packet that can change the plan
   def update(self, CS, CP, VM, LaC, LoC, v_cruise_kph, force_slow_decel):
+    global relative_velocity
     cur_time = sec_since_boot()
     v_cruise_setpoint = v_cruise_kph * CV.KPH_TO_MS
 
@@ -497,12 +498,10 @@ class Planner(object):
       self.lead_1 = l20.live20.leadOne
       self.lead_2 = l20.live20.leadTwo
 
-      longitudinal_mpc = LongitudinalMpc()
-
       try:
-        longitudinal_mpc.get_relative_velocity(self.lead_1.vRel)
-      except:
-        longitudinal_mpc.get_relative_velocity(0.0)
+          relative_velocity = self.lead_1.vRel
+      except: #if no lead car
+          relative_velocity = 0.0
 
 
       enabled = (LoC.long_control_state == LongCtrlState.pid) or (LoC.long_control_state == LongCtrlState.stopping)
