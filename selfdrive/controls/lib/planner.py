@@ -504,7 +504,6 @@ class Planner(object):
       except:
         longitudinal_mpc.get_relative_velocity(0.0)
 
-
       enabled = (LoC.long_control_state == LongCtrlState.pid) or (LoC.long_control_state == LongCtrlState.stopping)
       following = self.lead_1.status and self.lead_1.dRel < 45.0 and self.lead_1.vLeadK > CS.vEgo and self.lead_1.aLeadK > 0.0
 
