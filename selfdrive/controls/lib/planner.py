@@ -239,7 +239,7 @@ class LongitudinalMpc(object):
     self.cur_state[0].v_ego = v
     self.cur_state[0].a_ego = a
 
-  def get_velocity(self, l):
+  def get_relative_velocity(self, l):
     self.rel_vel = l
 
   def generateTR(self, velocity): # in m/s
@@ -498,9 +498,9 @@ class Planner(object):
       self.lead_2 = l20.live20.leadTwo
 
       try:
-        LongitudinalMpc.get_velocity(self.lead_1.vRel)
+        LongitudinalMpc.get_relative_velocity(self.lead_1.vRel)
       except:
-        None
+        LongitudinalMpc.get_relative_velocity(0)
 
       enabled = (LoC.long_control_state == LongCtrlState.pid) or (LoC.long_control_state == LongCtrlState.stopping)
       following = self.lead_1.status and self.lead_1.dRel < 45.0 and self.lead_1.vLeadK > CS.vEgo and self.lead_1.aLeadK > 0.0
