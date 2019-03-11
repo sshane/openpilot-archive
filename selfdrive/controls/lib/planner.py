@@ -197,17 +197,13 @@ class FDistanceNet(): # basic neural network based off sigmoid function
 
     if 22.352 > v >= 17.8816: # 50 mph > velocity > 40 mph
       #average two outputs together to create seamless transition from the slow weight set to the fast set
-      output = (self.sigmoid(np.dot(inputs, self.synaptic_weights_fast)) + self.sigmoid(np.dot(inputs, self.synaptic_weights_slow))) / 2.0
+      o1 = self.sigmoid(np.dot(inputs, self.synaptic_weights_fast))
+      o2 = self.sigmoid(np.dot(inputs, self.synaptic_weights_slow))
+      return (self.remap_range(o1, "rvs_dist_fast") + self.remap_range(o2, "rvs_dist")) / 2.0
     elif 22.352 <= v: # 50 mph
-      is_fast = True
-      output = self.sigmoid(np.dot(inputs, self.synaptic_weights_fast))
+      return self.remap_range(self.sigmoid(np.dot(inputs, self.synaptic_weights_fast))[0], "rvs_dist_fast")
     else: # must be below 40 mph
-      output = self.sigmoid(np.dot(inputs, self.synaptic_weights_slow))
-
-    if is_fast:
-      return self.remap_range(output[0], "rvs_dist_fast")  # reverse remap back to seconds
-    else:
-      return self.remap_range(output[0], "rvs_dist") # reverse remap back to seconds
+      return self.remap_range(self.sigmoid(np.dot(inputs, self.synaptic_weights_slow))[0], "rvs_dist")
 
 class LongitudinalMpc(object):
   def __init__(self, mpc_id, live_longitudinal_mpc):
