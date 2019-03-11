@@ -147,7 +147,8 @@ class FCWChecker(object):
 
 class FDistanceNet(): # basic neural network based off sigmoid function
   def __init__(self):
-    self.synaptic_weights = np.array([[3.94759622], [-0.26450928], [-2.38073849]])  # accurate trained values: velocity, lead car relative velocity, acceleration
+    self.synaptic_weights_slow = np.array([[3.94759622], [-0.26450928], [-2.38073849]])  # accurate trained values < 50 mph: velocity, lead car relative velocity, acceleration
+    self.synaptic_weights_fast = np.array([[5.40885434], [-2.38832404], [-2.32140576]])  # accurate trained values > 50 mph
 
   def remap_range(self, value, remapType):
     if remapType == "dist":
@@ -165,6 +166,9 @@ class FDistanceNet(): # basic neural network based off sigmoid function
     elif remapType == "rvs_dist":
       x = [0, 1.0]
       y = [.67, 2.7]
+    elif remapType == "rvs_dist_fast":
+      x = [0, 1.0]
+      y = [.8, 2.7]
     elif remapType == "rvs_vel":
       x = [0, 1.0]
       y = [0, 53.6448]
@@ -184,17 +188,26 @@ class FDistanceNet(): # basic neural network based off sigmoid function
 
   def think(self, inputs):
     inputs = inputs.astype(float)
+    v = float(inputs[0])
     inputs[0] = self.remap_range(inputs[0], "vel") # remap input values to 0 to 1 so we can evaluate with sigmoid function
     inputs[1] = self.remap_range(inputs[1], "rel_vel")
     inputs[2] = self.remap_range(inputs[2], "accel")
-    try:
-      output = self.sigmoid(np.dot(inputs, self.synaptic_weights))
-    except:
-      print(inputs)
-      print(self.synaptic_weights)
-      output = self.sigmoid(np.dot(inputs, self.synaptic_weights))
 
-    return self.remap_range(output[0], "rvs_dist") # reverse remap back to seconds
+    is_fast = False
+
+    if 22.352 > v >= 17.8816: # 50 mph > velocity > 40 mph
+      #average two outputs together to create seamless transition from the slow weight set to the fast set
+      output = (self.sigmoid(np.dot(inputs, self.synaptic_weights_fast)) + self.sigmoid(np.dot(inputs, self.synaptic_weights_slow))) / 2.0
+    elif 22.352 <= v: # 50 mph
+      is_fast = True
+      output = self.sigmoid(np.dot(inputs, self.synaptic_weights_fast))
+    else: # must be below 40 mph
+      output = self.sigmoid(np.dot(inputs, self.synaptic_weights_slow))
+
+    if is_fast:
+      return self.remap_range(output[0], "rvs_dist_fast")  # reverse remap back to seconds
+    else:
+      return self.remap_range(output[0], "rvs_dist") # reverse remap back to seconds
 
 class LongitudinalMpc(object):
   def __init__(self, mpc_id, live_longitudinal_mpc):
@@ -248,7 +261,11 @@ class LongitudinalMpc(object):
 
   def get_acceleration(self): # calculate car's own acceleration to generate more accurate following distances
     a = (self.velocity_list[-1] - self.velocity_list[0]) # first half of acceleration formula
-    return a / (len(self.velocity_list) / 100.0) # divide difference in velocity by how long in seconds the velocity list has been tracking velocity (2 sec)
+    a = a / (len(self.velocity_list) / 100.0) # divide difference in velocity by how long in seconds the velocity list has been tracking velocity (2 sec)
+    if abs(a) < 0.67056: #if abs(acceleration) is less than 1.5 mph/s, return 0
+      return 0
+    else:
+      return a
 
   def generateTR(self, velocity): # in m/s
     global relative_velocity
