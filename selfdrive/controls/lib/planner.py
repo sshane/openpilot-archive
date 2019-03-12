@@ -165,7 +165,7 @@ class FDistanceNet(): # basic neural network based off sigmoid function
       y = [0, 1]
     elif remapType == "rvs_dist":
       x = [0, 1.0]
-      y = [.67, 2.7]
+      y = [.85, 2.7]
     elif remapType == "rvs_dist_fast":
       x = [0, 1.0]
       y = [.8, 2.7]
