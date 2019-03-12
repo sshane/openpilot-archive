@@ -145,66 +145,6 @@ class FCWChecker(object):
 
     return False
 
-class FDistanceNet(): # basic neural network based off sigmoid function
-  def __init__(self):
-    self.synaptic_weights_slow = np.array([[3.94759622], [-0.26450928], [-2.38073849]])  # accurate trained values < 50 mph: velocity, lead car relative velocity, acceleration
-    self.synaptic_weights_fast = np.array([[5.40885434], [-2.38832404], [-2.32140576]])  # accurate trained values > 50 mph
-
-  def remap_range(self, value, remapType):
-    if remapType == "dist":
-      x = [1.0, 2.7] # in seconds
-      y = [0, 1.0]
-    elif remapType == "vel":
-      x = [0, 53.6448] # max 120 mph
-      y = [0, 1.0]
-    elif remapType == "rel_vel":
-      x = [-8.9408, 3.12928] # -20 mph, 7 mph
-      y = [0, 1.0]
-    elif remapType == "accel":
-      x = [-4.4704, 4.4704] # -/+10 mph
-      y = [0, 1]
-    elif remapType == "rvs_dist":
-      x = [0, 1.0]
-      y = [.85, 2.7]
-    elif remapType == "rvs_dist_fast":
-      x = [0, 1.0]
-      y = [.69, 2.7]
-    elif remapType == "rvs_vel":
-      x = [0, 1.0]
-      y = [0, 53.6448]
-    elif remapType == "rvs_rel_vel":
-      x = [0, 1.0]
-      y = [-8.9408, 3.12928]
-
-    remapped = (float(value) - float(x[0])) / (float(x[1]) - float(x[0])) * (float(y[1]) - float(y[0])) + float(y[0])
-    remapped = min(max(remapped, y[0]), y[1]) # limit range output between min and max outputs
-    return remapped
-
-  def sigmoid(self, x):
-    return 1 / (1 + np.exp(-x))
-
-  def sigmoid_derivative(self, x):
-    return x * (1 - x)
-
-  def think(self, inputs):
-    inputs = inputs.astype(float)
-    v = float(inputs[0])
-    inputs[0] = self.remap_range(inputs[0], "vel") # remap input values to 0 to 1 so we can evaluate with sigmoid function
-    inputs[1] = self.remap_range(inputs[1], "rel_vel")
-    inputs[2] = self.remap_range(inputs[2], "accel")
-
-    is_fast = False
-
-    if 22.352 > v >= 17.8816: # 50 mph > velocity > 40 mph
-      #average two outputs together to create seamless transition from the slow weight set to the fast set
-      o1 = self.sigmoid(np.dot(inputs, self.synaptic_weights_fast))
-      o2 = self.sigmoid(np.dot(inputs, self.synaptic_weights_slow))
-      return (self.remap_range(o1, "rvs_dist_fast") + self.remap_range(o2, "rvs_dist")) / 2.0
-    elif 22.352 <= v: # 50 mph
-      return self.remap_range(self.sigmoid(np.dot(inputs, self.synaptic_weights_fast))[0], "rvs_dist_fast")
-    else: # must be below 40 mph
-      return self.remap_range(self.sigmoid(np.dot(inputs, self.synaptic_weights_slow))[0], "rvs_dist")
-
 class LongitudinalMpc(object):
   def __init__(self, mpc_id, live_longitudinal_mpc):
     self.live_longitudinal_mpc = live_longitudinal_mpc
@@ -222,7 +162,6 @@ class LongitudinalMpc(object):
     self.last_cloudlog_t = 0.0
     self.last_cost = 0
     self.velocity_list = []
-    self.neural_network = FDistanceNet()
 
   def send_mpc_solution(self, qp_iterations, calculation_time):
     qp_iterations = max(0, qp_iterations)
@@ -258,14 +197,31 @@ class LongitudinalMpc(object):
   def get_acceleration(self): # calculate car's own acceleration to generate more accurate following distances
     a = (self.velocity_list[-1] - self.velocity_list[0]) # first half of acceleration formula
     a = a / (len(self.velocity_list) / 100.0) # divide difference in velocity by how long in seconds the velocity list has been tracking velocity (2 sec)
-    if abs(a) < 0.67056: #if abs(acceleration) is less than 1.5 mph/s, return 0
+    if abs(a) < 0.44704: #if abs(acceleration) is less than 1 mph/s, return 0
       return 0
     else:
       return a
 
   def generateTR(self, velocity): # in m/s
     global relative_velocity
-    return round(self.neural_network.think(np.array([velocity, relative_velocity, self.get_acceleration()])), 2)
+    x = [0, 5, 20, 50, 70, 80, 90]
+    y = [1.2, 1.4, 1.5, 1.66, 1.85, 1.9, 2.2]
+
+    TR = interpolate.interp1d(x, y, fill_value='extrapolate')  # exterpolate above 90 mph
+
+    TR = TR(velocity)[()]
+
+    x = [-20, -5, 0, 5]  # relative velocity values
+    y = [(TR + .35), (TR + .05), TR, (TR - .2)]  # modification values, less modification with less difference in velocity
+
+    TR = np.interp(relative_velocity, x, y)  # interpolate as to not modify too much
+
+    x = [-15, -5, 0, 5]  # acceleration values
+    y = [(TR + .56), (TR + .15), TR, (TR - .3)]  # same as above
+
+    TR = np.interp(self.get_acceleration(), x, y)
+
+    return round(TR, 2)
 
   def generate_cost(self, distance):
     x = [.9, 1.8, 2.7]
@@ -328,11 +284,12 @@ class LongitudinalMpc(object):
         self.velocity_list.append(CS.vEgo)
 
         generatedTR = self.generateTR(CS.vEgo)
+        generated_cost = self.generate_cost(generatedTR)
         TR = generatedTR
 
-        if abs(self.generate_cost(generatedTR) - self.last_cost) > .2:
-          self.libmpc.init(MPC_COST_LONG.TTC, self.generate_cost(generatedTR), MPC_COST_LONG.ACCELERATION, MPC_COST_LONG.JERK)
-          self.last_cost = self.generate_cost(generatedTR)
+        if abs(generated_cost - self.last_cost) > .2:
+          self.libmpc.init(MPC_COST_LONG.TTC, generated_cost, MPC_COST_LONG.ACCELERATION, MPC_COST_LONG.JERK)
+          self.last_cost = generated_cost
       elif CS.readdistancelines == 3:
         if CS.readdistancelines == self.lastTR:
           TR = 2.7
