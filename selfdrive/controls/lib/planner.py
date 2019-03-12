@@ -147,21 +147,28 @@ class FCWChecker(object):
 
 class FDistanceNet(): # basic neural network based off sigmoid function
   def __init__(self):
-    self.synaptic_weights = np.array([[3.0327508], [-2.07414288]]) # accurate trained values
+    self.synaptic_weights_slow = np.array([[3.94759622], [-0.26450928], [-2.38073849]])  # accurate trained values < 50 mph: velocity, lead car relative velocity, acceleration
+    self.synaptic_weights_fast = np.array([[5.40885434], [-2.38832404], [-2.32140576]])  # accurate trained values > 50 mph
 
   def remap_range(self, value, remapType):
     if remapType == "dist":
       x = [1.0, 2.7] # in seconds
       y = [0, 1.0]
     elif remapType == "vel":
-      x = [0, 53.6448] # 120 mph
+      x = [0, 53.6448] # max 120 mph
       y = [0, 1.0]
     elif remapType == "rel_vel":
       x = [-8.9408, 3.12928] # -20 mph, 7 mph
       y = [0, 1.0]
+    elif remapType == "accel":
+      x = [-4.4704, 4.4704] # -/+10 mph
+      y = [0, 1]
     elif remapType == "rvs_dist":
       x = [0, 1.0]
-      y = [.67, 2.7]
+      y = [.85, 2.7]
+    elif remapType == "rvs_dist_fast":
+      x = [0, 1.0]
+      y = [.8, 2.7]
     elif remapType == "rvs_vel":
       x = [0, 1.0]
       y = [0, 53.6448]
@@ -181,16 +188,22 @@ class FDistanceNet(): # basic neural network based off sigmoid function
 
   def think(self, inputs):
     inputs = inputs.astype(float)
+    v = float(inputs[0])
     inputs[0] = self.remap_range(inputs[0], "vel") # remap input values to 0 to 1 so we can evaluate with sigmoid function
     inputs[1] = self.remap_range(inputs[1], "rel_vel")
-    try:
-      output = self.sigmoid(np.dot(inputs, self.synaptic_weights))
-    except:
-      print(inputs)
-      print(self.synaptic_weights)
-      output = self.sigmoid(np.dot(inputs, self.synaptic_weights))
+    inputs[2] = self.remap_range(inputs[2], "accel")
 
-    return self.remap_range(output[0], "rvs_dist") # reverse remap back to seconds
+    is_fast = False
+
+    if 22.352 > v >= 17.8816: # 50 mph > velocity > 40 mph
+      #average two outputs together to create seamless transition from the slow weight set to the fast set
+      o1 = self.sigmoid(np.dot(inputs, self.synaptic_weights_fast))
+      o2 = self.sigmoid(np.dot(inputs, self.synaptic_weights_slow))
+      return (self.remap_range(o1, "rvs_dist_fast") + self.remap_range(o2, "rvs_dist")) / 2.0
+    elif 22.352 <= v: # 50 mph
+      return self.remap_range(self.sigmoid(np.dot(inputs, self.synaptic_weights_fast))[0], "rvs_dist_fast")
+    else: # must be below 40 mph
+      return self.remap_range(self.sigmoid(np.dot(inputs, self.synaptic_weights_slow))[0], "rvs_dist")
 
 class LongitudinalMpc(object):
   def __init__(self, mpc_id, live_longitudinal_mpc):
@@ -208,7 +221,8 @@ class LongitudinalMpc(object):
     self.lastTR = 0
     self.last_cloudlog_t = 0.0
     self.last_cost = 0
-    self.rel_vel = 0
+    self.velocity_list = []
+    self.neural_network = FDistanceNet()
 
   def send_mpc_solution(self, qp_iterations, calculation_time):
     qp_iterations = max(0, qp_iterations)
@@ -241,9 +255,17 @@ class LongitudinalMpc(object):
     self.cur_state[0].v_ego = v
     self.cur_state[0].a_ego = a
 
+  def get_acceleration(self): # calculate car's own acceleration to generate more accurate following distances
+    a = (self.velocity_list[-1] - self.velocity_list[0]) # first half of acceleration formula
+    a = a / (len(self.velocity_list) / 100.0) # divide difference in velocity by how long in seconds the velocity list has been tracking velocity (2 sec)
+    if abs(a) < 0.67056: #if abs(acceleration) is less than 1.5 mph/s, return 0
+      return 0
+    else:
+      return a
+
   def generateTR(self, velocity): # in m/s
-    neural_network = FDistanceNet()
-    return round(neural_network.think(np.array([velocity, relative_velocity])), 2)
+    global relative_velocity
+    return round(self.neural_network.think(np.array([velocity, relative_velocity, self.get_acceleration()])), 2)
 
   def generate_cost(self, distance):
     x = [.9, 1.8, 2.7]
@@ -301,6 +323,10 @@ class LongitudinalMpc(object):
           self.libmpc.init(MPC_COST_LONG.TTC, 1.0, MPC_COST_LONG.ACCELERATION, MPC_COST_LONG.JERK)
           self.lastTR = CS.readdistancelines
       elif CS.readdistancelines == 2:
+        if len(self.velocity_list) > 200 and len(self.velocity_list) != 0: #100hz, so 200 items is 2 seconds
+          self.velocity_list.pop(0)
+        self.velocity_list.append(CS.vEgo)
+
         generatedTR = self.generateTR(CS.vEgo)
         TR = generatedTR
 
@@ -345,7 +371,6 @@ class LongitudinalMpc(object):
       self.v_mpc = CS.vEgo
       self.a_mpc = CS.aEgo
       self.prev_lead_status = False
-
 
 
 class Planner(object):
