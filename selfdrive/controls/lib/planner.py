@@ -197,7 +197,7 @@ class LongitudinalMpc(object):
   def get_acceleration(self): # calculate car's own acceleration to generate more accurate following distances
     a = (self.velocity_list[-1] - self.velocity_list[0]) # first half of acceleration formula
     a = a / (len(self.velocity_list) / 100.0) # divide difference in velocity by how long in seconds the velocity list has been tracking velocity (2 sec)
-    if abs(a) < 0.44704: #if abs(acceleration) is less than 1 mph/s, return 0
+    if abs(a) < 0.22352: #if abs(acceleration) is less than 0.5 mph/s, return 0
       return 0
     else:
       return a
@@ -212,12 +212,12 @@ class LongitudinalMpc(object):
     TR = TR(velocity)[()]
 
     x = [-8.9408, -2.2352, 0, 1.78816]  # relative velocity values, mph: [-20, -5, 0, 4]
-    y = [(TR + .4), (TR + .05), TR, (TR - .25)]  # modification values, less modification with less difference in velocity
+    y = [(TR + .375), (TR + .05), TR, (TR - .25)]  # modification values, less modification with less difference in velocity
 
     TR = np.interp(relative_velocity, x, y)  # interpolate as to not modify too much
 
     x = [-4.4704, -2.2352, 0, 1.34112]  # acceleration values, mph: [-10, -5, 0, 3]
-    y = [(TR + .4), (TR + .15), TR, (TR - .3)]  # same as above
+    y = [(TR + .375), (TR + .15), TR, (TR - .3)]  # same as above
 
     TR = np.interp(self.get_acceleration(), x, y)
 
