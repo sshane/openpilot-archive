@@ -1586,6 +1586,11 @@ struct LiveParametersData {
 struct LiveMapData {
   speedLimitValid @0 :Bool;
   speedLimit @1 :Float32;
+  speedAdvisoryValid @12 :Bool;
+  speedAdvisory @13 :Float32;
+  speedLimitAheadValid @14 :Bool;
+  speedLimitAhead @15 :Float32;
+  speedLimitAheadDistance @16 :Float32;
   curvatureValid @2 :Bool;
   curvature @3 :Float32;
   wayId @4 :UInt64;
