@@ -211,7 +211,7 @@ class LongitudinalMpc(object):
 
     TR = TR(velocity)[()]
 
-    x = [-11.176, -2.2352, 0, 1.78816]  # relative velocity values, mph: [-25, 0, 4]
+    x = [-11.176, 0, 1.78816]  # relative velocity values, mph: [-25, 0, 4]
     y = [(TR + .425), TR, (TR - .25)]  # distance modification values
 
     TR = np.interp(relative_velocity, x, y)  # interpolate as to not modify too much //todo: test extrapolation
