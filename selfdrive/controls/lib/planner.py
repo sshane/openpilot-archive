@@ -204,20 +204,20 @@ class LongitudinalMpc(object):
 
   def generateTR(self, velocity): # in m/s
     global relative_velocity
-    x = [0, 8.9408, 22.352, 31.2928, 35.7632, 40.2336] # in mph: [0, 20, 50, 70, 80, 90]
-    y = [1.0, 1.35, 1.6, 1.7, 1.85, 2.0] # distances
+    x = [0, 8.9408, 22.352, 31.2928, 35.7632, 40.2336]  # in mph: [0, 20, 50, 70, 80, 90]
+    y = [1.0, 1.35, 1.6, 1.7, 1.85, 2.0]  # distances
 
     TR = interpolate.interp1d(x, y, fill_value='extrapolate')  # extrapolate above 90 mph
 
     TR = TR(velocity)[()]
 
-    x = [-11.176, 0, 1.78816]  # relative velocity values, mph: [-25, 0, 4]
-    y = [(TR + .425), TR, (TR - .25)]  # distance modification values
+    x = [-8.9408, -2.2352, 0, 1.78816]  # relative velocity values, mph: [-20, -5, 0, 4]
+    y = [(TR + .375), (TR + .05), TR, (TR - .25)]  # modification values, less modification with less difference in velocity
 
-    TR = np.interp(relative_velocity, x, y)  # interpolate as to not modify too much //todo: test extrapolation
+    TR = np.interp(relative_velocity, x, y)  # interpolate as to not modify too much
 
-    x = [-4.4704, 0, 1.34112]  # acceleration values, mph: [-10, 0, 3]
-    y = [(TR + .375), TR, (TR - .3)]
+    x = [-4.4704, -2.2352, 0, 1.34112]  # acceleration values, mph: [-10, -5, 0, 3]
+    y = [(TR + .375), (TR + .15), TR, (TR - .3)]  # same as above
 
     TR = np.interp(self.get_acceleration(), x, y)
 
@@ -270,14 +270,18 @@ class LongitudinalMpc(object):
       #if self.lastTR > 0:
         #self.libmpc.init(MPC_COST_LONG.TTC, 0.1, PC_COST_LONG.ACCELERATION, MPC_COST_LONG.JERK)
         #self.lastTR = 0
+    elif (CS.readdistancelines == 2 or CS.readdistancelines == 3) and (CS.leftBlinker or CS.rightBlinker):
+      TR=0.9
+      if self.last_cost != 1.0:
+        self.libmpc.init(MPC_COST_LONG.TTC, 1.0, MPC_COST_LONG.ACCELERATION, MPC_COST_LONG.JERK)
+        self.last_cost = 1.0
     else:
       if CS.readdistancelines == 1:
-        if CS.readdistancelines == self.lastTR:
-          TR=0.9 # 10m at 40km/hr
-        else:
-          TR=0.9
+        TR = 0.9  # 10m at 40km/hr
+        if CS.readdistancelines != self.lastTR or self.last_cost != 1.0:
           self.libmpc.init(MPC_COST_LONG.TTC, 1.0, MPC_COST_LONG.ACCELERATION, MPC_COST_LONG.JERK)
           self.lastTR = CS.readdistancelines
+          self.last_cost = 1.0
       elif CS.readdistancelines == 2:
         if len(self.velocity_list) > 200 and len(self.velocity_list) != 0: #100hz, so 200 items is 2 seconds
           self.velocity_list.pop(0)
@@ -291,12 +295,11 @@ class LongitudinalMpc(object):
           self.libmpc.init(MPC_COST_LONG.TTC, generated_cost, MPC_COST_LONG.ACCELERATION, MPC_COST_LONG.JERK)
           self.last_cost = generated_cost
       elif CS.readdistancelines == 3:
-        if CS.readdistancelines == self.lastTR:
-          TR = 2.7
-        else:
-          TR = 2.7  # 30m at 40km/hr
+        TR = 2.7  # 30m at 40km/hr
+        if CS.readdistancelines != self.lastTR or self.last_cost != 0.05:
           self.libmpc.init(MPC_COST_LONG.TTC, 0.05, MPC_COST_LONG.ACCELERATION, MPC_COST_LONG.JERK)
           self.lastTR = CS.readdistancelines
+          self.last_cost = 0.05
       else:
         TR=1.8 # if readdistancelines = 0
     #print TR
