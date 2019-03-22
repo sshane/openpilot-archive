@@ -163,7 +163,6 @@ class LongitudinalMpc(object):
     self.last_cloudlog_t = 0.0
     self.last_cost = 0
     self.velocity_list = []
-    self.UE = UIEvents(self)
 
   def send_mpc_solution(self, qp_iterations, calculation_time):
     qp_iterations = max(0, qp_iterations)
@@ -274,7 +273,7 @@ class LongitudinalMpc(object):
         #self.lastTR = 0
     elif (CS.readdistancelines == 2 or CS.readdistancelines == 3) and (CS.leftBlinker or CS.rightBlinker):
       TR=0.9
-      self.UE.custom_alert_message(2, "Blinkers active", 25, 3)
+      print("Blinkers active")
       if self.last_cost != 1.0:
         self.libmpc.init(MPC_COST_LONG.TTC, 1.0, MPC_COST_LONG.ACCELERATION, MPC_COST_LONG.JERK)
         self.last_cost = 1.0
