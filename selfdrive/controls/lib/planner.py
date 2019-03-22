@@ -20,6 +20,7 @@ from selfdrive.controls.lib.speed_smoother import speed_smoother
 from selfdrive.controls.lib.longcontrol import LongCtrlState, MIN_CAN_SPEED
 from selfdrive.controls.lib.radar_helpers import _LEAD_ACCEL_TAU
 from scipy import interpolate
+from selfdrive.car.modules.UIEV_module import UIEvents
 
 # Max lateral acceleration, used to caclulate how much to slow down in turns
 A_Y_MAX = 1.85  # m/s^2
@@ -162,6 +163,7 @@ class LongitudinalMpc(object):
     self.last_cloudlog_t = 0.0
     self.last_cost = 0
     self.velocity_list = []
+    self.UE = UIEvents(self)
 
   def send_mpc_solution(self, qp_iterations, calculation_time):
     qp_iterations = max(0, qp_iterations)
@@ -272,6 +274,7 @@ class LongitudinalMpc(object):
         #self.lastTR = 0
     elif (CS.readdistancelines == 2 or CS.readdistancelines == 3) and (CS.leftBlinker or CS.rightBlinker):
       TR=0.9
+      self.UE.custom_alert_message(2, "Blinkers active", 25, 3)
       if self.last_cost != 1.0:
         self.libmpc.init(MPC_COST_LONG.TTC, 1.0, MPC_COST_LONG.ACCELERATION, MPC_COST_LONG.JERK)
         self.last_cost = 1.0
