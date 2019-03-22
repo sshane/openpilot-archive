@@ -20,7 +20,6 @@ from selfdrive.controls.lib.speed_smoother import speed_smoother
 from selfdrive.controls.lib.longcontrol import LongCtrlState, MIN_CAN_SPEED
 from selfdrive.controls.lib.radar_helpers import _LEAD_ACCEL_TAU
 from scipy import interpolate
-from selfdrive.car.modules.UIEV_module import UIEvents
 
 # Max lateral acceleration, used to caclulate how much to slow down in turns
 A_Y_MAX = 1.85  # m/s^2
