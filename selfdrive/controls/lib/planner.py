@@ -204,20 +204,20 @@ class LongitudinalMpc(object):
 
   def generateTR(self, velocity): # in m/s
     global relative_velocity
-    x = [0, 8.9408, 22.352, 31.2928, 35.7632, 40.2336]  # in mph: [0, 20, 50, 70, 80, 90]
-    y = [1.0, 1.35, 1.6, 1.7, 1.85, 2.0]  # distances
+    x = [0, 0.89408, 8.9408, 22.352, 31.2928, 35.7632, 40.2336]  # velocity, mph: [0, 2, 20, 50, 70, 80, 90]
+    y = [1.0, 1.1, 1.375, 1.6, 1.7, 1.85, 2.0]  # distances
 
     TR = interpolate.interp1d(x, y, fill_value='extrapolate')  # extrapolate above 90 mph
 
     TR = TR(velocity)[()]
 
-    x = [-8.9408, -2.2352, 0, 1.78816]  # relative velocity values, mph: [-20, -5, 0, 4]
-    y = [(TR + .375), (TR + .05), TR, (TR - .25)]  # modification values, less modification with less difference in velocity
+    x = [-11.176, -3.12928, 0, 1.34112, 2.68224]  # relative velocity values, mph: [-25, -7, 0, 3, 6]
+    y = [(TR + .425), (TR + .1), TR, (TR - .175), (TR - .3)]  # modification values, less modification with less difference in velocity
 
     TR = np.interp(relative_velocity, x, y)  # interpolate as to not modify too much
 
-    x = [-4.4704, -2.2352, 0, 1.34112]  # acceleration values, mph: [-10, -5, 0, 3]
-    y = [(TR + .375), (TR + .15), TR, (TR - .3)]  # same as above
+    x = [-4.4704, -2.2352, -0.89408, 0, 1.34112]  # acceleration values, mph: [-10, -5, -2, 0, 3]
+    y = [(TR + .395), (TR + .165), (TR + .025), TR, (TR - .325)]  # modification values
 
     TR = np.interp(self.get_acceleration(), x, y)
 
@@ -265,8 +265,8 @@ class LongitudinalMpc(object):
 
     # Calculate mpc
     t = sec_since_boot()
-    if CS.vEgo < 2.0:
-      TR=1.8 # under 41km/hr use a TR of 1.8 seconds
+    if CS.vEgo < 2.0 and CS.readdistancelines != 2: # if under 2m/s and not dynamic follow
+      TR=1.8 # under 7.2km/hr use a TR of 1.8 seconds
       #if self.lastTR > 0:
         #self.libmpc.init(MPC_COST_LONG.TTC, 0.1, PC_COST_LONG.ACCELERATION, MPC_COST_LONG.JERK)
         #self.lastTR = 0
