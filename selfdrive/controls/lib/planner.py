@@ -204,8 +204,8 @@ class LongitudinalMpc(object):
 
   def generateTR(self, velocity): # in m/s
     global relative_velocity
-    x = [0, 0.89408, 8.9408, 22.352, 31.2928, 35.7632, 40.2336]  # velocity, mph: [0, 2, 20, 50, 70, 80, 90]
-    y = [1.0, 1.1, 1.325, 1.6, 1.7, 1.85, 2.0]  # distances
+    x = [0, 8.9408, 22.352, 31.2928, 35.7632, 40.2336]  # velocity, mph: [0, 20, 50, 70, 80, 90]
+    y = [1.0, 1.325, 1.6, 1.7, 1.85, 2.0]  # distances
 
     TR = interpolate.interp1d(x, y, fill_value='extrapolate')  # extrapolate above 90 mph
 
@@ -265,7 +265,7 @@ class LongitudinalMpc(object):
 
     # Calculate mpc
     t = sec_since_boot()
-    if CS.vEgo < 2.0 and CS.readdistancelines != 2: # if under 2m/s and not dynamic follow
+    if CS.vEgo < 2.0:
       TR=1.8 # under 7.2km/hr use a TR of 1.8 seconds
       #if self.lastTR > 0:
         #self.libmpc.init(MPC_COST_LONG.TTC, 0.1, PC_COST_LONG.ACCELERATION, MPC_COST_LONG.JERK)
