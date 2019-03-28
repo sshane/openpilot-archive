@@ -162,6 +162,9 @@ class LongitudinalMpc(object):
     self.last_cost = 0
     self.velocity_list = []
 
+    with open("/data/openpilot/gas-interceptor", "r") as f:
+      self.gas_interceptor = bool(f.read())
+
   def send_mpc_solution(self, qp_iterations, calculation_time):
     qp_iterations = max(0, qp_iterations)
     dat = messaging.new_message()
@@ -264,7 +267,7 @@ class LongitudinalMpc(object):
 
     # Calculate mpc
     t = sec_since_boot()
-    if CS.vEgo < 2.0 and CS.readdistancelines != 2:  # if under 2m/s and not dynamic follow
+    if CS.vEgo < 2.0 and CS.readdistancelines != 2 and self.gas_interceptor:  # if under 2m/s, not dynamic follow, and user has comma pedal
       TR=1.8 # under 7.2km/hr use a TR of 1.8 seconds
       #if self.lastTR > 0:
         #self.libmpc.init(MPC_COST_LONG.TTC, 0.1, PC_COST_LONG.ACCELERATION, MPC_COST_LONG.JERK)
