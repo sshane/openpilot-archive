@@ -15,4 +15,4 @@ Highlight Features
 * **Slow Mode (SLO)**: For cars with longitudinal control down to 0 mph, you have the option to activate SLO mode which enables you to set your car's cruise control under your car's limit. For example, you could coast along at 15, 10, or even 5 mph.
 * **Acceleration Profiles (GAS)**: You can select from a few acceleration profiles with the GAS button. If your car accelerates too slowly for your liking, this will solve that.
 * **Select Vision Model (on 0.5.8, dynamic-follow branch only)**: You can select whether you would like to use the wiggly model, or the normal vision model for path planning. Wiggly has more torque and can better guess the road curvature without lane lines, but it occasionally crashes or mis-predicts the path.
-* **EON and openpilot Stats UI**: With the on-screen UI, you can view stats about your EON such as its temperature, your grey panda's GPS accuracy, the lead car's relative velocity, its distance, and more.
+* **EON and openpilot Stats**: With the on-screen UI, you can view stats about your EON such as its temperature, your grey panda's GPS accuracy, the lead car's relative velocity, its distance, and more.
