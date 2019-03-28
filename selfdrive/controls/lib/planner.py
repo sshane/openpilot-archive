@@ -269,7 +269,7 @@ class LongitudinalMpc(object):
       #if self.lastTR > 0:
         #self.libmpc.init(MPC_COST_LONG.TTC, 0.1, PC_COST_LONG.ACCELERATION, MPC_COST_LONG.JERK)
         #self.lastTR = 0
-    elif (CS.readdistancelines == 2 or CS.readdistancelines == 3) and (CS.leftBlinker or CS.rightBlinker):
+    elif CS.leftBlinker or CS.rightBlinker:
       TR=0.9
       if self.last_cost != 1.0:
         self.libmpc.init(MPC_COST_LONG.TTC, 1.0, MPC_COST_LONG.ACCELERATION, MPC_COST_LONG.JERK)
