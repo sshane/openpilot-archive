@@ -53,9 +53,6 @@ _FCW_A_ACT_BP = [0., 30.]
 
 relative_velocity = 0.0 #lead car velocity
 
-relative_dist = 0.0
-
-
 def calc_cruise_accel_limits(v_ego, following):
   a_cruise_min = interp(v_ego, _A_CRUISE_MIN_BP, _A_CRUISE_MIN_V)
 
@@ -234,7 +231,6 @@ class LongitudinalMpc(object):
     return round(float(np.interp(distance, x, y)), 2) # used to cause stuttering, but now we're doing a percentage change check before changing
 
   def update(self, CS, lead, v_cruise_setpoint):
-    global relative_dist
     # Setup current mpc state
     self.cur_state[0].x_ego = 0.0
 
@@ -432,7 +428,6 @@ class Planner(object):
   # this runs whenever we get a packet that can change the plan
   def update(self, CS, CP, VM, LaC, LoC, v_cruise_kph, force_slow_decel):
     global relative_velocity
-    global relative_dist
     cur_time = sec_since_boot()
     v_cruise_setpoint = v_cruise_kph * CV.KPH_TO_MS
 
@@ -491,11 +486,6 @@ class Planner(object):
           relative_velocity = self.lead_1.vRel
       except: #if no lead car
           relative_velocity = 0.0
-
-      try:
-        relative_dist = self.lead_1.dRel
-      except:
-        relative_dist = None
 
       enabled = (LoC.long_control_state == LongCtrlState.pid) or (LoC.long_control_state == LongCtrlState.stopping)
       following = self.lead_1.status and self.lead_1.dRel < 45.0 and self.lead_1.vLeadK > CS.vEgo and self.lead_1.aLeadK > 0.0
