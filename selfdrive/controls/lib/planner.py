@@ -213,8 +213,8 @@ class LongitudinalMpc(object):
 
     TR = TR(velocity)[()]
 
-    x = [-11.176, -3.12928, 0, 1.34112, 2.68224]  # relative velocity values, mph: [-25, -7, 0, 3, 6]
-    y = [(TR + .425), (TR + .125), TR, (TR - .175), (TR - .3)]  # modification values, less modification with less difference in velocity
+    x = [-11.176, -7.84276, -4.67716, -2.12623, 0, 1.34112, 2.68224]  # relative velocity values, mph: [-25, -17.5, -10.5, -4.75, 0, 3, 6]
+    y = [(TR + .425), (TR + .320565), (TR + .257991), (TR + .126369), TR, (TR - .18), (TR - .3)]  # modification values, less modification with less difference in velocity
 
     TR = np.interp(relative_velocity, x, y)  # interpolate as to not modify too much
 
