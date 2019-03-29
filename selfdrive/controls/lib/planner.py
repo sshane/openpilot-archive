@@ -162,8 +162,11 @@ class LongitudinalMpc(object):
     self.last_cost = 0
     self.velocity_list = []
 
-    with open("/data/openpilot/gas-interceptor", "r") as f:
-      self.gas_interceptor = bool(f.read())
+    try:
+      with open("/data/openpilot/gas-interceptor", "r") as f:
+        self.gas_interceptor = bool(f.read())
+    except:
+      self.gas_interceptor = False
 
   def send_mpc_solution(self, qp_iterations, calculation_time):
     qp_iterations = max(0, qp_iterations)
