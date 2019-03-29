@@ -197,7 +197,7 @@ class CarState(object):
     self.includeradius = 22
     self.blind_spot_on = bool(0)
     self.distance_toggle_prev = 2
-    self.read_distance_lines_prev = 3
+    self.read_distance_lines_prev = 2
     self.lane_departure_toggle_on_prev = True
     self.acc_slow_on_prev = False
     #BB UIEvents
