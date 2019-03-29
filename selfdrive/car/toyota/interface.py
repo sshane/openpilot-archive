@@ -233,8 +233,12 @@ class CarInterface(object):
     #detect the Pedal address
     ret.enableGasInterceptor = 0x201 in fingerprint
 
-    with open("/data/openpilot/gas-interceptor", "w") as f:  # write if the user has a pedal installed for d-f exception in planner
-      f.write(str(ret.enableGasInterceptor))
+    try:
+      with open("/data/openpilot/gas-interceptor",
+                "w") as f:  # write if the user has a pedal installed for d-f exception in planner
+        f.write(str(ret.enableGasInterceptor))
+    except:
+      pass
     
     # min speed to enable ACC. if car can do stop and go, then set enabling speed
     # to a negative value, so it won't matter.
