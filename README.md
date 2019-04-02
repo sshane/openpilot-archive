@@ -30,4 +30,4 @@ dynamic-follow uses multiple factors when deciding how far your car should be fr
     
       However, when we factor in acceleration, we can keep this farther following distance by increasing the distance when either the lead car or your car is decelerating. And decrease the distance when either are accelerating, to match traffic.
       
-These three factors should ensure safe and natural braking and acceleration in the real world envirnment.
+These three factors should ensure safe and natural braking and acceleration in the real world envirnment. However, these values are all hard-coded and tuned by one person. If you notice any unsafe behavior, or any way you think you can improve the performance of this code to make it more natural, please feel free to open a pull request!
