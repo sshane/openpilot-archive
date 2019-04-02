@@ -1,18 +1,33 @@
-[![](https://i.imgur.com/UetIFyH.jpg)](#)
+[d-f]: https://github.com/ShaneSmiskol/openpilot/blob/dynamic-follow/d-f%20graph.png "x is mph, y is seconds"
 
-Welcome to openpilot by Arne Schwarck
-https://youtu.be/WKwSq8TPdpo
-======
+# dynamic-follow for openpilot
 
-[openpilot](http://github.com/commaai/openpilot) is an open source driving agent. Currently, it performs the functions of Adaptive Cruise Control (ACC) and Lane Keeping Assist System (LKAS) for selected Honda, Toyota, Acura, Lexus, Chevrolet, Hyundai, Kia. It's about on par with Tesla Autopilot and GM Super Cruise, and better than all other manufacturers.
+#### This branch is Arne's dynamic follow branch, but all new updates see the light of day here first. Once they are verified as working, they are merged to [Arne's fork](https://github.com/arne182/openpilot/tree/dynamic-follow).
 
-Highlight Features
-=======================
+### How it works:
 
-* **Automatic Lane Change Assist (ALC)**: Check your surroundings, signal in the direction you would like to change lanes, and let openpilot do the rest. You can choose between three ALC profiles, Normal, Wifey, and Mad Max. Each increasing in steering torque.
-* **Stock Lane Keeping Assist (LKA)**: Arne has worked on recreating the lake keeping assist system present in your car for openpilot. It works with cruise control not engaged, attempting to steer to keep you inside your lane when it detects you are departing it.
-* **Dynamic Following Distance Profile**: Three following distance (TR) profiles are available to select; 0.9 seconds, 2.7 seconds, and a custom tuned dynamic follow profile. The first two behave as your stock cruise control system does. Dynamic follow aims to provide a more natural feeling drive, adjusting your distance from the lead car based on your speed, your relative velocity with the lead car, and your acceleration (or deceleration). If the system detects the lead car decelerating, your car should start to brake sooner than a hard-coded TR value. Same with accelerating
-* **Slow Mode (SLO)**: For cars with longitudinal control down to 0 mph, you have the option to activate SLO mode which enables you to set your car's cruise control under your car's limit. For example, you could coast along at 15, 10, or even 5 mph.
-* **Acceleration Profiles (GAS)**: You can select from two acceleration profiles with the GAS button. If your car accelerates too slowly for your liking, this will solve that.
-* **Select Vision Model (on 0.5.8, `dynamic-follow` branch only)**: You can select whether you would like to use the wiggly model or the normal vision model for path planning. Wiggly has more torque and can better guess the road curvature without lane lines, but it occasionally crashes or mispredicts the path.
-* **EON and openpilot Stats**: With the on-screen UI, you can view stats about your EON such as its temperature, your grey panda's GPS accuracy, the lead car's relative velocity, its distance, and more.
+dynamic-follow uses multiple factors when deciding how far your car should be from the lead car. Stock openpilot (pre 0.5.10) uses a hard coded value of 1.8 seconds to determine the distance. This is fine for highway driving in the most perfect of situations where there is usually no traffic. However, in real life use, you expect your car to be able to naturally respond to unexpected (and expected, for humans at least) situations.
+
+### Factors:
+
+1. Speed:
+    - Your car's speed is largely the most influential factor in generating a following distance. The faster you're going, the farther the distance in seconds it's set. Here's the current dynamic-follow velocity array (x in m/s, y in seconds):
+    
+    ```
+    x = [0.0, 1.86267, 3.72533, 5.588, 7.45067, 9.31333, 11.55978, 13.645, 22.352, 31.2928, 33.528, 35.7632, 40.2336]  # velocity
+    y = [1.03, 1.05363, 1.07879, 1.11493, 1.16969, 1.25071, 1.36325, 1.43, 1.6, 1.7, 1.75618, 1.85, 2.0]  # distances
+    ```
+    
+    ![d-f]
+    
+    `You can see a clear curve near the < 25 mph section of the array. This is to ensure a safe, smooth deceleration to a stop.`
+
+2. Relative velocity:
+    - The relative velocity between your car and the car ahead is the second largest factor in deciding how far back your car should be. We use relative velocity as a factor because it can tell us if a car ahead is either; stopped and we need to slow down immediately, accelerating and we should speed up to go with the flow of traffic, or a number of other scenarios in between. This is also a large safety factor in braking earlier. When hard braking must occur, this should ensure we start braking sooner. With this factor we can also ignore braking when a vehicle overtakes you traveling a significantly higher speed.
+
+3. Acceleration/deceleration:
+    - The third and final factor taken into consideration is the acceleration of your vehicle (and now the lead car's as well) over the last two seconds. For example, say openpilot is braking pretty harshly to make sure you don't collide with the rapidly decelerating vehicle ahead. We want a large distance throughout this maneuver. However, as time passes, our relative velocity (the factor dictating this temporary large distance) equalizes as we decelerate to the lead car's deceleration speed. This means dynamic follow will generate a closer distance as we are essentially going the same speed.
+    
+      However, when we factor in acceleration, we can keep this farther following distance by increasing the distance when either the lead car or your car is decelerating. And decrease the distance when either are accelerating, to match traffic.
+      
+These three factors should ensure safe and natural braking and acceleration in the real world envirnment. However, these values are all hard-coded and tuned by one person. If you notice any unsafe behavior, or any way you think you can improve the performance of this code to make it more natural, please feel free to open a pull request!
