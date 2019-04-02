@@ -6,7 +6,7 @@
 
 ### How it works:
 
-dynamic-follow uses multiple factors when deciding how far your car should be from the lead car. Stock openpilot (pre 0.5.10) uses a hard coded value of 1.8 seconds to determine the distance. This is fine for highway driving in the most perfect of situations where there is usually no traffic. However, in real life use, you expect your car to be able to naturally respond to unexpected (and expected) situations.
+dynamic-follow uses multiple factors when deciding how far your car should be from the lead car. Stock openpilot (pre 0.5.10) uses a hard coded value of 1.8 seconds to determine the distance. This is fine for highway driving in the most perfect of situations where there is usually no traffic. However, in real life use, you expect your car to be able to naturally respond to unexpected (and expected, for humans at least) situations.
 
 ### Factors:
 
