@@ -27,4 +27,7 @@ dynamic-follow uses multiple factors when deciding how far your car should be fr
 
 3. Acceleration/deceleration:
     - The third and final factor taken into consideration is the acceleration of your vehicle (and now the lead car's as well) over the last two seconds. For example, say openpilot is braking pretty abruptly to make sure you don't collide with the rapidly decelerating vehicle ahead. We want a large distance throughout this maneuver. However, as time passes, our relative velocity (the factor dictating this temporary large distance) equalizes as we decelerate to the lead car's deceleration speed. This means dynamic follow will generate a closer distance as we are essentially going the same speed.
-    However, when we factor in acceleration, we can keep this farther following distance by increasing the distance when either the lead car or your car is decelerating. And decrease the distance when either are accelerating, to match traffic.
+    
+      However, when we factor in acceleration, we can keep this farther following distance by increasing the distance when either the lead car or your car is decelerating. And decrease the distance when either are accelerating, to match traffic.
+      
+These three factors should ensure safe and natural braking and acceleration in the real world envirnment.
