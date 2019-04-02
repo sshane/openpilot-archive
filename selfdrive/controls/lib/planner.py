@@ -209,7 +209,7 @@ class LongitudinalMpc(object):
 
   def generateTR(self, velocity):  # in m/s
     global relative_velocity
-    x = [0.0, 1.86267, 3.72533, 5.588, 7.45067, 9.31333, 11.55978, 13.645, 22.352, 31.2928, 33.528, 35.7632, 40.2336]  # velocity, mph: [0, 20, 50, 70, 80, 90]
+    x = [0.0, 1.86267, 3.72533, 5.588, 7.45067, 9.31333, 11.55978, 13.645, 22.352, 31.2928, 33.528, 35.7632, 40.2336]  # velocity
     y = [1.03, 1.05363, 1.07879, 1.11493, 1.16969, 1.25071, 1.36325, 1.43, 1.6, 1.7, 1.75618, 1.85, 2.0]  # distances
 
     TR = interpolate.interp1d(x, y, fill_value='extrapolate')  # extrapolate above 90 mph
@@ -217,17 +217,17 @@ class LongitudinalMpc(object):
     TR = TR(velocity)[()]
 
     x = [-11.176, -7.84276, -4.67716, -2.12623, 0, 1.34112, 2.68224]  # relative velocity values, mph: [-25, -17.5, -10.5, -4.75, 0, 3, 6]
-    y = [(TR + .425), (TR + .320565), (TR + .257991), (TR + .126369), TR, (TR - .18), (TR - .3)]  # modification values, less modification with less difference in velocity
+    y = [(TR + .45), (TR + .34), (TR + .26), (TR + .13), TR, (TR - .18), (TR - .3)]  # modification values, less modification with less difference in velocity
 
     TR = np.interp(relative_velocity, x, y)  # interpolate as to not modify too much
 
     x = [-4.4704, -2.2352, -0.89408, 0, 1.34112]  # self acceleration values, mph: [-10, -5, -2, 0, 3]
-    y = [(TR + .175), (TR + .005), (TR + .001), TR, (TR - .1)]  # modification values
+    y = [(TR + .15), (TR + .005), (TR + .001), TR, (TR - .1)]  # modification values
 
     TR = np.interp(self.get_acceleration(self.accel_dict["self"]), x, y)  # factor in self acceleration
 
     x = [-4.4704, -2.2352, -0.89408, 0, 1.34112]  # lead acceleration values, mph: [-10, -5, -2, 0, 3]
-    y = [(TR + .22), (TR + .15), (TR + .0215), TR, (TR - .225)]  # modification values
+    y = [(TR + .255), (TR + .15), (TR + .0215), TR, (TR - .225)]  # modification values
 
     TR = np.interp(self.get_acceleration(self.accel_dict["lead"]), x, y)  # factor in lead car's acceleration; should perform better
 
