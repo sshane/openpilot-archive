@@ -1,3 +1,5 @@
+[d-f]: https://github.com/ShaneSmiskol/openpilot/blob/dynamic-follow/d-f%20graph.png "x is mph, y is seconds"
+
 # dynamic-follow for openpilot
 
 #### This branch is Arne's dynamic follow branch, but all new updates see the light of day here first, then if they work as expected, they are merged to [Arne's](https://github.com/arne182/openpilot/tree/dynamic-follow).
@@ -16,7 +18,13 @@ dynamic-follow uses multiple factors when deciding how far your car should be fr
     y = [1.03, 1.05363, 1.07879, 1.11493, 1.16969, 1.25071, 1.36325, 1.43, 1.6, 1.7, 1.75618, 1.85, 2.0]  # distances
     ```
     
-    `Note, if you graph this, you can see a clear curve near the < 25 mph section of the array. This is to ensure a safe, smooth slow down to a stop.`
+    ![d-f]
+    
+    `You can see a clear curve near the < 25 mph section of the array. This is to ensure a safe, smooth deceleration to a stop.`
 
 2. Relative velocity:
-    - The relative velocity between your car and the car ahead is the second largest factor in deciding how far back your car should be. We use relative velocity as a factor because it can tell us if a car ahead is either; stopped and we need to slow down immediately, accelerating and we should speed up to go with the flow of traffic, or a number of other scenarios in between.
+    - The relative velocity between your car and the car ahead is the second largest factor in deciding how far back your car should be. We use relative velocity as a factor because it can tell us if a car ahead is either; stopped and we need to slow down immediately, accelerating and we should speed up to go with the flow of traffic, or a number of other scenarios in between. This is also a large safety factor in braking earlier. When hard braking must occur, this should ensure we start braking sooner. With this factor we can also ignore braking when a vehicle overtakes you traveling a significantly higher speed.
+
+3. Acceleration/deceleration:
+    - The third and final factor taken into consideration is the acceleration of your vehicle (and now the lead car's as well) over the last two seconds. For example, say openpilot is braking pretty abruptly to make sure you don't collide with the rapidly decelerating vehicle ahead. We want a large distance throughout this maneuver. However, as time passes, our relative velocity (the factor dictating this temporary large distance) equalizes as we decelerate to the lead car's deceleration speed. This means dynamic follow will generate a closer distance as we are essentially going the same speed.
+    However, when we factor in acceleration, we can keep this farther following distance by increasing the distance when either the lead car or your car is decelerating. And decrease the distance when either are accelerating, to match traffic.
