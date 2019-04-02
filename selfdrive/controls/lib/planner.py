@@ -222,12 +222,12 @@ class LongitudinalMpc(object):
     TR = np.interp(relative_velocity, x, y)  # interpolate as to not modify too much
 
     x = [-4.4704, -2.2352, -0.89408, 0, 1.34112]  # self acceleration values, mph: [-10, -5, -2, 0, 3]
-    y = [(TR + .15), (TR + .005), (TR + .001), TR, (TR - .1)]  # modification values
+    y = [(TR + .158), (TR + .062), (TR + .009), TR, (TR - .13)]  # modification values
 
     TR = np.interp(self.get_acceleration(self.accel_dict["self"]), x, y)  # factor in self acceleration
 
     x = [-4.4704, -2.2352, -0.89408, 0, 1.34112]  # lead acceleration values, mph: [-10, -5, -2, 0, 3]
-    y = [(TR + .255), (TR + .15), (TR + .0215), TR, (TR - .225)]  # modification values
+    y = [(TR + .237), (TR + .093), (TR + .0135), TR, (TR - .195)]  # modification values
 
     TR = np.interp(self.get_acceleration(self.accel_dict["lead"]), x, y)  # factor in lead car's acceleration; should perform better
 
