@@ -2,7 +2,7 @@
 
 # dynamic-follow for openpilot
 
-#### This branch is Arne's dynamic follow branch, but all new updates see the light of day here first, then if they work as expected, they are merged to [Arne's fork](https://github.com/arne182/openpilot/tree/dynamic-follow).
+#### This branch is Arne's dynamic follow branch, but all new updates see the light of day here first. Once they are verified as working, they are merged to [Arne's fork](https://github.com/arne182/openpilot/tree/dynamic-follow).
 
 ### How it works:
 
