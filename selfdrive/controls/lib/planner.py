@@ -231,7 +231,10 @@ class LongitudinalMpc(object):
 
     TR = np.interp(self.get_acceleration(self.accel_dict["lead"]), x, y)  # factor in lead car's acceleration; should perform better
 
-    return round(TR, 2)
+    if TR < 0.5:
+      return 0.6
+    else:
+      return round(TR, 2)
 
   def generate_cost(self, distance):
     x = [.9, 1.8, 2.7]
