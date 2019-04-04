@@ -210,14 +210,14 @@ class LongitudinalMpc(object):
   def generateTR(self, velocity):  # in m/s
     global relative_velocity
     x = [0.0, 1.86267, 3.72533, 5.588, 7.45067, 9.31333, 11.55978, 13.645, 22.352, 31.2928, 33.528, 35.7632, 40.2336]  # velocity
-    y = [1.03, 1.05363, 1.07879, 1.11493, 1.16969, 1.25071, 1.36325, 1.43, 1.6, 1.7, 1.75618, 1.85, 2.0]  # distances
+    y = [1.03, 1.0513, 1.0739, 1.1064, 1.1557, 1.2286, 1.3299, 1.39, 1.543, 1.633, 1.6836, 1.768, 1.903]  # distances
 
     TR = interpolate.interp1d(x, y, fill_value='extrapolate')  # extrapolate above 90 mph
 
     TR = TR(velocity)[()]
 
     x = [-11.176, -7.84276, -4.67716, -2.12623, 0, 1.34112, 2.68224]  # relative velocity values, mph: [-25, -17.5, -10.5, -4.75, 0, 3, 6]
-    y = [(TR + .45), (TR + .34), (TR + .26), (TR + .13), TR, (TR - .18), (TR - .3)]  # modification values, less modification with less difference in velocity
+    y = [(TR + .45), (TR + .355), (TR + .294), (TR + .156), TR, (TR - .18), (TR - .3)]  # modification values, less modification with less difference in velocity
 
     TR = np.interp(relative_velocity, x, y)  # interpolate as to not modify too much
 
@@ -226,8 +226,8 @@ class LongitudinalMpc(object):
 
     TR = np.interp(self.get_acceleration(self.accel_dict["self"]), x, y)  # factor in self acceleration
 
-    x = [-4.4704, -2.2352, -0.89408, 0, 1.34112]  # lead acceleration values, mph: [-10, -5, -2, 0, 3]
-    y = [(TR + .237), (TR + .093), (TR + .0135), TR, (TR - .195)]  # modification values
+    x = [-4.4704, -1.77, -.31446, 0, .446, 1.34112]  # lead acceleration values, mph: [-10, -5, -2, 0, 3]
+    y = [(TR + .237), (TR + .12), (TR + .027), TR, (TR - .105), (TR - .195)]  # modification values
 
     TR = np.interp(self.get_acceleration(self.accel_dict["lead"]), x, y)  # factor in lead car's acceleration; should perform better
 
