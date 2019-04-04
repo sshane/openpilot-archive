@@ -249,7 +249,7 @@ class LongitudinalMpc(object):
     TR = TR * self.get_traffic_level(self.dynamic_follow_dict["lead_vel"])  # modify TR based on last minute of traffic data
 
     if TR < 0.5:
-      return 0.6
+      return 0.5
     else:
       return round(TR, 2)
 
