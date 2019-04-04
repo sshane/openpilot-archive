@@ -199,7 +199,7 @@ class LongitudinalMpc(object):
     self.cur_state[0].v_ego = v
     self.cur_state[0].a_ego = a
 
-  def get_traffic_level(self, lead_vels):  # generate a value to modify TR by based on fluctuations in traffic
+  def get_traffic_level(self, lead_vels):  # generate a value to modify TR by based on fluctuations in traffic speed
     lead_vel_diffs = []
     for idx, vel in enumerate(lead_vels):
       if idx != 0:
@@ -212,8 +212,8 @@ class LongitudinalMpc(object):
     return traffic
 
   def get_acceleration(self, velocity_list):  # calculate car's own acceleration to generate more accurate following distances
-    try:  # try to get value 200 from end
-      a = (velocity_list[-200] - velocity_list[0])  # first half of acceleration formula
+    try:  # try to get value 100 from end
+      a = (velocity_list[-100] - velocity_list[0])  # first half of acceleration formula
     except:
       a = (velocity_list[-1] - velocity_list[0])
     a = a / (len(velocity_list) / 100.0) # divide difference in velocity by how long in seconds the velocity list has been tracking velocity (2 sec)
@@ -262,7 +262,7 @@ class LongitudinalMpc(object):
     return round(float(np.interp(distance, x, y)), 2) # used to cause stuttering, but now we're doing a percentage change check before changing
 
   def save_car_data(self, self_vel, lead_vel):
-    if len(self.dynamic_follow_dict["self_vel"]) > 200:  # 100hz, so 200 items is 2 seconds
+    if len(self.dynamic_follow_dict["self_vel"]) > 100:  # 100hz, so 100 items is 1 second
       self.dynamic_follow_dict["self_vel"].pop(0)
     self.dynamic_follow_dict["self_vel"].append(self_vel)
 
