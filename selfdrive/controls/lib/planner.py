@@ -200,6 +200,8 @@ class LongitudinalMpc(object):
     self.cur_state[0].a_ego = a
 
   def get_traffic_level(self, lead_vels):  # generate a value to modify TR by based on fluctuations in traffic speed
+    if len(lead_vels) < 1000:
+      return 1.0  # do nothing to TR
     lead_vel_diffs = []
     for idx, vel in enumerate(lead_vels):
       if idx != 0:
@@ -266,7 +268,7 @@ class LongitudinalMpc(object):
       self.dynamic_follow_dict["self_vel"].pop(0)
     self.dynamic_follow_dict["self_vel"].append(self_vel)
 
-    if len(self.dynamic_follow_dict["lead_vel"]) > 6000:  # 100hz, so 6000 items is 1 minute
+    if len(self.dynamic_follow_dict["lead_vel"]) > 12000:  # 100hz, so 12000 items is 2 minutes
       self.dynamic_follow_dict["lead_vel"].pop(0)
     self.dynamic_follow_dict["lead_vel"].append(lead_vel)
 
