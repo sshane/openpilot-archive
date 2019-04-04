@@ -208,7 +208,7 @@ class LongitudinalMpc(object):
         lead_vel_diffs.append(abs(vel - lead_vels[idx - 1]))
 
     x = [0, len(lead_vels)]
-    y = [1.15, .85]  # min and max values to modify TR by, need to tune
+    y = [1.1, .9]  # min and max values to modify TR by, need to tune
     traffic = np.interp(sum(lead_vel_diffs), x, y)
 
     return traffic
