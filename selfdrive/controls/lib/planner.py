@@ -337,7 +337,7 @@ class LongitudinalMpc(object):
           self.lastTR = CS.readdistancelines
           self.last_cost = 1.0
       elif CS.readdistancelines == 2:
-        self.save_car_data(CS.vEgo, relative_velocity)
+        self.save_car_data(CS.vEgo)
 
         generatedTR = self.generateTR(CS.vEgo)
         generated_cost = self.generate_cost(generatedTR)
