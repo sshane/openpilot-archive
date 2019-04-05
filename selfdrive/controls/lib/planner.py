@@ -51,7 +51,7 @@ _A_TOTAL_MAX_BP = [0., 25., 40.]
 _FCW_A_ACT_V = [-3., -2.]
 _FCW_A_ACT_BP = [0., 30.]
 
-relative_velocity = 0.0 #lead car velocity
+relative_velocity = None #lead car velocity
 
 def calc_cruise_accel_limits(v_ego, following):
   a_cruise_min = interp(v_ego, _A_CRUISE_MIN_BP, _A_CRUISE_MIN_V)
@@ -233,10 +233,12 @@ class LongitudinalMpc(object):
 
     TR = TR(velocity)[()]
 
-    x = [-11.176, -7.84276, -4.67716, -2.12623, 0, 1.34112, 2.68224]  # relative velocity values, mph: [-25, -17.5, -10.5, -4.75, 0, 3, 6]
-    y = [(TR + .45), (TR + .34), (TR + .26), (TR + .089), TR, (TR - .18), (TR - .3)]  # modification values, less modification with less difference in velocity
+    if relative_velocity is not None:
 
-    TR = np.interp(relative_velocity, x, y)  # interpolate as to not modify too much
+      x = [-11.176, -7.84276, -4.67716, -2.12623, 0, 1.34112, 2.68224]  # relative velocity values, mph: [-25, -17.5, -10.5, -4.75, 0, 3, 6]
+      y = [(TR + .45), (TR + .34), (TR + .26), (TR + .089), TR, (TR - .18), (TR - .3)]  # modification values, less modification with less difference in velocity
+
+      TR = np.interp(relative_velocity, x, y)  # interpolate as to not modify too much
 
     x = [-4.4704, -2.2352, -0.89408, 0, 1.34112]  # self acceleration values, mph: [-10, -5, -2, 0, 3]
     y = [(TR + .158), (TR + .062), (TR + .009), TR, (TR - .13)]  # modification values
@@ -263,22 +265,25 @@ class LongitudinalMpc(object):
     #return y[diff.index(min(diff))] # find closest cost, should fix beow
     return round(float(np.interp(distance, x, y)), 2) # used to cause stuttering, but now we're doing a percentage change check before changing
 
-  def save_car_data(self, self_vel, lead_vel):
+  def save_car_data(self, self_vel):
     if len(self.dynamic_follow_dict["self_vels"]) > 150:  # 100hz, so 150 items is 1.5 seconds
       del self.dynamic_follow_dict["self_vels"][0]
     self.dynamic_follow_dict["self_vels"].append(self_vel)
 
-    if len(self.dynamic_follow_dict["lead_vels"]) > 150:  # 100hz, so 12000 items is 1.5 seconds
-      del self.dynamic_follow_dict["lead_vels"][0]
-    self.dynamic_follow_dict["lead_vels"].append(lead_vel)
+    if relative_velocity is not None:
+      if len(self.dynamic_follow_dict["lead_vels"]) > 150:  # 100hz, so 12000 items is 1.5 seconds
+        del self.dynamic_follow_dict["lead_vels"][0]
+      self.dynamic_follow_dict["lead_vels"].append(self_vel + relative_velocity)
 
-    if self.mpc_frame >= 50:  # add to traffic list every half second so we're not working with a huge list
-      if len(self.dynamic_follow_dict["traffic_vels"]) > 240:  # 240 half seconds is 2 minutes of traffic logging
-        del self.dynamic_follow_dict["traffic_vels"][0]
-      self.dynamic_follow_dict["traffic_vels"].append(lead_vel)
-      self.mpc_frame = 0  # reset every half second
+      if self.mpc_frame > 50:  # add to traffic list every half second so we're not working with a huge list
+        if len(self.dynamic_follow_dict["traffic_vels"]) > 240:  # 240 half seconds is 2 minutes of traffic logging
+          del self.dynamic_follow_dict["traffic_vels"][0]
+        self.dynamic_follow_dict["traffic_vels"].append(self_vel + relative_velocity)
+        self.mpc_frame = 0  # reset every half second
+      self.mpc_frame += 1  # increment every frame
 
-    self.mpc_frame += 1  # increment every frame
+    else:  # if no car, reset lead car list; ignore for traffic
+      self.dynamic_follow_dict["lead_vels"] = []
 
   def update(self, CS, lead, v_cruise_setpoint):
     # Setup current mpc state
@@ -332,7 +337,7 @@ class LongitudinalMpc(object):
           self.lastTR = CS.readdistancelines
           self.last_cost = 1.0
       elif CS.readdistancelines == 2:
-        self.save_car_data(CS.vEgo, CS.vEgo + relative_velocity)
+        self.save_car_data(CS.vEgo, relative_velocity)
 
         generatedTR = self.generateTR(CS.vEgo)
         generated_cost = self.generate_cost(generatedTR)
@@ -533,7 +538,7 @@ class Planner(object):
       try:
           relative_velocity = self.lead_1.vRel
       except: #if no lead car
-          relative_velocity = 0.0
+          relative_velocity = None
 
       enabled = (LoC.long_control_state == LongCtrlState.pid) or (LoC.long_control_state == LongCtrlState.stopping)
       following = self.lead_1.status and self.lead_1.dRel < 45.0 and self.lead_1.vLeadK > CS.vEgo and self.lead_1.aLeadK > 0.0
