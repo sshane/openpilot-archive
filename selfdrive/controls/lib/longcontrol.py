@@ -134,7 +134,7 @@ class LongControl(object):
       vRel = self.lead_1.vRel
     except:
       vRel = None
-
+      
     #gas_max = interp(v_ego, CP.gasMaxBP, CP.gasMaxV)
     gas_max = self.dynamic_gas(v_ego, vRel, gasinterceptor, gasbuttonstatus)
     brake_max = interp(v_ego, CP.brakeMaxBP, CP.brakeMaxV)

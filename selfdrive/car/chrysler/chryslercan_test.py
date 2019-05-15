@@ -1,5 +1,4 @@
-import chryslercan
-from values import CAR
+from selfdrive.car.chrysler import chryslercan
 from selfdrive.can.packer import CANPacker
 
 from cereal import car
@@ -15,7 +14,8 @@ class TestChryslerCan(unittest.TestCase):
     self.assertEqual(0x75, chryslercan.calc_checksum([0x01, 0x20]))
     self.assertEqual(0xcc, chryslercan.calc_checksum([0x14, 0, 0, 0, 0x20]))
 
-  def test_heartbit(self):
+    
+  def test_heartbit(self): # is this needed?
     packer = CANPacker('chrysler_pacifica_2017_hybrid')
     self.assertEqual(
         [0x2d9, 0, '0000000820'.decode('hex'), 0],

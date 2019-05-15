@@ -2,7 +2,7 @@
 import os
 import sys
 import json
-from subprocess import check_output
+#from subprocess import check_output
 import threading
 from selfdrive.version import version, dirty
 

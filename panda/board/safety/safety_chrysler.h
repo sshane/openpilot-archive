@@ -5,7 +5,7 @@ const int CHRYSLER_MAX_RATE_UP = 3 * 10;     // do not want to strictly enforce 
 const int CHRYSLER_MAX_RATE_DOWN = 3 * 10;
 const int CHRYSLER_MAX_TORQUE_ERROR = 80;    // max torque cmd in excess of torque motor
 
-int chrysler_camera_detected = 0;
+int chrysler_camera_detected = 0;             // is giraffe switch 2 high?
 int chrysler_rt_torque_last = 0;
 int chrysler_desired_torque_last = 0;
 int chrysler_cruise_engaged_last = 0;
@@ -137,15 +137,24 @@ static int chrysler_fwd_hook(int bus_num, CAN_FIFOMailBox_TypeDef *to_fwd) {
   if (bus_num == 0 && addr != 0x2d9 && addr != 0x2a6 && addr != 0x292) {
     return 2;
   }
+
+
   return -1;  // do not forward
 }
 
+static void chrysler_init(int16_t param) {
+  chrysler_camera_detected = 0;
+  #ifdef PANDA
+    lline_relay_release();
+  #endif
+}
 
 const safety_hooks chrysler_hooks = {
-  .init = nooutput_init,
+  .init = chrysler_init,
   .rx = chrysler_rx_hook,
   .tx = chrysler_tx_hook,
   .tx_lin = nooutput_tx_lin_hook,
   .ignition = default_ign_hook,
   .fwd = chrysler_fwd_hook,
+  .relay = nooutput_relay_hook, // is this needed?
 };

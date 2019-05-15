@@ -1,6 +1,6 @@
 #library to work with buttons and ui.c via buttons.msg file
 import struct
-from ctypes import create_string_buffer
+#from ctypes import create_string_buffer
 import os
 from datetime import datetime
 from common.basedir import BASEDIR

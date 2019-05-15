@@ -27,7 +27,6 @@ class CarInterface(object):
 
     # *** init the major players ***
     self.CS = CarState(CP)
-
     self.cp = get_can_parser(CP)
     self.cp_cam = get_camera_parser(CP)
 
@@ -95,7 +94,7 @@ class CarInterface(object):
     if candidate in (CAR.PACIFICA_2019_HYBRID, CAR.JEEP_CHEROKEE_2019):
       ret.minSteerSpeed = 17.5  # m/s 17 on the way up, 13 on the way down once engaged.
       # TODO allow 2019 cars to steer down to 13 m/s if already engaged.
-      
+
     centerToRear = ret.wheelbase - ret.centerToFront
     # TODO: get actual value, for now starting with reasonable value for
     # civic and scaling by mass and wheelbase
@@ -123,7 +122,7 @@ class CarInterface(object):
     ret.brakeMaxV = [1., 0.8]
 
     ret.enableCamera = not check_ecu_msgs(fingerprint, ECU.CAM)
-    print "ECU Camera Simulated: ", ret.enableCamera
+    print("ECU Camera Simulated: {0}".format(ret.enableCamera))
     ret.openpilotLongitudinalControl = False
 
     ret.steerLimitAlert = True
@@ -141,7 +140,6 @@ class CarInterface(object):
   def update(self, c):
     # ******************* do can recv *******************
     canMonoTimes = []
-
     self.cp.update(int(sec_since_boot() * 1e9), False)
     self.cp_cam.update(int(sec_since_boot() * 1e9), False)
     self.CS.update(self.cp, self.cp_cam)
@@ -219,6 +217,8 @@ class CarInterface(object):
     self.low_speed_alert = (ret.vEgo < self.CP.minSteerSpeed)
 
     ret.genericToggle = self.CS.generic_toggle
+    #ret.lkasCounter = self.CS.lkas_counter
+    #ret.lkasCarModel = self.CS.lkas_car_model
 
     if ret.cruiseState.enabled and not self.cruise_enabled_prev:
       disengage_event = True

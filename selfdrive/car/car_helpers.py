@@ -1,11 +1,14 @@
 import os
 import time
+import json
 from common.basedir import BASEDIR
 from common.realtime import sec_since_boot
 from common.fingerprints import eliminate_incompatible_cars, all_known_cars
 from selfdrive.swaglog import cloudlog
 import selfdrive.messaging as messaging
 import selfdrive.crash as crash
+from common.params import Params
+import selfdrive.kegman_conf as kegman
 
 def load_interfaces(x):
   ret = {}
@@ -47,6 +50,13 @@ def fingerprint(logcan, timeout):
     return ("simulator2", None)
   elif os.getenv("SIMULATOR") is not None:
     return ("simulator", None)
+
+  params = Params()
+
+  cached_fingerprint = params.get('CachedFingerprint')
+  if cached_fingerprint is not None and kegman.get("useCarCaching", True):  # if we previously identified a car and fingerprint and user hasn't disabled caching
+    cached_fingerprint = json.loads(cached_fingerprint)
+    return (str(cached_fingerprint[0]), {long(key): value for key, value in cached_fingerprint[1].items()})  # not sure if dict of longs is required
 
   cloudlog.warning("waiting for fingerprint...")
   candidate_cars = all_known_cars()
@@ -98,7 +108,8 @@ def fingerprint(logcan, timeout):
     pass
   
   cloudlog.warning("fingerprinted %s", candidate_cars[0])
-  
+
+  params.put("CachedFingerprint", json.dumps([candidate_cars[0], {int(key): value for key, value in finger.items()}]))  # probably can remove long to int conversion
   return (candidate_cars[0], finger)
 
 

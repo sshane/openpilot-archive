@@ -426,7 +426,7 @@ struct Live100Data {
   gpsPlannerActive @40 :Bool;
   engageable @41 :Bool;  # can OP be engaged?
   driverMonitoringOn @43 :Bool;
-
+  brakeLights @55 :Bool;
   # maps
   vCurvature @46 :Float32;
   decelForTurn @47 :Bool;

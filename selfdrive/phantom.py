@@ -6,7 +6,7 @@ import subprocess
 from common.basedir import BASEDIR
 
 class Phantom():
-  def __init__(self, timeout=True):
+  def __init__(self, timeout=False, do_sshd_mod=False):
     context = zmq.Context()
     self.poller = zmq.Poller()
     self.phantom_Data_sock = messaging.sub_sock(context, service_list['phantomData'].port, conflate=True, poller=self.poller)
@@ -15,7 +15,7 @@ class Phantom():
     self.last_phantom_data = {"status": False, "speed": 0.0}
     self.timeout = timeout
     self.to_disable = True
-    if (BASEDIR == "/data/openpilot") and (not kegman.get("UseDNS") or not kegman.get("UseDNS")) and self.timeout:  # ensure we only run from latcontrol, once
+    if (BASEDIR == "/data/openpilot") and (not kegman.get("UseDNS") or kegman.get("UseDNS") is None) and do_sshd_mod:  # ensure we only run once
       self.mod_sshd_config()
 
   def update(self, rate=40.43):  # in the future, pass in the current rate of long_mpc to accurate calculate disconnect time

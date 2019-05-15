@@ -1,5 +1,5 @@
 import zmq
-from math import acos,sin,cos,radians
+from math import sin,cos,radians
 import selfdrive.messaging as messaging
 from selfdrive.services import service_list
 from common.kalman.simple_kalman import KF1D
@@ -8,13 +8,12 @@ from common.numpy_fast import interp
 from selfdrive.can.parser import CANParser, CANDefine
 from selfdrive.config import Conversions as CV
 from selfdrive.car.toyota.values import CAR, DBC, STEER_THRESHOLD
-from common.kalman.simple_kalman import KF1D
 import selfdrive.kegman_conf as kegman
 from selfdrive.car.modules.UIBT_module import UIButtons,UIButton
 from selfdrive.car.modules.UIEV_module import UIEvents
-import os
-import subprocess
-import sys
+#import os
+#import subprocess
+#import sys
 
 def gps_distance(gpsLat, gpsLon, gpsAlt, gpsAcc):
   A = np.array([(6371010+gpsAlt)*sin(radians(gpsLat-90))*cos(radians(gpsLon)),(6371010+gpsAlt)*sin(radians(gpsLat-90))*sin(radians(gpsLon)),(6371010+gpsAlt)*cos(radians(gpsLat-90))])
@@ -321,7 +320,7 @@ class CarState(object):
     self.can_valid = cp.can_valid
     self.cam_can_valid = cp_cam.can_valid
     msg = None
-    lastspeedlimit = None
+    #lastspeedlimit = None
     lastlive_MapData = None
     for socket, event in self.poller.poll(0):
       if socket is self.gps_location:

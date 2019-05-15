@@ -3,7 +3,7 @@ from selfdrive.can.parser import CANParser
 from selfdrive.config import Conversions as CV
 from common.kalman.simple_kalman import KF1D
 import numpy as np
-from common.numpy_fast import interp
+#from common.numpy_fast import interp
 from selfdrive.car.modules.UIBT_module import UIButtons,UIButton
 from selfdrive.car.modules.UIEV_module import UIEvents
 

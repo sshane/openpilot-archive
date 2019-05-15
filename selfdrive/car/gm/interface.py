@@ -79,7 +79,7 @@ class CarInterface(object):
       # supports stop and go, but initial engage must be above 18mph (which include conservatism)
       ret.minEnableSpeed = 7 * CV.MPH_TO_MS
       # kg of standard extra cargo to count for driver, gas, etc...
-      ret.mass = 1607 + std_cargo
+      ret.mass = 1607. + std_cargo
       ret.safetyModel = car.CarParams.SafetyModels.gm
       ret.wheelbase = 2.69
       ret.steerRatio = 16.17 #0.5.10
@@ -98,7 +98,7 @@ class CarInterface(object):
 
     elif candidate == CAR.HOLDEN_ASTRA:
       # kg of standard extra cargo to count for driver, gas, etc...
-      ret.mass = 1363 + std_cargo
+      ret.mass = 1363. + std_cargo
       ret.wheelbase = 2.662
       # Remaining parameters copied from Volt for now
       ret.centerToFront = ret.wheelbase * 0.4
@@ -108,7 +108,7 @@ class CarInterface(object):
       ret.steerRatioRear = 0.
 
     elif candidate == CAR.ACADIA:
-      ret.minEnableSpeed = -1 # engage speed is decided by pcm
+      ret.minEnableSpeed = -1. # engage speed is decided by pcm
       ret.mass = 4353. * CV.LB_TO_KG + std_cargo
       ret.safetyModel = car.CarParams.SafetyModels.gm
       ret.wheelbase = 2.86
@@ -127,7 +127,7 @@ class CarInterface(object):
 
     elif candidate == CAR.CADILLAC_ATS:
       ret.minEnableSpeed = 18 * CV.MPH_TO_MS
-      ret.mass = 1601 + std_cargo
+      ret.mass = 1601. + std_cargo
       ret.safetyModel = car.CarParams.SafetyModels.gm
       ret.wheelbase = 2.78
       ret.steerRatio = 15.3
@@ -136,7 +136,7 @@ class CarInterface(object):
 
     elif candidate == CAR.CADILLAC_CT6:
       # engage speed is decided by pcm
-      ret.minEnableSpeed = -1
+      ret.minEnableSpeed = -1.
       # kg of standard extra cargo to count for driver, gas, etc...
       ret.mass = 4016. * CV.LB_TO_KG + std_cargo
       ret.safetyModel = car.CarParams.SafetyModels.cadillac

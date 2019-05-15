@@ -77,6 +77,7 @@ class CarInterface(object):
 
     ret.steerKiBP, ret.steerKpBP = [[0.], [0.]]
     ret.steerActuatorDelay = 0.001  # Default delay, Prius has larger delay
+    new_braking_tuned = False
 
     if candidate == CAR.PRIUS:
       stop_and_go = True
@@ -109,6 +110,7 @@ class CarInterface(object):
       tire_stiffness_factor = 0.5533
       ret.steerKf = 0.00001 # full torque for 10 deg at 80mph means 0.00007818594
       if ret.enableGasInterceptor:
+        new_braking_tuned = True
         stop_and_go = True
         ret.gasMaxV = [0.2, 0.5, 0.7]
         ret.longitudinalKpV = [0.028, 0.364, 0.24]  # tuned braking for higher brake limit
@@ -133,8 +135,9 @@ class CarInterface(object):
         ret.longitudinalKpV = [1.2, 0.8, 0.5]
         ret.longitudinalKiV = [0.18, 0.12]
       else:
+        new_braking_tuned = True
         ret.gasMaxV = [0.2, 0.5, 0.7]
-        ret.longitudinalKpV = [1.0, 0.5, 0.3]
+        ret.longitudinalKpV = [1.0, 0.5, 0.3]  # tuned braking for higher brake limit
         ret.longitudinalKiV = [0.20, 0.10]
     elif candidate == CAR.RAV4_2019:
       stop_and_go = True
@@ -158,6 +161,7 @@ class CarInterface(object):
       ret.steerKpV, ret.steerKiV = [[0.2], [0.05]]
       ret.steerKf = 0.00003909297   # full torque for 20 deg at 80mph means 0.00007818594
       if ret.enableGasInterceptor:
+        new_braking_tuned = True
         ret.gasMaxV = [0.2, 0.5, 0.7]
         ret.longitudinalKpV = [0.333, 0.364, 0.15]  # tuned braking for higher brake limit
         ret.longitudinalKiV = [0.07, 0.05]
@@ -175,6 +179,7 @@ class CarInterface(object):
       ret.mass = 4481 * CV.LB_TO_KG + std_cargo  # mean between min and max
       ret.steerKpV, ret.steerKiV = [[0.2], [0.02]]
       ret.steerKf = 0.00007   # full torque for 10 deg at 80mph means 0.00007818594
+      new_braking_tuned = True
       if ret.enableGasInterceptor:
         ret.gasMaxV = [0.2, 0.5, 0.7]
         ret.longitudinalKpV = [0.333, 0.364, 0.15]  # tuned braking for higher brake limit
@@ -237,6 +242,12 @@ class CarInterface(object):
         ret.gasMaxV = [0.2, 0.5, 0.7]
         ret.longitudinalKpV = [3.6, 1.1, 1.0]
         ret.longitudinalKiV = [0.5, 0.24]
+
+    if not new_braking_tuned:
+      conversion_KpV = [0.278, 0.455, 0.3]  # conversion factors for new higher braking limit
+      conversion_KiV = [0.4, 0.417]
+      ret.longitudinalKpV = [round(float(i[1]) * conversion_KpV[i[0]], 3) for i in enumerate(ret.longitudinalKpV)]
+      ret.longitudinalKiV = [round(float(i[1]) * conversion_KiV[i[0]], 3) for i in enumerate(ret.longitudinalKiV)]
 
     ret.steerRateCost = 1.
     ret.centerToFront = ret.wheelbase * 0.44
@@ -469,8 +480,10 @@ class CarInterface(object):
 
     self.CC.update(self.sendcan, c.enabled, self.CS, self.frame,
                    c.actuators, c.cruiseControl.cancel, c.hudControl.visualAlert,
-                   c.hudControl.audibleAlert, self.forwarding_camera, c.hudControl.leftLaneVisible, 
-                   c.hudControl.rightLaneVisible, c.hudControl.leadVisible, c.hudControl.leftLaneDepart, c.hudControl.rightLaneDepart)
+                   c.hudControl.audibleAlert, self.forwarding_camera,
+                   c.hudControl.leftLaneVisible, c.hudControl.rightLaneVisible, c.hudControl.leadVisible, 
+                   c.hudControl.leftLaneDepart, c.hudControl.rightLaneDepart)
+
 
     self.frame += 1
     return False

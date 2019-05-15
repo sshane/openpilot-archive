@@ -1,5 +1,5 @@
 from cereal import ui
-from common import realtime
+#from common import realtime
 import selfdrive.messaging as messaging
 from selfdrive.services import service_list
 import zmq

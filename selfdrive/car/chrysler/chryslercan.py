@@ -1,5 +1,4 @@
 from cereal import car
-from selfdrive.car.chrysler.values import CAR
 
 
 VisualAlert = car.CarControl.HUDControl.VisualAlert
@@ -12,8 +11,8 @@ def calc_checksum(data):
   end_index = len(data)
   index = 0
   checksum = 0xFF
-  temp_chk = 0;
-  bit_sum = 0;
+  temp_chk = 0
+  bit_sum = 0
   if(end_index <= index):
     return False
   for index in range(0, end_index):
@@ -22,7 +21,7 @@ def calc_checksum(data):
     iterate = 8
     while(iterate > 0):
       iterate -= 1
-      bit_sum = curr & shift;
+      bit_sum = curr & shift
       temp_chk = checksum & 0x80
       if (bit_sum != 0):
         bit_sum = 0x1C
@@ -44,7 +43,7 @@ def calc_checksum(data):
 def make_can_msg(addr, dat):
   return [addr, 0, dat, 0]
 
-def create_lkas_heartbit(packer, lkas_status_ok):
+def create_lkas_heartbit(packer, lkas_status_ok): # is this needed?
   # LKAS_HEARTBIT 0x2d9 (729) Lane-keeping heartbeat.
   values = {
     "LKAS_STATUS_OK": lkas_status_ok

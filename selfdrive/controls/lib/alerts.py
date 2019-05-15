@@ -90,7 +90,7 @@ ALERTS = [
   Alert(
       "steerTempUnavailable",
       "TAKE CONTROL",
-      "Steering Temporarily Unavailable",
+      "Steering Unavailable",
       AlertStatus.userPrompt, AlertSize.mid,
       Priority.LOW, VisualAlert.steerRequired, AudibleAlert.chimeWarning1, .4, 2., 3.),
 
@@ -104,7 +104,7 @@ ALERTS = [
   Alert(
       "steerTempUnavailableNoCancel",
       "TAKE CONTROL SOON",
-      "Steering Unavailable",
+      "Steering Temporarily Unavailable",
       AlertStatus.userPrompt, AlertSize.mid,
       Priority.LOW, VisualAlert.none, AudibleAlert.none, .4, 2., 3.),
 

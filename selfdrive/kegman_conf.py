@@ -11,7 +11,7 @@ def read_config():
                     "wheelTouchSeconds": 1800, "battPercOff": 25, "carVoltageMinEonShutdown": 11200,
                     "brakeStoppingTarget": 0.25, "angle_steers_offset": 0, "brake_distance_extra": 1,
                     "lastALCAMode": 1, "brakefactor": 1.2, "lastGasMode": 0, "lastSloMode": 1,
-                    "leadDistance": 5}
+                    "leadDistance": 5, "useCarCaching": True}
 
   if os.path.isfile(kegman_file):
     with open(kegman_file, "r") as f:
@@ -40,6 +40,8 @@ def read_config():
       config.update({"lastSloMode": 1})
     if "leadDistance" not in config:  # leadDistance only works for Accord and Insight, have not tested other honda vehicles
       config.update({"leadDistance": 5.0})
+    if "useCarCaching" not in config:
+      config.update({"useCarCaching": True})  # disable if you want to grab your car's fingerprint on every boot
 
     # force update
     if config["carVoltageMinEonShutdown"] == "11800":
@@ -54,7 +56,6 @@ def read_config():
     write_config(default_config)
     config = default_config
   return config
-
 
 def kegman_thread():  # read and write thread; now merges changes from file and variable
   global conf
@@ -94,7 +95,6 @@ def kegman_thread():  # read and write thread; now merges changes from file and 
     cloudlog.warning("error in kegman thread")
     thread_started = False
 
-
 def write_config(conf):  # never to be called outside kegman_conf
   if BASEDIR == "/data/openpilot":
     with open(kegman_file, "w") as f:
@@ -116,19 +116,16 @@ def save(data):  # allows for writing multiple key/value pairs
     variables_written.append(key)
   conf.update(data)
 
-def get(key_s=""):  # can get multiple keys from a list
+def get(key="", default=""):  # can specify a default value if key doesn't exist
   global thread_counter
-  if key_s == "":  # get all
+  if key == "":  # get all
     return conf
   else:
     thread_counter = 0
-    if type(key_s) == list:
-      return [conf[i] if i in conf else None for i in key_s]
-    if key_s in conf:
-      return conf[key_s]
+    if key in conf:
+      return conf[key]
     else:
-      return None
-
+      return None if default == "" else default
 
 thread_counter = 0  # don't change
 thread_timeout = 5.0  # minutes to wait before stopping thread. reading or writing will reset the counter

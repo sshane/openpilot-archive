@@ -148,8 +148,10 @@ class Planner(object):
       if socket is self.lat_Control:
         self.lastlat_Control = messaging.recv_one(socket).latControl
 
+
     lead_1 = live20.live20.leadOne
     lead_2 = live20.live20.leadTwo
+
 
     enabled = (long_control_state == LongCtrlState.pid) or (long_control_state == LongCtrlState.stopping)
     following = lead_1.status and lead_1.dRel < 45.0 and lead_1.vLeadK > v_ego and lead_1.aLeadK > 0.0

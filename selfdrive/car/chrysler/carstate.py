@@ -75,7 +75,7 @@ def get_camera_parser(CP):
     ("LKAS_STATUS_OK", "LKAS_HEARTBIT", -1)
   ]
   checks = []
-  
+
   return CANParser(DBC[CP.carFingerprint]['pt'], signals, checks, 2)
 
 class CarState(object):
@@ -270,3 +270,8 @@ class CarState(object):
         self.lane_departure_toggle_on = False
       else:
         self.lane_departure_toggle_on = True
+
+    #self.lkas_counter = cp_cam.vl["LKAS_COMMAND"]['COUNTER']
+    #self.lkas_car_model = cp_cam.vl["LKAS_HUD"]['CAR_MODEL']
+    #self.lkas_status_ok = cp_cam.vl["LKAS_HEARTBIT"]['LKAS_STATUS_OK']
+

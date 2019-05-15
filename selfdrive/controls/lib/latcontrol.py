@@ -21,7 +21,6 @@ class LatControl(object):
     self.angle_ff_gain = 1.0
     self.rate_ff_gain = 0.01
     self.angle_ff_bp = [[0.5, 5.0],[0.0, 1.0]]
-    self.previous_integral = 0.0
     
   def reset(self):
     self.pid.reset()
@@ -56,20 +55,20 @@ class LatControl(object):
         angle_feedforward *= self.angle_ff_ratio * self.angle_ff_gain
         rate_feedforward = (1.0 - self.angle_ff_ratio) * self.rate_ff_gain * path_plan.rateSteers
         steer_feedforward = v_ego**2 * (rate_feedforward + angle_feedforward)
-
+        
         if v_ego > 10.0:
           if abs(angle_steers) > (self.angle_ff_bp[0][1] / 2.0):
             self.adjust_angle_gain()
           else:
             self.previous_integral = self.pid.i
-
+        
       deadzone = 0.0
       output_steer = self.pid.update(self.angle_steers_des, angle_steers, check_saturation=(v_ego > 10), override=steer_override,
                                      feedforward=steer_feedforward, speed=v_ego, deadzone=deadzone)
-
+    
     self.sat_flag = self.pid.saturated
-    return output_steer, float(self.angle_steers_des)
-
+    return output_steer, float(self.angle_steers_des)    
+    
     # ALCA works better with the non-interpolated angle
     #if CP.steerControlType == car.CarParams.SteerControlType.torque:
     #  return output_steer, float(self.angle_steers_des_mpc)

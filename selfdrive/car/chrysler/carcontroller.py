@@ -1,11 +1,13 @@
 from cereal import car
-from common.numpy_fast import interp
+#from common.numpy_fast import interp
 from selfdrive.boardd.boardd import can_list_to_can_capnp
 from selfdrive.car import apply_toyota_steer_torque_limits
 from selfdrive.car.chrysler.chryslercan import create_lkas_hud, create_lkas_command, \
                                                create_wheel_buttons, create_lkas_heartbit, \
                                                create_chimes
+
 from selfdrive.car.modules.ALCA_module import ALCAController
+
 from selfdrive.car.chrysler.values import ECU, CAR
 from selfdrive.can.packer import CANPacker
 
@@ -35,6 +37,7 @@ class CarController(object):
     
     self.ALCA = ALCAController(self,True,False)  # Enabled  True and SteerByAngle only False
     
+
     self.fake_ecus = set()
     if enable_camera:
       self.fake_ecus.add(ECU.CAM)
@@ -108,7 +111,9 @@ class CarController(object):
       new_msg = create_wheel_buttons(self.ccframe)
       can_sends.append(new_msg)
 
+    # LKAS_HEARTBIT is forwarded by Panda so no need to send it here.
     # frame is 100Hz (0.01s period)
+
     if (self.ccframe % 10 == 0):  # 0.1s period
       new_msg = create_lkas_heartbit(self.packer, CS.lkas_status_ok)
       can_sends.append(new_msg)
