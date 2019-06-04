@@ -86,16 +86,16 @@ class CarInterface(object):
     ret.stoppingControl = False
     ret.startAccel = 0.0
 
-    #if ret.enableGasInterceptor:
-    ret.gasMaxBP = [0., 9., 55]
-    ret.gasMaxV = [0.2, 0.5, 0.7]
-    ret.longitudinalTuning.kpV = [0.333, 0.364, 0.1]  # braking tune
-    ret.longitudinalTuning.kiV = [0.07, 0.05]
-    '''else:
+    if ret.enableGasInterceptor:
+      ret.gasMaxBP = [0., 9., 50.]
+      ret.gasMaxV = [0.2, 0.5, 0.7]
+      ret.longitudinalTuning.kpV = [1.0, 0.66, 0.42]
+      ret.longitudinalTuning.kiV = [0.135, 0.09]
+    else:
       ret.gasMaxBP = [0.]
       ret.gasMaxV = [0.5]
       ret.longitudinalTuning.kpV = [1.0, 0.5, 0.3]  # braking tune from rav4h
-      ret.longitudinalTuning.kiV = [0.20, 0.10]'''
+      ret.longitudinalTuning.kiV = [0.20, 0.10]
 
     ret.steerActuatorDelay = 0.12  # Default delay, Prius has larger delay
     if candidate != CAR.PRIUS:
