@@ -196,6 +196,7 @@ class CarState(object):
     self.alcaMode = int(kegman.conf['lastALCAMode'])     # default to last ALCAmode on startup
     if self.CP.carFingerprint == CAR.PRIUS:
       self.alcaMode = 3
+      self.cstm_btns.set_button_status("alca", 0)
     #if (CP.carFingerprint == CAR.MODELS):
     # ALCA PARAMS
     # max REAL delta angle for correction vs actuator
