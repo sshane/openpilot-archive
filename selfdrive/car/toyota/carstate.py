@@ -318,8 +318,8 @@ class CarState(object):
             kegman.save({'lastALCAMode': int(self.alcaMode)})  # write last ALCAMode setting to file
           self.cstm_btns.btns[id].btn_label2 = self.alcaLabels[self.alcaMode]
           self.cstm_btns.hasChanges = True
-            if self.CP.carFingerprint == CAR.PRIUS:
-              self.alcaMode = 3
+          if self.CP.carFingerprint == CAR.PRIUS:
+            self.alcaMode = 3
           if self.alcaMode == 3:
             self.cstm_btns.set_button_status("alca", 0)
       elif (id == 2) and (btn_status == 0) and self.cstm_btns.btns[id].btn_name=="slow":
