@@ -247,8 +247,9 @@ class LongitudinalMpc(object):
                 f.write("\n".join([str(i) for i in self.df_data]) + "\n")
               self.df_data = []
               self.df_frame = 0
-            except:
-              pass
+            except Exception,e:
+              with open("/data/test", "a") as f:
+                f.write(str(e)+"\n")
 
         self.v_lead = v_lead
         self.x_lead = x_lead
