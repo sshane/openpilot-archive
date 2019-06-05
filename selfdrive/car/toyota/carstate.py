@@ -244,9 +244,7 @@ class CarState(object):
     self.CP = CP
     self.can_define = CANDefine(DBC[CP.carFingerprint]['pt'])
     self.shifter_values = self.can_define.dv["GEAR_PACKET"]['GEAR']
-    if self.CP.carFingerprint == CAR.PRIUS:
-      self.alcaMode = 3
-      self.cstm_btns.set_button_status("alca", 0)
+    
     self.left_blinker_on = 0
     self.right_blinker_on = 0
     self.lkas_barriers = 0
@@ -270,6 +268,9 @@ class CarState(object):
 
     #BB variable for custom buttons
     self.cstm_btns = UIButtons(self,"Toyota","toyota")
+    if self.CP.carFingerprint == CAR.PRIUS:
+      self.alcaMode = 3
+      self.cstm_btns.set_button_status("alca", 0)
 
     #BB pid holder for ALCA
     self.pid = None
