@@ -284,7 +284,7 @@ def uploader_fn(exit_event):
       with open("/data/openpilot/selfdrive/df/df-data", "r") as f:
         this_df = f.read()
       if this_df == last_df:
-        if on_wifi or on_hotspot:
+        if on_wifi and not on_hotspot:
           df_uploader.upload_data()
     except:
       pass

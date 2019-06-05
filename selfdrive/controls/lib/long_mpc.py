@@ -231,6 +231,7 @@ class LongitudinalMpc(object):
       self.cur_state[0].v_l = v_lead
     else:
       if lead is not None and lead.status:
+        self.df_frame += 1
         x_lead = lead.dRel
         v_lead = max(0.0, lead.vLead)
         a_lead = lead.aLeadK
