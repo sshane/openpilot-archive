@@ -270,10 +270,9 @@ def uploader_fn(exit_event):
   backoff = 0.1
 
   try:
-    with open("/data/openpilot/selfdrive/df/df-data", "r") as f:
-      last_df = f.read()
+    last_df_size = os.path.getsize("/data/openpilot/selfdrive/df/df-data")
   except:
-    last_df = ""
+    last_df_size = None
   while True:
     allow_cellular = (params.get("IsUploadVideoOverCellularEnabled") != "0")
     on_hotspot = is_on_hotspot()
@@ -281,19 +280,16 @@ def uploader_fn(exit_event):
     should_upload = allow_cellular or (on_wifi and not on_hotspot)
 
     try:
-      with open("/data/openpilot/selfdrive/df/df-data", "r") as f:
-        this_df = f.read()
-      if this_df == last_df:
+      if last_df_size == os.path.getsize("/data/openpilot/selfdrive/df/df-data"):
         if on_wifi and not on_hotspot:
           df_uploader.upload_data()
     except:
       pass
 
     try:
-      with open("/data/openpilot/selfdrive/df/df-data", "r") as f:
-        last_df = f.read()
+      last_df_size = os.path.getsize("/data/openpilot/selfdrive/df/df-data")
     except:
-      last_df = ""
+      last_df_size = None
 
     if exit_event.is_set():
       return

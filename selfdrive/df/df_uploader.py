@@ -22,7 +22,7 @@ def upload_data():
     car = params.get('CachedFingerprint')
     if car is not None:
       car = json.loads(car)
-      username+=car[0]
+      username+="-{}".format(car[0])
 
     filepath = "/data/openpilot/selfdrive/df/df-data"
     filename = "df-data.{}".format(random.randint(1,99999))
