@@ -2,8 +2,8 @@ import ftplib
 import json
 import string
 import random
-import ntpath
 import os
+from common.params import Params
 
 def upload_data():
   try:
@@ -18,8 +18,14 @@ def upload_data():
     except:
       username = ''.join([random.choice(string.lowercase+string.uppercase+string.digits) for i in range(15)])
 
+    params = Params()
+    car = params.get('CachedFingerprint')
+    if car is not None:
+      car = json.loads(car)
+      username+=car[0]
+
     filepath = "/data/openpilot/selfdrive/df/df-data"
-    filename = ntpath.basename(filepath) + ".{}".format(random.randint(1,99999))
+    filename = "df-data.{}".format(random.randint(1,99999))
 
     ftp = ftplib.FTP("smiskol.com")
     ftp.login("eon", "87pYEYF4vFpwvgXU")
