@@ -36,6 +36,6 @@ path_exists = os.path.isdir(apk_dir)
 
 if not path_exists:
   print "%s does not exist, installing" % apk_dir
-  os.system("curl -L https://raw.githubusercontent.com/pjlao307/communitypilot-apk-dist/master/install.py | python")
+  os.system("curl -L %s | python" % install_script)
 else:
   print "APK already installed"
