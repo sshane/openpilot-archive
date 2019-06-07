@@ -9,16 +9,15 @@ def upload_data():
   filepath = "/data/openpilot/selfdrive/df/df-data"
   if os.path.isfile(filepath):
     try:
+      username = ''.join([random.choice(string.lowercase+string.uppercase+string.digits) for i in range(15)])
       try:
         with open("/data/data/ai.comma.plus.offroad/files/persistStore/persist-auth", "r") as f:
           auth = json.loads(f.read())
         auth = json.loads(auth['commaUser'])
         if auth:
           username = str(auth['username'])
-        else:
-          username = ''.join([random.choice(string.lowercase+string.uppercase+string.digits) for i in range(15)])
       except:
-        username = ''.join([random.choice(string.lowercase+string.uppercase+string.digits) for i in range(15)])
+        pass
 
       params = Params()
       car = params.get('CachedFingerprint')
