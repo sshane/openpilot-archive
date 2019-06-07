@@ -14,7 +14,7 @@ def upload_data():
         with open("/data/data/ai.comma.plus.offroad/files/persistStore/persist-auth", "r") as f:
           auth = json.loads(f.read())
         auth = json.loads(auth['commaUser'])
-        if auth:
+        if auth and str(auth['username']) != "":
           username = str(auth['username'])
       except:
         pass
