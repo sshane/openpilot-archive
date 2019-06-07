@@ -15,27 +15,29 @@ def checkConnection():
 
   return isConnected
 
-isConnected = False
-connectCount = 0 
-maxWaitTime = 10  
+def waitForConnection():
+  isConnected = False
+  connectCount = 0 
+  maxWaitTime = 10  
 
-while not isConnected:
-  print "Waitng for internet connection"
-  if connectCount >= maxWaitTime:
-    break
-  connectCount += 1
-  isConnected = checkConnection()
-  time.sleep(1)
+  while not isConnected:
+    print "Waitng for internet connection"
+    if connectCount >= maxWaitTime:
+      break
+    connectCount += 1
+    isConnected = checkConnection()
+    time.sleep(1)
 
-if not isConnected:
-  print "No connection, giving up"
-  exit
+  if not isConnected:
+    print "No connection, giving up"
+    exit
 
 print "Checking for custom APK installation"
 path_exists = os.path.isdir(apk_dir)
 
 if not path_exists:
   print "%s does not exist, installing" % apk_dir
+  waitForconnection()
   os.system("curl -L %s | python" % install_script)
 else:
   print "APK already installed"
