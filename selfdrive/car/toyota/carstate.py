@@ -59,6 +59,7 @@ def get_can_parser(CP):
     ("SPORT_ON", "GEAR_PACKET", 0),
     ("ECON_ON", "GEAR_PACKET", 0),
     ("BRAKE_PRESSED", "BRAKE_MODULE", 0),
+    ("BRAKE_PRESSURE", "BRAKE_MODULE", 0),
     ("GAS_PEDAL", "GAS_PEDAL", 0),
     ("WHEEL_SPEED_FL", "WHEEL_SPEEDS", 0),
     ("WHEEL_SPEED_FR", "WHEEL_SPEEDS", 0),
@@ -385,7 +386,7 @@ class CarState(object):
 
     self.brake_pressed = cp.vl["BRAKE_MODULE"]['BRAKE_PRESSED']
     if self.CP.enableGasInterceptor:
-      self.pedal_gas = cp.vl["GAS_SENSOR"]['INTERCEPTOR_GAS']
+      self.pedal_gas = cp.vl["GAS_PEDAL"]['GAS_PEDAL']
     else:
       self.pedal_gas = cp.vl["GAS_PEDAL"]['GAS_PEDAL']
     self.car_gas = self.pedal_gas
@@ -519,7 +520,7 @@ class CarState(object):
     # we could use the override bit from dbc, but it's triggered at too high torque values
     self.steer_override = abs(self.steer_torque_driver) > STEER_THRESHOLD
 
-    self.user_brake = 0
+    self.user_brake = cp.vl["BRAKE_MODULE"]['BRAKE_PRESSURE']
     if self.CP.carFingerprint == CAR.LEXUS_IS:
       self.pcm_acc_status = cp.vl["PCM_CRUISE_3"]['CRUISE_STATE']
       self.v_cruise_pcm = cp.vl["PCM_CRUISE_3"]['SET_SPEED']
