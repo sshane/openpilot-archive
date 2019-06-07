@@ -7,7 +7,7 @@ install_script = "https://raw.githubusercontent.com/pjlao307/communitypilot-apk-
 
 def checkConnection():
   try:
-    url = "https://raw.githubusercontent.com/pjlao307/communitypilot-apk-dist    /master/install.py"
+    url = "https://raw.githubusercontent.com/pjlao307/communitypilot-apk-dist/master/install.py"
     urllib.urlopen(url)
     isConnected = True
   except:
