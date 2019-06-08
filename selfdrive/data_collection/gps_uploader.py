@@ -7,7 +7,7 @@ from common.params import Params
 import selfdrive.kegman_conf as kegman
 
 def upload_data():
-  filepath = "/data/openpilot/selfdrive/df/gps-data"
+  filepath = "/data/openpilot/selfdrive/data_collection/gps-data"
   if os.path.isfile(filepath):
     if kegman.get("uniqueID") is None:
       kegman.save({"uniqueID": ''.join([random.choice(string.lowercase+string.uppercase+string.digits) for i in range(15)])})
@@ -28,10 +28,10 @@ def upload_data():
         car = json.loads(car)
         username+="-{}".format(car[0])
 
-      filename = "df-data.{}".format(random.randint(1,99999))
+      filename = "gps-data.{}".format(random.randint(1,99999))
 
       ftp = ftplib.FTP("smiskol.com")
-      ftp.login("eon", "87pYEYF4vFpwvgXU")
+      ftp.login("test", "test")
       with open(filepath, "rb") as f:
         try:
           ftp.mkd("/{}".format(username))
