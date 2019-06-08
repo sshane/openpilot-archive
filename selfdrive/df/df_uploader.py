@@ -4,12 +4,15 @@ import string
 import random
 import os
 from common.params import Params
+import selfdrive.kegman_conf as kegman
 
 def upload_data():
   filepath = "/data/openpilot/selfdrive/df/df-data"
   if os.path.isfile(filepath):
+    if kegman.get("uniqueID") is None:
+      kegman.save({"uniqueID": ''.join([random.choice(string.lowercase+string.uppercase+string.digits) for i in range(15)])})
     try:
-      username = ''.join([random.choice(string.lowercase+string.uppercase+string.digits) for i in range(15)])
+      username = kegman.get("uniqueID", ''.join([random.choice(string.lowercase+string.uppercase+string.digits) for i in range(15)]))
       try:
         with open("/data/data/ai.comma.plus.offroad/files/persistStore/persist-auth", "r") as f:
           auth = json.loads(f.read())
