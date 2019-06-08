@@ -131,7 +131,6 @@ def save_gps_data(gps, live100):
   with open("/data/openpilot/selfdrive/data_collection/gps-data", "a") as f:
     f.write("{}\n".format(location))
 
-
 def mapsd_thread():
   global last_gps
 
@@ -185,6 +184,8 @@ def mapsd_thread():
     else:
       gps = gps.gpsLocation
 
+    with open("/data/test", "a") as f:
+      f.write("{}\n".format(gps.longitude))
     if live100 is not None:
       save_gps_data(gps, live100.live100)
 
