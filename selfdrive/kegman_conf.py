@@ -96,16 +96,13 @@ def save(data):  # allows for writing multiple key/value pairs
     variables_written.append(key)
   conf.update(data)
 
-def get(key="", default=""):  # can specify a default value if key doesn't exist
+def get(key=None, default=None):  # can specify a default value if key doesn't exist
   global thread_counter
-  if key == "":  # get all
+  if key is None:  # get all
     return conf
   else:
     thread_counter = 0
-    if key in conf:
-      return conf[key]
-    else:
-      return None if default == "" else default
+    return conf[key] if key in conf else default
 
 thread_counter = 0  # don't change
 thread_timeout = 5.0  # minutes to wait before stopping thread. reading or writing will reset the counter
