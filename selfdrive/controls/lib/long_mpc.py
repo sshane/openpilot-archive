@@ -209,7 +209,8 @@ class LongitudinalMpc(object):
 
     # Setup current mpc state
     self.cur_state[0].x_ego = 0.0
-    self.phantom.update(self.calc_rate(new_frame=True))
+    #self.phantom.update(self.calc_rate(new_frame=True))
+    self.phantom.update()
 
     if self.phantom.data["status"]:
       if self.phantom.data["speed"] != 0.0:
