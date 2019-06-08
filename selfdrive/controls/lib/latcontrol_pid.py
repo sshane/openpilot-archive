@@ -19,6 +19,7 @@ class LatControlPID(object):
     self.angle_ff_gain = 1.0
     self.rate_ff_gain = 0.01
     self.angle_ff_bp = [[0.5, 5.0],[0.0, 1.0]]
+    self.sat_time = 0.0
     
   def reset(self):
     self.pid.reset()
@@ -71,7 +72,23 @@ class LatControlPID(object):
       pid_log.output = output_steer
       pid_log.saturated = bool(self.pid.saturated)
 
-    self.sat_flag = self.pid.saturated
+    # Reset sat_flat always, set it only if needed
+    self.sat_flag = False
+
+    # If PID is saturated, set time which it was saturated
+    if self.pid.saturated and self.sat_time < 0.5:
+      self.sat_time = sec_since_boot()
+
+    # To save cycles, nest in sat_time check
+    if self.sat_time > 0.5:
+      # If its been saturated for 0.7 seconds then set flag
+      if (sec_since_boot() - self.sat_time) > 0.7:
+        self.sat_flag = True
+
+      # If it is no longer saturated, clear the sat flag and timer
+      if not self.pid.saturated:
+        self.sat_time = 0.0
+
     if CP.steerControlType == car.CarParams.SteerControlType.torque:
       return output_steer, path_plan.angleSteers, pid_log
     else:
