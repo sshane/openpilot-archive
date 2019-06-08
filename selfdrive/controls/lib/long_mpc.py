@@ -245,7 +245,7 @@ class LongitudinalMpc(object):
           self.df_data.append([v_ego, a_ego, v_lead, x_lead, a_lead, gas, brake, time.time()])
           if self.df_frame >= 200:  # every 5 seconds, write to file
             try:
-              with open("/data/openpilot/selfdrive/df/df-data", "a") as f:
+              with open("/data/openpilot/selfdrive/data_collection/df-data", "a") as f:
                 f.write("\n".join([str(i) for i in self.df_data]) + "\n")
               self.df_data = []
               self.df_frame = 0
