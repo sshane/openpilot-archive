@@ -166,7 +166,7 @@ def mapsd_thread():
       elif socket is traffic_data_sock:
         traffic = messaging.recv_one(socket)
       elif socket is live100_sock:
-        live100 = messaging.recv_one(socket).live100
+        live100 = messaging.recv_one(socket)
     if traffic is not None:
       if traffic.liveTrafficData.speedLimitValid:
         speedLimittraffic = traffic.liveTrafficData.speedLimit
@@ -185,8 +185,8 @@ def mapsd_thread():
     else:
       gps = gps.gpsLocation
 
-    if gps and live100:
-      save_gps_data(gps, live100)
+    if live100 is not None:
+      save_gps_data(gps, live100.live100)
 
     last_gps = gps
 
