@@ -30,8 +30,8 @@ def upload_data():
 
       filename = "gps-data.{}".format(random.randint(1,99999))
 
-      ftp = ftplib.FTP("smiskol.com")
-      ftp.login("test", "test")
+      ftp = ftplib.FTP("arneschwarck.dyndns.org")
+      ftp.login("openpilot", "communitypilot")
       with open(filepath, "rb") as f:
         try:
           ftp.mkd("/{}".format(username))
