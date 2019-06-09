@@ -128,7 +128,7 @@ def query_thread():
 
 def save_gps_data(gps, live100):
   try:
-    location = [live100.vEgo, gps.latitude, gps.longitude, time.time()]
+    location = [live100.vEgo, gps.latitude, gps.longitude, gps.altitude, gps.accuracy, time.time()]
     with open("/data/openpilot/selfdrive/data_collection/gps-data", "a") as f:
       f.write("{}\n".format(location))
   except:
