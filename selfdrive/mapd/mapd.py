@@ -126,9 +126,9 @@ def query_thread():
         last_query_result = None
         query_lock.release()
 
-def save_gps_data(gps, live100):
+def save_gps_data(gps):
   try:
-    location = [live100.vEgo, gps.latitude, gps.longitude, gps.altitude, gps.accuracy, time.time()]
+    location = [gps.speed, gps.bearing, gps.latitude, gps.longitude, gps.altitude, gps.accuracy, time.time()]
     with open("/data/openpilot/selfdrive/data_collection/gps-data", "a") as f:
       f.write("{}\n".format(location))
   except:
@@ -143,7 +143,6 @@ def mapsd_thread():
   gps_external_sock = messaging.sub_sock(context, service_list['gpsLocationExternal'].port, conflate=True, poller=poller)
   map_data_sock = messaging.pub_sock(context, service_list['liveMapData'].port)
   traffic_data_sock = messaging.sub_sock(context, service_list['liveTrafficData'].port, conflate=True, poller=poller)
-  live100_sock = messaging.sub_sock(context, service_list['live100'].port, conflate=True, poller=poller)
 
   cur_way = None
   curvature_valid = False
@@ -161,14 +160,11 @@ def mapsd_thread():
     gps = messaging.recv_one(gps_sock)
     gps_ext = None
     traffic = None
-    live100 = None
     for socket, event in poller.poll(0):
       if socket is gps_external_sock:
         gps_ext = messaging.recv_one(socket)
       elif socket is traffic_data_sock:
         traffic = messaging.recv_one(socket)
-      elif socket is live100_sock:
-        live100 = messaging.recv_one(socket)
     if traffic is not None:
       if traffic.liveTrafficData.speedLimitValid:
         speedLimittraffic = traffic.liveTrafficData.speedLimit
@@ -187,8 +183,7 @@ def mapsd_thread():
     else:
       gps = gps.gpsLocation
 
-    if live100 is not None:
-      save_gps_data(gps, live100.live100)
+    save_gps_data(gps)
 
     last_gps = gps
 
