@@ -166,10 +166,13 @@ class Planner(object):
     # Speed limit and curvature
     set_speed_limit_active = self.params.get("LimitSetSpeed") == "1" and self.params.get("SpeedLimitOffset") is not None
     if set_speed_limit_active and map_valid:
+      offset = float(self.params.get("SpeedLimitOffset"))
       if live_map_data.liveMapData.speedLimitValid:
         speed_limit = live_map_data.liveMapData.speedLimit
-        offset = float(self.params.get("SpeedLimitOffset"))
         v_speedlimit = speed_limit + offset
+      if live_map_data.liveMapData.speedLimitAheadValid:
+        speed_limit_ahead = live_map_data.liveMapData.speedLimitAhead
+        v_speedlimit_ahead = speed_limit + offset
 
       if live_map_data.liveMapData.curvatureValid:
         curvature = abs(live_map_data.liveMapData.curvature)
@@ -208,7 +211,12 @@ class Planner(object):
         # if required so, force a smooth deceleration
         accel_limits[1] = min(accel_limits[1], AWARENESS_DECEL)
         accel_limits[0] = min(accel_limits[0], accel_limits[1])
-
+        
+      if v_speedlimit_ahead < v_speedlimit:
+        time_to_speedlimit = max(1.0, live_map_data.liveMapData.speedLimitAheadDistance / max(self.v_cruise, 1.))
+        required_decel = min(0, (v_speedlimit_ahead - self.v_cruise) / time_to_speedlimit)
+        accel_limits[0] = max(accel_limits[0], required_decel)
+        
       # Change accel limits based on time remaining to turn
       if decel_for_turn:
         time_to_turn = max(1.0, live_map_data.liveMapData.distToTurn / max(self.v_cruise, 1.))
