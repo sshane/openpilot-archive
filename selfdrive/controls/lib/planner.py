@@ -159,6 +159,7 @@ class Planner(object):
 
     v_speedlimit = NO_CURVATURE_SPEED
     v_curvature = NO_CURVATURE_SPEED
+    v_speedlimit_ahead = NO_CURVATURE_SPEED
 
     map_age = cur_time - rcv_times['liveMapData']
     map_valid = True #live_map_data.liveMapData.mapValid and map_age < 10.0
