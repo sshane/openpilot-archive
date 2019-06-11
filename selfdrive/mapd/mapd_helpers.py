@@ -6,7 +6,7 @@ from common.basedir import BASEDIR
 from selfdrive.config import Conversions as CV
 from common.transformations.coordinates import LocalCoord, geodetic2ecef
 
-LOOKAHEAD_TIME = 10.
+LOOKAHEAD_TIME = 20.
 MAPS_LOOKAHEAD_DISTANCE = 50 * LOOKAHEAD_TIME
 
 DEFAULT_SPEEDS_JSON_FILE = BASEDIR + "/selfdrive/mapd/default_speeds.json"
@@ -219,7 +219,7 @@ class Way:
 
     speed_ahead = None
     speed_ahead_dist = None
-    lookahead_ways = 5
+    lookahead_ways = 10
     way = self
     for i in range(lookahead_ways):
       way_pts = way.points_in_car_frame(lat, lon, heading)
@@ -228,21 +228,29 @@ class Way:
       max_dist = np.linalg.norm(way_pts[-1, :])
 
       if max_dist > 2 * lookahead:
+        print "max_dist break"
         break
 
       if 'maxspeed' in way.way.tags:
         spd = parse_speed_tags(way.way.tags)
+        print "spd found"
+        print spd
         if not spd:
           location_info = self.query_results[4]
           spd = geocode_maxspeed(way.way.tags, location_info)
+          print "spd is actually"
+          print spd
         if spd < current_speed_limit:
           speed_ahead = spd
           min_dist = np.linalg.norm(way_pts[1, :])
           speed_ahead_dist = min_dist
+          print "slower speed found"
+          
           break
       # Find next way
       way = way.next_way()
       if not way:
+        print "no way break"
         break
 
     return speed_ahead, speed_ahead_dist
