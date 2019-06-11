@@ -173,6 +173,8 @@ class Planner(object):
         v_speedlimit = speed_limit + offset
       if live_map_data.liveMapData.speedLimitAheadValid:
         speed_limit_ahead = live_map_data.liveMapData.speedLimitAhead
+        print "Speed Ahead found"
+        print speed_limit_ahead
         v_speedlimit_ahead = speed_limit + offset
 
       if live_map_data.liveMapData.curvatureValid:
@@ -215,6 +217,8 @@ class Planner(object):
         
       if v_speedlimit_ahead < v_speedlimit:
         time_to_speedlimit = max(1.0, live_map_data.liveMapData.speedLimitAheadDistance / max(self.v_cruise, 1.))
+        print "Decelerating in "
+        print time_to_speedlimit
         required_decel = min(0, (v_speedlimit_ahead - self.v_cruise) / time_to_speedlimit)
         accel_limits[0] = max(accel_limits[0], required_decel)
         
