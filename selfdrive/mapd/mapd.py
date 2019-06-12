@@ -153,6 +153,9 @@ def mapsd_thread():
   speedLimittraffic = 0
   speedLimittraffic_prev = 0
   max_speed = None
+  max_speed_ahead = None
+  max_speed_ahead_dist = None
+  
   max_speed_prev = 0
   speedLimittrafficvalid = False
   
@@ -191,6 +194,8 @@ def mapsd_thread():
     if not fix_ok or last_query_result is None or not cache_valid:
       cur_way = None
       curvature = None
+      max_speed_ahead = None
+      max_speed_ahead_dist = None
       curvature_valid = False
       upcoming_curvature = 0.
       dist_to_turn = 0.
@@ -280,6 +285,8 @@ def mapsd_thread():
         new_latitude  = gps.latitude + (MAPS_LOOKAHEAD_DISTANCE * cos(heading/180*3.14159265358979) / (6371010 + gps.altitude)) * (180 / 3.14159265358979)
         new_longitude = gps.longitude + (MAPS_LOOKAHEAD_DISTANCE * sin(heading/180*3.14159265358979) / (6371010 + gps.altitude)) * (180 / 3.14159265358979) / cos(gps.latitude * 3.14159265358979/180)
         ahead_speed = None
+        max_speed_ahead = None
+        max_speed_ahead_dist = None
         ahead_speed = Way.closest(last_query_result, new_latitude, new_longitude, heading, ahead_speed)
         if ahead_speed is not None and ahead_speed < max_speed:
           max_speed_ahead = ahead_speed.max_speed()
