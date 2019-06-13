@@ -248,7 +248,7 @@ class Way:
           
           break
       # Find next way
-      way = way.next_way()
+      way = way.next_way(True)
       if not way:
         print "no way break"
         break
