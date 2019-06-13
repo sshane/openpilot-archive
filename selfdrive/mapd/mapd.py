@@ -292,7 +292,7 @@ def mapsd_thread():
           max_speed_ahead = ahead_speed.max_speed()
           print "speed ahead found"
           print max_speed_ahead
-          max_speed_ahead_dist = distance_to_closest_node(lat, lon, heading, pnts)
+          max_speed_ahead_dist = cur_way.distance_to_closest_node(lat, lon, heading, pnts)
           
         if abs(max_speed - max_speed_prev) > 0.1:
           speedLimittrafficvalid = False
