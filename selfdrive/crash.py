@@ -41,7 +41,7 @@ else:
   try:
     with open("/data/params/d/CommunityPilotUser", "r") as f:
       auth = json.loads(f.read())
-    auth = json.loads(auth['commaUser'])
+    
     try:
       error_tags['username'] = ''.join(char for char in auth['username'].decode('utf-8', 'ignore') if char.isalnum())
     except:
