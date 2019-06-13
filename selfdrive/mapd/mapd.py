@@ -301,7 +301,7 @@ def mapsd_thread():
       
 
         # TODO: use the function below to anticipate upcoming speed limits
-        #max_speed_ahead, max_speed_ahead_dist = cur_way.max_speed_ahead(max_speed, lat, lon, heading, MAPS_LOOKAHEAD_DISTANCE)
+        max_speed_ahead, max_speed_ahead_dist = cur_way.max_speed_ahead(max_speed, lat, lon, heading, MAPS_LOOKAHEAD_DISTANCE)
         if max_speed_ahead is not None and max_speed_ahead_dist is not None:
           dat.liveMapData.speedLimitAheadValid = True
           dat.liveMapData.speedLimitAhead = float(max_speed_ahead)
