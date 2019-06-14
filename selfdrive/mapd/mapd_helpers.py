@@ -324,7 +324,7 @@ class Way:
     try:
       # Simple heuristic to find next way
       ways = [w for w in ways if w.id != self.id]
-      ways = [w for w in ways if w.nodes[0] == node]
+      #ways = [w for w in ways if w.nodes[0] == node]
 
       # Filter on highway tag
       acceptable_tags = list()
