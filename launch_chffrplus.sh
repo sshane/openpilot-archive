@@ -27,7 +27,7 @@ function launch {
   export PYTHONPATH="$PWD"
 
   # check to see if custom APK is installed
-  #python ./checkCustomAPK.py
+  python ./checkCustomAPK.py
 
   # start manager
   cd selfdrive
