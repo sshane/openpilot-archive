@@ -38,6 +38,21 @@ else:
   except:
     pass
 
+  try:
+    with open("/data/params/d/CommunityPilotUser", "r") as f:
+      auth = json.loads(f.read())
+    
+    try:
+      error_tags['username'] = ''.join(char for char in auth['username'].decode('utf-8', 'ignore') if char.isalnum())
+    except:
+      error_tags['username'] = "char_error"
+    try:
+      error_tags['email'] = auth['email']
+    except:
+      pass
+  except:
+    pass
+
   logging_data = {"branch": "/data/params/d/GitBranch", "commit": "/data/params/d/GitCommit", "remote": "/data/params/d/GitRemote"}
 
   for key in logging_data:
