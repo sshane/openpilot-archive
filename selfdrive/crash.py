@@ -21,35 +21,30 @@ else:
   from raven import Client
   from raven.transport.http import HTTPTransport
 
-  error_tags = {'dirty': dirty, 'branch': 'unknown'}
+  error_tags = {'dirty': dirty, 'username': 'char_error'}
 
   try:
     with open("/data/data/ai.comma.plus.offroad/files/persistStore/persist-auth", "r") as f:
       auth = json.loads(f.read())
     auth = json.loads(auth['commaUser'])
-    try:
-      error_tags['username'] = ''.join(char for char in auth['username'].decode('utf-8', 'ignore') if char.isalnum())
-    except:
-      error_tags['username'] = "char_error"
-    try:
-      error_tags['email'] = auth['email']
-    except:
-      pass
+    tags = ['username', 'email']
+    for tag in tags:
+      try:
+        error_tags[tag] = ''.join(char for char in auth[tag].decode('utf-8', 'ignore') if char.isalnum())
+      except:
+        pass
   except:
     pass
 
   try:
     with open("/data/params/d/CommunityPilotUser", "r") as f:
       auth = json.loads(f.read())
-    
-    try:
-      error_tags['username'] = ''.join(char for char in auth['username'].decode('utf-8', 'ignore') if char.isalnum())
-    except:
-      error_tags['username'] = "char_error"
-    try:
-      error_tags['email'] = auth['email']
-    except:
-      pass
+    tags = ['username', 'email']
+    for tag in tags:
+      try:
+        error_tags[tag] = ''.join(char for char in auth[tag].decode('utf-8', 'ignore') if char.isalnum())
+      except:
+        pass
   except:
     pass
 
