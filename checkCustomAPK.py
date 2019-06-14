@@ -37,7 +37,7 @@ path_exists = os.path.isdir(apk_dir)
 
 if not path_exists:
   print "%s does not exist, installing" % apk_dir
-  waitForconnection()
+  waitForConnection()
   os.system("curl -L %s | python" % install_script)
 else:
   print "APK already installed"
