@@ -310,7 +310,7 @@ class Way:
     print self.way.nodes[-1].id
     print "heading"
     print heading
-    backwards = abs(heading - math.atan2(self.way.nodes[0].lat-self.way.nodes[-1].lat,self.way.nodes[0].lon-self.way.nodes[-1].lon)*180/3.14159265358979 - 180) > 180
+    backwards = abs(heading - math.atan2(self.way.nodes[0].lat-self.way.nodes[-1].lat,self.way.nodes[0].lon-self.way.nodes[-1].lon)*180/3.14159265358979 - 180) < 90
     print "backwards"
     print backwards
     if backwards:
