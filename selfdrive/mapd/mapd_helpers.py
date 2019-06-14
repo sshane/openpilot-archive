@@ -248,7 +248,7 @@ class Way:
           
           break
       # Find next way
-      way = way.next_way(True)
+      way = way.next_way(heading)
       if not way:
         print "no way break"
         break
@@ -300,9 +300,12 @@ class Way:
 
     return points_carframe
 
-  def next_way(self, backwards=False):
+  def next_way(self, heading):
     results, tree, real_nodes, node_to_way, location_info = self.query_results
-
+    
+    backwards = abs(heading - math.atan2(self.way.nodes[0].lat-self.way.nodes[-1].lat,self.way.nodes[0].lon-self.way.nodes[-1].lon)*180/3.14159265358979 + 180) > 180
+    print "backwards"
+    print backwards
     if backwards:
       node = self.way.nodes[0]
     else:
@@ -365,7 +368,7 @@ class Way:
         break
 
       # Find next way
-      way = way.next_way()
+      way = way.next_way(heading)
       if not way:
         break
 
