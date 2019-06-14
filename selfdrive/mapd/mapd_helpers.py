@@ -302,7 +302,14 @@ class Way:
 
   def next_way(self, heading):
     results, tree, real_nodes, node_to_way, location_info = self.query_results
-    
+    print "way.id"
+    print self.id
+    print "node0.id"
+    print self.way.nodes[0].id
+    print "node-1.id"
+    print self.way.nodes[-1].id
+    print "heading"
+    print heading
     backwards = abs(heading - math.atan2(self.way.nodes[0].lat-self.way.nodes[-1].lat,self.way.nodes[0].lon-self.way.nodes[-1].lon)*180/3.14159265358979 + 180) > 180
     print "backwards"
     print backwards
