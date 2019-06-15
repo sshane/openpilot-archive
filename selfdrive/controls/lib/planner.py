@@ -175,7 +175,7 @@ class Planner(object):
         speed_limit_ahead = live_map_data.liveMapData.speedLimitAhead
         print "Speed Ahead found"
         print speed_limit_ahead
-        v_speedlimit_ahead = speed_limit + offset
+        v_speedlimit_ahead = speed_limit_ahead + offset
 
       if live_map_data.liveMapData.curvatureValid:
         curvature = abs(live_map_data.liveMapData.curvature)
