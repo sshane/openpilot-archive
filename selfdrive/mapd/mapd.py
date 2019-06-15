@@ -282,19 +282,19 @@ def mapsd_thread():
       # Speed limit
       max_speed = cur_way.max_speed()
       if max_speed is not None:
-        new_latitude  = gps.latitude + (MAPS_LOOKAHEAD_DISTANCE * cos(heading/180*3.14159265358979) / (6371010 + gps.altitude)) * (180 / 3.14159265358979)
-        new_longitude = gps.longitude + (MAPS_LOOKAHEAD_DISTANCE * sin(heading/180*3.14159265358979) / (6371010 + gps.altitude)) * (180 / 3.14159265358979) / cos(gps.latitude * 3.14159265358979/180)
+        #new_latitude  = gps.latitude + (MAPS_LOOKAHEAD_DISTANCE * cos(heading/180*3.14159265358979) / (6371010 + gps.altitude)) * (180 / 3.14159265358979)
+        #new_longitude = gps.longitude + (MAPS_LOOKAHEAD_DISTANCE * sin(heading/180*3.14159265358979) / (6371010 + gps.altitude)) * (180 / 3.14159265358979) / cos(gps.latitude * 3.14159265358979/180)
         ahead_speed = None
         max_speed_ahead = None
         max_speed_ahead_dist = None
-        ahead_speed = Way.closest(last_query_result, new_latitude, new_longitude, heading, ahead_speed)
-        if ahead_speed is not None and ahead_speed < max_speed:
-          max_speed_ahead = ahead_speed.max_speed()
-          print "speed ahead found"
-          print max_speed_ahead
-          max_speed_ahead_dist = cur_way.distance_to_closest_node(lat, lon, heading, pnts)
-          print "distance"
-          print max_speed_ahead_dist
+        #ahead_speed = Way.closest(last_query_result, new_latitude, new_longitude, heading, ahead_speed)
+        #if ahead_speed is not None and ahead_speed < max_speed:
+        #  max_speed_ahead = ahead_speed.max_speed()
+        #  print "speed ahead found"
+        #  print max_speed_ahead
+        #  max_speed_ahead_dist = cur_way.distance_to_closest_node(lat, lon, heading, pnts)
+        #  print "distance"
+        #  print max_speed_ahead_dist
           
         if abs(max_speed - max_speed_prev) > 0.1:
           speedLimittrafficvalid = False
