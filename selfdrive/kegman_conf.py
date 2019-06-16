@@ -77,7 +77,7 @@ def kegman_thread():  # read and write thread; now merges changes from file and 
     thread_started = False
 
 def write_config(conf):  # never to be called outside kegman_conf
-  if BASEDIR == "/data/openpilot":
+  if BASEDIR == "/data/openpilot" or BASEDIR == "/data/openpilot.arne182":
     with open(kegman_file, "w") as f:
       json.dump(conf, f, indent=2, sort_keys=True)
       os.chmod(kegman_file, 0o764)
@@ -88,7 +88,7 @@ def save(data):  # allows for writing multiple key/value pairs
   global thread_started
   global variables_written
   thread_counter = 0
-  if not thread_started and BASEDIR == "/data/openpilot":
+  if not thread_started and (BASEDIR == "/data/openpilot" or BASEDIR == "/data/openpilot.arne182"):
     threading.Thread(target=kegman_thread).start()  # automatically start write thread if file needs it
     thread_started = True
     print("Starting thread!")
