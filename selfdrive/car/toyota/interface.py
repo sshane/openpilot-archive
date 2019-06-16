@@ -246,11 +246,11 @@ class CarInterface(object):
       stop_and_go = True
       ret.safetyParam = 100 # see conversion factor for STEER_TORQUE_EPS in dbc file
       ret.wheelbase = 2.455
-      ret.steerRatio = 20.
+      ret.steerRatio = 18.
       tire_stiffness_factor = 0.444
-      ret.mass = 4690 * CV.LB_TO_KG + std_cargo  # mean between normal and hybrid
-      ret.lateralTuning.pid.kpV, ret.lateralTuning.pid.kiV = [[0.15], [0.04]]
-      ret.lateralTuning.pid.kf = 0.00006   # full torque for 20 deg at 80mph means 0.00007818594
+      ret.mass = 6200 * CV.LB_TO_KG + std_cargo  # mean between normal and hybrid
+      ret.lateralTuning.pid.kpV, ret.lateralTuning.pid.kiV = [[0.12], [0.04]]
+      ret.lateralTuning.pid.kf = 0.00004   # full torque for 20 deg at 80mph means 0.00007818594
       if ret.enableGasInterceptor:
         ret.gasMaxV = [0.2, 0.5, 0.7]
         ret.longitudinalTuning.kpV = [1.2, 0.8, 0.5]
