@@ -184,7 +184,7 @@ class Planner(object):
         v_curvature = min(NO_CURVATURE_SPEED, v_curvature)
 
     decel_for_turn = bool(v_curvature < min([v_cruise_setpoint, v_speedlimit, v_ego + 1.]))
-    v_cruise_setpoint = min([v_cruise_setpoint, v_curvature, v_speedlimit])
+    v_cruise_setpoint = min([v_cruise_setpoint, v_curvature, v_speedlimit, v_speedlimit_ahead])
 
     # Calculate speed for normal cruise control
     if enabled:
@@ -295,7 +295,7 @@ class Planner(object):
     plan_send.plan.longitudinalPlanSource = self.longitudinalPlanSource
 
     plan_send.plan.vCurvature = v_curvature
-    plan_send.plan.decelForTurn = decel_for_turn
+    plan_send.plan.decelForTurn = bool(decel_for_turn or v_speedlimit_ahead < min([v_speedlimit, v_ego + 1.]))
     plan_send.plan.mapValid = map_valid
 
     radar_valid = not (radar_dead or radar_fault)
