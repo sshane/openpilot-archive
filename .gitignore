@@ -34,5 +34,9 @@ selfdrive/test/tests/plant/out
 selfdrive/visiond/visiond
 selfdrive/visiond/visiond-normal
 /src/
+apk/ai.comma.plus.offroad.apk
+openpilot
+selfdrive/data_collection/df-data
+selfdrive/data_collection/gps-data
 
 one
