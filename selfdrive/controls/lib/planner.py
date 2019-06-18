@@ -215,11 +215,11 @@ class Planner(object):
         accel_limits[1] = min(accel_limits[1], AWARENESS_DECEL)
         accel_limits[0] = min(accel_limits[0], accel_limits[1])
         
-      if v_speedlimit_ahead < v_speedlimit:
+      if v_speedlimit_ahead < v_speedlimit and live_map_data.liveMapData.speedLimitAheadDistance < 200:
         time_to_speedlimit = max(1.0, live_map_data.liveMapData.speedLimitAheadDistance / max(self.v_cruise, 1.))
         print "Decelerating in "
         print time_to_speedlimit
-        required_decel = min(0, (v_speedlimit_ahead - self.v_cruise) / time_to_speedlimit)
+        required_decel = min(0, (v_speedlimit_ahead - self.v_cruise) / time_to_speedlimit)*5
         if live_map_data.liveMapData.speedLimitAheadDistance < 100.0:
           max(required_decel*10.0, -3.0)
         print "required_decel"
