@@ -219,7 +219,7 @@ class Way:
 
     speed_ahead = None
     speed_ahead_dist = None
-    lookahead_ways = 5
+    lookahead_ways = 3
     way = self
     for i in range(lookahead_ways):
       way_pts = way.points_in_car_frame(lat, lon, heading)
@@ -228,21 +228,29 @@ class Way:
       max_dist = np.linalg.norm(way_pts[-1, :])
 
       if max_dist > 2 * lookahead:
+        #print "max_dist break"
         break
 
       if 'maxspeed' in way.way.tags:
         spd = parse_speed_tags(way.way.tags)
+        #print "spd found"
+        #print spd
         if not spd:
           location_info = self.query_results[4]
           spd = geocode_maxspeed(way.way.tags, location_info)
+          #print "spd is actually"
+          #print spd
         if spd < current_speed_limit:
           speed_ahead = spd
           min_dist = np.linalg.norm(way_pts[1, :])
           speed_ahead_dist = min_dist
+          #print "slower speed found"
+          
           break
       # Find next way
-      way = way.next_way()
+      way = way.next_way(heading)
       if not way:
+        #print "no way break"
         break
 
     return speed_ahead, speed_ahead_dist
@@ -292,9 +300,19 @@ class Way:
 
     return points_carframe
 
-  def next_way(self, backwards=False):
+  def next_way(self, heading):
     results, tree, real_nodes, node_to_way, location_info = self.query_results
-
+    #print "way.id"
+    #print self.id
+    #print "node0.id"
+    #print self.way.nodes[0].id
+    #print "node-1.id"
+    #print self.way.nodes[-1].id
+    #print "heading"
+    #print heading
+    backwards = abs(heading - math.atan2(self.way.nodes[0].lat-self.way.nodes[-1].lat,self.way.nodes[0].lon-self.way.nodes[-1].lon)*180/3.14159265358979 - 180) < 90
+    #print "backwards"
+    #print backwards
     if backwards:
       node = self.way.nodes[0]
     else:
@@ -306,7 +324,11 @@ class Way:
     try:
       # Simple heuristic to find next way
       ways = [w for w in ways if w.id != self.id]
-      ways = [w for w in ways if w.nodes[0] == node]
+      ways = [w for w in ways if (w.nodes[0] == node or w.nodes[-1] == node)]
+      if len(ways) == 1:
+        way = Way(ways[0], self.query_results)
+        #print "only one way found"
+        return way
 
       # Filter on highway tag
       acceptable_tags = list()
@@ -357,7 +379,7 @@ class Way:
         break
 
       # Find next way
-      way = way.next_way()
+      way = way.next_way(heading)
       if not way:
         break
 
