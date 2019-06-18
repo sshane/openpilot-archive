@@ -219,14 +219,16 @@ class Planner(object):
         time_to_speedlimit = max(1.0, live_map_data.liveMapData.speedLimitAheadDistance / max(self.v_cruise, 1.))
         print "Decelerating in "
         print time_to_speedlimit
-        required_decel = max(min(0, (v_speedlimit_ahead - self.v_cruise) / time_to_speedlimit), -3.0)
+        required_decel = min(0, (v_speedlimit_ahead - self.v_cruise) / time_to_speedlimit)
+        if live_map_data.liveMapData.speedLimitAheadDistance < 100.0:
+          max(required_decel*10.0, -3.0)
         print "required_decel"
         print required_decel
         print "accel_limits 0"
         print accel_limits[0]
         print "accel_limits 1"
         print accel_limits[1]
-        accel_limits[0] = max(accel_limits[0], required_decel)
+        accel_limits[0] = min(accel_limits[0], required_decel)
         
       # Change accel limits based on time remaining to turn
       if decel_for_turn:
