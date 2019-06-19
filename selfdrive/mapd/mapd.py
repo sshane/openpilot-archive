@@ -28,7 +28,7 @@ import threading
 import numpy as np
 import overpy
 from collections import defaultdict
-
+from math import sin,cos
 from common.params import Params
 from common.transformations.coordinates import geodetic2ecef
 from selfdrive.services import service_list
@@ -153,6 +153,9 @@ def mapsd_thread():
   speedLimittraffic = 0
   speedLimittraffic_prev = 0
   max_speed = None
+  max_speed_ahead = None
+  max_speed_ahead_dist = None
+  
   max_speed_prev = 0
   speedLimittrafficvalid = False
   
@@ -178,6 +181,7 @@ def mapsd_thread():
         speedLimittrafficAdvisoryvalid = False
     else:
       speedLimittrafficAdvisoryvalid = False
+      speedLimittrafficvalid = False
     if gps_ext is not None:
       gps = gps_ext.gpsLocationExternal
     else:
@@ -191,6 +195,8 @@ def mapsd_thread():
     if not fix_ok or last_query_result is None or not cache_valid:
       cur_way = None
       curvature = None
+      max_speed_ahead = None
+      max_speed_ahead_dist = None
       curvature_valid = False
       upcoming_curvature = 0.
       dist_to_turn = 0.
@@ -274,9 +280,23 @@ def mapsd_thread():
     if cur_way is not None:
       dat.liveMapData.wayId = cur_way.id
 
-      # Seed limit
+      # Speed limit
       max_speed = cur_way.max_speed()
       if max_speed is not None:
+        #new_latitude  = gps.latitude + (MAPS_LOOKAHEAD_DISTANCE * cos(heading/180*3.14159265358979) / (6371010 + gps.altitude)) * (180 / 3.14159265358979)
+        #new_longitude = gps.longitude + (MAPS_LOOKAHEAD_DISTANCE * sin(heading/180*3.14159265358979) / (6371010 + gps.altitude)) * (180 / 3.14159265358979) / cos(gps.latitude * 3.14159265358979/180)
+        ahead_speed = None
+        max_speed_ahead = None
+        max_speed_ahead_dist = None
+        #ahead_speed = Way.closest(last_query_result, new_latitude, new_longitude, heading, ahead_speed)
+        #if ahead_speed is not None and ahead_speed < max_speed:
+        #  max_speed_ahead = ahead_speed.max_speed()
+        #  print "speed ahead found"
+        #  print max_speed_ahead
+        #  max_speed_ahead_dist = cur_way.distance_to_closest_node(lat, lon, heading, pnts)
+        #  print "distance"
+        #  print max_speed_ahead_dist
+          
         if abs(max_speed - max_speed_prev) > 0.1:
           speedLimittrafficvalid = False
           max_speed_prev = max_speed
@@ -284,11 +304,11 @@ def mapsd_thread():
       
 
         # TODO: use the function below to anticipate upcoming speed limits
-        #max_speed_ahead, max_speed_ahead_dist = cur_way.max_speed_ahead(max_speed, lat, lon, heading, MAPS_LOOKAHEAD_DISTANCE)
-        #if max_speed_ahead is not None and max_speed_ahead_dist is not None:
-        #  dat.liveMapData.speedLimitAheadValid = True
-        #  dat.liveMapData.speedLimitAhead = float(max_speed_ahead)
-        #  dat.liveMapData.speedLimitAheadDistance = float(max_speed_ahead_dist)
+        max_speed_ahead, max_speed_ahead_dist = cur_way.max_speed_ahead(max_speed, lat, lon, heading, MAPS_LOOKAHEAD_DISTANCE)
+        if max_speed_ahead is not None and max_speed_ahead_dist is not None:
+          dat.liveMapData.speedLimitAheadValid = True
+          dat.liveMapData.speedLimitAhead = float(max_speed_ahead)
+          dat.liveMapData.speedLimitAheadDistance = float(max_speed_ahead_dist)
 
 
       advisory_max_speed = cur_way.advisory_max_speed()
