@@ -8,6 +8,7 @@ from selfdrive.car.toyota.carstate import CarState, get_can_parser, get_cam_can_
 from selfdrive.car.toyota.values import ECU, check_ecu_msgs, CAR
 from selfdrive.swaglog import cloudlog
 import selfdrive.kegman_conf as kegman
+from selfdrive.phantom import Phantom
 
 steeringAngleoffset = float(kegman.conf['angle_steers_offset'])  # deg offset
    
@@ -21,7 +22,7 @@ class CarInterface(object):
   def __init__(self, CP, sendcan=None):
     self.CP = CP
     self.VM = VehicleModel(CP)
-
+    self.phantom = Phantom() 
     self.frame = 0
     self.gas_pressed_prev = False
     self.brake_pressed_prev = False
@@ -423,9 +424,12 @@ class CarInterface(object):
       disengage_event = True
     else:
       disengage_event = False
-
-    if not ret.gearShifter == 'drive' and self.CP.enableDsu:
-      events.append(create_event('wrongGear', [ET.NO_ENTRY, ET.SOFT_DISABLE]))
+    self.phantom.update()
+    if not self.phantom.data["status"]:
+      if not ret.gearShifter == 'drive' and self.CP.enableDsu:
+        events.append(create_event('wrongGear', [ET.NO_ENTRY, ET.SOFT_DISABLE]))
+      if ret.gearShifter == 'reverse' and self.CP.enableDsu:
+        events.append(create_event('reverseGear', [ET.NO_ENTRY, ET.IMMEDIATE_DISABLE]))
     if ret.doorOpen and disengage_event:
       events.append(create_event('doorOpen', [ET.NO_ENTRY, ET.SOFT_DISABLE]))
     if ret.seatbeltUnlatched and disengage_event:
@@ -434,8 +438,7 @@ class CarInterface(object):
       events.append(create_event('espDisabled', [ET.NO_ENTRY, ET.SOFT_DISABLE]))
     if not self.CS.main_on and self.CP.enableDsu:
       events.append(create_event('wrongCarMode', [ET.NO_ENTRY, ET.USER_DISABLE]))
-    if ret.gearShifter == 'reverse' and self.CP.enableDsu:
-      events.append(create_event('reverseGear', [ET.NO_ENTRY, ET.IMMEDIATE_DISABLE]))
+
     if self.CS.steer_error:
       events.append(create_event('steerTempUnavailable', [ET.NO_ENTRY, ET.WARNING]))
     if self.CS.low_speed_lockout and self.CP.enableDsu:
