@@ -28,7 +28,7 @@ def upload_data():
         car = json.loads(car)
         username+="-{}".format(car[0])
 
-      filename = "df-data.{}".format(random.randint(1,99999))
+      filename = "df-data.{}.a".format(random.randint(1,99999))
 
       ftp = ftplib.FTP("smiskol.com")
       ftp.login("eon", "87pYEYF4vFpwvgXU")
