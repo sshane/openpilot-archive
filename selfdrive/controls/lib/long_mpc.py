@@ -236,13 +236,14 @@ class LongitudinalMpc(object):
         x_lead = lead.dRel
         v_lead = max(0.0, lead.vLead)
         a_lead = lead.aLeadK
+        a_rel = lead.aRel
 
         if (v_lead < 0.1 or -a_lead / 2.0 > v_lead):
           v_lead = 0.0
           a_lead = 0.0
 
         if self.mpc_id == 1 and not CS.carState.cruiseState.enabled:
-          self.df_data.append([v_ego, a_ego, v_lead, x_lead, a_lead, gas, brake, time.time()])
+          self.df_data.append([v_ego, a_ego, v_lead, x_lead, a_lead, a_rel, gas, brake, time.time()])
           if self.df_frame >= 200:  # every 5 seconds, write to file
             try:
               with open("/data/openpilot/selfdrive/data_collection/df-data", "a") as f:
