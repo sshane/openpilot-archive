@@ -223,7 +223,7 @@ class Way:
     way = self
     for i in range(lookahead_ways):
       way_pts = way.points_in_car_frame(lat, lon, heading)
-
+      #print way_pts
       # Check current lookahead distance
       if way_pts[0,0] < 0:
         max_dist = np.linalg.norm(way_pts[-1, :])
@@ -251,6 +251,7 @@ class Way:
           min_dist = min(np.linalg.norm(way_pts[1, :]),np.linalg.norm(way_pts[0, :]),np.linalg.norm(way_pts[-1, :]))
           speed_ahead_dist = min_dist
           #print "slower speed found"
+          #print min_dist
           
           break
       # Find next way
@@ -316,7 +317,16 @@ class Way:
     #print self.way.nodes[-1].id
     #print "heading"
     #print heading
-    backwards = abs(heading - math.atan2(self.way.nodes[0].lat-self.way.nodes[-1].lat,self.way.nodes[0].lon-self.way.nodes[-1].lon)*180/3.14159265358979 - 180) > 90
+    angle=heading - math.atan2(self.way.nodes[0].lat-self.way.nodes[-1].lat,self.way.nodes[0].lon-self.way.nodes[-1].lon)*180/3.14159265358979 - 180
+    #print "angle before"
+    #print angle
+    if angle < -180:
+      angle = angle + 360
+    if angle > 180:
+      angle = angle - 360
+    #print "angle"
+    #print angle
+    backwards = abs(angle) > 90
     #print "backwards"
     #print backwards
     if backwards:
