@@ -317,7 +317,7 @@ class Way:
     #print self.way.nodes[-1].id
     #print "heading"
     #print heading
-    angle=heading - math.atan2(self.way.nodes[0].lat-self.way.nodes[-1].lat,self.way.nodes[0].lon-self.way.nodes[-1].lon)*180/3.14159265358979 - 180
+    angle=heading - math.atan2(self.way.nodes[0].lon-self.way.nodes[-1].lon,self.way.nodes[0].lat-self.way.nodes[-1].lat)*180/3.14159265358979 - 180
     #print "angle before"
     #print angle
     if angle < -180:
