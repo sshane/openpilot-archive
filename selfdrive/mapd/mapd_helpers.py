@@ -227,8 +227,11 @@ class Way:
       # Check current lookahead distance
       if way_pts[0,0] < 0:
         max_dist = np.linalg.norm(way_pts[-1, :])
-      else:
+      elif way_pts[-1,0] < 0:
         max_dist = np.linalg.norm(way_pts[0, :])
+      else:
+        max_dist = min(np.linalg.norm(way_pts[1, :]),np.linalg.norm(way_pts[0, :]),np.linalg.norm(way_pts[-1, :]))
+         
 
       if max_dist > 2 * lookahead:
         #print "max_dist break"
@@ -245,10 +248,7 @@ class Way:
           #print spd
         if spd < current_speed_limit:
           speed_ahead = spd
-          if way_pts[0,0] < 0:
-            min_dist = np.linalg.norm(way_pts[-1, :])
-          else:
-            min_dist = np.linalg.norm(way_pts[0, :])
+          min_dist = min(np.linalg.norm(way_pts[1, :]),np.linalg.norm(way_pts[0, :]),np.linalg.norm(way_pts[-1, :]))
           speed_ahead_dist = min_dist
           #print "slower speed found"
           
