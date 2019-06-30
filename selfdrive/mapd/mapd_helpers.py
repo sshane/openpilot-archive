@@ -355,7 +355,10 @@ class Way:
         acceptable_tags.append('trunk')
         acceptable_tags.append('primary')
       ways = [w for w in ways if w.tags['highway'] in acceptable_tags]
-
+      if len(ways) == 1:
+        way = Way(ways[0], self.query_results)
+        #print "only one way found"
+        return way
       # Filter on number of lanes
       cur_num_lanes = int(self.way.tags['lanes'])
       if len(ways) > 1:
