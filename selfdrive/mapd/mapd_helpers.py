@@ -236,7 +236,24 @@ class Way:
       if max_dist > 2 * lookahead:
         #print "max_dist break"
         break
-
+      if way.way.tags['junction']=='roundabout':
+        latmin = 181
+        lonmin = 181
+        latmax = -181
+        lonmax = -181
+        for n in way.way.nodes:
+          lonmax = max(n.lon,lonmax)
+          lonmin = min(n.lon,lonmin)
+          latmax = max(n.lat,latmax)
+          latmin = min(n.lat,latmin)
+        a = 111132.954*math.cos(float(latmax+latmin)/360*3.141592)*float(lonmax-lonmin)
+        speed_ahead = np.sqrt(1.6075*a)
+        min_dist = 999.9
+        for w in way_pts:
+          min_dist = min(min_dist, float(np.linalg.norm(w)))
+        speed_ahead_dist = min_dist
+        break
+      
       if 'maxspeed' in way.way.tags:
         spd = parse_speed_tags(way.way.tags)
         #print "spd found"
@@ -345,7 +362,10 @@ class Way:
         way = Way(ways[0], self.query_results)
         #print "only one way found"
         return way
-
+      elif ways[0].tags['junction']=='roundabout':
+        print ("roundabout found")
+        way = Way(ways[0], self.query_results)
+        return way
       # Filter on highway tag
       acceptable_tags = list()
       cur_tag = self.way.tags['highway']
