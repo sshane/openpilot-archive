@@ -359,6 +359,10 @@ class Way:
     try:
       # Simple heuristic to find next way
       ways = [w for w in ways if w.id != self.id]
+      if len(ways) == 1:
+        way = Way(ways[0], self.query_results)
+        #print "only one way found"
+        return way
       ways = [w for w in ways if (w.nodes[0] == node or w.nodes[-1] == node)]
       if len(ways) == 1:
         way = Way(ways[0], self.query_results)
@@ -367,7 +371,7 @@ class Way:
       if len(ways) == 2:
         try:
           if ways[0].tags['junction']=='roundabout':
-            print ("roundabout found")
+            #print ("roundabout found")
             way = Way(ways[0], self.query_results)
             return way
         except KeyError:
