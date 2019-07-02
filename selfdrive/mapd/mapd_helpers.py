@@ -364,10 +364,11 @@ class Way:
         way = Way(ways[0], self.query_results)
         #print "only one way found"
         return way
-      elif ways[0].tags['junction']=='roundabout':
-        print ("roundabout found")
-        way = Way(ways[0], self.query_results)
-        return way
+      if len(ways) == 2:
+        if ways[0].tags['junction']=='roundabout':
+          print ("roundabout found")
+          way = Way(ways[0], self.query_results)
+          return way
       # Filter on highway tag
       acceptable_tags = list()
       cur_tag = self.way.tags['highway']
