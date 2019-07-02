@@ -237,7 +237,7 @@ class Way:
         #print "max_dist break"
         break
       try:
-      if way.way.tags['junction']=='roundabout':
+        if way.way.tags['junction']=='roundabout':
           latmin = 181
           lonmin = 181
           latmax = -181
