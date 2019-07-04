@@ -2139,7 +2139,7 @@ static void ui_update(UIState *s) {
         struct cereal_LiveMapData datad;
         cereal_read_LiveMapData(&datad, eventd.liveMapData);
         s->scene.speedlimit = datad.speedLimit;
-	s->scene.speedlimitahead_valid = datad.speedLimitAheadValid
+	s->scene.speedlimitahead_valid = datad.speedLimitAheadValid;
         s->scene.speedlimit_valid = datad.speedLimitValid;
         s->scene.map_valid = datad.mapValid;
       } 
