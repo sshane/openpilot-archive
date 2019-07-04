@@ -135,6 +135,7 @@ typedef struct UIScene {
   float speedlimit;
   bool speedlimit_valid;
   bool speedlimitahead_valid;
+  float speedlimitaheaddistance;
   bool map_valid;
 
   float curvature;
@@ -561,7 +562,7 @@ static void ui_init(UIState *s) {
   s->img_turn = nvgCreateImage(s->vg, "../assets/img_trafficSign_turn.png", 1);
 
   assert(s->img_speed >= 0);
-  s->img_speed = nvgCreateImage(s->vg, "../assets/img_trafficSign_speed_limit.png", 1);
+  s->img_speed = nvgCreateImage(s->vg, "../assets/img_trafficSign_speedahead.png", 1);
 
   assert(s->img_face >= 0);
   s->img_face = nvgCreateImage(s->vg, "../assets/img_driver_face.png", 1);
@@ -1357,7 +1358,7 @@ static void ui_draw_vision_event(UIState *s) {
   const int viz_event_x = ((ui_viz_rx + ui_viz_rw) - (viz_event_w + (bdr_s*2)));
   const int viz_event_y = (box_y + (bdr_s*1.5));
   const int viz_event_h = (header_h - (bdr_s*1.5));
-  if (s->scene.speedlimitahead_valid && s->scene.engaged && s->limit_set_speed) {
+  if (s->scene.speedlimitahead_valid && s->scene.speedlimitaheaddistance < 300 && s->scene.engaged && s->limit_set_speed) {
     // draw winding road sign
     const int img_turn_size = 160;
     const int img_turn_x = viz_event_x-(img_turn_size/4)+80;
@@ -2140,6 +2141,7 @@ static void ui_update(UIState *s) {
         cereal_read_LiveMapData(&datad, eventd.liveMapData);
         s->scene.speedlimit = datad.speedLimit;
 	s->scene.speedlimitahead_valid = datad.speedLimitAheadValid;
+	s->scene.speedlimitaheaddistance = datad.speedLimitAheadDistance;
         s->scene.speedlimit_valid = datad.speedLimitValid;
         s->scene.map_valid = datad.mapValid;
       } 
