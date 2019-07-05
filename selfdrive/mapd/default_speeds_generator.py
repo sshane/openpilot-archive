@@ -138,6 +138,7 @@ def main(filename = DEFAULT_OUTPUT_FILENAME):
   DE.add_rule({"highway": "motorway"}, "none")
   DE.add_rule({"highway": "living_street"}, "10")
   DE.add_rule({"highway": "residential"}, "30")
+  DE.add_rule({"highway": "service"}, "10")
   DE.add_rule({"zone:traffic": "DE:rural"}, "100")
   DE.add_rule({"zone:traffic": "DE:urban"}, "50")
   DE.add_rule({"zone:maxspeed": "DE:30"}, "30")
