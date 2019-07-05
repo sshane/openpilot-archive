@@ -28,7 +28,6 @@ import threading
 import numpy as np
 import overpy
 from collections import defaultdict
-from math import sin,cos
 from common.params import Params
 from common.transformations.coordinates import geodetic2ecef
 from selfdrive.services import service_list
@@ -218,7 +217,7 @@ def mapsd_thread():
         ys = pnts[:, 1]
         road_points = [float(x) for x in xs], [float(y) for y in ys]
 
-        if speed < 10:
+        if speed < 5:
           curvature_valid = False
         if curvature_valid and pnts.shape[0] <= 3:
           curvature_valid = False
@@ -254,7 +253,7 @@ def mapsd_thread():
             # TODO: Determine left or right turn
             curvature = np.nan_to_num(curvature)
 
-            # Outlier rejection
+            # Outlier rejection TODO: Needs to include more data i.e. Less outliers
             new_curvature = np.percentile(curvature, 90, interpolation='lower')
 
             k = 0.6
@@ -283,27 +282,16 @@ def mapsd_thread():
       # Speed limit
       max_speed = cur_way.max_speed()
       if max_speed is not None:
-        #new_latitude  = gps.latitude + (MAPS_LOOKAHEAD_DISTANCE * cos(heading/180*3.14159265358979) / (6371010 + gps.altitude)) * (180 / 3.14159265358979)
-        #new_longitude = gps.longitude + (MAPS_LOOKAHEAD_DISTANCE * sin(heading/180*3.14159265358979) / (6371010 + gps.altitude)) * (180 / 3.14159265358979) / cos(gps.latitude * 3.14159265358979/180)
-        ahead_speed = None
         max_speed_ahead = None
         max_speed_ahead_dist = None
-        #ahead_speed = Way.closest(last_query_result, new_latitude, new_longitude, heading, ahead_speed)
-        #if ahead_speed is not None and ahead_speed < max_speed:
-        #  max_speed_ahead = ahead_speed.max_speed()
-        #  print "speed ahead found"
-        #  print max_speed_ahead
-        #  max_speed_ahead_dist = cur_way.distance_to_closest_node(lat, lon, heading, pnts)
-        #  print "distance"
-        #  print max_speed_ahead_dist
-          
+         
         if abs(max_speed - max_speed_prev) > 0.1:
           speedLimittrafficvalid = False
           max_speed_prev = max_speed
       
       
 
-        # TODO: use the function below to anticipate upcoming speed limits
+        # TODO: anticipate T junctions and right and left hand turns based on indicator
         max_speed_ahead, max_speed_ahead_dist = cur_way.max_speed_ahead(max_speed, lat, lon, heading, MAPS_LOOKAHEAD_DISTANCE)
         if max_speed_ahead is not None and max_speed_ahead_dist is not None:
           dat.liveMapData.speedLimitAheadValid = True
@@ -342,19 +330,6 @@ def mapsd_thread():
         dat.liveMapData.speedLimitValid = True
         dat.liveMapData.speedLimit = max_speed
         
-    #print "speedLimittraffic_prev"
-    #print speedLimittraffic_prev
-    #print "speedLimittraffic"
-    #print speedLimittraffic
-    #print "max_speed_prev"
-    #print max_speed_prev
-    #print "max_speed"
-    #print max_speed
-    #print "speedLimittrafficvalid"
-    #if speedLimittrafficvalid:
-    #  print "True"
-    #else:
-    #  print "False"
     dat.liveMapData.mapValid = map_valid
 
     map_data_sock.send(dat.to_bytes())
