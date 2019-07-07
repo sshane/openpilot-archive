@@ -107,7 +107,7 @@ class LongControl(object):
     """Update longitudinal control. This updates the state machine and runs a PID loop"""
     # Actuation limits
     df_output = self.df(radar_state, v_ego, a_ego, set_speed)
-    return max(df_output[1], 0.0), -min(df_output[1], 0.0)
+    return max(df_output, 0.0), -min(df_output, 0.0)
 
     '''gas_max = interp(v_ego, CP.gasMaxBP, CP.gasMaxV)
     brake_max = interp(v_ego, CP.brakeMaxBP, CP.brakeMaxV)
