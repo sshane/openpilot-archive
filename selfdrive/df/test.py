@@ -10,5 +10,5 @@ for i in range(30):
   0.28780443294609244,
   0.01075646532123655)
 print(time.time() - start)
-model_output = df_model.run_model(29.02843475,  0.35738668, 30.92068291, 30.125,  0.31128621)
+model_output = df_model.run_model(.5,  .5, .2, .2, .5)
 print(model_output)
