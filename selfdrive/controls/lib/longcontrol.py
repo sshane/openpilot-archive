@@ -79,25 +79,24 @@ class LongControl(object):
     self.model_wrapper.init_model()
 
   def df(self, radar_state, v_ego, a_ego, set_speed):
-    v_ego_scale = [-0.2154252678155899, 41.05433654785156]
-    a_ego_scale = [-6.315138339996338, 4.432629585266113]
-    v_lead_scale = [0.0, 48.66924285888672]
-    x_lead_scale = [0.125, 185.21875]
-    a_lead_scale = [-8.398388862609863, 14.781030654907227]
+    v_scale = [0.0, 30.005355834961]
+    a_scale = [-6.480010509491, 14.781030654907]
+    x_scale = [0.125, 138.5]
 
     speed_offset = 1 # model offset
-    v_lead = set_speed - speed_offset
-    x_lead = 23.0
+    v_lead = set_speed #- speed_offset
+    x_lead = 17.0
     a_lead = 0.0
 
     if radar_state is not None:
       lead_1 = radar_state.leadOne
       if lead_1 is not None and lead_1.status:
-        x_lead, v_lead, a_lead = (lead_1.dRel, lead_1.vLead, lead_1.aLeadK) if lead_1.vLead < set_speed else (23.0, set_speed, 0.0)
+        x_lead, v_lead, a_lead = (lead_1.dRel, lead_1.vLead, lead_1.aLeadK) if lead_1.vLead < set_speed else (17.0, set_speed, 0.0)
         #v_lead -= speed_offset
 
-    model_output = float(self.model_wrapper.run_model(norm(v_ego, v_ego_scale), norm(a_ego, a_ego_scale), norm(v_lead, v_lead_scale), norm(x_lead, x_lead_scale), norm(a_lead, a_lead_scale)))
-    return clip((model_output - 0.5) * 2.5, -1.0, 1.0)
+    model_output = float(self.model_wrapper.run_model(norm(v_ego, v_scale), norm(a_ego, a_scale), norm(v_lead, v_scale), norm(x_lead, x_scale), norm(a_lead, a_scale)))
+    #model_output = float(self.model_wrapper.run_model(norm(v_ego, v_ego_scale), norm(a_ego, a_ego_scale), norm(v_lead, v_lead_scale), norm(x_lead, x_lead_scale), norm(a_lead, a_lead_scale)))
+    return clip((model_output - 0.5) * 2.0, -1.0, 1.0)
 
   def reset(self, v_pid):
     """Reset PID controller and change setpoint"""
