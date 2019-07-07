@@ -62,8 +62,8 @@ def data_sample(CI, CC, sm, cal_status, cal_perc, overtemp, free_space, low_batt
 
   sm.update(0)
 
-  if sm.updated['radar_state']:
-    last_radar_state = sm['radar_state']
+  if sm.updated['radarState']:
+    last_radar_state = sm['radarState']
 
   if sm.updated['thermal']:
     overtemp = sm['thermal'].thermalStatus >= ThermalStatus.red
