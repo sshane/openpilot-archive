@@ -28,6 +28,7 @@ from selfdrive.locationd.calibration_helpers import Calibration, Filter
 
 ThermalStatus = log.ThermalData.ThermalStatus
 State = log.ControlsState.OpenpilotState
+last_radar_state = None
 
 
 def isActive(state):
@@ -54,11 +55,15 @@ def data_sample(CI, CC, sm, cal_status, cal_perc, overtemp, free_space, low_batt
   """Receive data from sockets and create events for battery, temperature and disk space"""
 
   # Update carstate from CAN and create events
+  global last_radar_state
   CS = CI.update(CC)
   events = list(CS.events)
   enabled = isEnabled(state)
 
   sm.update(0)
+
+  if sm.updated['radar_state']:
+    last_radar_state = sm['radar_state']
 
   if sm.updated['thermal']:
     overtemp = sm['thermal'].thermalStatus >= ThermalStatus.red
@@ -102,7 +107,7 @@ def data_sample(CI, CC, sm, cal_status, cal_perc, overtemp, free_space, low_batt
   if sm.updated['driverMonitoring']:
     driver_status.get_pose(sm['driverMonitoring'], params)
 
-  return CS, events, cal_status, cal_perc, overtemp, free_space, low_battery, mismatch_counter
+  return CS, events, cal_status, cal_perc, overtemp, free_space, low_battery, mismatch_counter, last_radar_state
 
 
 def state_transition(frame, CS, CP, state, events, soft_disable_timer, v_cruise_kph, AM):
@@ -192,7 +197,7 @@ def state_transition(frame, CS, CP, state, events, soft_disable_timer, v_cruise_
   return state, soft_disable_timer, v_cruise_kph, v_cruise_kph_last
 
 
-def state_control(frame, rcv_frame, plan, path_plan, CS, CP, state, events, v_cruise_kph, v_cruise_kph_last,
+def state_control(frame, rcv_frame, plan, path_plan, radar_state, CS, CP, state, events, v_cruise_kph, v_cruise_kph_last,
                   AM, rk, driver_status, LaC, LoC, VM, read_only, is_metric, cal_perc):
   """Given the state, this function returns an actuators packet"""
 
@@ -237,7 +242,7 @@ def state_control(frame, rcv_frame, plan, path_plan, CS, CP, state, events, v_cr
   v_acc_sol = plan.vStart + dt * (a_acc_sol + plan.aStart) / 2.0
 
   # Gas/Brake PID loop
-  actuators.gas, actuators.brake = LoC.update(active, CS.vEgo, CS.brakePressed, CS.standstill, CS.cruiseState.standstill,
+  actuators.gas, actuators.brake = LoC.update(active, CS.vEgo, CS.aEgo, CS.cruiseState.speed, radar_state, CS.brakePressed, CS.standstill, CS.cruiseState.standstill,
                                               v_cruise_kph, v_acc_sol, plan.vTargetFuture, a_acc_sol, CP)
   # Steering PID loop and lateral MPC
   actuators.steer, actuators.steerAngle, lac_log = LaC.update(active, CS.vEgo, CS.steeringAngle, CS.steeringRate,
@@ -413,7 +418,7 @@ def controlsd_thread(gctx=None):
   is_metric = params.get("IsMetric") == "1"
   passive = params.get("Passive") != "0"
 
-  sm = messaging.SubMaster(['thermal', 'health', 'liveCalibration', 'driverMonitoring', 'plan', 'pathPlan'])
+  sm = messaging.SubMaster(['thermal', 'health', 'liveCalibration', 'driverMonitoring', 'plan', 'pathPlan', 'radarState'])
   logcan = messaging.sub_sock(service_list['can'].port)
 
   CC = car.CarControl.new_message()
@@ -468,7 +473,7 @@ def controlsd_thread(gctx=None):
     prof.checkpoint("Ratekeeper", ignore=True)
 
     # Sample data and compute car events
-    CS, events, cal_status, cal_perc, overtemp, free_space, low_battery, mismatch_counter =\
+    CS, events, cal_status, cal_perc, overtemp, free_space, low_battery, mismatch_counter, last_radar_state =\
       data_sample(CI, CC, sm, cal_status, cal_perc, overtemp, free_space, low_battery,
                   driver_status, state, mismatch_counter, params)
     prof.checkpoint("Sample")
@@ -501,7 +506,7 @@ def controlsd_thread(gctx=None):
 
     # Compute actuators (runs PID loops and lateral MPC)
     actuators, v_cruise_kph, driver_status, v_acc, a_acc, lac_log = \
-      state_control(sm.frame, sm.rcv_frame, sm['plan'], sm['pathPlan'], CS, CP, state, events, v_cruise_kph, v_cruise_kph_last, AM, rk,
+      state_control(sm.frame, sm.rcv_frame, sm['plan'], sm['pathPlan'], last_radar_state, CS, CP, state, events, v_cruise_kph, v_cruise_kph_last, AM, rk,
                     driver_status, LaC, LoC, VM, read_only, is_metric, cal_perc)
 
     prof.checkpoint("State Control")
