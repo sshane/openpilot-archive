@@ -223,14 +223,39 @@ class Way:
     way = self
     for i in range(lookahead_ways):
       way_pts = way.points_in_car_frame(lat, lon, heading)
-
+      #print way_pts
       # Check current lookahead distance
-      max_dist = min(np.linalg.norm(way_pts[1, :]),np.linalg.norm(way_pts[-1, :]))
+      if way_pts[0,0] < 0:
+        max_dist = np.linalg.norm(way_pts[-1, :])
+      elif way_pts[-1,0] < 0:
+        max_dist = np.linalg.norm(way_pts[0, :])
+      else:
+        max_dist = min(np.linalg.norm(way_pts[1, :]),np.linalg.norm(way_pts[0, :]),np.linalg.norm(way_pts[-1, :]))
+         
 
       if max_dist > 2 * lookahead:
         #print "max_dist break"
         break
-
+      try:
+        if way.way.tags['junction']=='roundabout':
+          latmin = 181
+          lonmin = 181
+          latmax = -181
+          lonmax = -181
+          for n in way.way.nodes:
+            lonmax = max(n.lon,lonmax)
+            lonmin = min(n.lon,lonmin)
+            latmax = max(n.lat,latmax)
+            latmin = min(n.lat,latmin)
+          a = 111132.954*math.cos(float(latmax+latmin)/360*3.141592)*float(lonmax-lonmin)
+          speed_ahead = np.sqrt(1.6075*a)
+          min_dist = 999.9
+          for w in way_pts:
+            min_dist = min(min_dist, float(np.linalg.norm(w)))
+          speed_ahead_dist = min_dist
+          break
+      except KeyError:
+        pass
       if 'maxspeed' in way.way.tags:
         spd = parse_speed_tags(way.way.tags)
         #print "spd found"
@@ -242,9 +267,10 @@ class Way:
           #print spd
         if spd < current_speed_limit:
           speed_ahead = spd
-          min_dist = min(np.linalg.norm(way_pts[1, :]),np.linalg.norm(way_pts[-1, :]))
+          min_dist = min(np.linalg.norm(way_pts[1, :]),np.linalg.norm(way_pts[0, :]),np.linalg.norm(way_pts[-1, :]))
           speed_ahead_dist = min_dist
           #print "slower speed found"
+          #print min_dist
           
           break
       # Find next way
@@ -310,7 +336,16 @@ class Way:
     #print self.way.nodes[-1].id
     #print "heading"
     #print heading
-    backwards = abs(heading - math.atan2(self.way.nodes[0].lat-self.way.nodes[-1].lat,self.way.nodes[0].lon-self.way.nodes[-1].lon)*180/3.14159265358979 - 180) < 90
+    angle=heading - math.atan2(self.way.nodes[0].lon-self.way.nodes[-1].lon,self.way.nodes[0].lat-self.way.nodes[-1].lat)*180/3.14159265358979 - 180
+    #print "angle before"
+    #print angle
+    if angle < -180:
+      angle = angle + 360
+    if angle > 180:
+      angle = angle - 360
+    #print "angle"
+    #print angle
+    backwards = abs(angle) > 90
     #print "backwards"
     #print backwards
     if backwards:
@@ -324,12 +359,23 @@ class Way:
     try:
       # Simple heuristic to find next way
       ways = [w for w in ways if w.id != self.id]
+      if len(ways) == 1:
+        way = Way(ways[0], self.query_results)
+        #print "only one way found"
+        return way
       ways = [w for w in ways if (w.nodes[0] == node or w.nodes[-1] == node)]
       if len(ways) == 1:
         way = Way(ways[0], self.query_results)
         #print "only one way found"
         return way
-
+      if len(ways) == 2:
+        try:
+          if ways[0].tags['junction']=='roundabout':
+            #print ("roundabout found")
+            way = Way(ways[0], self.query_results)
+            return way
+        except KeyError:
+          pass
       # Filter on highway tag
       acceptable_tags = list()
       cur_tag = self.way.tags['highway']
@@ -339,7 +385,10 @@ class Way:
         acceptable_tags.append('trunk')
         acceptable_tags.append('primary')
       ways = [w for w in ways if w.tags['highway'] in acceptable_tags]
-
+      if len(ways) == 1:
+        way = Way(ways[0], self.query_results)
+        #print "only one way found"
+        return way
       # Filter on number of lanes
       cur_num_lanes = int(self.way.tags['lanes'])
       if len(ways) > 1:
