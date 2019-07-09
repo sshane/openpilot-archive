@@ -252,8 +252,8 @@ class Way:
           if way.way.nodes[0].id == way.way.nodes[-1].id:
             a = 111132.954*math.cos(float(latmax+latmin)/360*3.141592)*float(lonmax-lonmin)
           else:
-            circle = circle_through_points([way.way.nodes[0].lat,way.way.nodes[0].lon], [way.way.nodes[1].lat,way.way.nodes[1].lon], [way.way.nodes[-1].lat,way.way.nodes[-1].lon])
-            a = circle[2]
+            circle = circle_through_points([way.way.nodes[0].lat,way.way.nodes[0].lon,1], [way.way.nodes[1].lat,way.way.nodes[1].lon,1], [way.way.nodes[-1].lat,way.way.nodes[-1].lon,1])
+            a = 111132.954*math.cos(float(latmax+latmin)/360*3.141592)*float(circle[2])
           speed_ahead = np.sqrt(1.6075*a)
           min_dist = 999.9
           for w in way_pts:
@@ -369,19 +369,19 @@ class Way:
         way = Way(ways[0], self.query_results)
         #print "only one way found"
         return way
-      ways = [w for w in ways if (w.nodes[0] == node or w.nodes[-1] == node)]
-      if len(ways) == 1:
-        way = Way(ways[0], self.query_results)
-        #print "only one way found"
-        return way
       if len(ways) == 2:
         try:
           if ways[0].tags['junction']=='roundabout':
             #print ("roundabout found")
             way = Way(ways[0], self.query_results)
             return way
-        except KeyError:
+        except (KeyError, IndexError):
           pass
+      ways = [w for w in ways if (w.nodes[0] == node or w.nodes[-1] == node)]
+      if len(ways) == 1:
+        way = Way(ways[0], self.query_results)
+        #print "only one way found"
+        return way
       # Filter on highway tag
       acceptable_tags = list()
       cur_tag = self.way.tags['highway']
