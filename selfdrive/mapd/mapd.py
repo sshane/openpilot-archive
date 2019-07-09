@@ -98,10 +98,12 @@ def query_thread():
         for n in new_result.nodes:
           nodes.append((float(n.lat), float(n.lon), 0))
           real_nodes.append(n)
-
-        for way in new_result.ways:
-          for n in way.nodes:
-            node_to_way[n.id].append(way)
+        try:
+          for way in new_result.ways:
+            for n in way.nodes:
+              node_to_way[n.id].append(way)
+        except:
+          pass
 
         for area in new_result.areas:
           if area.tags.get('admin_level', '') == "2":
