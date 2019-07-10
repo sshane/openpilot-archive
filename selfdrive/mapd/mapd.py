@@ -66,7 +66,7 @@ def build_way_query(lat, lon, radius=50):
 
 def query_thread():
   global last_query_result, last_query_pos, cache_valid
-  api = overpy.Overpass(url=OVERPASS_API_URL, headers=OVERPASS_HEADERS, timeout=10.)
+  api = overpy.Overpass(url=OVERPASS_API_URL, headers=OVERPASS_HEADERS, timeout=20.)
 
   while True:
     time.sleep(1)
