@@ -64,11 +64,12 @@ zdl::DlSystem::ITensor* executeNetwork(std::unique_ptr<zdl::SNPE::SNPE>& snpe,
 }
 
 extern "C" {
-  float run_model(float v_ego, float v_lead, float x_lead){
+  float run_model(float v_ego, float v_lead, float x_lead, float a_lead){
     std::vector<float> inputVec;
     inputVec.push_back(v_ego);
     inputVec.push_back(v_lead);
     inputVec.push_back(x_lead);
+    inputVec.push_back(a_lead);
 
     std::unique_ptr<zdl::DlSystem::ITensor> inputTensor = loadInputTensor(snpe, inputVec);
     zdl::DlSystem::ITensor* oTensor = executeNetwork(snpe, inputTensor);
