@@ -80,10 +80,10 @@ class LongControl(object):
 
   def df(self, radar_state, v_ego, a_ego, set_speed):
     v_scale = [-0.0, 43.495891571045]
-    a_scale = [-5.849747657776, 10.745646476746]
+    #a_scale = [-5.849747657776, 10.745646476746]
     x_scale = [0.25, 138.625]
 
-    TR = 1.6
+    TR = 1.4
     v_lead = set_speed
     x_lead = v_ego * TR
     a_lead = 0.0
@@ -93,7 +93,8 @@ class LongControl(object):
       if lead_1 is not None and lead_1.status:
         x_lead, v_lead, a_lead = (lead_1.dRel, lead_1.vLead, lead_1.aLeadK) if lead_1.vLead < set_speed else (x_lead, set_speed, 0.0)
 
-    model_output = float(self.model_wrapper.run_model(norm(v_ego, v_scale), norm(a_ego, a_scale), norm(v_lead, v_scale), norm(x_lead, x_scale), norm(a_lead, a_scale)))
+    #model_output = float(self.model_wrapper.run_model(norm(v_ego, v_scale), norm(a_ego, a_scale), norm(v_lead, v_scale), norm(x_lead, x_scale), norm(a_lead, a_scale)))
+    model_output = float(self.model_wrapper.run_model(norm(v_ego, v_scale), norm(v_lead, v_scale), norm(x_lead, x_scale)))
     return clip((model_output - 0.5) * 2.0, -1.0, 1.0)
 
   def reset(self, v_pid):
