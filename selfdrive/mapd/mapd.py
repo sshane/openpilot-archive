@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 # Add phonelibs openblas to LD_LIBRARY_PATH if import fails
+import selfdrive.crash as crash
 from common.basedir import BASEDIR
 try:
   from scipy import spatial
@@ -121,6 +122,7 @@ def query_thread():
 
       except Exception as e:
         print(e)
+        crash.capture_warning(e)
         query_lock.acquire()
         last_query_result = None
         query_lock.release()
