@@ -52,7 +52,7 @@ def main(gctx=None):
       if NEED_REBOOT:
         msg = messaging.recv_sock(manager_sock, wait=True)
         if msg:
-          if "controlsd" not in msg.managerData.runningProcesses:
+          if "controlsd" not in msg.managerData.runningProcesses and msg.managerData.runningProcesses != []:
             NEED_REBOOT = False
             os.system('reboot')
 
