@@ -225,7 +225,9 @@ class Way:
       way_pts = way.points_in_car_frame(lat, lon, heading)
       #print way_pts
       # Check current lookahead distance
-      if way_pts[0,0] < 0:
+      if way_pts[0,0] < 0 and way_pts[-1,0] < 0:
+        break
+      elif way_pts[0,0] < 0:
         max_dist = np.linalg.norm(way_pts[-1, :])
       elif way_pts[-1,0] < 0:
         max_dist = np.linalg.norm(way_pts[0, :])
@@ -247,7 +249,11 @@ class Way:
             lonmin = min(n.lon,lonmin)
             latmax = max(n.lat,latmax)
             latmin = min(n.lat,latmin)
-          a = 111132.954*math.cos(float(latmax+latmin)/360*3.141592)*float(lonmax-lonmin)
+          if way.way.nodes[0].id == way.way.nodes[-1].id:
+            a = 111132.954*math.cos(float(latmax+latmin)/360*3.141592)*float(lonmax-lonmin)
+          else:
+            circle = circle_through_points([way.way.nodes[0].lat,way.way.nodes[0].lon,1], [way.way.nodes[1].lat,way.way.nodes[1].lon,1], [way.way.nodes[-1].lat,way.way.nodes[-1].lon,1])
+            a = 111132.954*math.cos(float(latmax+latmin)/360*3.141592)*float(circle[2])
           speed_ahead = np.sqrt(1.6075*a)
           min_dist = 999.9
           for w in way_pts:
@@ -363,19 +369,19 @@ class Way:
         way = Way(ways[0], self.query_results)
         #print "only one way found"
         return way
-      ways = [w for w in ways if (w.nodes[0] == node or w.nodes[-1] == node)]
-      if len(ways) == 1:
-        way = Way(ways[0], self.query_results)
-        #print "only one way found"
-        return way
       if len(ways) == 2:
         try:
           if ways[0].tags['junction']=='roundabout':
             #print ("roundabout found")
             way = Way(ways[0], self.query_results)
             return way
-        except KeyError:
+        except (KeyError, IndexError):
           pass
+      ways = [w for w in ways if (w.nodes[0] == node or w.nodes[-1] == node)]
+      if len(ways) == 1:
+        way = Way(ways[0], self.query_results)
+        #print "only one way found"
+        return way
       # Filter on highway tag
       acceptable_tags = list()
       cur_tag = self.way.tags['highway']
