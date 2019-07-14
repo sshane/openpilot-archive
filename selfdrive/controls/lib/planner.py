@@ -165,9 +165,9 @@ class Planner(object):
     map_valid = True #live_map_data.liveMapData.mapValid and map_age < 10.0
 
     # Speed limit and curvature
-    set_speed_limit_active = self.params.get("LimitSetSpeed") == "1" and self.params.get("SpeedLimitOffset") is not None
+    set_speed_limit_active = kegman.get("LimitSetSpeed")
     if set_speed_limit_active and map_valid:
-      offset = float(self.params.get("SpeedLimitOffset"))
+      offset = float(kegman.get("SpeedLimitOffset"))
       if live_map_data.liveMapData.speedLimitValid:
         speed_limit = live_map_data.liveMapData.speedLimit
         v_speedlimit = speed_limit + offset
