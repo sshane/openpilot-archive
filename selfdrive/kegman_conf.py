@@ -22,6 +22,7 @@ def read_config():
       config = default_config
     for i in default_config:
       if i not in config:
+        variables_written.append(i)
         config.update({i: default_config[i]})
 
     # force update
