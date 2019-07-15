@@ -11,7 +11,7 @@ def read_config():
                     "wheelTouchSeconds": 1800, "battPercOff": 25, "carVoltageMinEonShutdown": 11200,
                     "brakeStoppingTarget": 0.25, "angle_steers_offset": 0, "brake_distance_extra": 1,
                     "lastALCAMode": 1, "brakefactor": 1.2, "lastGasMode": 0, "lastSloMode": 1,
-                    "leadDistance": 5, "useCarCaching": True, "autoUpdate": True}
+                    "leadDistance": 5, "useCarCaching": True, "autoUpdate": True, "SpeedLimitOffset": 0, "LimitSetSpeed": True}
 
   if os.path.isfile(kegman_file):
     try:
