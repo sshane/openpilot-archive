@@ -342,7 +342,7 @@ def manager_thread():
   # now loop
   global manager_sock
   context = zmq.Context()
-  thermal_sock = messaging.sub_sock(context, service_list['thermal'].port)
+  thermal_sock = messaging.sub_sock(context, service_list['thermal'].port, conflate=True)
   gps_sock = messaging.sub_sock(context, service_list['gpsLocation'].port, conflate=True)
   manager_sock = messaging.pub_sock(context, service_list['managerData'].port)
 
