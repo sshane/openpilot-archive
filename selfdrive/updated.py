@@ -10,6 +10,7 @@ import subprocess
 from selfdrive.swaglog import cloudlog
 import selfdrive.kegman_conf as kegman
 import os
+import selfdrive.crash as crash
 
 NICE_LOW_PRIORITY = ["nice", "-n", "19"]
 def main(gctx=None):
@@ -53,6 +54,7 @@ def main(gctx=None):
         msg = messaging.recv_sock(manager_sock, wait=True)
         if msg:
           if "controlsd" not in msg.managerData.runningProcesses and msg.managerData.runningProcesses != []:
+            crash.capture_warning(msg.managerData.runningProcesses)
             NEED_REBOOT = False
             os.system('reboot')
 
