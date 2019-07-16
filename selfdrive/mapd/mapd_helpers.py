@@ -127,7 +127,10 @@ class Way:
 
   @classmethod
   def closest(cls, query_results, lat, lon, heading, prev_way=None):
-    results, tree, real_nodes, node_to_way, location_info = query_results
+    if query_results is None:
+      return None
+    else:
+      results, tree, real_nodes, node_to_way, location_info = query_results
 
     cur_pos = geodetic2ecef((lat, lon, 0))
     nodes = tree.query_ball_point(cur_pos, 500)
