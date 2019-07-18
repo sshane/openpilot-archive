@@ -30,13 +30,13 @@ import threading
 import numpy as np
 import overpy
 from collections import defaultdict
-from common.params import Params
+
 from common.transformations.coordinates import geodetic2ecef
 from selfdrive.services import service_list
 import selfdrive.messaging as messaging
 from selfdrive.mapd.mapd_helpers import MAPS_LOOKAHEAD_DISTANCE, Way, circle_through_points
-import selfdrive.crash as crash
-from selfdrive.version import version, dirty
+
+
 
 
 OVERPASS_API_URL = "https://overpass.kumi.systems/api/interpreter"
@@ -352,11 +352,7 @@ def mapsd_thread():
 
 
 def main(gctx=None):
-  params = Params()
-  dongle_id = params.get("DongleId")
-  crash.bind_user(id=dongle_id)
-  crash.bind_extra(version=version, dirty=dirty, is_eon=True)
-  crash.install()
+ 
 
   main_thread = threading.Thread(target=mapsd_thread)
   main_thread.daemon = True
