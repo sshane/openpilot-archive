@@ -19,7 +19,7 @@ zdl::DlSystem::Runtime_t checkRuntime()
 
 void initializeSNPE(zdl::DlSystem::Runtime_t runtime) {
   std::unique_ptr<zdl::DlContainer::IDlContainer> container;
-  container = zdl::DlContainer::IDlContainer::open("/data/openpilot/selfdrive/df/3model.dlc");
+  container = zdl::DlContainer::IDlContainer::open("/data/openpilot/selfdrive/df/LSTM_fake.dlc");
   //printf("loaded model\n");
   int counter = 0;
   zdl::SNPE::SNPEBuilder snpeBuilder(container.get());
@@ -80,6 +80,10 @@ extern "C" {
   void init_model(){
     zdl::DlSystem::Runtime_t runt=checkRuntime();
     initializeSNPE(runt);
+  }
+
+  void test_fun(float[] list){
+  std::cout << list[0];
   }
 
 int main(){
