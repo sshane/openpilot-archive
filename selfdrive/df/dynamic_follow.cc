@@ -83,10 +83,16 @@ extern "C" {
   }
 
   void test_fun(float testarr[5]){
-  std::array<float, 3> texts = {0.0, 1.5, 9.5};
+  /*std::array<float, 3> texts = {0.0, 1.5, 9.5};
     // ^ An array of 3 elements with the type std::string
 
   for(const auto& float : texts) {   // Range-for!
+      std::cout << text << std::endl;
+  }*/
+  std::array<std::string, 3> texts = {"Apple", "Banana", "Orange"};
+    // ^ An array of 3 elements with the type std::string
+
+  for(const auto& text : texts) {   // Range-for!
       std::cout << text << std::endl;
   }
   }
