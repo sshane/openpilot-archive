@@ -86,7 +86,7 @@ extern "C" {
   std::array<std::float, 3> texts = {"Apple", "Banana", "Orange"};
     // ^ An array of 3 elements with the type std::string
 
-  for(const auto& text : testarr) {   // Range-for!
+  for(const auto& text : texts) {   // Range-for!
       std::cout << text << std::endl;
   }
   }
