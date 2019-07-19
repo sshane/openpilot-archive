@@ -84,7 +84,7 @@ extern "C" {
 
   void test_fun(float testarr[5]){
   for(const string &fval : testarr)
-    std::cout << "value of text: " << fval << endl;
+    std::cout << "value of text: " << fval;
   }
 
 int main(){
