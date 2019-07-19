@@ -83,11 +83,8 @@ extern "C" {
   }
 
   void test_fun(float testarr[5]){
-  std::cout << testarr[0];
-  std::cout << testarr[1];
-  std::cout << testarr[2];
-  std::cout << testarr[3];
-  std::cout << testarr[4];
+  for(const string &fval : testarr)
+    std::cout << "value of text: " << fval << endl;
   }
 
 int main(){

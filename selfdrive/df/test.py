@@ -9,7 +9,7 @@ for i in range(30):
   0.46805728618371273,
   0.28780443294609244,
   0.01075646532123655)
-print(time.time() - start)'''
+print(time.time() - startl)'''
 df_model.test_fun([2, 3, 9, 2, 4])
 '''model_output = df_model.run_model(.5, .5, .2, .1, .5)
 print(model_output)
