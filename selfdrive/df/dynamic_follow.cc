@@ -83,13 +83,15 @@ extern "C" {
   }
 
   void test_fun(float testarr[5]){
-  std::array<float, 5> texts;
-  std::copy(std::begin(testarr), std::end(testarr), std::begin(texts));
+    for( unsigned int a = 0; a < sizeof(texts)/sizeof(texts[0]); a = a + 1 ){
+      std::cout << a;
+    }
+
   //std::array<float, 3> texts = {5.5, 5.5, 5.9};
 
-  for(const auto& text : texts) {   // Range-for!
-      std::cout << text << std::endl;
-    }
+  //for(const auto& text : texts) {   // Range-for!
+      //std::cout << text << std::endl;
+    //}
   }
 
 int main(){
