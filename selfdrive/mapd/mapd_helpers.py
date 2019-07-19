@@ -127,7 +127,10 @@ class Way:
 
   @classmethod
   def closest(cls, query_results, lat, lon, heading, prev_way=None):
-    results, tree, real_nodes, node_to_way, location_info = query_results
+    if query_results is None:
+      return None
+    else:
+      results, tree, real_nodes, node_to_way, location_info = query_results
 
     cur_pos = geodetic2ecef((lat, lon, 0))
     nodes = tree.query_ball_point(cur_pos, 500)
@@ -252,7 +255,10 @@ class Way:
           if way.way.nodes[0].id == way.way.nodes[-1].id:
             a = 111132.954*math.cos(float(latmax+latmin)/360*3.141592)*float(lonmax-lonmin)
           else:
-            circle = circle_through_points([way.way.nodes[0].lat,way.way.nodes[0].lon,1], [way.way.nodes[1].lat,way.way.nodes[1].lon,1], [way.way.nodes[-1].lat,way.way.nodes[-1].lon,1])
+            if way.way.nodes[1].id == way.way.nodes[-1].id:
+              circle = 30
+            else:
+              circle = circle_through_points([way.way.nodes[0].lat,way.way.nodes[0].lon,1], [way.way.nodes[1].lat,way.way.nodes[1].lon,1], [way.way.nodes[-1].lat,way.way.nodes[-1].lon,1])
             a = 111132.954*math.cos(float(latmax+latmin)/360*3.141592)*float(circle[2])*2
           speed_ahead = np.sqrt(1.6075*a)
           min_dist = 999.9
