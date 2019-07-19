@@ -1,4 +1,5 @@
 #include "dynamic_follow.h"
+using namespace std;
 
 std::unique_ptr<zdl::SNPE::SNPE> snpe;
 
@@ -85,7 +86,7 @@ extern "C" {
   void test_fun(float testarr[5]){
     int size = 5;
     for (int i = 0; i < size; i++ ) {
-      cout << testarr[i];
+      std::cout << testarr[i];
     }
   //std::array<float, 3> texts = {5.5, 5.5, 5.9};
 
