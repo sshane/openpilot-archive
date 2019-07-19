@@ -82,7 +82,9 @@ extern "C" {
     initializeSNPE(runt);
   }
 
-  void test_fun(std::array<float, 5> texts){
+  void test_fun(float testarr[5]){
+  std::array<float, 5> texts;
+  std::copy(std::begin(testarr), std::end(testarr), std::begin(texts));
   //std::array<float, 3> texts = {5.5, 5.5, 5.9};
 
   for(const auto& text : texts) {   // Range-for!
