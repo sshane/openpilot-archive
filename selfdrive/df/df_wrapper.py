@@ -12,7 +12,7 @@ def get_wrapper():  # initialize df model and process long predictions
     ffi.cdef("""    
     float run_model(float v_ego, float a_ego, float v_lead, float x_lead, float a_lead);
     void init_model();
-    void test_fun(vector<float> vect);
+    void test_fun(std::vector<float> vect);
     """)
 
     return ffi.dlopen(libmpc_fn)

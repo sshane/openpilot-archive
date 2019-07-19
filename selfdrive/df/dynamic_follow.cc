@@ -82,7 +82,7 @@ extern "C" {
     initializeSNPE(runt);
   }
 
-  void test_fun(vector<float> vect){
+  void test_fun(std::vector<float> vect){
 
   //std::array<float, 3> texts = {5.5, 5.5, 5.9};
 
