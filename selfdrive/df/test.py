@@ -10,7 +10,7 @@ for i in range(30):
   0.28780443294609244,
   0.01075646532123655)
 print(time.time() - startl)'''
-pred = df_model.test_fun([0.5, 0.4, 0.4]*10)
+pred = df_model.run_model_lstm([0.5, 0.4, 0.4]*10)
 print(pred)
 '''model_output = df_model.run_model(.5, .5, .2, .1, .5)
 print(model_output)
