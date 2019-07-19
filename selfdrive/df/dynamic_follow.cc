@@ -82,8 +82,8 @@ extern "C" {
     initializeSNPE(runt);
   }
 
-  void test_fun(float[2] testarr){
-  std::cout << list[0];
+  void test_fun(float testarr[2]){
+  std::cout << testarr[0];
   }
 
 int main(){
