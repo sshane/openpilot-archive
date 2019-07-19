@@ -11,7 +11,7 @@ for i in range(30):
   0.01075646532123655)
 print(time.time() - startl)'''
 
-input_data = [[.2, .2, .2]]
+input_data = [[.6, .6, .55]]
 for i in range(29):
     input_data.append([input_data[-1][0]-.003, input_data[-1][1], input_data[-1][2]-.001])
 input_data = sum(input_data, [])
