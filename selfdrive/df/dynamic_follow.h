@@ -15,7 +15,7 @@
 extern "C"{
   float run_model(float v_ego, float a_ego, float v_lead, float x_lead, float a_lead);
   void init_model();
-  void test_fun(float[] list);
+  void test_fun(float[2] list);
 }
 
 struct testvar_t {
