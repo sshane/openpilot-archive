@@ -14,8 +14,8 @@ print(time.time() - startl)'''
 input_data = [[.8, .8, .6]]
 for i in range(29):
     input_data.append([input_data[-1][0]-.013, input_data[-1][1], input_data[-1][2]-.01])
-print(input_data)
-pred = df_model.run_model_lstm([0.5, 0.4, 0.4]*10)
+
+pred = df_model.run_model_lstm(input_data)
 print(pred)
 '''model_output = df_model.run_model(.5, .5, .2, .1, .5)
 print(model_output)
