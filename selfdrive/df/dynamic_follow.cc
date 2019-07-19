@@ -87,7 +87,8 @@ extern "C" {
     {
         std::cout << testarr[a] << "\n";
     }
-  std::cout << "done";
+  std::cout << "\n";
+  std::cout << testarr;
   }
 
 int main(){
