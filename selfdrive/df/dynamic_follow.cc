@@ -89,7 +89,7 @@ extern "C" {
   for(const auto& float : texts) {   // Range-for!
       std::cout << text << std::endl;
   }*/
-  std::array<std::string, 3> texts = {"Apple", "Banana", "Orange"};
+  std::array<float, 3> texts = {5.5, 5.5, 5.9};
     // ^ An array of 3 elements with the type std::string
 
   for(const auto& text : texts) {   // Range-for!
