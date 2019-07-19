@@ -83,16 +83,16 @@ extern "C" {
     initializeSNPE(runt);
   }
 
-  void test_fun(float testarr[5]){
-    int size = 5;
+  float run_model_lstm(float testarr[30]){
+    int size = 30;
+    std::vector<float> inputVec;
     for (int i = 0; i < size; i++ ) {
-      cout << testarr[i];
+      inputVec.push_back(testarr[i]);
     }
-  //std::array<float, 3> texts = {5.5, 5.5, 5.9};
 
-  //for(const auto& text : texts) {   // Range-for!
-      //std::cout << text << std::endl;
-    //}
+    std::unique_ptr<zdl::DlSystem::ITensor> inputTensor = loadInputTensor(snpe, inputVec);
+    zdl::DlSystem::ITensor* oTensor = executeNetwork(snpe, inputTensor);
+    return returnOutput(oTensor);
   }
 
 int main(){
