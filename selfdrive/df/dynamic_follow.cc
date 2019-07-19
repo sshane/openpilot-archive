@@ -83,7 +83,7 @@ extern "C" {
   }
 
   void test_fun(float testarr[5]){
-    for( unsigned int a = 0; a < sizeof(texts)/sizeof(texts[0]); a = a + 1 ){
+    for( unsigned int a = 0; a < sizeof(testarr)/sizeof(testarr[0]); a = a + 1 ){
       std::cout << a;
     }
 
