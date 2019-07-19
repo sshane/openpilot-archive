@@ -83,8 +83,9 @@ extern "C" {
   }
 
   void test_fun(float testarr[5]){
-  for(const float &fval : testarr)
-    std::cout << "value of text: " << fval;
+  for( unsigned int a = 0; a < sizeof(testarr); a = a + 1 )
+  {
+      std::cout << "value of a: " << testarr[a];
   }
 
 int main(){
