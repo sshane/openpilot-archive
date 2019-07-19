@@ -85,7 +85,7 @@ extern "C" {
   void test_fun(float testarr[5]){
   for( unsigned int a = 0; a < sizeof(testarr); a = a + 1 )
   {
-      std::cout << "value of a: " << testarr[a];
+      std::cout << testarr[a] << "\n";
   }
   }
 
