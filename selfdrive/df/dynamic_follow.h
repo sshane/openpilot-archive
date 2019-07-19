@@ -16,7 +16,7 @@
 extern "C"{
   float run_model(float v_ego, float a_ego, float v_lead, float x_lead, float a_lead);
   void init_model();
-  void test_fun(float testarr[5]);
+  void test_fun(std::array<float, 5> texts);
 }
 
 struct testvar_t {

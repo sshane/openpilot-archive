@@ -82,19 +82,12 @@ extern "C" {
     initializeSNPE(runt);
   }
 
-  void test_fun(float testarr[5]){
-  /*std::array<float, 3> texts = {0.0, 1.5, 9.5};
-    // ^ An array of 3 elements with the type std::string
-
-  for(const auto& float : texts) {   // Range-for!
-      std::cout << text << std::endl;
-  }*/
-  std::array<float, 3> texts = {5.5, 5.5, 5.9};
-    // ^ An array of 3 elements with the type std::string
+  void test_fun(std::array<float, 5> texts){
+  //std::array<float, 3> texts = {5.5, 5.5, 5.9};
 
   for(const auto& text : texts) {   // Range-for!
       std::cout << text << std::endl;
-  }
+    }
   }
 
 int main(){
