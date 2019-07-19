@@ -77,6 +77,7 @@ class LongControl(object):
     self.last_output_gb = 0.0
     self.model_wrapper = df_wrapper.get_wrapper()
     self.model_wrapper.init_model()
+    self.past_data = []
 
   def df(self, radar_state, v_ego, a_ego, set_speed):
     v_scale, a_scale, x_scale = [0.0, 48.288787841797], [-8.39838886261, 9.994253158569], [0.125, 138.625]
@@ -90,9 +91,17 @@ class LongControl(object):
       lead_1 = radar_state.leadOne
       if lead_1 is not None and lead_1.status:
         x_lead, v_lead, a_lead = (lead_1.dRel, lead_1.vLead, lead_1.aLeadK) if lead_1.vLead < set_speed else (x_lead, set_speed, 0.0)
+        self.past_data.append([norm(v_ego, v_scale), norm(v_lead, v_scale), norm(x_lead, x_scale)])  # add driving data to list
 
-    model_output = float(self.model_wrapper.run_model(norm(v_ego, v_scale), norm(a_ego, a_scale), norm(v_lead, v_scale), norm(x_lead, x_scale), norm(a_lead, a_scale)))
-    #model_output = float(self.model_wrapper.run_model(norm(v_ego, v_scale), norm(v_lead, v_scale), norm(x_lead, x_scale), norm(a_lead, a_scale)))
+    while len(self.past_data) > 30:  # make sure list len is 30 (10 sequences of 3)
+      del self.past_data[0]
+
+    input_data = [item for sublist in self.past_data for item in sublist]
+
+    if len(self.past_data) == 30:
+      model_output = float(self.model_wrapper.run_model(input_data))
+    else:
+      model_output = 0.5
     return clip((model_output - 0.51) * 3.45, -1.0, 1.0)
 
   def reset(self, v_pid):

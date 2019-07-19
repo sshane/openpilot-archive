@@ -13,7 +13,7 @@ print(time.time() - startl)'''
 
 input_data = [[.2, .2, .2]]
 for i in range(29):
-    input_data.append([input_data[-1][0]+.013, input_data[-1][1], input_data[-1][2]+.01])
+    input_data.append([input_data[-1][0]-.003, input_data[-1][1], input_data[-1][2]-.001])
 input_data = sum(input_data, [])
 pred = df_model.run_model_lstm(input_data)
 print(pred)
