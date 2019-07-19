@@ -83,12 +83,12 @@ extern "C" {
   }
 
   void test_fun(float testarr[5]){
-  std::array<std::float, 3> texts = {0.0, 1.5, 9.5};
+  std::array<float, 3> texts = {0.0, 1.5, 9.5};
     // ^ An array of 3 elements with the type std::string
 
-  for(const auto& float : texts) {   // Range-for!
-      std::cout << text << std::endl;
-  }
+  //for(const auto& float : texts) {   // Range-for!
+      //std::cout << text << std::endl;
+  //}
   }
 
 int main(){
