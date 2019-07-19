@@ -10,6 +10,10 @@ for i in range(30):
   0.28780443294609244,
   0.01075646532123655)
 print(time.time() - startl)'''
+
+input_data = [[.8, .8, .6]]
+for i in range(29):
+    input_data.append([input_data[-1][0]-.013, input_data[-1][1], input_data[-1][2]-.01])
 pred = df_model.run_model_lstm([0.5, 0.4, 0.4]*10)
 print(pred)
 '''model_output = df_model.run_model(.5, .5, .2, .1, .5)
