@@ -106,7 +106,7 @@ class LongControl(object):
     else:
       self.past_data = []
       model_output = 0.5
-    return clip((model_output - 0.50) * 2.6, -1.0, 1.0)
+    return clip((model_output - 0.55) * 3.5, -1.0, 1.0)
 
   def reset(self, v_pid):
     """Reset PID controller and change setpoint"""
