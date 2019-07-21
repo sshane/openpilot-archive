@@ -87,21 +87,24 @@ class LongControl(object):
     v_lead = set_speed
     x_lead = v_ego * TR
     a_lead = 0.0
+    has_lead = False
 
     if radar_state is not None:
       lead_1 = radar_state.leadOne
       if lead_1 is not None and lead_1.status:
         x_lead, v_lead, a_lead = (lead_1.dRel, lead_1.vLead, lead_1.aLeadK) if lead_1.vLead < set_speed else (x_lead, set_speed, 0.0)
         self.past_data.append([norm(v_ego, v_scale), norm(v_lead, v_scale), norm(x_lead, x_scale)])  # add driving data to list
+        has_lead = True
 
     while len(self.past_data) > 10:  # model takes 10 sequences
       del self.past_data[0]
 
     input_data = [item for sublist in self.past_data for item in sublist]
 
-    if len(input_data) == 30:  # make sure list len is 30 (10 sequences of 3)
+    if len(input_data) == 30 and has_lead:  # make sure list len is 30 (10 sequences of 3)
       model_output = float(self.model_wrapper.run_model_lstm(input_data))
     else:
+      self.past_data = []
       model_output = 0.5
     return clip((model_output - 0.50) * 2.6, -1.0, 1.0)
 
