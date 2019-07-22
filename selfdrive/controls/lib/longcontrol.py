@@ -92,7 +92,7 @@ class LongControl(object):
         x_lead, v_lead, a_lead = (lead_1.dRel, lead_1.vLead, lead_1.aLeadK) if lead_1.vLead < set_speed else (x_lead, set_speed, 0.0)
 
     model_output = float(self.model_wrapper.run_model(norm(v_ego, v_ego_scale), norm(v_lead, v_lead_scale), norm(x_lead, x_lead_scale), norm(a_lead, a_lead_scale)))
-    return clip((model_output - 0.5) * 2.5, -1.0, 1.0)
+    return clip((model_output - 0.51) * 3.5, -1.0, 1.0)
 
   def reset(self, v_pid):
     """Reset PID controller and change setpoint"""
