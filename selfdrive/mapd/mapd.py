@@ -297,24 +297,22 @@ def mapsd_thread():
 
       # Speed limit
       max_speed = cur_way.max_speed()
+      max_speed_ahead = None
+      max_speed_ahead_dist = None
       if max_speed is not None:
-        max_speed_ahead = None
-        max_speed_ahead_dist = None
-         
+        max_speed_ahead, max_speed_ahead_dist = cur_way.max_speed_ahead(max_speed, lat, lon, heading, MAPS_LOOKAHEAD_DISTANCE)
+      else:
+        max_speed_ahead, max_speed_ahead_dist = cur_way.max_speed_ahead(speed*1.1, lat, lon, heading, MAPS_LOOKAHEAD_DISTANCE)
+      # TODO: anticipate T junctions and right and left hand turns based on indicator
+        
+      if max_speed_ahead is not None and max_speed_ahead_dist is not None:
+        dat.liveMapData.speedLimitAheadValid = True
+        dat.liveMapData.speedLimitAhead = float(max_speed_ahead)
+        dat.liveMapData.speedLimitAheadDistance = float(max_speed_ahead_dist)
+      if max_speed is not None:
         if abs(max_speed - max_speed_prev) > 0.1:
           speedLimittrafficvalid = False
           max_speed_prev = max_speed
-      
-      
-
-        # TODO: anticipate T junctions and right and left hand turns based on indicator
-        max_speed_ahead, max_speed_ahead_dist = cur_way.max_speed_ahead(max_speed, lat, lon, heading, MAPS_LOOKAHEAD_DISTANCE)
-        if max_speed_ahead is not None and max_speed_ahead_dist is not None:
-          dat.liveMapData.speedLimitAheadValid = True
-          dat.liveMapData.speedLimitAhead = float(max_speed_ahead)
-          dat.liveMapData.speedLimitAheadDistance = float(max_speed_ahead_dist)
-
-
       advisory_max_speed = cur_way.advisory_max_speed()
       if speedLimittrafficAdvisoryvalid:
         dat.liveMapData.speedAdvisoryValid = True
