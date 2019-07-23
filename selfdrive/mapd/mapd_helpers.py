@@ -207,7 +207,21 @@ class Way:
     """Extracts the (conditional) speed limit from a way"""
     if not self.way:
       return None
-
+    angle=heading - math.atan2(self.way.nodes[0].lon-self.way.nodes[-1].lon,self.way.nodes[0].lat-self.way.nodes[-1].lat)*180/3.14159265358979 - 180
+    if angle < -180:
+      angle = angle + 360
+    if angle > 180:
+      angle = angle - 360
+    backwards = abs(angle) > 90
+    try:
+      if backwards:
+        max_speed = self.way.tags['maxspeed:backward']
+      else:
+        max_speed = self.way.tags['maxspeed:forward']
+      max_speed = parse_speed_unit(max_speed)
+      break
+    except KeyError:
+      pass
     max_speed = parse_speed_tags(self.way.tags)
     if not max_speed:
       location_info = self.query_results[4]
@@ -268,6 +282,30 @@ class Way:
           break
       except KeyError:
         pass
+      angle=heading - math.atan2(way.way.nodes[0].lon-way.way.nodes[-1].lon,way.way.nodes[0].lat-way.way.nodes[-1].lat)*180/3.14159265358979 - 180
+      if angle < -180:
+        angle = angle + 360
+      if angle > 180:
+        angle = angle - 360
+      backwards = abs(angle) > 90
+      if backwards:
+        if 'maxspeed:backward' in way.way.tags:
+          spd = way.way.tags['maxspeed:backward']
+          spd = parse_speed_unit(spd)
+          if spd < current_speed_limit:
+            speed_ahead = spd
+            min_dist = min(np.linalg.norm(way_pts[1, :]),np.linalg.norm(way_pts[0, :]),np.linalg.norm(way_pts[-1, :]))
+            speed_ahead_dist = min_dist
+          break
+      else:
+        if 'maxspeed:forward' in way.way.tags:
+          spd = way.way.tags['maxspeed:forward']
+          spd = parse_speed_unit(spd)
+          if spd < current_speed_limit:
+            speed_ahead = spd
+            min_dist = min(np.linalg.norm(way_pts[1, :]),np.linalg.norm(way_pts[0, :]),np.linalg.norm(way_pts[-1, :]))
+            speed_ahead_dist = min_dist
+          break
       if 'maxspeed' in way.way.tags:
         spd = parse_speed_tags(way.way.tags)
         #print "spd found"
@@ -285,12 +323,6 @@ class Way:
           #print min_dist
           
           break
-      angle=heading - math.atan2(way.way.nodes[0].lon-way.way.nodes[-1].lon,way.way.nodes[0].lat-way.way.nodes[-1].lat)*180/3.14159265358979 - 180
-      if angle < -180:
-        angle = angle + 360
-      if angle > 180:
-        angle = angle - 360
-      backwards = abs(angle) > 90
       try:
         if backwards:
           if self.way.nodes[0].tags['highway']=='mini_roundabout':
