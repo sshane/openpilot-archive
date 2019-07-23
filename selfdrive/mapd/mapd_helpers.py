@@ -285,6 +285,39 @@ class Way:
           #print min_dist
           
           break
+      angle=heading - math.atan2(way.way.nodes[0].lon-way.way.nodes[-1].lon,way.way.nodes[0].lat-way.way.nodes[-1].lat)*180/3.14159265358979 - 180
+      if angle < -180:
+        angle = angle + 360
+      if angle > 180:
+        angle = angle - 360
+      backwards = abs(angle) > 90
+      try:
+        if backwards:
+          if self.way.nodes[0].tags['highway']=='mini_roundabout':
+            if way_pts[0,0] < 0 and way_pts[-1,0] < 0:
+              pass
+            elif way_pts[0,0] < 0:
+              speed_ahead_dist = np.linalg.norm(way_pts[-1, :])
+              speed_ahead = 15/3.6
+              break
+            elif way_pts[-1,0] < 0:
+              speed_ahead_dist = np.linalg.norm(way_pts[0, :])
+              speed_ahead = 15/3.6
+              break
+        else:
+          if self.way.nodes[-1].tags['highway']=='mini_roundabout':
+            if way_pts[0,0] < 0 and way_pts[-1,0] < 0:
+              pass
+            elif way_pts[0,0] < 0:
+              speed_ahead_dist = np.linalg.norm(way_pts[-1, :])
+              speed_ahead = 15/3.6
+              break
+            elif way_pts[-1,0] < 0:
+              speed_ahead_dist = np.linalg.norm(way_pts[0, :])
+              speed_ahead = 15/3.6
+              break
+     except KeyError:
+      pass
       # Find next way
       way = way.next_way(heading)
       if not way:
