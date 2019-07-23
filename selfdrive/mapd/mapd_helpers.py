@@ -213,15 +213,17 @@ class Way:
     if angle > 180:
       angle = angle - 360
     backwards = abs(angle) > 90
-    try:
-      if backwards:
+    if backwards:
+      if 'maxspeed:backward' in self.way.tags:
         max_speed = self.way.tags['maxspeed:backward']
-      else:
+        max_speed = parse_speed_unit(max_speed)
+        break
+    else:
+      if 'maxspeed:forward' in self.way.tags:
         max_speed = self.way.tags['maxspeed:forward']
-      max_speed = parse_speed_unit(max_speed)
-      break
-    except KeyError:
-      pass
+        max_speed = parse_speed_unit(max_speed)
+        break
+
     max_speed = parse_speed_tags(self.way.tags)
     if not max_speed:
       location_info = self.query_results[4]
