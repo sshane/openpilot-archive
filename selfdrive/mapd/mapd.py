@@ -39,7 +39,7 @@ from selfdrive.mapd.mapd_helpers import MAPS_LOOKAHEAD_DISTANCE, Way, circle_thr
 
 
 
-OVERPASS_API_URL = "https://overpass.kumi.systems/api/interpreter"
+OVERPASS_API_URL = "https://z.overpass-api.de/api/interpreter"
 OVERPASS_HEADERS = {
     'User-Agent': 'NEOS (comma.ai)',
     'Accept-Encoding': 'gzip'
@@ -51,7 +51,7 @@ last_query_result = None
 last_query_pos = None
 cache_valid = False
 
-def connected_to_internet(url='https://overpass.kumi.systems/api/interpreter', timeout=5):
+def connected_to_internet(url='https://z.overpass-api.de/api/interpreter', timeout=5):
     try:
         requests.get(url, timeout=timeout)
         return True
