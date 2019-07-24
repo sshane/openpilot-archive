@@ -29,15 +29,14 @@ import requests
 import threading
 import numpy as np
 import overpy
+from common.params import Params
 from collections import defaultdict
 
 from common.transformations.coordinates import geodetic2ecef
 from selfdrive.services import service_list
 import selfdrive.messaging as messaging
 from selfdrive.mapd.mapd_helpers import MAPS_LOOKAHEAD_DISTANCE, Way, circle_through_points
-
-
-
+from selfdrive.version import version, dirty
 
 OVERPASS_API_URL = "https://z.overpass-api.de/api/interpreter"
 OVERPASS_HEADERS = {
@@ -350,7 +349,11 @@ def mapsd_thread():
 
 
 def main(gctx=None):
- 
+  params = Params()
+  dongle_id = params.get("DongleId")
+  crash.bind_user(id=dongle_id)
+  crash.bind_extra(version=version, dirty=dirty, is_eon=True)
+  crash.install()
 
   main_thread = threading.Thread(target=mapsd_thread)
   main_thread.daemon = True
