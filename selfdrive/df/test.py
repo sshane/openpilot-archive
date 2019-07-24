@@ -17,9 +17,9 @@ for i in range(29):
 input_data = sum(input_data, [])
 pred = df_model.run_model_lstm(input_data)
 print(pred)'''
-model_output = df_model.run_model(.5, .2, .1, .5, .5)
+model_output = df_model.run_model(.5, .2, .1, .5, .2)
 print(model_output)
-model_output = df_model.run_model(.05, .3, .4, .6, .5)
+model_output = df_model.run_model(.05, .3, .4, .6, .6)
 print(model_output)
-model_output = df_model.run_model(.7, .85, .55, .5, .5)
+model_output = df_model.run_model(.7, .85, .55, .5, .55)
 print(model_output)
