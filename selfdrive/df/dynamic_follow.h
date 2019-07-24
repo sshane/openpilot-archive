@@ -14,7 +14,7 @@
 #include <array>
 
 extern "C"{
-  float run_model(float v_ego, float a_ego, float v_lead, float x_lead, float a_lead, float a_rel);
+  float run_model(float v_ego, float v_lead, float x_lead, float a_lead, float a_rel);
   void init_model();
   float run_model_lstm(float testarr[30]);
 }
