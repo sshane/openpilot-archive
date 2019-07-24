@@ -298,7 +298,7 @@ class Way:
             speed_ahead = spd
             min_dist = min(np.linalg.norm(way_pts[1, :]),np.linalg.norm(way_pts[0, :]),np.linalg.norm(way_pts[-1, :]))
             speed_ahead_dist = min_dist
-          break
+            break
       else:
         if 'maxspeed:forward' in way.way.tags:
           spd = way.way.tags['maxspeed:forward']
@@ -307,7 +307,7 @@ class Way:
             speed_ahead = spd
             min_dist = min(np.linalg.norm(way_pts[1, :]),np.linalg.norm(way_pts[0, :]),np.linalg.norm(way_pts[-1, :]))
             speed_ahead_dist = min_dist
-          break
+            break
       if 'maxspeed' in way.way.tags:
         spd = parse_speed_tags(way.way.tags)
         #print "spd found"
