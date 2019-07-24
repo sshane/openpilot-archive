@@ -296,7 +296,7 @@ def mapsd_thread():
       dat.liveMapData.wayId = cur_way.id
 
       # Speed limit
-      max_speed = cur_way.max_speed()
+      max_speed = cur_way.max_speed(heading)
       max_speed_ahead = None
       max_speed_ahead_dist = None
       if max_speed is not None:
