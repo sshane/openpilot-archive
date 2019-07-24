@@ -350,8 +350,8 @@ class Way:
               speed_ahead_dist = np.linalg.norm(way_pts[0, :])
               speed_ahead = 15/3.6
               break
-     except KeyError:
-      pass
+      except KeyError:
+        pass
       # Find next way
       way = way.next_way(heading)
       if not way:
