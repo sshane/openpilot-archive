@@ -203,7 +203,7 @@ class Way:
   def __str__(self):
     return "%s %s" % (self.id, self.way.tags)
 
-  def max_speed(self):
+  def max_speed(self, heading):
     """Extracts the (conditional) speed limit from a way"""
     if not self.way:
       return None
