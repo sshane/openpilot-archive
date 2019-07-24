@@ -217,12 +217,12 @@ class Way:
       if 'maxspeed:backward' in self.way.tags:
         max_speed = self.way.tags['maxspeed:backward']
         max_speed = parse_speed_unit(max_speed)
-        break
+        return max_speed
     else:
       if 'maxspeed:forward' in self.way.tags:
         max_speed = self.way.tags['maxspeed:forward']
         max_speed = parse_speed_unit(max_speed)
-        break
+        return max_speed
 
     max_speed = parse_speed_tags(self.way.tags)
     if not max_speed:
