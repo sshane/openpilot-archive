@@ -82,11 +82,11 @@ extern "C" {
     initializeSNPE(runt);
   }
 
-  float run_model_lstm(float testarr[30]){
-    int size = 30;
+  float run_model_lstm(float inputData[40]){
+    int size = 40;
     std::vector<float> inputVec;
     for (int i = 0; i < size; i++ ) {
-      inputVec.push_back(testarr[i]);
+      inputVec.push_back(inputData[i]);
     }
 
     std::unique_ptr<zdl::DlSystem::ITensor> inputTensor = loadInputTensor(snpe, inputVec);
