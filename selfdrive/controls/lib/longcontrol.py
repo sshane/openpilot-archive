@@ -105,7 +105,7 @@ class LongControl(object):
       #model_output = float(self.model_wrapper.run_model(norm(v_ego, scales['v_ego_scale']), norm(v_lead, scales['v_lead_scale']), norm(x_lead, scales['x_lead_scale']), norm(a_lead, scales['a_lead_scale'])))
       #return clip((model_output - 0.525) * 3.8, -1.0, 1.0)
     else:
-      return 0.0, 0.0
+      return 0.0
 
   def reset(self, v_pid):
     """Reset PID controller and change setpoint"""
