@@ -82,8 +82,8 @@ extern "C" {
     initializeSNPE(runt);
   }
 
-  float run_model_lstm(float inputData[40]){
-    int size = 40;
+  float run_model_lstm(float inputData[120]){
+    int size = 120;
     std::vector<float> inputVec;
     for (int i = 0; i < size; i++ ) {
       inputVec.push_back(inputData[i]);
