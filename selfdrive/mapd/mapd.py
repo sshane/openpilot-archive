@@ -54,7 +54,7 @@ def connected_to_internet(url='https://z.overpass-api.de/api/interpreter', timeo
     try:
         requests.get(url, timeout=timeout)
         return True
-    except requests.ConnectionError:
+    except (ReadTimeout, requests.ConnectionError):
         print("No internet connection available.")
     return False
 
