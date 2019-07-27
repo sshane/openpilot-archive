@@ -80,9 +80,10 @@ class LongControl(object):
     self.past_data = []
 
   def df(self, radar_state, v_ego, a_ego, set_speed):
-    scales = {'v_ego_scale': [0.0, 29.385902404785],
-             'v_lead_scale': [0.0, 29.329719543457],
-             'x_lead_scale': [0.125, 138.625]}
+    scales = {'a_lead_scale': [-8.398388862609863, 13.873639106750488],
+             'v_ego_scale': [-0.0, 41.05433654785156],
+             'v_lead_scale': [0.0, 44.508262634277344],
+             'x_lead_scale': [0.125, 195.09375]}
 
     TR = 1.4
     v_lead = set_speed
@@ -93,19 +94,20 @@ class LongControl(object):
     if radar_state is not None:
       lead_1 = radar_state.leadOne
       if lead_1 is not None and lead_1.status:
-        x_lead, v_lead, a_lead, a_rel = (lead_1.dRel, lead_1.vLead, lead_1.aLeadK, lead_1.aRel)# if lead_1.vLead < set_speed else (x_lead, set_speed, 0.0, 0.0)
-        self.past_data.append([norm(v_ego, scales['v_ego_scale']), norm(v_lead, scales['v_lead_scale']), norm(x_lead, scales['x_lead_scale'])])
+        x_lead, v_lead, a_lead, a_rel = (lead_1.dRel, lead_1.vLead, lead_1.aLeadK, lead_1.aRel) if lead_1.vLead < set_speed else (x_lead, set_speed, 0.0, 0.0)
+        #self.past_data.append([norm(v_ego, scales['v_ego_scale']), norm(v_lead, scales['v_lead_scale']), norm(x_lead, scales['x_lead_scale'])])
 
-    while len(self.past_data) > 40:
+    model_output = float(self.model_wrapper.run_model(norm(v_ego, scales['v_ego_scale']), norm(v_lead, scales['v_lead_scale']), norm(x_lead, scales['x_lead_scale']), norm(a_lead, scales['a_lead_scale'])))
+    return clip((model_output - 0.51) * 3.6, -1.0, 1.0)
+
+    '''while len(self.past_data) > 40:
       del self.past_data[0]
 
     if len(self.past_data) == 40:
       model_output = self.model_wrapper.run_model_lstm([i for x in self.past_data for i in x])
       return clip((model_output - 0.51) * 3.25, -1.0, 1.0)
-      #model_output = float(self.model_wrapper.run_model(norm(v_ego, scales['v_ego_scale']), norm(v_lead, scales['v_lead_scale']), norm(x_lead, scales['x_lead_scale']), norm(a_lead, scales['a_lead_scale'])))
-      #return clip((model_output - 0.525) * 3.8, -1.0, 1.0)
     else:
-      return 0.0
+      return 0.0'''
 
   def reset(self, v_pid):
     """Reset PID controller and change setpoint"""
