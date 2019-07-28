@@ -98,7 +98,7 @@ class LongControl(object):
         #self.past_data.append([norm(v_ego, scales['v_ego_scale']), norm(v_lead, scales['v_lead_scale']), norm(x_lead, scales['x_lead_scale'])])
 
     model_output = float(self.model_wrapper.run_model(norm(v_ego, scales['v_ego_scale']), norm(v_lead, scales['v_lead_scale']), norm(x_lead, scales['x_lead_scale']), norm(a_lead, scales['a_lead_scale'])))
-    return clip((model_output - 0.53) * 4.0, -1.0, 1.0)
+    return clip((model_output - 0.515) * 4.1, -1.0, 1.0)
 
     '''while len(self.past_data) > 40:
       del self.past_data[0]
