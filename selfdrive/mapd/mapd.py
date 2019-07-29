@@ -29,17 +29,16 @@ import requests
 import threading
 import numpy as np
 import overpy
+from common.params import Params
 from collections import defaultdict
 
 from common.transformations.coordinates import geodetic2ecef
 from selfdrive.services import service_list
 import selfdrive.messaging as messaging
 from selfdrive.mapd.mapd_helpers import MAPS_LOOKAHEAD_DISTANCE, Way, circle_through_points
+from selfdrive.version import version, dirty
 
-
-
-
-OVERPASS_API_URL = "https://overpass.kumi.systems/api/interpreter"
+OVERPASS_API_URL = "https://z.overpass-api.de/api/interpreter"
 OVERPASS_HEADERS = {
     'User-Agent': 'NEOS (comma.ai)',
     'Accept-Encoding': 'gzip'
@@ -51,11 +50,11 @@ last_query_result = None
 last_query_pos = None
 cache_valid = False
 
-def connected_to_internet(url='https://overpass.kumi.systems/api/interpreter', timeout=5):
+def connected_to_internet(url='https://z.overpass-api.de/api/interpreter', timeout=5):
     try:
         requests.get(url, timeout=timeout)
         return True
-    except requests.ConnectionError:
+    except (requests.ReadTimeout, requests.ConnectionError):
         print("No internet connection available.")
     return False
 
@@ -296,25 +295,23 @@ def mapsd_thread():
       dat.liveMapData.wayId = cur_way.id
 
       # Speed limit
-      max_speed = cur_way.max_speed()
+      max_speed = cur_way.max_speed(heading)
+      max_speed_ahead = None
+      max_speed_ahead_dist = None
       if max_speed is not None:
-        max_speed_ahead = None
-        max_speed_ahead_dist = None
-         
+        max_speed_ahead, max_speed_ahead_dist = cur_way.max_speed_ahead(max_speed, lat, lon, heading, MAPS_LOOKAHEAD_DISTANCE)
+      else:
+        max_speed_ahead, max_speed_ahead_dist = cur_way.max_speed_ahead(speed*1.1, lat, lon, heading, MAPS_LOOKAHEAD_DISTANCE)
+      # TODO: anticipate T junctions and right and left hand turns based on indicator
+        
+      if max_speed_ahead is not None and max_speed_ahead_dist is not None:
+        dat.liveMapData.speedLimitAheadValid = True
+        dat.liveMapData.speedLimitAhead = float(max_speed_ahead)
+        dat.liveMapData.speedLimitAheadDistance = float(max_speed_ahead_dist)
+      if max_speed is not None:
         if abs(max_speed - max_speed_prev) > 0.1:
           speedLimittrafficvalid = False
           max_speed_prev = max_speed
-      
-      
-
-        # TODO: anticipate T junctions and right and left hand turns based on indicator
-        max_speed_ahead, max_speed_ahead_dist = cur_way.max_speed_ahead(max_speed, lat, lon, heading, MAPS_LOOKAHEAD_DISTANCE)
-        if max_speed_ahead is not None and max_speed_ahead_dist is not None:
-          dat.liveMapData.speedLimitAheadValid = True
-          dat.liveMapData.speedLimitAhead = float(max_speed_ahead)
-          dat.liveMapData.speedLimitAheadDistance = float(max_speed_ahead_dist)
-
-
       advisory_max_speed = cur_way.advisory_max_speed()
       if speedLimittrafficAdvisoryvalid:
         dat.liveMapData.speedAdvisoryValid = True
@@ -352,7 +349,11 @@ def mapsd_thread():
 
 
 def main(gctx=None):
- 
+  params = Params()
+  dongle_id = params.get("DongleId")
+  crash.bind_user(id=dongle_id)
+  crash.bind_extra(version=version, dirty=dirty, is_eon=True)
+  crash.install()
 
   main_thread = threading.Thread(target=mapsd_thread)
   main_thread.daemon = True

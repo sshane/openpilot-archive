@@ -203,10 +203,26 @@ class Way:
   def __str__(self):
     return "%s %s" % (self.id, self.way.tags)
 
-  def max_speed(self):
+  def max_speed(self, heading):
     """Extracts the (conditional) speed limit from a way"""
     if not self.way:
       return None
+    angle=heading - math.atan2(self.way.nodes[0].lon-self.way.nodes[-1].lon,self.way.nodes[0].lat-self.way.nodes[-1].lat)*180/3.14159265358979 - 180
+    if angle < -180:
+      angle = angle + 360
+    if angle > 180:
+      angle = angle - 360
+    backwards = abs(angle) > 90
+    if backwards:
+      if 'maxspeed:backward' in self.way.tags:
+        max_speed = self.way.tags['maxspeed:backward']
+        max_speed = parse_speed_unit(max_speed)
+        return max_speed
+    else:
+      if 'maxspeed:forward' in self.way.tags:
+        max_speed = self.way.tags['maxspeed:forward']
+        max_speed = parse_speed_unit(max_speed)
+        return max_speed
 
     max_speed = parse_speed_tags(self.way.tags)
     if not max_speed:
@@ -268,6 +284,30 @@ class Way:
           break
       except KeyError:
         pass
+      angle=heading - math.atan2(way.way.nodes[0].lon-way.way.nodes[-1].lon,way.way.nodes[0].lat-way.way.nodes[-1].lat)*180/3.14159265358979 - 180
+      if angle < -180:
+        angle = angle + 360
+      if angle > 180:
+        angle = angle - 360
+      backwards = abs(angle) > 90
+      if backwards:
+        if 'maxspeed:backward' in way.way.tags:
+          spd = way.way.tags['maxspeed:backward']
+          spd = parse_speed_unit(spd)
+          if spd < current_speed_limit:
+            speed_ahead = spd
+            min_dist = min(np.linalg.norm(way_pts[1, :]),np.linalg.norm(way_pts[0, :]),np.linalg.norm(way_pts[-1, :]))
+            speed_ahead_dist = min_dist
+            break
+      else:
+        if 'maxspeed:forward' in way.way.tags:
+          spd = way.way.tags['maxspeed:forward']
+          spd = parse_speed_unit(spd)
+          if spd < current_speed_limit:
+            speed_ahead = spd
+            min_dist = min(np.linalg.norm(way_pts[1, :]),np.linalg.norm(way_pts[0, :]),np.linalg.norm(way_pts[-1, :]))
+            speed_ahead_dist = min_dist
+            break
       if 'maxspeed' in way.way.tags:
         spd = parse_speed_tags(way.way.tags)
         #print "spd found"
@@ -285,6 +325,33 @@ class Way:
           #print min_dist
           
           break
+      try:
+        if backwards:
+          if self.way.nodes[0].tags['highway']=='mini_roundabout':
+            if way_pts[0,0] < 0 and way_pts[-1,0] < 0:
+              pass
+            elif way_pts[0,0] < 0:
+              speed_ahead_dist = np.linalg.norm(way_pts[-1, :])
+              speed_ahead = 15/3.6
+              break
+            elif way_pts[-1,0] < 0:
+              speed_ahead_dist = np.linalg.norm(way_pts[0, :])
+              speed_ahead = 15/3.6
+              break
+        else:
+          if self.way.nodes[-1].tags['highway']=='mini_roundabout':
+            if way_pts[0,0] < 0 and way_pts[-1,0] < 0:
+              pass
+            elif way_pts[0,0] < 0:
+              speed_ahead_dist = np.linalg.norm(way_pts[-1, :])
+              speed_ahead = 15/3.6
+              break
+            elif way_pts[-1,0] < 0:
+              speed_ahead_dist = np.linalg.norm(way_pts[0, :])
+              speed_ahead = 15/3.6
+              break
+      except KeyError:
+        pass
       # Find next way
       way = way.next_way(heading)
       if not way:
