@@ -79,7 +79,7 @@ class LatControlINDI(object):
         self.G = self.actuatorEffectiveness
         self.outer_loop_gain = self.outerLoopGain
         self.inner_loop_gain = self.innerLoopGain
-        self.alpha = 1. - DT / (self.RC + DT)
+        self.alpha = 1. - DT_CTRL / (self.RC + DT_CTRL)
 
       self.mpc_frame = 0
 
