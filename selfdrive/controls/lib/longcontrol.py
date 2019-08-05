@@ -80,10 +80,10 @@ class LongControl(object):
     self.past_data = []
 
   def df(self, radar_state, v_ego, a_ego, set_speed):
-    scales = {'a_lead_scale': [-8.398388862609863, 13.873639106750488],
-             'v_ego_scale': [-0.0, 41.05433654785156],
-             'v_lead_scale': [0.0, 44.508262634277344],
-             'x_lead_scale': [0.125, 195.09375]}
+    scales = {'a_lead_scale': [-5.8212361335754395, 5.633832931518555],
+             'v_ego_scale': [0.0, 48.79419708251953],
+             'v_lead_scale': [0.0, 44.45916748046875],
+             'x_lead_scale': [0.375, 248.65625]}
 
     TR = 1.4
     v_lead = set_speed
