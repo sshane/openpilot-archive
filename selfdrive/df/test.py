@@ -11,11 +11,11 @@ for i in range(30):
   0.01075646532123655)
 print(time.time() - startl)'''
 
-model_output = df_model.run_model(.5, .2, .1, .5)
+model_output = df_model.run_model(.5, .5, .2, .1, .5, .2)
 print(model_output)
-model_output = df_model.run_model(.3, 0.0, .3, .5)
+'''model_output = df_model.run_model(.3, 0.0, .3, .5)
 print(model_output)
 model_output = df_model.run_model(.05, .3, .4, .6)
 print(model_output)
 model_output = df_model.run_model(.7, .85, .55, .5)
-print(model_output)
+print(model_output)'''
