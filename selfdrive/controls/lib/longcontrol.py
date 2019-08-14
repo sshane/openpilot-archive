@@ -82,9 +82,8 @@ class LongControl(object):
   def df(self, radar_state, v_ego, a_ego, set_speed):
     scales = {'a_ego_scale': [-6.456730365753174, 8.471155166625977],
              'a_lead_scale': [-8.398388862609863, 14.48592472076416],
-             'a_rel_scale': [-7.990887641906738, 9.50364875793457],
-             'v_ego_scale': [-0.0, 41.05433654785156],
-             'v_lead_scale': [0.0, 48.66924285888672],
+             'v_ego_scale': [-0.0, 40.3693962097168],
+             'v_lead_scale': [0.0, 43.89860534667969],
              'x_lead_scale': [0.125, 138.625]}
 
     TR = 1.4
@@ -99,8 +98,8 @@ class LongControl(object):
         x_lead, v_lead, a_lead, a_rel = (lead_1.dRel, lead_1.vLead, lead_1.aLeadK, lead_1.aRel) if lead_1.vLead < set_speed else (x_lead, set_speed, 0.0, 0.0)
         #self.past_data.append([norm(v_ego, scales['v_ego_scale']), norm(v_lead, scales['v_lead_scale']), norm(x_lead, scales['x_lead_scale'])])
 
-    model_output = float(self.model_wrapper.run_model(norm(v_ego, scales['v_ego_scale']), norm(a_ego, scales['a_ego_scale']), norm(v_lead, scales['v_lead_scale']), norm(x_lead, scales['x_lead_scale']), norm(a_lead, scales['a_lead_scale']), norm(a_rel, scales['a_rel_scale'])))
-    return clip((model_output - 0.515) * 2.3, -1.0, 1.0)
+    model_output = float(self.model_wrapper.run_model(norm(v_ego, scales['v_ego_scale']), norm(a_ego, scales['a_ego_scale']), norm(v_lead, scales['v_lead_scale']), norm(x_lead, scales['x_lead_scale']), norm(a_lead, scales['a_lead_scale'])))
+    return clip((model_output - 0.50) * 2.3, -1.0, 1.0)
 
     '''while len(self.past_data) > 40:
       del self.past_data[0]
