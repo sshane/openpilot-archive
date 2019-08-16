@@ -120,7 +120,7 @@ class LongControl(object):
     max_return = 1.0
     return round(max(min(accel, max_return), min_return), 5)  # ensure we return a value between range'''
 
-  def dynamic_gas(self, v_ego, v_rel):
+  def dynamic_gas(self, v_ego, v_rel, a_lead):
     x = [0.0, 1.4082, 2.80311, 4.22661, 5.38271, 6.16561, 7.24781, 8.28308, 10.24465, 12.96402, 15.42303, 18.11903, 20.11703, 24.46614, 29.05805, 32.71015, 35.76326]
     y = [0.2, 0.20443, 0.21592, 0.23334, 0.25734, 0.27916, 0.3229, 0.34784, 0.36765, 0.38, 0.396, 0.409, 0.425, 0.478, 0.55, 0.621, 0.7]
     #x = [0.0, 0.6422, 1.36595, 2.25989, 3.22941, 4.06505, 5.64084, 7.00847, 9.2202, 12.96404, 15.42305, 18.11906, 20.11706, 24.46618, 29.0581, 32.7102, 35.76332]  # need to test, all this is is a quicker accel 0 to 15 mph
@@ -149,22 +149,21 @@ class LongControl(object):
     #self.sm.update()
     #lead_1 = self.sm['radarState'].leadOne
     radarState = messaging.recv_one_or_none(self.radarState)
-    vRel = None
-    if radarState is not None:
-      try:
-        self.last_lead = radarState.radarState.leadOne
-        self.num_nones = 0
-        vRel = self.last_lead.vRel
-      except:
-        pass
-    '''else:
-      if self.num_nones > 20:
-        vRel = None
+    if radarState is not None and radarState.radarState is not None and radarState.radarState.leadOne is not None:
+      self.last_lead = radarState.radarState.leadOne
+      self.num_nones = 0
+      v_rel = self.last_lead.vRel
+      a_lead = self.last_lead.aLeadK
+    else:
+      if self.num_nones > 10:
+        v_rel = None
+        a_lead = None
       else:
-        vRel = self.last_lead.vRel
-      self.num_nones += 1'''
+        v_rel = self.last_lead.vRel
+        a_lead = self.last_lead.aLeadK
+      self.num_nones += 1
 
-    gas_max = self.dynamic_gas(v_ego, vRel)
+    gas_max = self.dynamic_gas(v_ego, v_rel, a_lead)
     #gas_max = .2
     #gas_max = interp(v_ego, CP.gasMaxBP, CP.gasMaxV)
     brake_max = interp(v_ego, CP.brakeMaxBP, CP.brakeMaxV)
