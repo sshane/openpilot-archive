@@ -12,11 +12,8 @@ class opParams:
     self.last_read_time = time.time()
 
   def read_params(self):
-    default_params = {"cameraOffset": 0.06, "lastTrMode": 1, "battChargeMin": 90, "battChargeMax": 95,
-                      "wheelTouchSeconds": 1800, "battPercOff": 25, "carVoltageMinEonShutdown": 11200,
-                      "brakeStoppingTarget": 0.25, "angle_steers_offset": 0, "brake_distance_extra": 1,
-                      "lastALCAMode": 1, "brakefactor": 1.2, "lastGasMode": 0, "lastSloMode": 1,
-                      "leadDistance": 5, "useCarCaching": True, "autoUpdate": True}
+    default_params = {'cameraOffset': 0.06, 'wheelTouchSeconds': 1800, 'lane_hug': 'none',
+                      'lane_hug_mod': 1.2, 'lane_hug_angle': 10}
 
     if os.path.isfile(self.params_file):
       try:
