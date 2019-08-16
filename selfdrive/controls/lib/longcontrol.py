@@ -126,8 +126,8 @@ class LongControl(object):
 
     accel = interp(v_ego, x, y)
 
-    #with open('/data/testifworking', 'w') as f:
-      #f.write('{}\n'.format(v_rel))
+    with open('/data/testifworking', 'a') as f:
+      f.write('{}\n'.format(v_rel))
 
     if v_rel is not None:  # if lead
       if (v_ego) < 8.94086:  # if under 20 mph
@@ -148,8 +148,12 @@ class LongControl(object):
     #lead_1 = self.sm['radarState'].leadOne
     radarState = messaging.recv_one_or_none(self.radarState)
     if radarState is not None:
+      with open('testfile', 'a') as f:
+        f.write('lead\n')
       vRel = radarState.radarState.leadOne.vRel
     else:
+      with open('testfile', 'a') as f:
+        f.write('no lead\n')
       vRel = None
 
     gas_max = self.dynamic_gas(v_ego, vRel)
