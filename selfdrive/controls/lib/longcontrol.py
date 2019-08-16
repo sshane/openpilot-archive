@@ -148,7 +148,7 @@ class LongControl(object):
     #lead_1 = self.sm['radarState'].leadOne
     radarState = messaging.recv_one_or_none(self.radarState)
     if radarState is not None:
-      vRel = radarState.radarState.lead_1.vRel
+      vRel = radarState.radarState.leadOne.vRel
     else:
       vRel = None
 
