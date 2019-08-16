@@ -6,7 +6,6 @@ class opParams:
   def __init__(self):
     self.params_file = "/data/op_params.json"
     self.kegman_file = "/data/kegman.json"
-    self.keys_written = []
     self.params = {}
     self.read_params()
     self.last_read_time = time.time()
@@ -42,10 +41,8 @@ class opParams:
       json.dump(self.params, f, indent=2, sort_keys=True)
     os.chmod(self.params_file, 0o764)
 
-  def put(self, data):  # allows for writing multiple key/value pairs
-    for key in data:
-      self.keys_written.append(key)
-    self.params.update(data)
+  def put(self, key, value):
+    self.params.update({key: value})
     self.write_config()
 
   def get(self, key=None, default=None):  # can specify a default value if key doesn't exist
