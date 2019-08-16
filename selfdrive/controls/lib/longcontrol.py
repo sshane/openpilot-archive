@@ -146,9 +146,13 @@ class LongControl(object):
     # Actuation limits
     #self.sm.update()
     #lead_1 = self.sm['radarState'].leadOne
-    lead_1 = messaging.recv_one_or_none(self.radarState).radarState
+    radarState = messaging.recv_one_or_none(self.radarState)
+    if radarState is not None:
+      vRel = radarState.radarState.lead_1.vRel
+    else:
+      vRel = None
 
-    gas_max = self.dynamic_gas(v_ego, lead_1.vRel)
+    gas_max = self.dynamic_gas(v_ego, vRel)
     #gas_max = .2
     #gas_max = interp(v_ego, CP.gasMaxBP, CP.gasMaxV)
     brake_max = interp(v_ego, CP.brakeMaxBP, CP.brakeMaxV)
