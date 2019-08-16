@@ -1,5 +1,6 @@
 import math
 import numpy as np
+from common.numpy_fast import interp
 
 from cereal import log
 from common.realtime import DT_CTRL
@@ -62,7 +63,11 @@ class LatControlINDI(object):
       self.output_steer = 0.0
       self.delayed_output = 0.0
     else:
-      self.angle_steers_des = path_plan.angleSteers
+      if path_plan.angleSteers > 0:  # only apply angle steers mod to left curves
+          self.angle_steers_des = path_plan.angleSteers / interp(path_plan.angleSteers, [0, 10], [1.0, 1.2])  # suggrestion thanks to zorrobyte
+      else:
+          self.angle_steers_des = path_plan.angleSteers
+      #self.angle_steers_des = path_plan.angleSteers
       self.rate_steers_des = path_plan.rateSteers
 
       steers_des = math.radians(self.angle_steers_des)
