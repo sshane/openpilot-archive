@@ -45,7 +45,7 @@ class LatControlINDI(object):
     self.reset()
     op_params = opParams()
 
-    self.lane_hug = op_params.get('lane_hug', 'none')  # if lane hugging is present and which side. none, left, or right
+    self.lane_hug_direction = op_params.get('lane_hug_direction', 'none')  # if lane hugging is present and which side. none, left, or right
     self.lane_hug_mod = op_params.get('lane_hug_mod', 1.2)  # how much to reduce angle by. float from 1.0 to 2.0
     self.lane_hug_angle = op_params.get('lane_hug_angle', 10)  # where to end increasing angle modification. from 0 to this
 
@@ -56,9 +56,9 @@ class LatControlINDI(object):
 
   def lane_hugging(self, path_plan):
     angle_steers_des = path_plan.angleSteers
-    if self.lane_hug == 'left' and path_plan.angleSteers > 0:
+    if self.lane_hug_direction == 'left' and path_plan.angleSteers > 0:
       angle_steers_des = path_plan.angleSteers / interp(path_plan.angleSteers, [0, self.lane_hug_angle], [1.0, self.lane_hug_mod])  # suggestion thanks to zorrobyte
-    if self.lane_hug == 'right' and path_plan.angleSteers < 0:
+    if self.lane_hug_direction == 'right' and path_plan.angleSteers < 0:
       angle_steers_des = path_plan.angleSteers / interp(path_plan.angleSteers, [0, self.lane_hug_angle], [1.0, self.lane_hug_mod])
 
     return angle_steers_des
