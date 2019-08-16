@@ -34,3 +34,5 @@ Highlight Features
     op_params.get('cameraOffset')
     ```
     returns `-0.01`
+    
+    Parameters are stored at `/data/op_params.json`
