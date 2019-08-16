@@ -132,10 +132,18 @@ class LongControl(object):
       f.write('{}\n'.format(v_rel))
 
     if v_rel is not None:  # if lead
-      if (v_ego) < 8.94086:  # if under 20 mph
-        x = [1.61479, 1.99067, 2.28537, 2.49888, 2.6312, 2.68224]
-        y = [-accel, -(accel / 1.06), -(accel / 1.2), -(accel / 1.8), -(accel / 4.4), 0]  # array that matches current chosen accel value
-        accel += interp(v_rel, x, y)
+      if v_ego < 8.94086:  # if under 20 mph
+        x = [0.0, 0.503, 1.207, 1.565, 1.874, 1.973, 2.012]
+        y = [0.0, 0.01, 0.0285, 0.0835, 0.222, 0.3865, 0.5]
+        y_mod = interp(v_rel, x, y)
+
+        x = [0.0, 0.16093, 0.39487, 0.54105, 0.66635, 0.9587, 1.37288, 1.5643]
+        y = [0.0, 0.0045, 0.0665, 0.153, 0.2845, 0.396, 0.4665, 0.5]
+        y_mod += interp(a_lead, x, y)
+
+        x = [0.0, 8.94086]  # less modification the faster we're going
+        y = [accel * y_mod, accel]
+        accel = interp(v_ego, x, y)
       else:
         x = [-0.89408, 0, 0.89408, 4.4704]
         y = [-.15, -.05, .005, .05]
@@ -150,19 +158,18 @@ class LongControl(object):
     #lead_1 = self.sm['radarState'].leadOne
     radarState = messaging.recv_one_or_none(self.radarState)
 
-    v_rel = None
-    a_lead = None
-
     if radarState is not None and radarState.radarState.leadOne.status is True:
       self.last_lead = radarState.radarState.leadOne
       self.num_nones = 0
+    else:
+      self.num_nones = clip(self.num_nones + 1, 0, 20)
+
+    if self.num_nones <= 10 and self.last_lead is not None:  # if the number of iterations where None is returned is less than 10, assume we have a lead
       v_rel = self.last_lead.vRel
       a_lead = self.last_lead.aLeadK
     else:
-      if self.num_nones <= 10 and self.last_lead is not None:  # if the number of iterations where None is returned is less than 10, assume we have a lead
-        v_rel = self.last_lead.vRel
-        a_lead = self.last_lead.aLeadK
-      self.num_nones = clip(self.num_nones + 1, 0, 20)
+      v_rel = None
+      a_lead = None
 
     with open('/data/num_nones', 'a') as f:
       f.write('{}\n'.format(self.num_nones))
