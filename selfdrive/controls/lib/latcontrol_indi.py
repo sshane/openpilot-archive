@@ -57,7 +57,7 @@ class LatControlINDI(object):
     if self.lane_hug == 'left' and path_plan.angleSteers > 0:
       angle_steers_des = path_plan.angleSteers / interp(path_plan.angleSteers, [0, self.lane_hug_angle], [1.0, self.lane_hug_mod])  # suggestion thanks to zorrobyte
     if self.lane_hug == 'right' and path_plan.angleSteers < 0:
-      angle_steers_des = path_plan.angleSteers / interp(path_plan.angleSteers, [0, self.lane_hug_angle], [1.0, self.lane_hug_mod])  # suggestion thanks to zorrobyte
+      angle_steers_des = path_plan.angleSteers / interp(path_plan.angleSteers, [0, self.lane_hug_angle], [1.0, self.lane_hug_mod])
 
     return angle_steers_des
 
@@ -76,8 +76,7 @@ class LatControlINDI(object):
       self.output_steer = 0.0
       self.delayed_output = 0.0
     else:
-      self.angle_steers_des = self.lane_hugging(path_plan)
-      #self.angle_steers_des = path_plan.angleSteers
+      self.angle_steers_des = self.lane_hugging(path_plan)  # self.angle_steers_des = path_plan.angleSteers
       self.rate_steers_des = path_plan.rateSteers
 
       steers_des = math.radians(self.angle_steers_des)
