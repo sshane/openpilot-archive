@@ -127,7 +127,10 @@ class Way:
 
   @classmethod
   def closest(cls, query_results, lat, lon, heading, prev_way=None):
-    results, tree, real_nodes, node_to_way, location_info = query_results
+    if query_results is None:
+      return None
+    else:
+      results, tree, real_nodes, node_to_way, location_info = query_results
 
     cur_pos = geodetic2ecef((lat, lon, 0))
     nodes = tree.query_ball_point(cur_pos, 500)
@@ -200,10 +203,26 @@ class Way:
   def __str__(self):
     return "%s %s" % (self.id, self.way.tags)
 
-  def max_speed(self):
+  def max_speed(self, heading):
     """Extracts the (conditional) speed limit from a way"""
     if not self.way:
       return None
+    angle=heading - math.atan2(self.way.nodes[0].lon-self.way.nodes[-1].lon,self.way.nodes[0].lat-self.way.nodes[-1].lat)*180/3.14159265358979 - 180
+    if angle < -180:
+      angle = angle + 360
+    if angle > 180:
+      angle = angle - 360
+    backwards = abs(angle) > 90
+    if backwards:
+      if 'maxspeed:backward' in self.way.tags:
+        max_speed = self.way.tags['maxspeed:backward']
+        max_speed = parse_speed_unit(max_speed)
+        return max_speed
+    else:
+      if 'maxspeed:forward' in self.way.tags:
+        max_speed = self.way.tags['maxspeed:forward']
+        max_speed = parse_speed_unit(max_speed)
+        return max_speed
 
     max_speed = parse_speed_tags(self.way.tags)
     if not max_speed:
@@ -219,7 +238,7 @@ class Way:
 
     speed_ahead = None
     speed_ahead_dist = None
-    lookahead_ways = 3
+    lookahead_ways = 5
     way = self
     for i in range(lookahead_ways):
       way_pts = way.points_in_car_frame(lat, lon, heading)
@@ -252,7 +271,10 @@ class Way:
           if way.way.nodes[0].id == way.way.nodes[-1].id:
             a = 111132.954*math.cos(float(latmax+latmin)/360*3.141592)*float(lonmax-lonmin)
           else:
-            circle = circle_through_points([way.way.nodes[0].lat,way.way.nodes[0].lon,1], [way.way.nodes[1].lat,way.way.nodes[1].lon,1], [way.way.nodes[-1].lat,way.way.nodes[-1].lon,1])
+            if way.way.nodes[1].id == way.way.nodes[-1].id:
+              circle = 30
+            else:
+              circle = circle_through_points([way.way.nodes[0].lat,way.way.nodes[0].lon,1], [way.way.nodes[1].lat,way.way.nodes[1].lon,1], [way.way.nodes[-1].lat,way.way.nodes[-1].lon,1])
             a = 111132.954*math.cos(float(latmax+latmin)/360*3.141592)*float(circle[2])*2
           speed_ahead = np.sqrt(1.6075*a)
           min_dist = 999.9
@@ -262,6 +284,30 @@ class Way:
           break
       except KeyError:
         pass
+      angle=heading - math.atan2(way.way.nodes[0].lon-way.way.nodes[-1].lon,way.way.nodes[0].lat-way.way.nodes[-1].lat)*180/3.14159265358979 - 180
+      if angle < -180:
+        angle = angle + 360
+      if angle > 180:
+        angle = angle - 360
+      backwards = abs(angle) > 90
+      if backwards:
+        if 'maxspeed:backward' in way.way.tags:
+          spd = way.way.tags['maxspeed:backward']
+          spd = parse_speed_unit(spd)
+          if spd < current_speed_limit:
+            speed_ahead = spd
+            min_dist = min(np.linalg.norm(way_pts[1, :]),np.linalg.norm(way_pts[0, :]),np.linalg.norm(way_pts[-1, :]))
+            speed_ahead_dist = min_dist
+            break
+      else:
+        if 'maxspeed:forward' in way.way.tags:
+          spd = way.way.tags['maxspeed:forward']
+          spd = parse_speed_unit(spd)
+          if spd < current_speed_limit:
+            speed_ahead = spd
+            min_dist = min(np.linalg.norm(way_pts[1, :]),np.linalg.norm(way_pts[0, :]),np.linalg.norm(way_pts[-1, :]))
+            speed_ahead_dist = min_dist
+            break
       if 'maxspeed' in way.way.tags:
         spd = parse_speed_tags(way.way.tags)
         #print "spd found"
@@ -279,6 +325,33 @@ class Way:
           #print min_dist
           
           break
+      try:
+        if backwards:
+          if self.way.nodes[0].tags['highway']=='mini_roundabout':
+            if way_pts[0,0] < 0 and way_pts[-1,0] < 0:
+              pass
+            elif way_pts[0,0] < 0:
+              speed_ahead_dist = np.linalg.norm(way_pts[-1, :])
+              speed_ahead = 15/3.6
+              break
+            elif way_pts[-1,0] < 0:
+              speed_ahead_dist = np.linalg.norm(way_pts[0, :])
+              speed_ahead = 15/3.6
+              break
+        else:
+          if self.way.nodes[-1].tags['highway']=='mini_roundabout':
+            if way_pts[0,0] < 0 and way_pts[-1,0] < 0:
+              pass
+            elif way_pts[0,0] < 0:
+              speed_ahead_dist = np.linalg.norm(way_pts[-1, :])
+              speed_ahead = 15/3.6
+              break
+            elif way_pts[-1,0] < 0:
+              speed_ahead_dist = np.linalg.norm(way_pts[0, :])
+              speed_ahead = 15/3.6
+              break
+      except KeyError:
+        pass
       # Find next way
       way = way.next_way(heading)
       if not way:

@@ -15,7 +15,7 @@ import selfdrive.crash as crash
 NICE_LOW_PRIORITY = ["nice", "-n", "19"]
 def main(gctx=None):
   context = zmq.Context()
-  manager_sock = messaging.sub_sock(context, service_list['managerData'].port)
+  manager_sock = messaging.sub_sock(context, service_list['managerData'].port, conflate=True)
   NEED_REBOOT = False
   while True:
     # try network
