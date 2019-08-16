@@ -165,6 +165,9 @@ class LongControl(object):
         a_lead = self.last_lead.aLeadK'''
       self.num_nones = clip(self.num_nones + 1, 0, 20)
 
+    with open('/data/num_nones', 'a') as f:
+      f.write('{}\n'.format(len(self.num_nones)))
+
     gas_max = self.dynamic_gas(v_ego, v_rel, a_lead)
     #gas_max = .2
     #gas_max = interp(v_ego, CP.gasMaxBP, CP.gasMaxV)
