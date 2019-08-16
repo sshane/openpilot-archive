@@ -43,10 +43,23 @@ class LatControlINDI(object):
 
     self.reset()
 
+    self.lane_hug = 'left'  # if lane hugging is present and which side. none, left, or right
+    self.lane_hug_mod = 1.2  # how much to reduce angle by. float from 1.0 to 2.0
+    self.lane_hug_angle = 10  # where to end increasing angle modification. from 0 to this
+
   def reset(self):
     self.delayed_output = 0.
     self.output_steer = 0.
     self.counter = 0
+
+  def lane_hugging(self, path_plan):
+    angle_steers_des = path_plan.angleSteers
+    if self.lane_hug == 'left' and path_plan.angleSteers > 0:
+      angle_steers_des = path_plan.angleSteers / interp(path_plan.angleSteers, [0, self.lane_hug_angle], [1.0, self.lane_hug_mod])  # suggestion thanks to zorrobyte
+    if self.lane_hug == 'right' and path_plan.angleSteers < 0:
+      angle_steers_des = path_plan.angleSteers / interp(path_plan.angleSteers, [0, self.lane_hug_angle], [1.0, self.lane_hug_mod])  # suggestion thanks to zorrobyte
+
+    return angle_steers_des
 
   def update(self, active, v_ego, angle_steers, angle_steers_rate, eps_torque, steer_override, CP, VM, path_plan):
     # Update Kalman filter
@@ -63,10 +76,7 @@ class LatControlINDI(object):
       self.output_steer = 0.0
       self.delayed_output = 0.0
     else:
-      if path_plan.angleSteers > 0:  # only apply angle steers mod to left curves
-          self.angle_steers_des = path_plan.angleSteers / interp(path_plan.angleSteers, [0, 10], [1.0, 1.2])  # suggrestion thanks to zorrobyte
-      else:
-          self.angle_steers_des = path_plan.angleSteers
+      self.angle_steers_des = self.lane_hugging(path_plan)
       #self.angle_steers_des = path_plan.angleSteers
       self.rate_steers_des = path_plan.rateSteers
 
