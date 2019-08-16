@@ -2,8 +2,10 @@ import numpy as np
 from common.realtime import sec_since_boot, DT_CTRL, DT_DMON
 from selfdrive.controls.lib.drive_helpers import create_event, EventTypes as ET
 from common.filter_simple import FirstOrderFilter
+from selfdrive.op_params import opParams
+op_params = opParams()
 
-_AWARENESS_TIME = 90.        # 1.5 minutes limit without user touching steering wheels make the car enter a terminal status
+_AWARENESS_TIME = op_params.get('wheelTouchSeconds', 90)        # 1.5 minutes limit without user touching steering wheels make the car enter a terminal status
 _AWARENESS_PRE_TIME_TILL_TERMINAL = 20.    # a first alert is issued 20s before expiration
 _AWARENESS_PROMPT_TIME_TILL_TERMINAL = 5.  # a second alert is issued 5s before start decelerating the car
 _DISTRACTED_TIME = 10.
