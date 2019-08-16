@@ -128,27 +128,25 @@ class LongControl(object):
 
     accel = interp(v_ego, x, y)
 
-    with open('/data/testifworking', 'a') as f:
-      f.write('{}\n'.format(v_rel))
+    do_mods = False
+    if do_mods:
+      if v_rel is not None:  # if lead
+        if v_ego < 8.94086:  # if under 20 mph
+          x = [0.0, 0.503, 1.207, 1.565, 1.874, 1.973, 2.012]
+          y = [0.0, 0.01, 0.0285, 0.0835, 0.222, 0.3865, 0.5]
+          y_mod = interp(v_rel, x, y)
 
-    if v_rel is not None:  # if lead
-      if v_ego < 8.94086:  # if under 20 mph
-        x = [0.0, 0.503, 1.207, 1.565, 1.874, 1.973, 2.012]
-        y = [0.0, 0.01, 0.0285, 0.0835, 0.222, 0.3865, 0.5]
-        y_mod = interp(v_rel, x, y)
+          x = [0.0, 0.16093, 0.39487, 0.54105, 0.66635, 0.9587, 1.37288, 1.5643]
+          y = [0.0, 0.0045, 0.0665, 0.153, 0.2845, 0.396, 0.4665, 0.5]
+          y_mod += interp(a_lead, x, y)
 
-        x = [0.0, 0.16093, 0.39487, 0.54105, 0.66635, 0.9587, 1.37288, 1.5643]
-        y = [0.0, 0.0045, 0.0665, 0.153, 0.2845, 0.396, 0.4665, 0.5]
-        y_mod += interp(a_lead, x, y)
-
-        x = [0.0, 8.94086]  # less modification the faster we're going
-        y = [accel * y_mod, accel]
-        accel = interp(v_ego, x, y)
-      else:
-        #x = [-0.89408, 0, 0.89408, 4.4704]
-        #y = [-.15, -.05, .005, .05]
-        #accel += interp(v_rel, x, y)
-        pass
+          x = [0.0, 8.94086]  # less modification the faster we're going
+          y = [accel * y_mod, accel]
+          accel = interp(v_ego, x, y)
+        else:
+          x = [-0.89408, 0, 0.89408, 4.4704]
+          y = [-.15, -.05, .005, .05]
+          accel += interp(v_rel, x, y)
 
     return round(clip(accel, 0.0, 1.0), 5)
 
@@ -171,9 +169,6 @@ class LongControl(object):
     else:
       v_rel = None
       a_lead = None
-
-    with open('/data/num_nones', 'a') as f:
-      f.write('{}\n'.format(self.num_nones))
 
     gas_max = self.dynamic_gas(v_ego, v_rel, a_lead)
     #gas_max = .2
