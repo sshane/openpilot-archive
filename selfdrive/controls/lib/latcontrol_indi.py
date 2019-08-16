@@ -8,6 +8,7 @@ from common.numpy_fast import clip
 from selfdrive.car.toyota.carcontroller import SteerLimitParams
 from selfdrive.car import apply_toyota_steer_torque_limits
 from selfdrive.controls.lib.drive_helpers import get_steer_max
+from selfdrive.op_params import opParams
 
 
 class LatControlINDI(object):
@@ -42,10 +43,11 @@ class LatControlINDI(object):
     self.alpha = 1. - DT_CTRL / (self.RC + DT_CTRL)
 
     self.reset()
+    op_params = opParams()
 
-    self.lane_hug = 'left'  # if lane hugging is present and which side. none, left, or right
-    self.lane_hug_mod = 1.2  # how much to reduce angle by. float from 1.0 to 2.0
-    self.lane_hug_angle = 10  # where to end increasing angle modification. from 0 to this
+    self.lane_hug = op_params.get('lane_hug', 'none')  # if lane hugging is present and which side. none, left, or right
+    self.lane_hug_mod = op_params.get('lane_hug_mod', 1.2)  # how much to reduce angle by. float from 1.0 to 2.0
+    self.lane_hug_angle = op_params.get('lane_hug_angle', 10)  # where to end increasing angle modification. from 0 to this
 
   def reset(self):
     self.delayed_output = 0.
