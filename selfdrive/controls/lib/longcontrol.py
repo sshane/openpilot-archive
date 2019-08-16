@@ -159,9 +159,10 @@ class LongControl(object):
       v_rel = self.last_lead.vRel
       a_lead = self.last_lead.aLeadK
     else:
+      '''
       if self.num_nones <= 10 and self.last_lead is not None:  # if the number of iterations where None is returned is less than 10, assume we have a lead
         v_rel = self.last_lead.vRel
-        a_lead = self.last_lead.aLeadK
+        a_lead = self.last_lead.aLeadK'''
       self.num_nones = clip(self.num_nones + 1, 0, 20)
 
     gas_max = self.dynamic_gas(v_ego, v_rel, a_lead)
