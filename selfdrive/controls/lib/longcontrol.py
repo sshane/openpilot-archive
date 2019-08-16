@@ -153,16 +153,15 @@ class LongControl(object):
     v_rel = None
     a_lead = None
 
-    if radarState is not None and radarState.radarState is not None and radarState.radarState.leadOne is not None:
+    if radarState is not None and radarState.radarState.leadOne.status is True:
       self.last_lead = radarState.radarState.leadOne
       self.num_nones = 0
       v_rel = self.last_lead.vRel
       a_lead = self.last_lead.aLeadK
     else:
-      '''
       if self.num_nones <= 10 and self.last_lead is not None:  # if the number of iterations where None is returned is less than 10, assume we have a lead
         v_rel = self.last_lead.vRel
-        a_lead = self.last_lead.aLeadK'''
+        a_lead = self.last_lead.aLeadK
       self.num_nones = clip(self.num_nones + 1, 0, 20)
 
     with open('/data/num_nones', 'a') as f:
