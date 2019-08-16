@@ -70,7 +70,9 @@ class LongControl(object):
     self.last_output_gb = 0.0
     #self.sm = messaging.SubMaster(['radarState'])
     #self.poller = zmq.Poller()
-    self.radarState = messaging.sub_sock(service_list['radarState'].port, conflate=False)
+    self.radarState = messaging.sub_sock(service_list['radarState'].port, conflate=True)
+    self.last_lead = None
+    self.num_nones = 0
 
   def reset(self, v_pid):
     """Reset PID controller and change setpoint"""
@@ -148,13 +150,15 @@ class LongControl(object):
     #lead_1 = self.sm['radarState'].leadOne
     radarState = messaging.recv_one_or_none(self.radarState)
     if radarState is not None:
-      with open('/data/testfile', 'a') as f:
-        f.write('lead\n')
-      vRel = radarState.radarState.leadOne.vRel
+      self.last_lead = radarState.radarState.leadOne
+      self.num_nones = 0
+      vRel = self.last_lead.vRel
     else:
-      with open('/data/testfile', 'a') as f:
-        f.write('no lead\n')
-      vRel = None
+      if self.num_nones > 10:
+        vRel = None
+      else:
+        vRel = self.last_lead.vRel
+      self.num_nones += 1
 
     gas_max = self.dynamic_gas(v_ego, vRel)
     #gas_max = .2
