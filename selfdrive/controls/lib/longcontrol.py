@@ -145,9 +145,10 @@ class LongControl(object):
         y = [accel * y_mod, accel]
         accel = interp(v_ego, x, y)
       else:
-        x = [-0.89408, 0, 0.89408, 4.4704]
-        y = [-.15, -.05, .005, .05]
-        accel += interp(v_rel, x, y)
+        #x = [-0.89408, 0, 0.89408, 4.4704]
+        #y = [-.15, -.05, .005, .05]
+        #accel += interp(v_rel, x, y)
+        pass
 
     return round(clip(accel, 0.0, 1.0), 5)
 
