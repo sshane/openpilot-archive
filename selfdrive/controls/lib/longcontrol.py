@@ -149,19 +149,20 @@ class LongControl(object):
     #self.sm.update()
     #lead_1 = self.sm['radarState'].leadOne
     radarState = messaging.recv_one_or_none(self.radarState)
+
+    v_rel = None
+    a_lead = None
+
     if radarState is not None and radarState.radarState is not None and radarState.radarState.leadOne is not None:
       self.last_lead = radarState.radarState.leadOne
       self.num_nones = 0
       v_rel = self.last_lead.vRel
       a_lead = self.last_lead.aLeadK
     else:
-      if self.num_nones > 10:
-        v_rel = None
-        a_lead = None
-      else:
+      if self.num_nones <= 10 and self.last_lead is not None:  # if the number of iterations where None is returned is less than 10, assume we have a lead
         v_rel = self.last_lead.vRel
         a_lead = self.last_lead.aLeadK
-      self.num_nones += 1
+      self.num_nones = clip(self.num_nones + 1, 0, 20)
 
     gas_max = self.dynamic_gas(v_ego, v_rel, a_lead)
     #gas_max = .2
