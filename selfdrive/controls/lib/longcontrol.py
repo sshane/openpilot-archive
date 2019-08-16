@@ -127,7 +127,7 @@ class LongControl(object):
     accel = interp(v_ego, x, y)
 
     with open('/data/testifworking', 'w') as f:
-      f.write(str(v_rel))
+      f.write('{}\n'.format(v_rel))
 
     if v_rel is not None:  # if lead
       if (v_ego) < 8.94086:  # if under 20 mph
