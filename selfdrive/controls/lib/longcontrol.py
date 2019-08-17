@@ -129,7 +129,7 @@ class LongControl(object):
     accel = interp(v_ego, x, y)
 
 
-    if v_rel is not None:  # if lead
+    '''if v_rel is not None:  # if lead
       if (v_ego) < 3.12928: # under 7 mph
         x = [0.0, 2.2352]
         y = [.25, .5]
@@ -143,10 +143,23 @@ class LongControl(object):
         y = [accel * y_mod, accel]
         accel = interp(v_ego, x, y)
       else:
-        '''x = [-0.89408, 0, 0.89408, 4.4704]
+        x = [-0.89408, 0, 0.89408, 4.4704]
         y = [-.15, -.05, .005, .05]
-        accel += interp(v_rel, x, y)'''
-        pass
+        accel += interp(v_rel, x, y)
+        '''
+    if v_rel is not None:  # if lead
+      if v_ego <= 4.4704:  # if under 10 mph
+        x = [1.61479, 1.99067, 2.28537, 2.49888, 2.6312, 2.68224]
+        y = [-accel, -(accel / 1.06), -(accel / 1.2), -(accel / 1.8), -(accel / 4.4), 0]  # smooth, quick accel from stop
+        y_mod = interp(v_rel, x, y)
+
+        x = [1.78816, 4.4704]
+        y = [accel + y_mod, accel]
+        accel = interp(v_ego, x, y)
+      else:
+        x = [-0.89408, 0, 0.89408, 4.4704]
+        y = [-.15, -.05, .005, .05]
+        accel += interp(v_rel, x, y)
 
     return round(clip(accel, 0.0, 1.0), 5)
 
