@@ -126,42 +126,31 @@ class LongControl(object):
     #x = [0.0, 0.6422, 1.36595, 2.25989, 3.22941, 4.06505, 5.64084, 7.00847, 9.2202, 12.96404, 15.42305, 18.11906, 20.11706, 24.46618, 29.0581, 32.7102, 35.76332]  # need to test, all this is is a quicker accel 0 to 15 mph
     #y = [0.2, 0.20443, 0.21592, 0.23334, 0.25734, 0.27916, 0.3229, 0.34784, 0.36765, 0.38, 0.396, 0.409, 0.425, 0.478, 0.55, 0.621, 0.7]
 
-    accel = interp(v_ego, x, y)
+    gas = interp(v_ego, x, y)
 
-
-    '''if v_rel is not None:  # if lead
-      if (v_ego) < 3.12928: # under 7 mph
-        x = [0.0, 2.2352]
-        y = [.25, .5]
-        y_mod = interp(v_rel, x, y)
-
-        x = [0.0, 2.2352]
-        y = [.25, .5]
-        y_mod += interp(a_lead, x, y)
-
-        x = [1.56464, 3.12928]
-        y = [accel * y_mod, accel]
-        accel = interp(v_ego, x, y)
-      else:
-        x = [-0.89408, 0, 0.89408, 4.4704]
-        y = [-.15, -.05, .005, .05]
-        accel += interp(v_rel, x, y)
-        '''
     if v_rel is not None:  # if lead
-      if v_ego <= 4.4704:  # if under 10 mph
-        x = [1.61479, 1.99067, 2.28537, 2.49888, 2.6312, 2.68224]
-        y = [-accel, -(accel / 1.06), -(accel / 1.2), -(accel / 1.8), -(accel / 4.4), 0]  # smooth, quick accel from stop
-        y_mod = interp(v_rel, x, y)
+      if v_ego <= 8.9408:  # if under 20 mph
+        gas_mod = 0.0
+        x = [0.0, 0.24588812499999999, 0.432818589, 0.593044697, 0.730381365, 1.050833588, 1.3965, 1.714627481]  # relative velocity mod
+        y = [-(gas / 1.1022), -(gas / 1.133), -(gas / 1.243), -(gas / 1.6), -(gas / 2.32), -(gas / 4.8), -(gas / 15), 0]
+        gas_mod += interp(v_rel, x, y)
 
-        x = [1.78816, 4.4704]
-        y = [accel + y_mod, accel]
-        accel = interp(v_ego, x, y)
-      else:
-        x = [-0.89408, 0, 0.89408, 4.4704]
-        y = [-.15, -.05, .005, .05]
-        accel += interp(v_rel, x, y)
+        x = [0.0, 0.22, 0.44518483, 0.675, 1.0, 1.76361684]  # lead accel mod
+        y = [0.0, (gas * 0.08), (gas * 0.20), (gas * 0.4), (gas * 0.52), (gas * 0.6)]
 
-    return round(clip(accel, 0.0, 1.0), 5)
+        gas_mod += interp(a_lead, x, y)
+
+        new_gas = gas + gas_mod
+
+        x = [1.78816, 4.4704, 7.15264, 8.9408]  # slowly ramp mods down as we approach 20 mph
+        y = [new_gas, (new_gas * 0.8 + gas * 0.1), (new_gas + gas) / 2.0, gas]
+        gas = interp(v_ego, x, y)
+    else:
+      x = [-0.89408, 0, 0.89408, 4.4704]  # need to tune this
+      y = [-.15, -.05, .005, .05]
+      gas += interp(v_rel, x, y)
+
+    return round(clip(gas, 0.0, 1.0), 5)
 
   def update(self, active, v_ego, brake_pressed, standstill, cruise_standstill, v_cruise, v_target, v_target_future, a_target, CP):
     """Update longitudinal control. This updates the state machine and runs a PID loop"""
