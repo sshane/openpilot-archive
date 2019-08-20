@@ -132,6 +132,17 @@ class CarInterface(object):
       ret.lateralTuning.indi.timeConstant = 1.0
       ret.lateralTuning.indi.actuatorEffectiveness = 1.0
 
+      if ret.enableGasInterceptor:
+        ret.gasMaxBP = [0., 9., 35]
+        ret.gasMaxV = [0.2, 0.5, 0.7]
+        ret.longitudinalTuning.kpV = [1.0, 0.66, 0.42]
+        ret.longitudinalTuning.kiV = [0.135, 0.09]
+      else:
+        ret.gasMaxBP = [0.]
+        ret.gasMaxV = [0.5]
+        ret.longitudinalTuning.kpV = [3.6, 2.4, 1.5]
+        ret.longitudinalTuning.kiV = [0.54, 0.36]
+
     elif candidate == CAR.LEXUS_RXH:
       stop_and_go = True
       ret.safetyParam = 73
