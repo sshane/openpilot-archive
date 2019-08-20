@@ -136,9 +136,9 @@ class LongControl(object):
         y = [-(gas / 1.1022), -(gas / 1.133), -(gas / 1.243), -(gas / 1.6), -(gas / 2.32), -(gas / 4.8), -(gas / 15), 0]
         gas_mod = interp(v_rel, x, y)
 
-        x = [0.0, 0.22, 0.44518483, 0.675, 1.0, 1.76361684]  # lead accel mod
-        y = [0.0, (gas * 0.08), (gas * 0.20), (gas * 0.4), (gas * 0.52), (gas * 0.6)]
-        gas_mod += interp(a_lead, x, y)
+        #x = [0.0, 0.22, 0.44518483, 0.675, 1.0, 1.76361684]  # lead accel mod
+        #y = [0.0, (gas * 0.08), (gas * 0.20), (gas * 0.4), (gas * 0.52), (gas * 0.6)]
+        #gas_mod += interp(a_lead, x, y)
 
         x = [TR * 0.5, TR, TR * 1.5]  # as lead gets further from car, lessen gas mod
         y = [gas_mod * 1.5, gas_mod, gas_mod * 0.5]
