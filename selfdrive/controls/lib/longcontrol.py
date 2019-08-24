@@ -80,35 +80,34 @@ class LongControl(object):
     self.past_data = []
 
   def df(self, radar_state, v_ego, a_ego, set_speed):
-    scales = {'a_ego_scale': [-6.456730365753174, 8.471155166625977],
-             'a_lead_scale': [-8.398388862609863, 14.48592472076416],
-             'v_ego_scale': [-0.0, 40.3693962097168],
-             'v_lead_scale': [0.0, 43.89860534667969],
-             'x_lead_scale': [0.125, 138.625]}
+    scales = {'v_ego_scale': [0.0, 40.558326721191],
+              'v_lead_scale': [0.0, 44.508262634277],
+              'x_lead_scale': [0.125, 146.375]}
 
     TR = 1.4
     v_lead = set_speed
     x_lead = v_ego * TR
     a_lead = 0.0
     a_rel = 0.0
+    seq_len = 60 # shape 20, 3
 
     if radar_state is not None:
       lead_1 = radar_state.leadOne
       if lead_1 is not None and lead_1.status:
-        x_lead, v_lead, a_lead, a_rel = (lead_1.dRel, lead_1.vLead, lead_1.aLeadK, lead_1.aRel) if lead_1.vLead < set_speed else (x_lead, set_speed, 0.0, 0.0)
-        #self.past_data.append([norm(v_ego, scales['v_ego_scale']), norm(v_lead, scales['v_lead_scale']), norm(x_lead, scales['x_lead_scale'])])
+        #x_lead, v_lead, a_lead, a_rel = (lead_1.dRel, lead_1.vLead, lead_1.aLeadK, lead_1.aRel) if lead_1.vLead < set_speed else (x_lead, set_speed, 0.0, 0.0)
+        self.past_data.append([norm(v_ego, scales['v_ego_scale']), norm(v_lead, scales['v_lead_scale']), norm(x_lead, scales['x_lead_scale'])])
 
-    model_output = float(self.model_wrapper.run_model(norm(v_ego, scales['v_ego_scale']), norm(a_ego, scales['a_ego_scale']), norm(v_lead, scales['v_lead_scale']), norm(x_lead, scales['x_lead_scale']), norm(a_lead, scales['a_lead_scale'])))
-    return clip((model_output - 0.50) * 2.3, -1.0, 1.0)
+    #model_output = float(self.model_wrapper.run_model(norm(v_ego, scales['v_ego_scale']), norm(a_ego, scales['a_ego_scale']), norm(v_lead, scales['v_lead_scale']), norm(x_lead, scales['x_lead_scale']), norm(a_lead, scales['a_lead_scale'])))
+    #return clip((model_output - 0.50) * 2.3, -1.0, 1.0)
 
-    '''while len(self.past_data) > 40:
+    while len(self.past_data) > seq_len:
       del self.past_data[0]
 
-    if len(self.past_data) == 40:
+    if len(self.past_data) == seq_len:
       model_output = self.model_wrapper.run_model_lstm([i for x in self.past_data for i in x])
-      return clip((model_output - 0.51) * 3.25, -1.0, 1.0)
+      return clip((model_output - 0.50) * 2.0, -1.0, 1.0)
     else:
-      return 0.0'''
+      return None
 
   def reset(self, v_pid):
     """Reset PID controller and change setpoint"""
@@ -119,59 +118,60 @@ class LongControl(object):
     """Update longitudinal control. This updates the state machine and runs a PID loop"""
     # Actuation limits
     df_output = self.df(radar_state, v_ego, a_ego, set_speed)
-    return max(df_output, 0.0), -min(df_output, 0.0)
+    if df_output is not None:
+      return max(df_output, 0.0), -min(df_output, 0.0)
+    else:  # use mpc when no lead
+      gas_max = interp(v_ego, CP.gasMaxBP, CP.gasMaxV)
+      brake_max = interp(v_ego, CP.brakeMaxBP, CP.brakeMaxV)
 
-    '''gas_max = interp(v_ego, CP.gasMaxBP, CP.gasMaxV)
-    brake_max = interp(v_ego, CP.brakeMaxBP, CP.brakeMaxV)
+      # Update state machine
+      output_gb = self.last_output_gb
+      self.long_control_state = long_control_state_trans(active, self.long_control_state, v_ego,
+                                                         v_target_future, self.v_pid, output_gb,
+                                                         brake_pressed, cruise_standstill)
 
-    # Update state machine
-    output_gb = self.last_output_gb
-    self.long_control_state = long_control_state_trans(active, self.long_control_state, v_ego,
-                                                       v_target_future, self.v_pid, output_gb,
-                                                       brake_pressed, cruise_standstill)
+      v_ego_pid = max(v_ego, MIN_CAN_SPEED)  # Without this we get jumps, CAN bus reports 0 when speed < 0.3
 
-    v_ego_pid = max(v_ego, MIN_CAN_SPEED)  # Without this we get jumps, CAN bus reports 0 when speed < 0.3
+      if self.long_control_state == LongCtrlState.off:
+        self.v_pid = v_ego_pid
+        self.pid.reset()
+        output_gb = 0.
 
-    if self.long_control_state == LongCtrlState.off:
-      self.v_pid = v_ego_pid
-      self.pid.reset()
-      output_gb = 0.
+      # tracking objects and driving
+      elif self.long_control_state == LongCtrlState.pid:
+        self.v_pid = v_target
+        self.pid.pos_limit = gas_max
+        self.pid.neg_limit = - brake_max
 
-    # tracking objects and driving
-    elif self.long_control_state == LongCtrlState.pid:
-      self.v_pid = v_target
-      self.pid.pos_limit = gas_max
-      self.pid.neg_limit = - brake_max
+        # Toyota starts braking more when it thinks you want to stop
+        # Freeze the integrator so we don't accelerate to compensate, and don't allow positive acceleration
+        prevent_overshoot = not CP.stoppingControl and v_ego < 1.5 and v_target_future < 0.7
+        deadzone = interp(v_ego_pid, CP.longitudinalTuning.deadzoneBP, CP.longitudinalTuning.deadzoneV)
 
-      # Toyota starts braking more when it thinks you want to stop
-      # Freeze the integrator so we don't accelerate to compensate, and don't allow positive acceleration
-      prevent_overshoot = not CP.stoppingControl and v_ego < 1.5 and v_target_future < 0.7
-      deadzone = interp(v_ego_pid, CP.longitudinalTuning.deadzoneBP, CP.longitudinalTuning.deadzoneV)
+        output_gb = self.pid.update(self.v_pid, v_ego_pid, speed=v_ego_pid, deadzone=deadzone, feedforward=a_target, freeze_integrator=prevent_overshoot)
 
-      output_gb = self.pid.update(self.v_pid, v_ego_pid, speed=v_ego_pid, deadzone=deadzone, feedforward=a_target, freeze_integrator=prevent_overshoot)
+        if prevent_overshoot:
+          output_gb = min(output_gb, 0.0)
 
-      if prevent_overshoot:
-        output_gb = min(output_gb, 0.0)
+      # Intention is to stop, switch to a different brake control until we stop
+      elif self.long_control_state == LongCtrlState.stopping:
+        # Keep applying brakes until the car is stopped
+        if not standstill or output_gb > -BRAKE_STOPPING_TARGET:
+          output_gb -= STOPPING_BRAKE_RATE / RATE
+        output_gb = clip(output_gb, -brake_max, gas_max)
 
-    # Intention is to stop, switch to a different brake control until we stop
-    elif self.long_control_state == LongCtrlState.stopping:
-      # Keep applying brakes until the car is stopped
-      if not standstill or output_gb > -BRAKE_STOPPING_TARGET:
-        output_gb -= STOPPING_BRAKE_RATE / RATE
-      output_gb = clip(output_gb, -brake_max, gas_max)
+        self.v_pid = v_ego
+        self.pid.reset()
 
-      self.v_pid = v_ego
-      self.pid.reset()
+      # Intention is to move again, release brake fast before handing control to PID
+      elif self.long_control_state == LongCtrlState.starting:
+        if output_gb < -0.2:
+          output_gb += STARTING_BRAKE_RATE / RATE
+        self.v_pid = v_ego
+        self.pid.reset()
 
-    # Intention is to move again, release brake fast before handing control to PID
-    elif self.long_control_state == LongCtrlState.starting:
-      if output_gb < -0.2:
-        output_gb += STARTING_BRAKE_RATE / RATE
-      self.v_pid = v_ego
-      self.pid.reset()
+      self.last_output_gb = output_gb
+      final_gas = clip(output_gb, 0., gas_max)
+      final_brake = -clip(output_gb, -brake_max, 0.)
 
-    self.last_output_gb = output_gb
-    final_gas = clip(output_gb, 0., gas_max)
-    final_brake = -clip(output_gb, -brake_max, 0.)
-
-    return final_gas, final_brake'''
+      return final_gas, final_brake
