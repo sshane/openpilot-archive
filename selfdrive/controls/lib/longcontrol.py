@@ -94,9 +94,11 @@ class LongControl(object):
     a_lead = 0.0
     a_rel = 0.0
     seq_len = 60 # shape 20, 3
+    has_lead = False
     if radar_state is not None:
       lead_1 = radar_state.leadOne
       if lead_1 is not None and lead_1.status:
+        has_lead = True
         #x_lead, v_lead, a_lead, a_rel = (lead_1.dRel, lead_1.vLead, lead_1.aLeadK, lead_1.aRel) if lead_1.vLead < set_speed else (x_lead, set_speed, 0.0, 0.0)
         self.past_data.append([interp_fast(v_ego, scales['v_ego_scale']), interp_fast(v_lead, scales['v_lead_scale']), interp_fast(x_lead, scales['x_lead_scale'])])
 
@@ -106,7 +108,7 @@ class LongControl(object):
     while len(self.past_data) > seq_len:
       del self.past_data[0]
 
-    if len(self.past_data) == seq_len:
+    if len(self.past_data) == seq_len and has_lead:
       model_output = self.model_wrapper.run_model_lstm([i for x in self.past_data for i in x])
       with open('/data/df_output', 'a') as f:
         f.write('\n' + str(model_output) + ' ' + str(self.past_data))
