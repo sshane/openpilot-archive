@@ -117,9 +117,9 @@ class LongControl(object):
     """Update longitudinal control. This updates the state machine and runs a PID loop"""
     # Actuation limits
     df_output = self.df(radar_state, v_ego, a_ego, set_speed)
-    with open('/data/df_output', 'a') as f:
-      f.write('\n{}'.format(df_output))
     if df_output is not None:
+      with open('/data/df_output', 'a') as f:
+        f.write('\n' + str(df_output))
       return max(df_output, 0.0), -min(df_output, 0.0)
     else:  # use mpc when no lead
       gas_max = interp(v_ego, CP.gasMaxBP, CP.gasMaxV)
