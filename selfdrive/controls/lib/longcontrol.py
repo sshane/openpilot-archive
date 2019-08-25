@@ -21,13 +21,17 @@ _MAX_SPEED_ERROR_V = [1.5, .8]  # max positive v_pid error VS actual speed; this
 RATE = 100.0
 
 
-def norm(data, min_max=None):
+'''def norm(data, min_max=None):
   if min_max==None:
     d_min = min(data)
     d_max = max(data)
     return [(i - d_min) / (d_max - d_min) for i in data], [d_min, d_max]
   else:
-    return (data - min_max[0]) / (min_max[1] - min_max[0])
+    return (data - min_max[0]) / (min_max[1] - min_max[0])'''
+
+
+def interp_fast(x, min_max):
+  return (x - min_max[0]) / (min_max[1] - min_max[0])
 
 
 def long_control_state_trans(active, long_control_state, v_ego, v_target, v_pid,
@@ -80,9 +84,9 @@ class LongControl(object):
     self.past_data = []
 
   def df(self, radar_state, v_ego, a_ego, set_speed):
-    scales = {'v_ego_scale': [0.0, 39.129379272461],
-              'v_lead_scale': [0.0, 44.459167480469],
-              'x_lead_scale': [0.375, 146.375]}
+    scales = {'v_ego_scale': [0.0, 40.755523681641],
+              'v_lead_scale': [0.0, 44.508262634277],
+              'x_lead_scale': [0.125, 146.375]}
 
     TR = 1.4
     v_lead = set_speed
@@ -94,7 +98,7 @@ class LongControl(object):
       lead_1 = radar_state.leadOne
       if lead_1 is not None and lead_1.status:
         #x_lead, v_lead, a_lead, a_rel = (lead_1.dRel, lead_1.vLead, lead_1.aLeadK, lead_1.aRel) if lead_1.vLead < set_speed else (x_lead, set_speed, 0.0, 0.0)
-        self.past_data.append([norm(v_ego, scales['v_ego_scale']), norm(v_lead, scales['v_lead_scale']), norm(x_lead, scales['x_lead_scale'])])
+        self.past_data.append([interp_fast(v_ego, scales['v_ego_scale']), interp_fast(v_lead, scales['v_lead_scale']), interp_fast(x_lead, scales['x_lead_scale'])])
 
     #model_output = float(self.model_wrapper.run_model(norm(v_ego, scales['v_ego_scale']), norm(a_ego, scales['a_ego_scale']), norm(v_lead, scales['v_lead_scale']), norm(x_lead, scales['x_lead_scale']), norm(a_lead, scales['a_lead_scale'])))
     #return clip((model_output - 0.50) * 2.3, -1.0, 1.0)
