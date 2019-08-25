@@ -88,11 +88,11 @@ class LongControl(object):
               'v_lead_scale': [0.0, 44.508262634277],
               'x_lead_scale': [0.125, 146.375]}
 
-    TR = 1.4
-    v_lead = set_speed
-    x_lead = v_ego * TR
-    a_lead = 0.0
-    a_rel = 0.0
+    #TR = 1.4
+    #v_lead = set_speed
+    #x_lead = v_ego * TR
+    #a_lead = 0.0
+    #a_rel = 0.0
     seq_len = 60 # shape 20, 3
     has_lead = False
     if radar_state is not None:
@@ -100,7 +100,7 @@ class LongControl(object):
       if lead_1 is not None and lead_1.status:
         has_lead = True
         #x_lead, v_lead, a_lead, a_rel = (lead_1.dRel, lead_1.vLead, lead_1.aLeadK, lead_1.aRel) if lead_1.vLead < set_speed else (x_lead, set_speed, 0.0, 0.0)
-        self.past_data.append([interp_fast(v_ego, scales['v_ego_scale']), interp_fast(v_lead, scales['v_lead_scale']), interp_fast(x_lead, scales['x_lead_scale'])])
+        self.past_data.append([interp_fast(v_ego, scales['v_ego_scale']), interp_fast(lead_1.vLead, scales['v_lead_scale']), interp_fast(lead_1.dRel, scales['x_lead_scale'])])
 
     #model_output = float(self.model_wrapper.run_model(norm(v_ego, scales['v_ego_scale']), norm(a_ego, scales['a_ego_scale']), norm(v_lead, scales['v_lead_scale']), norm(x_lead, scales['x_lead_scale']), norm(a_lead, scales['a_lead_scale'])))
     #return clip((model_output - 0.50) * 2.3, -1.0, 1.0)
