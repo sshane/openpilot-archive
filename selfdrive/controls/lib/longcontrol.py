@@ -106,7 +106,7 @@ class LongControl(object):
 
     if len(self.past_data) == seq_len and has_lead:
       model_output = self.model_wrapper.run_model_lstm([i for x in self.past_data for i in x])
-      return clip((model_output - 0.50) * 2.0, -1.0, 1.0)
+      return clip((model_output - 0.50) * 3.0, -1.0, 1.0)
     else:
       return None
 
