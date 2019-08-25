@@ -108,6 +108,8 @@ class LongControl(object):
         f.write('\n' + str(model_output) + ' ' + str(self.past_data))
       return clip((model_output - 0.50) * 3.0, -1.0, 1.0)
     else:
+      with open('/data/noneh', 'a') as f:
+        f.write('none\n')
       return None
 
   def reset(self, v_pid):
