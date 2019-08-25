@@ -87,6 +87,7 @@ extern "C" {
     int size = 60;
     std::vector<float> inputVec;
     for (int i = 0; i < size; i++ ) {
+      std::cout << inputData[i];
       inputVec.push_back(inputData[i]);
     }
 
