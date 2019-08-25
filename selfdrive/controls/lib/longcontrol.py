@@ -93,7 +93,7 @@ class LongControl(object):
     #x_lead = v_ego * TR
     #a_lead = 0.0
     #a_rel = 0.0
-    seq_len = 60 # shape 20, 3
+    seq_len = 20 # shape 20, 3
     has_lead = False
     if radar_state is not None:
       lead_1 = radar_state.leadOne
