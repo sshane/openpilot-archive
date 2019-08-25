@@ -104,6 +104,8 @@ class LongControl(object):
 
     if len(self.past_data) == seq_len:
       model_output = self.model_wrapper.run_model_lstm([i for x in self.past_data for i in x])
+      with open('/data/df_output', 'a') as f:
+        f.write('\n' + str(model_output) + ' ' + str(self.past_data))
       return clip((model_output - 0.50) * 3.0, -1.0, 1.0)
     else:
       return None
@@ -118,8 +120,6 @@ class LongControl(object):
     # Actuation limits
     df_output = self.df(radar_state, v_ego, a_ego, set_speed)
     if df_output is not None:
-      with open('/data/df_output', 'a') as f:
-        f.write('\n' + str(df_output))
       return max(df_output, 0.0), -min(df_output, 0.0)
     else:  # use mpc when no lead
       gas_max = interp(v_ego, CP.gasMaxBP, CP.gasMaxV)
