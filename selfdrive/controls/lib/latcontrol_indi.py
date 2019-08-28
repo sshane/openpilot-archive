@@ -63,7 +63,7 @@ class LatControlINDI(object):
     angle_steers = float(self.model_wrapper.run_model(self.output_steer, angle_steers, driver_torque))
 
     # smooth angle
-    max_samples = 20
+    max_samples = 50
     self.readings.append(angle_steers)
     angle_steers = round(mean(self.readings), 2)
     if len(self.readings) == max_samples:
