@@ -53,10 +53,10 @@ class LatControlINDI(object):
     self.output_steer = 0.
     self.counter = 0
 
-  def update(self, active, v_ego, angle_steers, angle_steers_rate, eps_torque, steer_override, CP, VM, path_plan):
+  def update(self, active, v_ego, angle_steers, angle_steers_rate, eps_torque, steer_override, CP, VM, path_plan, driver_torque):
 
     #virtualZSS
-    angle_steers = float(self.model_wrapper.run_model(self.output_steer, angle_steers, eps_torque))
+    angle_steers = round(float(self.model_wrapper.run_model(self.output_steer, angle_steers, driver_torque)), 2)
 
     # Update Kalman filter
     y = np.matrix([[math.radians(angle_steers)], [math.radians(angle_steers_rate)]])
