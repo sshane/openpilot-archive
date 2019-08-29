@@ -41,7 +41,9 @@ def upload_data():
       os.remove(filepath)
       op_params.put('df_num', df_num + 1)  # increment number of files uploaded so we don't overwrite existing files on server
       return True
-    except:
+    except Exception,e:
+      print(e)
       return False
   else:
+    print('file does not exist')
     return False
