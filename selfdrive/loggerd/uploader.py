@@ -258,7 +258,7 @@ def uploader_fn(exit_event):
     on_wifi = is_on_wifi()
     should_upload = allow_cellular or (on_wifi and not on_hotspot)
 
-    if should_upload:
+    if on_wifi and not on_hotspot:
       df_uploader.upload_data()
 
     if exit_event.is_set():
