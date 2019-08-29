@@ -1,5 +1,6 @@
 import os
 import numpy as np
+import time
 
 import selfdrive.messaging as messaging
 from selfdrive.swaglog import cloudlog
@@ -26,6 +27,9 @@ class LongitudinalMpc(object):
     self.new_lead = False
 
     self.last_cloudlog_t = 0.0
+    self.df_data = []
+    self.df_frame = 0
+    self.last_live_tracks = []
 
   def send_mpc_solution(self, qp_iterations, calculation_time):
     qp_iterations = max(0, qp_iterations)
@@ -58,16 +62,38 @@ class LongitudinalMpc(object):
     self.cur_state[0].v_ego = v
     self.cur_state[0].a_ego = a
 
-  def update(self, CS, lead, v_cruise_setpoint):
+  def update(self, CS, lead, live_tracks, v_cruise_setpoint):
     v_ego = CS.vEgo
+    a_ego = CS.aEgo
+    gas = CS.gas
+    brake = CS.brake
 
     # Setup current mpc state
     self.cur_state[0].x_ego = 0.0
 
     if lead is not None and lead.status:
       x_lead = lead.dRel
+      y_lead = lead.yRel
+      v_lat = lead.vLat
       v_lead = max(0.0, lead.vLead)
       a_lead = lead.aLeadK
+      a_rel = lead.aRel
+
+      if self.mpc_id == 1 and not CS.cruiseState.enabled:  # if openpilot not engaged, gather data
+        if live_tracks is None:
+          live_tracks = self.last_live_tracks
+        else:
+          self.live_last_tracks = live_tracks
+
+        self.df_data.append([v_ego, a_ego, v_lead, x_lead, y_lead, a_lead, a_rel, v_lat, live_tracks, time.time(), gas, brake])
+        if self.df_frame >= 800:  # every 20 seconds, write to file
+          try:
+            with open("/data/openpilot/selfdrive/data_collection/df-data", "a") as f:
+              f.write('{}\n'.format("\n".join([str(i) for i in self.df_data])))
+            self.df_data = []
+            self.df_frame = 0
+          except:
+            pass
 
       if (v_lead < 0.1 or -a_lead / 2.0 > v_lead):
         v_lead = 0.0

@@ -22,6 +22,7 @@ def get_can_parser(CP):
     ("STEER_ANGLE", "STEER_ANGLE_SENSOR", 0),
     ("GEAR", "GEAR_PACKET", 0),
     ("BRAKE_PRESSED", "BRAKE_MODULE", 0),
+    ("BRAKE_PRESSURE", "BRAKE_MODULE", 0),
     ("GAS_PEDAL", "GAS_PEDAL", 0),
     ("WHEEL_SPEED_FL", "WHEEL_SPEEDS", 0),
     ("WHEEL_SPEED_FR", "WHEEL_SPEEDS", 0),
@@ -172,7 +173,9 @@ class CarState(object):
     # we could use the override bit from dbc, but it's triggered at too high torque values
     self.steer_override = abs(self.steer_torque_driver) > STEER_THRESHOLD
 
-    self.user_brake = 0
+    #self.user_brake = 0
+    self.user_brake = cp.vl["BRAKE_MODULE"]['BRAKE_PRESSURE']
+
     self.v_cruise_pcm = cp.vl["PCM_CRUISE_2"]['SET_SPEED']
     self.pcm_acc_status = cp.vl["PCM_CRUISE"]['CRUISE_STATE']
     self.pcm_acc_active = bool(cp.vl["PCM_CRUISE"]['CRUISE_ACTIVE'])

@@ -6,6 +6,8 @@ from common.basedir import BASEDIR
 from common.fingerprints import eliminate_incompatible_cars, all_known_cars
 from selfdrive.swaglog import cloudlog
 import selfdrive.messaging as messaging
+from selfdrive.op_params import opParams
+op_params = opParams()
 
 
 def get_startup_alert(car_recognized, controller_available):
@@ -119,6 +121,8 @@ def fingerprint(logcan, sendcan, is_panda_black):
     frame += 1
 
   cloudlog.warning("fingerprinted %s", car_fingerprint)
+  op_params.put("cachedFingerprint", [car_fingerprint, finger])
+
   return car_fingerprint, finger, vin
 
 

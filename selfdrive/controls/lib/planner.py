@@ -137,6 +137,7 @@ class Planner(object):
 
     lead_1 = sm['radarState'].leadOne
     lead_2 = sm['radarState'].leadTwo
+    live_tracks = sm['liveTracks']
 
     enabled = (long_control_state == LongCtrlState.pid) or (long_control_state == LongCtrlState.stopping)
     following = lead_1.status and lead_1.dRel < 45.0 and lead_1.vLeadK > v_ego and lead_1.aLeadK > 0.0
@@ -199,8 +200,8 @@ class Planner(object):
     self.mpc1.set_cur_state(self.v_acc_start, self.a_acc_start)
     self.mpc2.set_cur_state(self.v_acc_start, self.a_acc_start)
 
-    self.mpc1.update(sm['carState'], lead_1, v_cruise_setpoint)
-    self.mpc2.update(sm['carState'], lead_2, v_cruise_setpoint)
+    self.mpc1.update(sm['carState'], lead_1, live_tracks, v_cruise_setpoint)
+    self.mpc2.update(sm['carState'], lead_2, live_tracks, v_cruise_setpoint)
 
     self.choose_solution(v_cruise_setpoint, enabled)
 
