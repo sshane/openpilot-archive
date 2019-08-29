@@ -17,7 +17,6 @@ class LatControlPID(object):
     self.model_wrapper = virtualZSS_wrapper.get_wrapper()
     self.model_wrapper.init_model()
     self.output_steer = 0
-    self.readings = []
 
   def reset(self):
     self.pid.reset()
