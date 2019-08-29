@@ -2,6 +2,8 @@ from selfdrive.controls.lib.pid import PIController
 from selfdrive.controls.lib.drive_helpers import get_steer_max
 from cereal import car
 from cereal import log
+from selfdrive.virtualZSS import virtualZSS_wrapper
+#from selfdrive.kegman_conf import kegman_conf
 
 
 class LatControlPID(object):
@@ -11,10 +13,19 @@ class LatControlPID(object):
                             k_f=CP.lateralTuning.pid.kf, pos_limit=1.0)
     self.angle_steers_des = 0.
 
+    # virtualZSS
+    self.model_wrapper = virtualZSS_wrapper.get_wrapper()
+    self.model_wrapper.init_model()
+    self.output_steer = 0
+    self.readings = []
+
   def reset(self):
     self.pid.reset()
 
   def update(self, active, v_ego, angle_steers, angle_steers_rate, eps_torque, steer_override, CP, VM, path_plan, driver_torque):
+    # virtualZSS
+    angle_steers = float(self.model_wrapper.run_model(self.output_steer, angle_steers, driver_torque))
+
     pid_log = log.ControlsState.LateralPIDState.new_message()
     pid_log.steerAngle = float(angle_steers)
     pid_log.steerRate = float(angle_steers_rate)
