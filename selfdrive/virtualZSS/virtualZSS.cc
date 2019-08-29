@@ -65,10 +65,10 @@ zdl::DlSystem::ITensor* executeNetwork(std::unique_ptr<zdl::SNPE::SNPE>& snpe,
 }
 
 extern "C" {
-  float run_model(float t_output, float shitty_angle){
+  float run_model(float shitty_angle, float t_output){
     std::vector<float> inputVec;
-    inputVec.push_back(t_output);
     inputVec.push_back(shitty_angle);
+    inputVec.push_back(t_output);
 
     std::unique_ptr<zdl::DlSystem::ITensor> inputTensor = loadInputTensor(snpe, inputVec);
     zdl::DlSystem::ITensor* oTensor = executeNetwork(snpe, inputTensor);

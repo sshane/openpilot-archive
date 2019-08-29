@@ -11,9 +11,9 @@ for i in range(30):
   0.01075646532123655)
 print(time.time() - startl)'''
 for i in range(1000):
-  model_output = virtualZSS_model.run_model_lstm([-0.006666666666666667,9.399999618530273])
+  model_output = virtualZSS_model.run_model_lstm([9.399999618530273, -0.006666666666666667,])
   print(model_output) #10.320219039916992
-  model_output = virtualZSS_model.run_model_lstm([-0.12266666666666666,1.899999976158142])
+  model_output = virtualZSS_model.run_model_lstm([1.899999976158142, -0.12266666666666666,])
   print(model_output) #2.2325875759124756,
 '''model_output = virtualZSS_model.run_model(.3, 0.0, .3, .5)
 print(model_output)
