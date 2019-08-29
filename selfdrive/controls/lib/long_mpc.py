@@ -79,7 +79,7 @@ class LongitudinalMpc(object):
       a_lead = lead.aLeadK
       a_rel = lead.aRel
 
-      if self.mpc_id == 1 and not CS.cruiseState.enabled:  # if openpilot not engaged, gather data
+      if self.mpc_id == 1 and not CS.cruiseState.enabled and CS.gearShifter == 'drive':  # if openpilot not engaged and in drive, gather data
         if live_tracks is None:
           live_tracks = self.last_live_tracks
         else:
@@ -94,6 +94,7 @@ class LongitudinalMpc(object):
             self.df_frame = 0
           except:
             pass
+        self.df_frame += 1
 
       if (v_lead < 0.1 or -a_lead / 2.0 > v_lead):
         v_lead = 0.0
