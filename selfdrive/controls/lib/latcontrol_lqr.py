@@ -43,8 +43,6 @@ class LatControlLQR(object):
 
     if len(self.past_data) == self.seq_len:
       angle_steers = float(self.model_wrapper.run_model_time_series([i for x in self.past_data for i in x]))
-    else:  # if we haven't gathered past 20 timesteps yet, use regular model
-      angle_steers = float(self.model_wrapper.run_model(angle_steers, self.output_steer))
 
     lqr_log = log.ControlsState.LateralLQRState.new_message()
 

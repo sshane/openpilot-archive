@@ -31,8 +31,6 @@ class LatControlPID(object):
 
     if len(self.past_data) == self.seq_len:
       angle_steers = float(self.model_wrapper.run_model_time_series([i for x in self.past_data for i in x]))
-    else:  # if we haven't gathered past 20 timesteps yet, use regular model
-      angle_steers = float(self.model_wrapper.run_model(angle_steers, self.output_steer))
 
     pid_log = log.ControlsState.LateralPIDState.new_message()
     pid_log.steerAngle = float(angle_steers)
