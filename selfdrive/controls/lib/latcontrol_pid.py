@@ -17,13 +17,22 @@ class LatControlPID(object):
     self.model_wrapper = virtualZSS_wrapper.get_wrapper()
     self.model_wrapper.init_model()
     self.output_steer = 0
+    self.past_data = []
+    self.seq_len = 20
 
   def reset(self):
     self.pid.reset()
 
   def update(self, active, v_ego, angle_steers, angle_steers_rate, eps_torque, steer_override, CP, VM, path_plan, driver_torque):
     # virtualZSS
-    angle_steers = float(self.model_wrapper.run_model(angle_steers, self.output_steer))
+    self.past_data.append([angle_steers, self.output_steer])
+    while len(self.past_data) > self.seq_len:
+      del self.past_data[0]
+
+    if len(self.past_data) == self.seq_len:
+      angle_steers = float(self.model_wrapper.run_model_time_series([i for x in self.past_data for i in x]))
+    else:  # if we haven't gathered past 20 timesteps yet, use regular model
+      angle_steers = float(self.model_wrapper.run_model(angle_steers, self.output_steer))
 
     pid_log = log.ControlsState.LateralPIDState.new_message()
     pid_log.steerAngle = float(angle_steers)
