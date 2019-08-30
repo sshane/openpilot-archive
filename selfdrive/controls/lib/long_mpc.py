@@ -29,7 +29,7 @@ class LongitudinalMpc(object):
     self.last_cloudlog_t = 0.0
     self.df_data = []
     self.df_frame = 0
-    self.last_live_tracks = []
+    #self.last_live_tracks = []
 
   def send_mpc_solution(self, qp_iterations, calculation_time):
     qp_iterations = max(0, qp_iterations)
@@ -62,7 +62,7 @@ class LongitudinalMpc(object):
     self.cur_state[0].v_ego = v
     self.cur_state[0].a_ego = a
 
-  def update(self, CS, lead, live_tracks, v_cruise_setpoint):
+  def update(self, CS, lead, track_data, v_cruise_setpoint):
     v_ego = CS.vEgo
     a_ego = CS.aEgo
     gas = CS.gas
@@ -80,12 +80,7 @@ class LongitudinalMpc(object):
       a_rel = lead.aRel
 
       if self.mpc_id == 1 and not CS.cruiseState.enabled and CS.gearShifter == 'drive':  # if openpilot not engaged and in drive, gather data
-        '''if live_tracks is None:
-          live_tracks = self.last_live_tracks
-        else:
-          self.live_last_tracks = live_tracks'''
-
-        self.df_data.append([v_ego, a_ego, v_lead, x_lead, y_lead, a_lead, a_rel, v_lat, time.time(), gas, brake])
+        self.df_data.append({'v_ego': v_ego, 'a_ego': a_ego, 'v_lead': v_lead, 'x_lead': x_lead, 'y_lead': y_lead, 'a_lead': a_lead, 'a_rel': a_rel, 'v_lat': v_lat, 'live_tracks': track_data, 'time': time.time(), 'gas': gas, 'brake': brake})
         if self.df_frame >= 800:  # every 20 seconds, write to file
           try:
             with open("/data/openpilot/selfdrive/data_collection/df-data", "a") as f:
@@ -93,7 +88,8 @@ class LongitudinalMpc(object):
             self.df_data = []
             self.df_frame = 0
           except:
-            pass
+            with open('/data/write_errors', 'a') as f:
+              f.write('write error\n')
         self.df_frame += 1
 
       if (v_lead < 0.1 or -a_lead / 2.0 > v_lead):

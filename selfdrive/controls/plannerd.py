@@ -31,7 +31,7 @@ def plannerd_thread():
 
   VM = VehicleModel(CP)
 
-  sm = messaging.SubMaster(['carState', 'controlsState', 'radarState', 'model', 'liveParameters', 'liveTracks'])
+  sm = messaging.SubMaster(['carState', 'controlsState', 'radarState', 'model', 'liveParameters'])
 
   sm['liveParameters'].valid = True
   sm['liveParameters'].sensorValid = True

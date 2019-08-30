@@ -76,6 +76,7 @@ class Planner(object):
 
     self.plan = messaging.pub_sock(service_list['plan'].port)
     self.live_longitudinal_mpc = messaging.pub_sock(service_list['liveLongitudinalMpc'].port)
+    self.liveTracks = messaging.sub_sock(service_list['liveTracks'].port)  # add gyro
 
     self.mpc1 = LongitudinalMpc(1, self.live_longitudinal_mpc)
     self.mpc2 = LongitudinalMpc(2, self.live_longitudinal_mpc)
@@ -97,6 +98,7 @@ class Planner(object):
     self.path_x = np.arange(192)
 
     self.params = Params()
+    self.last_track_data = None
 
   def choose_solution(self, v_cruise_setpoint, enabled):
     if enabled:
@@ -137,7 +139,16 @@ class Planner(object):
 
     lead_1 = sm['radarState'].leadOne
     lead_2 = sm['radarState'].leadTwo
-    live_tracks = sm['liveTracks']
+
+    tracks = messaging.recv_sock(self.liveTracks)
+    if tracks is not None:
+      track_data = {'tracks': [], 'live': True}  # true tells us it's live data
+      for track in tracks.liveTracks:
+        track_data['tracks'].append({'trackID': track.trackId, 'yRel': track.yRel, 'vRel': track.vRel, 'aRel': track.aRel, 'stationary': track.stationary, 'oncoming': track.oncoming, 'status': track.status})
+      self.last_track_data = track_data
+    else:  # live track data not available, use last tracks
+      track_data = self.last_track_data
+      track_data['live'] = False  # false tells us it's old data
 
     enabled = (long_control_state == LongCtrlState.pid) or (long_control_state == LongCtrlState.stopping)
     following = lead_1.status and lead_1.dRel < 45.0 and lead_1.vLeadK > v_ego and lead_1.aLeadK > 0.0
@@ -200,8 +211,8 @@ class Planner(object):
     self.mpc1.set_cur_state(self.v_acc_start, self.a_acc_start)
     self.mpc2.set_cur_state(self.v_acc_start, self.a_acc_start)
 
-    self.mpc1.update(sm['carState'], lead_1, live_tracks, v_cruise_setpoint)
-    self.mpc2.update(sm['carState'], lead_2, live_tracks, v_cruise_setpoint)
+    self.mpc1.update(sm['carState'], lead_1, track_data, v_cruise_setpoint)
+    self.mpc2.update(sm['carState'], lead_2, track_data, v_cruise_setpoint)
 
     self.choose_solution(v_cruise_setpoint, enabled)
 
