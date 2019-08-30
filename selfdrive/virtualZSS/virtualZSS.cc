@@ -20,7 +20,7 @@ zdl::DlSystem::Runtime_t checkRuntime()
 
 void initializeSNPE(zdl::DlSystem::Runtime_t runtime) {
   std::unique_ptr<zdl::DlContainer::IDlContainer> container;
-  container = zdl::DlContainer::IDlContainer::open("/data/openpilot/selfdrive/virtualZSS/virtualZSSv1.dlc");
+  container = zdl::DlContainer::IDlContainer::open("/data/openpilot/selfdrive/virtualZSS/virtualZSS-time-series.dlc");
   //printf("loaded model\n");
   int counter = 0;
   zdl::SNPE::SNPEBuilder snpeBuilder(container.get());
@@ -80,8 +80,8 @@ extern "C" {
     initializeSNPE(runt);
   }
 
-  float run_model_lstm(float inputData[4]){
-    int size = 4;
+  float run_model_time_series(float inputData[40]){
+    int size = 40;
     std::vector<float> inputVec;
     for (int i = 0; i < size; i++ ) {
       inputVec.push_back(inputData[i]);
