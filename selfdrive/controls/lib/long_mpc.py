@@ -80,12 +80,12 @@ class LongitudinalMpc(object):
       a_rel = lead.aRel
 
       if self.mpc_id == 1 and not CS.cruiseState.enabled and CS.gearShifter == 'drive':  # if openpilot not engaged and in drive, gather data
-        if live_tracks is None:
+        '''if live_tracks is None:
           live_tracks = self.last_live_tracks
         else:
-          self.live_last_tracks = live_tracks
+          self.live_last_tracks = live_tracks'''
 
-        self.df_data.append([v_ego, a_ego, v_lead, x_lead, y_lead, a_lead, a_rel, v_lat, live_tracks, time.time(), gas, brake])
+        self.df_data.append([v_ego, a_ego, v_lead, x_lead, y_lead, a_lead, a_rel, v_lat, time.time(), gas, brake])
         if self.df_frame >= 800:  # every 20 seconds, write to file
           try:
             with open("/data/openpilot/selfdrive/data_collection/df-data", "a") as f:
