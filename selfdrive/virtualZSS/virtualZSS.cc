@@ -20,7 +20,7 @@ zdl::DlSystem::Runtime_t checkRuntime()
 
 void initializeSNPE(zdl::DlSystem::Runtime_t runtime) {
   std::unique_ptr<zdl::DlContainer::IDlContainer> container;
-  container = zdl::DlContainer::IDlContainer::open("/data/openpilot/selfdrive/virtualZSS/zorrosteering.dlc");
+  container = zdl::DlContainer::IDlContainer::open("/data/openpilot/selfdrive/virtualZSS/virtualZSSv1.dlc");
   //printf("loaded model\n");
   int counter = 0;
   zdl::SNPE::SNPEBuilder snpeBuilder(container.get());
@@ -65,11 +65,10 @@ zdl::DlSystem::ITensor* executeNetwork(std::unique_ptr<zdl::SNPE::SNPE>& snpe,
 }
 
 extern "C" {
-  float run_model(float t_output, float shitty_angle, float driver_torque){
+  float run_model(float shitty_angle, float t_output){
     std::vector<float> inputVec;
-    inputVec.push_back(t_output);
     inputVec.push_back(shitty_angle);
-    inputVec.push_back(driver_torque);
+    inputVec.push_back(t_output);
 
     std::unique_ptr<zdl::DlSystem::ITensor> inputTensor = loadInputTensor(snpe, inputVec);
     zdl::DlSystem::ITensor* oTensor = executeNetwork(snpe, inputTensor);

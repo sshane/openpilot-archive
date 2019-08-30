@@ -92,10 +92,10 @@ class CarInterface(object):
       stop_and_go = True if (candidate in CAR.RAV4H) else False
       ret.safetyParam = 73
       ret.wheelbase = 2.65
-      ret.steerRatio = 16.88   # 14.5 is spec end-to-end
+      ret.steerRatio = 14.5   # 14.5 is spec end-to-end
       tire_stiffness_factor = 0.5533
       ret.mass = 3650. * CV.LB_TO_KG + STD_CARGO_KG  # mean between normal and hybrid
-
+      
       ret.lateralTuning.init('indi')
       ret.lateralTuning.indi.innerLoopGain = 4.0
       ret.lateralTuning.indi.outerLoopGain = 3.0

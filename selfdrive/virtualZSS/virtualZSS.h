@@ -14,9 +14,9 @@
 #include <array>
 
 extern "C"{
-  float run_model(float t_output, float shitty_angle, float driver_torque);
+  float run_model(float shitty_angle, float t_output);
   void init_model();
-  float run_model_lstm(float inputData[4]);
+  float run_model_lstm(float inputData[2]);
 }
 
 struct testvar_t {

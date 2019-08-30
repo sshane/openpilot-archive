@@ -2,7 +2,7 @@ import numpy as np
 from selfdrive.controls.lib.drive_helpers import get_steer_max
 from common.numpy_fast import clip
 from cereal import log
-
+from selfdrive.virtualZSS import virtualZSS_wrapper
 
 class LatControlLQR(object):
   def __init__(self, CP, rate=100):
@@ -22,6 +22,11 @@ class LatControlLQR(object):
     self.i_unwind_rate = 0.3 / rate
     self.i_rate = 1.0 / rate
 
+    #virtualZSS
+    self.model_wrapper = virtualZSS_wrapper.get_wrapper()
+    self.model_wrapper.init_model()
+    self.output_steer = 0
+
     self.reset()
 
   def reset(self):
@@ -29,6 +34,8 @@ class LatControlLQR(object):
     self.output_steer = 0.0
 
   def update(self, active, v_ego, angle_steers, angle_steers_rate, eps_torque, steer_override, CP, VM, path_plan, driver_torque):
+    #virtualZSS
+    angle_steers = float(self.model_wrapper.run_model(angle_steers, self.output_steer))
     lqr_log = log.ControlsState.LateralLQRState.new_message()
 
     torque_scale = (0.45 + v_ego / 60.0)**2  # Scale actuator model with speed

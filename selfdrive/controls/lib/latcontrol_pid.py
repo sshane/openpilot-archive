@@ -23,7 +23,7 @@ class LatControlPID(object):
 
   def update(self, active, v_ego, angle_steers, angle_steers_rate, eps_torque, steer_override, CP, VM, path_plan, driver_torque):
     # virtualZSS
-    angle_steers = float(self.model_wrapper.run_model(self.output_steer, angle_steers, driver_torque))
+    angle_steers = float(self.model_wrapper.run_model(angle_steers, self.output_steer))
 
     pid_log = log.ControlsState.LateralPIDState.new_message()
     pid_log.steerAngle = float(angle_steers)

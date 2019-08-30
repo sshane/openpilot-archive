@@ -10,9 +10,9 @@ def get_wrapper():  # initialize df model and process angle predictions
 
     ffi = FFI()
     ffi.cdef("""
-    float run_model(float t_output, float shitty_angle, float driver_torque);
+    float run_model(float shitty_angle, float t_output);
     void init_model();
-    float run_model_lstm(float inputData[4]);
+    float run_model_lstm(float inputData[2]);
     """)
 
     return ffi.dlopen(libmpc_fn)
