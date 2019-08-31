@@ -98,7 +98,7 @@ class Planner(object):
     self.path_x = np.arange(192)
 
     self.params = Params()
-    self.last_track_data = None
+    self.last_track_data = {}
 
   def choose_solution(self, v_cruise_setpoint, enabled):
     if enabled:
