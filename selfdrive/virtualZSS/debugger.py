@@ -2,7 +2,7 @@ import selfdrive.messaging as messaging
 from selfdrive.services import service_list
 import zmq
 import sys
-import time
+#import time
 
 context = zmq.Context()
 poller = zmq.Poller()

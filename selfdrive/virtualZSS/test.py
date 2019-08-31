@@ -1,4 +1,4 @@
-import time
+#import time
 from selfdrive.virtualZSS import virtualZSS_wrapper
 virtualZSS_model = virtualZSS_wrapper.get_wrapper()
 virtualZSS_model.init_model()
