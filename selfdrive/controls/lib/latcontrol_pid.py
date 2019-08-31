@@ -1,5 +1,5 @@
 from selfdrive.controls.lib.pid import PIController
-from numpy import interp
+from common.numpy_fast import interp
 from selfdrive.controls.lib.drive_helpers import get_steer_max
 from cereal import car
 from cereal import log
