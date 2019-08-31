@@ -211,8 +211,8 @@ class Planner(object):
     self.mpc1.set_cur_state(self.v_acc_start, self.a_acc_start)
     self.mpc2.set_cur_state(self.v_acc_start, self.a_acc_start)
 
-    self.mpc1.update(sm['carState'], lead_1, track_data, v_cruise_setpoint)
-    self.mpc2.update(sm['carState'], lead_2, track_data, v_cruise_setpoint)
+    self.mpc1.update(sm['carState'], lead_1, track_data, sm['controlsState'], v_cruise_setpoint)
+    self.mpc2.update(sm['carState'], lead_2, track_data, sm['controlsState'], v_cruise_setpoint)
 
     self.choose_solution(v_cruise_setpoint, enabled)
 
