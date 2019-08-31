@@ -144,7 +144,7 @@ class Planner(object):
     if tracks is not None:
       track_data = {'tracks': [], 'live': True}  # true tells us it's live data
       for track in tracks.liveTracks:
-        track_data['tracks'].append({'trackID': track.trackId, 'yRel': track.yRel, 'vRel': track.vRel, 'aRel': track.aRel, 'stationary': track.stationary, 'oncoming': track.oncoming, 'status': track.status})
+        track_data['tracks'].append({'trackID': track.trackId, 'yRel': track.yRel, 'dRel': track.dRel, 'vRel': track.vRel, 'aRel': track.aRel, 'stationary': track.stationary, 'oncoming': track.oncoming, 'status': track.status})
       self.last_track_data = track_data
     else:  # live track data not available, use last tracks
       track_data = self.last_track_data
