@@ -83,6 +83,18 @@ extern "C" {
     initializeSNPE(runt);
   }
 
+  float run_model_live_tracks(float inputData[66]){
+    int size = 66;
+    std::vector<float> inputVec;
+    for (int i = 0; i < size; i++ ) {
+      inputVec.push_back(inputData[i]);
+    }
+
+    std::unique_ptr<zdl::DlSystem::ITensor> inputTensor = loadInputTensor(snpe, inputVec);
+    zdl::DlSystem::ITensor* oTensor = executeNetwork(snpe, inputTensor);
+    return returnOutput(oTensor);
+    }
+
   float run_model_lstm(float inputData[60]){
     int size = 60;
     std::vector<float> inputVec;
@@ -94,6 +106,7 @@ extern "C" {
     zdl::DlSystem::ITensor* oTensor = executeNetwork(snpe, inputTensor);
     return returnOutput(oTensor);
   }
+
 
 int main(){
   std::cout << "hello";
