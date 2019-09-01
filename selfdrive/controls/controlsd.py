@@ -31,6 +31,7 @@ from selfdrive.locationd.calibration_helpers import Calibration, Filter
 ThermalStatus = log.ThermalData.ThermalStatus
 State = log.ControlsState.OpenpilotState
 last_radar_state = None
+last_track_data = []
 
 
 def isActive(state):
@@ -220,8 +221,9 @@ def state_transition(frame, CS, CP, state, events, soft_disable_timer, v_cruise_
 
 
 def state_control(frame, rcv_frame, plan, path_plan, radar_state, CS, CP, state, events, v_cruise_kph, v_cruise_kph_last,
-                  AM, rk, driver_status, LaC, LoC, VM, read_only, is_metric, cal_perc):
+                  AM, rk, driver_status, LaC, LoC, VM, read_only, is_metric, cal_perc, liveTracks):
   """Given the state, this function returns an actuators packet"""
+  global last_track_data
 
   actuators = car.CarControl.Actuators.new_message()
 
@@ -263,9 +265,18 @@ def state_control(frame, rcv_frame, plan, path_plan, radar_state, CS, CP, state,
   a_acc_sol = plan.aStart + (dt / LON_MPC_STEP) * (plan.aTarget - plan.aStart)
   v_acc_sol = plan.vStart + dt * (a_acc_sol + plan.aStart) / 2.0
 
+  tracks = messaging.recv_sock(liveTracks)
+  if tracks is not None:
+    track_data = []
+    for track in tracks.liveTracks:
+      track_data.append([track.yRel, track.dRel, track.vRel])
+    last_track_data = track_data
+  else:  # live track data not available, use last tracks
+    track_data = last_track_data
+
   # Gas/Brake PID loop
   actuators.gas, actuators.brake = LoC.update(active, CS.vEgo, CS.aEgo, CS.cruiseState.speed, radar_state, CS.brakePressed, CS.standstill, CS.cruiseState.standstill,
-                                              v_cruise_kph, v_acc_sol, plan.vTargetFuture, a_acc_sol, CP)
+                                              v_cruise_kph, v_acc_sol, plan.vTargetFuture, a_acc_sol, CP, track_data, CS.steeringAngle)
   # Steering PID loop and lateral MPC
   actuators.steer, actuators.steerAngle, lac_log = LaC.update(active, CS.vEgo, CS.steeringAngle, CS.steeringRate, CS.steeringTorqueEps, CS.steeringPressed, CP, VM, path_plan)
 
@@ -442,6 +453,7 @@ def controlsd_thread(gctx=None):
 
   sm = messaging.SubMaster(['thermal', 'health', 'liveCalibration', 'driverMonitoring', 'plan', 'pathPlan', 'radarState'])
   logcan = messaging.sub_sock(service_list['can'].port)
+  liveTracks = messaging.sub_sock(service_list['liveTracks'].port)
 
   # wait for health and CAN packets
   hw_type = messaging.recv_one(sm.sock['health']).health.hwType
@@ -550,7 +562,7 @@ def controlsd_thread(gctx=None):
     # Compute actuators (runs PID loops and lateral MPC)
     actuators, v_cruise_kph, driver_status, v_acc, a_acc, lac_log = \
       state_control(sm.frame, sm.rcv_frame, sm['plan'], sm['pathPlan'], last_radar_state, CS, CP, state, events, v_cruise_kph, v_cruise_kph_last, AM, rk,
-                    driver_status, LaC, LoC, VM, read_only, is_metric, cal_perc)
+                    driver_status, LaC, LoC, VM, read_only, is_metric, cal_perc, liveTracks)
 
     prof.checkpoint("State Control")
 

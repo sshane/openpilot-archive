@@ -34,6 +34,13 @@ def interp_fast(x, min_max):
   return (x - min_max[0]) / (min_max[1] - min_max[0])
 
 
+def pad_tracks(tracks, max_tracks):
+  to_add = max_tracks - len(tracks)
+  to_add_left = to_add - (to_add // 2)
+  to_add_right = to_add - to_add_left
+  to_pad = [[0, 0, 0, 0]]
+  return (to_pad * to_add_left) + tracks + (to_pad * to_add_right)
+
 def long_control_state_trans(active, long_control_state, v_ego, v_target, v_pid,
                              output_gb, brake_pressed, cruise_standstill):
   """Update longitudinal control state machine"""
@@ -83,6 +90,31 @@ class LongControl(object):
     self.model_wrapper.init_model()
     self.past_data = []
 
+  def df_live_tracks(self, v_ego, track_data, steering_angle):
+    scales = {'dRel': [1.1200000047683716, 196.60000610351562],
+              'steer_angle': [-564.0, 588.2000122070312],
+              'vRel': [-51.20000076293945, 26.75],
+              'v_ego': [-0.11515821516513824, 35.73124313354492],
+              'yRel': [-15.0, 15.0],
+              'max_tracks': 16}
+
+    tracks_normalized = [[interp_fast(track[0], scales['yRel']), interp_fast(track[1], scales['dRel']),  # normalize track data
+                          interp_fast(track[2], scales['vRel']), 1.0] for track in track_data]  # 1 means it's a real track, not padded
+    tracks_sorted = sorted(tracks_normalized, key=lambda track: track[0])  # sort tracks by yRel
+    padded_tracks = pad_tracks(tracks_sorted, scales['max_tracks'])  # pad tracks, keeping data in the center, sorted by yRel
+
+    flat_tracks = [i for x in padded_tracks for i in x]  # flatten track data for model
+    v_ego = interp_fast(v_ego, scales['v_ego'])
+    steering_angle = interp_fast(steering_angle, scales['steer_angle'])
+
+    final_input = [v_ego, steering_angle] + flat_tracks
+
+
+    model_output = float(self.model_wrapper.run_model_live_tracks(final_input))  # right now THIS WILL NOT BRAKE
+    return clip(model_output, 0.0, 1.0)
+
+
+
   def df(self, radar_state, v_ego, a_ego, set_speed):
     scales = {'v_ego_scale': [0.0, 40.755523681641],
               'v_lead_scale': [0.0, 44.508262634277],
@@ -123,12 +155,13 @@ class LongControl(object):
     self.pid.reset()
     self.v_pid = v_pid
 
-  def update(self, active, v_ego, a_ego, set_speed, radar_state, brake_pressed, standstill, cruise_standstill, v_cruise, v_target, v_target_future, a_target, CP):
+  def update(self, active, v_ego, a_ego, set_speed, radar_state, brake_pressed, standstill, cruise_standstill, v_cruise, v_target, v_target_future, a_target, CP, track_data, steering_angle):
     """Update longitudinal control. This updates the state machine and runs a PID loop"""
     # Actuation limits
-    df_output = self.df(radar_state, v_ego, a_ego, set_speed)
+    df_output = self.df_live_tracks(v_ego, track_data, steering_angle)
+    #df_output = self.df(radar_state, v_ego, a_ego, set_speed)
     if df_output is not None:
-      return max(df_output, 0.0), -min(df_output, 0.0)
+      return df_output, 0.0
     else:  # use mpc when no lead
       gas_max = interp(v_ego, CP.gasMaxBP, CP.gasMaxV)
       brake_max = interp(v_ego, CP.brakeMaxBP, CP.brakeMaxV)
