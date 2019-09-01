@@ -64,7 +64,6 @@ class LongitudinalMpc(object):
 
   def update(self, CS, lead, track_data, controlsState, v_cruise_setpoint):
     v_ego = CS.vEgo
-    a_ego = CS.aEgo
     gas = CS.gas
     brake = CS.brake
     steer_angle = CS.steeringAngle
@@ -83,7 +82,7 @@ class LongitudinalMpc(object):
       a_rel = lead.aRel
 
       if self.mpc_id == 1 and not CS.cruiseState.enabled and CS.gearShifter == 'drive':  # if openpilot not engaged and in drive, gather data
-        self.df_data.append({'v_ego': v_ego, 'a_ego': a_ego, 'v_lead': v_lead, 'status': lead.status, 'x_lead': x_lead, 'y_lead': y_lead, 'a_lead': a_lead, 'a_rel': a_rel, 'v_lat': v_lat, 'steer_angle': steer_angle, 'steer_rate': steer_rate, 'path_curvature': path_curvature, 'live_tracks': track_data, 'time': time.time(), 'gas': gas, 'brake': brake})
+        self.df_data.append({'v_ego': v_ego, 'a_ego': self.cur_state[0].a_ego, 'v_lead': v_lead, 'status': lead.status, 'x_lead': x_lead, 'y_lead': y_lead, 'a_lead': a_lead, 'a_rel': a_rel, 'v_lat': v_lat, 'steer_angle': steer_angle, 'steer_rate': steer_rate, 'path_curvature': path_curvature, 'live_tracks': track_data, 'time': time.time(), 'gas': gas, 'brake': brake})
         if self.df_frame >= 800:  # every 20 seconds, write to file
           try:
             with open("/data/openpilot/selfdrive/data_collection/df-data", "a") as f:
