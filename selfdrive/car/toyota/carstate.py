@@ -122,6 +122,7 @@ class CarState(object):
     self.brake_pressed = cp.vl["BRAKE_MODULE"]['BRAKE_PRESSED']
     if self.CP.enableGasInterceptor:
       self.pedal_gas = (cp.vl["GAS_SENSOR"]['INTERCEPTOR_GAS'] + cp.vl["GAS_SENSOR"]['INTERCEPTOR_GAS2']) / 2.
+      self.gas_sensor = cp.vl["GAS_PEDAL"]['GAS_PEDAL']  # useful mapping pedal_gas to 0 to 1, as it's more accurate
     else:
       self.pedal_gas = cp.vl["GAS_PEDAL"]['GAS_PEDAL']
     self.car_gas = self.pedal_gas

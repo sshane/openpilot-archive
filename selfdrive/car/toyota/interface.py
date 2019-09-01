@@ -314,6 +314,7 @@ class CarInterface(object):
 
     # gas pedal
     ret.gas = self.CS.car_gas
+    ret.gasSensor = self.CS.gas_sensor
     if self.CP.enableGasInterceptor:
     # use interceptor values to disengage on pedal press
       ret.gasPressed = self.CS.pedal_gas > 15

@@ -66,6 +66,7 @@ class LongitudinalMpc(object):
     v_ego = CS.vEgo
     a_ego = CS.aEgo
     gas = CS.gas
+    car_gas = CS.gasSensor
     brake = CS.brake
     steer_angle = CS.steeringAngle
     steer_rate = CS.steeringRate
@@ -96,7 +97,7 @@ class LongitudinalMpc(object):
         {'v_ego': v_ego, 'a_ego': a_ego, 'v_lead': v_lead, 'status': lead_status, 'x_lead': x_lead,
          'y_lead': y_lead, 'a_lead': a_lead, 'a_rel': a_rel, 'v_lat': v_lat, 'steer_angle': steer_angle,
          'steer_rate': steer_rate, 'path_curvature': path_curvature, 'live_tracks': track_data, 'time': time.time(),
-         'gas': gas, 'brake': brake})
+         'gas': gas, 'brake': brake, 'car_gas': car_gas})
       if self.df_frame >= 800:  # every 20 seconds, write to file
         try:
           with open("/data/openpilot/selfdrive/data_collection/df-data", "a") as f:
