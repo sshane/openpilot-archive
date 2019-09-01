@@ -80,19 +80,37 @@ class LongitudinalMpc(object):
       v_lead = max(0.0, lead.vLead)
       a_lead = lead.aLeadK
       a_rel = lead.aRel
+      lead_status = lead.status
+    else:
+      x_lead = 0.0
+      y_lead = 0.0
+      v_lat = 0.0
+      v_lead = 0.0
+      a_lead = 0.0
+      a_rel = 0.0
+      lead_status = False
 
-      if self.mpc_id == 1 and not CS.cruiseState.enabled and CS.gearShifter == 'drive':  # if openpilot not engaged and in drive, gather data
-        self.df_data.append({'v_ego': v_ego, 'a_ego': self.cur_state[0].a_ego, 'v_lead': v_lead, 'status': lead.status, 'x_lead': x_lead, 'y_lead': y_lead, 'a_lead': a_lead, 'a_rel': a_rel, 'v_lat': v_lat, 'steer_angle': steer_angle, 'steer_rate': steer_rate, 'path_curvature': path_curvature, 'live_tracks': track_data, 'time': time.time(), 'gas': gas, 'brake': brake})
-        if self.df_frame >= 800:  # every 20 seconds, write to file
-          try:
-            with open("/data/openpilot/selfdrive/data_collection/df-data", "a") as f:
-              f.write('{}\n'.format("\n".join([str(i) for i in self.df_data])))
-            self.df_data = []
-            self.df_frame = 0
-          except:
-            with open('/data/write_errors', 'a') as f:
-              f.write('write error\n')
-        self.df_frame += 1
+    if self.mpc_id == 1 and not CS.cruiseState.enabled and CS.gearShifter == 'drive':  # if openpilot not engaged and in drive, gather data
+      self.df_data.append(
+        {'v_ego': v_ego, 'a_ego': self.cur_state[0].a_ego, 'v_lead': v_lead, 'status': lead_status, 'x_lead': x_lead,
+         'y_lead': y_lead, 'a_lead': a_lead, 'a_rel': a_rel, 'v_lat': v_lat, 'steer_angle': steer_angle,
+         'steer_rate': steer_rate, 'path_curvature': path_curvature, 'live_tracks': track_data, 'time': time.time(),
+         'gas': gas, 'brake': brake})
+      if self.df_frame >= 800:  # every 20 seconds, write to file
+        try:
+          with open("/data/openpilot/selfdrive/data_collection/df-data", "a") as f:
+            f.write('{}\n'.format("\n".join([str(i) for i in self.df_data])))
+          self.df_data = []
+          self.df_frame = 0
+        except:
+          with open('/data/write_errors', 'a') as f:
+            f.write('write error\n')
+      self.df_frame += 1
+
+    if lead is not None and lead.status:
+      x_lead = lead.dRel
+      v_lead = max(0.0, lead.vLead)
+      a_lead = lead.aLeadK
 
       if (v_lead < 0.1 or -a_lead / 2.0 > v_lead):
         v_lead = 0.0
