@@ -26,7 +26,7 @@ data = [0.18767295, 0.47943065, 0., 0., 0.,
         0., 0., 0., 0., 0.,
         0.]
 
-for i in range(1000):
+for i in range(39):
   model_output = df_model.run_model_live_tracks(data)
 
 model_output = df_model.run_model_live_tracks(data)
