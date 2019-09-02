@@ -111,7 +111,7 @@ class LongControl(object):
 
 
     model_output = float(self.model_wrapper.run_model_live_tracks(final_input))  # right now THIS WILL NOT BRAKE
-    return clip((model_output - .15) * 2.5, -1.0, 1.0)
+    return clip((model_output - .15) * 2.0, -1.0, 1.0)
 
 
 
@@ -161,7 +161,7 @@ class LongControl(object):
     df_output = self.df_live_tracks(v_ego, track_data, steering_angle)
     #df_output = self.df(radar_state, v_ego, a_ego, set_speed)
     if df_output is not None:
-      return df_output, 0.0
+      return max(df_output, 0), -min(df_output, 0.0) 
     else:  # use mpc when no lead
       gas_max = interp(v_ego, CP.gasMaxBP, CP.gasMaxV)
       brake_max = interp(v_ego, CP.brakeMaxBP, CP.brakeMaxV)
