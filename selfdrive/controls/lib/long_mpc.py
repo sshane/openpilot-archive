@@ -71,6 +71,9 @@ class LongitudinalMpc(object):
     steer_angle = CS.steeringAngle
     steer_rate = CS.steeringRate
     path_curvature = controlsState.curvature
+    decel_for_model = controlsState.decelForModel
+    left_blinker = CS.leftBlinker
+    right_blinker = CS.rightBlinker
 
     # Setup current mpc state
     self.cur_state[0].x_ego = 0.0
@@ -93,11 +96,10 @@ class LongitudinalMpc(object):
       lead_status = False
 
     if self.mpc_id == 1 and not CS.cruiseState.enabled and CS.gearShifter == 'drive':  # if openpilot not engaged and in drive, gather data
-      self.df_data.append(
-        {'v_ego': v_ego, 'a_ego': a_ego, 'v_lead': v_lead, 'status': lead_status, 'x_lead': x_lead,
-         'y_lead': y_lead, 'a_lead': a_lead, 'a_rel': a_rel, 'v_lat': v_lat, 'steer_angle': steer_angle,
-         'steer_rate': steer_rate, 'path_curvature': path_curvature, 'live_tracks': track_data, 'time': time.time(),
-         'gas': gas, 'brake': brake, 'car_gas': car_gas})
+      self.df_data.append({'v_ego': v_ego, 'a_ego': a_ego, 'v_lead': v_lead, 'status': lead_status, 'x_lead': x_lead, 'y_lead': y_lead,
+                           'a_lead': a_lead, 'a_rel': a_rel, 'v_lat': v_lat, 'steer_angle': steer_angle, 'steer_rate': steer_rate,
+                           'path_curvature': path_curvature, 'live_tracks': track_data, 'time': time.time(), 'gas': gas, 'brake': brake,
+                           'car_gas': car_gas, 'left_blinker': left_blinker, 'right_blinker': right_blinker, 'decel_for_model': decel_for_model})
       if self.df_frame >= 800:  # every 20 seconds, write to file
         try:
           with open("/data/openpilot/selfdrive/data_collection/df-data", "a") as f:
