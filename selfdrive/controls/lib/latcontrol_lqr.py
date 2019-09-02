@@ -1,6 +1,6 @@
 import numpy as np
 from selfdrive.controls.lib.drive_helpers import get_steer_max
-from common.numpy_fast import clip, interp
+from common.numpy_fast import clip
 from cereal import log
 from selfdrive.virtualZSS import virtualZSS_wrapper
 
