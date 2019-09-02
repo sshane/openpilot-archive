@@ -111,7 +111,7 @@ class LongControl(object):
 
 
     model_output = float(self.model_wrapper.run_model_live_tracks(final_input))  # right now THIS WILL NOT BRAKE
-    return clip(model_output, 0.0, 1.0)
+    return clip()model_output - .15) * 2.5, 0.0, 1.0)
 
 
 
