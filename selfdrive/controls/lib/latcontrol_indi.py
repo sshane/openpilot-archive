@@ -10,7 +10,7 @@ from selfdrive.controls.lib.drive_helpers import get_steer_max
 from selfdrive.virtualZSS import virtualZSS_wrapper
 from selfdrive.kegman_conf import kegman_conf
 
-def interp(x, xp, fp):  # extrapolates above range, np.interp does not
+def interp_fast(x, xp, fp):  # extrapolates above range, np.interp does not
   return (((x - xp[0]) * (fp[1] - fp[0])) / (xp[1] - xp[0])) + fp[0]
 
 def mean(numbers):
@@ -92,12 +92,12 @@ class LatControlINDI(object):
   def update(self, active, v_ego, angle_steers, angle_steers_rate, eps_torque, steer_override, CP, VM, path_plan, driver_torque):
 
     #virtualZSS
-    self.past_data.append([interp(angle_steers, self.scales['stock_sensor'], [0, 1]), self.output_steer])  # steer command is already 'normalized'
+    self.past_data.append([interp_fast(angle_steers, self.scales['stock_sensor'], [0, 1]), self.output_steer])  # steer command is already 'normalized'
     while len(self.past_data) > self.seq_len:
       del self.past_data[0]
 
     if len(self.past_data) == self.seq_len:
-      angle_steers = interp(float(self.model_wrapper.run_model_time_series([i for x in self.past_data for i in x])), [0.0, 1.0], self.scales['zorro_sensor'])
+      angle_steers = interp_fast(float(self.model_wrapper.run_model_time_series([i for x in self.past_data for i in x])), [0.0, 1.0], self.scales['zorro_sensor'])
 
     # smooth angle
     #max_samples = 20
