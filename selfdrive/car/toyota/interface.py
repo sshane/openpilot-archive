@@ -95,7 +95,7 @@ class CarInterface(object):
       ret.steerRatio = 14.5   # 14.5 is spec end-to-end
       tire_stiffness_factor = 0.5533
       ret.mass = 3650. * CV.LB_TO_KG + STD_CARGO_KG  # mean between normal and hybrid
-      
+
       ret.lateralTuning.init('indi')
       ret.lateralTuning.indi.innerLoopGain = 4.0
       ret.lateralTuning.indi.outerLoopGain = 3.0
@@ -196,7 +196,7 @@ class CarInterface(object):
       stop_and_go = True
       ret.safetyParam = 73
       ret.wheelbase = 3.03
-      ret.steerRatio = 16.0
+      ret.steerRatio = 15.5
       tire_stiffness_factor = 0.444
       ret.mass = 4590. * CV.LB_TO_KG + STD_CARGO_KG
       ret.lateralTuning.pid.kpV, ret.lateralTuning.pid.kiV = [[0.3], [0.05]]
