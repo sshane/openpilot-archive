@@ -89,6 +89,7 @@ class RadarInterface(object):
           self.valid_cnt[ii] = max(self.valid_cnt[ii] -1, 0)
 
         score = self.rcp.vl[ii+16]['SCORE']
+        aRel = self.rcp.vl[ii + 16]['REL_ACCEL']
         # print ii, self.valid_cnt[ii], score, cpt['VALID'], cpt['LONG_DIST'], cpt['LAT_DIST']
 
         # radar point only valid if it's a valid measurement and score is above 50
@@ -100,7 +101,7 @@ class RadarInterface(object):
           self.pts[ii].dRel = cpt['LONG_DIST']  # from front of car
           self.pts[ii].yRel = -cpt['LAT_DIST']  # in car frame's y axis, left is positive
           self.pts[ii].vRel = cpt['REL_SPEED']
-          self.pts[ii].aRel = cpt['REL_ACCEL']
+          self.pts[ii].aRel = aRel
           self.pts[ii].yvRel = float('nan')
           self.pts[ii].measured = bool(cpt['VALID'])
         else:
