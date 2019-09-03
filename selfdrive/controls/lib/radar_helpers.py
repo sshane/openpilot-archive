@@ -27,11 +27,12 @@ class Track(object):
     self.ekf = None
     self.cnt = 0
 
-  def update(self, d_rel, y_rel, v_rel, v_ego_t_aligned, measured):
+  def update(self, d_rel, y_rel, v_rel, v_ego_t_aligned, measured, a_rel):
     # relative values, copy
     self.dRel = d_rel   # LONG_DIST
     self.yRel = y_rel   # -LAT_DIST
-    self.vRel = v_rel   # REL_SPEED
+    self.vRel = v_rel  # REL_SPEED
+    self.aRel = a_rel  # REL_ACCEL
     self.measured = measured   # measured or estimate
 
     # computed velocity and accelerations
@@ -55,7 +56,7 @@ class Track(object):
 
   def get_key_for_cluster(self):
     # Weigh y higher since radar is inaccurate in this dimension
-    return [self.dRel, self.yRel*2, self.vRel]
+    return [self.dRel, self.yRel*2, self.vRel]  # do I have to add aRel here?
 
   def reset_a_lead(self, aLeadK, aLeadTau):
     self.kf = KF1D([[self.vLead], [aLeadK]], _VLEAD_A, _VLEAD_C, _VLEAD_K)
@@ -130,6 +131,7 @@ class Cluster(object):
       "dRel": float(self.dRel),
       "yRel": float(self.yRel),
       "vRel": float(self.vRel),
+      "aRel": float(self.aRel),
       "vLead": float(self.vLead),
       "vLeadK": float(self.vLeadK),
       "aLeadK": float(self.aLeadK),

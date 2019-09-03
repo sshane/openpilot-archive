@@ -108,7 +108,7 @@ class RadarD(object):
 
     ar_pts = {}
     for pt in rr.points:
-      ar_pts[pt.trackId] = [pt.dRel, pt.yRel, pt.vRel, pt.measured]
+      ar_pts[pt.trackId] = [pt.dRel, pt.yRel, pt.vRel, pt.measured, pt.aRel]
 
     # *** remove missing points from meta data ***
     for ids in self.tracks.keys():
@@ -126,7 +126,7 @@ class RadarD(object):
       # create the track if it doesn't exist or it's a new track
       if ids not in self.tracks:
         self.tracks[ids] = Track()
-      self.tracks[ids].update(rpt[0], rpt[1], rpt[2], self.v_ego_t_aligned, rpt[3])
+      self.tracks[ids].update(rpt[0], rpt[1], rpt[2], self.v_ego_t_aligned, rpt[3], rpt[4])
 
     idens = list(self.tracks.keys())
     track_pts = np.array([self.tracks[iden].get_key_for_cluster() for iden in idens])
@@ -225,6 +225,7 @@ def radard_thread(gctx=None):
         "dRel": float(tracks[ids].dRel),
         "yRel": float(tracks[ids].yRel),
         "vRel": float(tracks[ids].vRel),
+        "aRel": float(tracks[ids].aRel),
       }
     liveTracks.send(dat.to_bytes())
 

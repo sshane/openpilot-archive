@@ -20,9 +20,9 @@ def _create_radar_can_parser(car_fingerprint):
   msg_b_n = len(RADAR_B_MSGS)
 
   signals = zip(['LONG_DIST'] * msg_a_n + ['NEW_TRACK'] * msg_a_n + ['LAT_DIST'] * msg_a_n +
-                ['REL_SPEED'] * msg_a_n + ['VALID'] * msg_a_n + ['SCORE'] * msg_b_n,
-                RADAR_A_MSGS * 5 + RADAR_B_MSGS,
-                [255] * msg_a_n + [1] * msg_a_n + [0] * msg_a_n + [0] * msg_a_n + [0] * msg_a_n + [0] * msg_b_n)
+                ['REL_SPEED'] * msg_a_n + ['VALID'] * msg_a_n + ['SCORE'] * msg_b_n + ['REL_ACCEL'] * msg_b_n,
+                RADAR_A_MSGS * 6 + RADAR_B_MSGS,
+                [255] * msg_a_n + [1] * msg_a_n + [0] * msg_a_n + [0] * msg_a_n + [0] * msg_a_n + [0] * msg_b_n * msg_b_n + [0])
 
   checks = zip(RADAR_A_MSGS + RADAR_B_MSGS, [20]*(msg_a_n + msg_b_n))
 
@@ -100,7 +100,7 @@ class RadarInterface(object):
           self.pts[ii].dRel = cpt['LONG_DIST']  # from front of car
           self.pts[ii].yRel = -cpt['LAT_DIST']  # in car frame's y axis, left is positive
           self.pts[ii].vRel = cpt['REL_SPEED']
-          self.pts[ii].aRel = float('nan')
+          self.pts[ii].aRel = cpt['REL_ACCEL']
           self.pts[ii].yvRel = float('nan')
           self.pts[ii].measured = bool(cpt['VALID'])
         else:
