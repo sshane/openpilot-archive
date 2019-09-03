@@ -21,7 +21,7 @@ def _create_radar_can_parser(car_fingerprint):
 
   signals = zip(['LONG_DIST'] * msg_a_n + ['NEW_TRACK'] * msg_a_n + ['LAT_DIST'] * msg_a_n +
                 ['REL_SPEED'] * msg_a_n + ['VALID'] * msg_a_n + ['SCORE'] * msg_b_n + ['REL_ACCEL'] * msg_b_n,
-                RADAR_A_MSGS * 6 + RADAR_B_MSGS,
+                RADAR_A_MSGS * 5 + RADAR_B_MSGS * 2,
                 [255] * msg_a_n + [1] * msg_a_n + [0] * msg_a_n + [0] * msg_a_n + [0] * msg_a_n + [0] * msg_b_n + [0] * msg_b_n)
 
   checks = zip(RADAR_A_MSGS + RADAR_B_MSGS, [20]*(msg_a_n + msg_b_n))
@@ -88,8 +88,6 @@ class RadarInterface(object):
         else:
           self.valid_cnt[ii] = max(self.valid_cnt[ii] -1, 0)
 
-        with open('/data/tst', 'a') as f:
-          f.write('{}, {}\n'.format(self.rcp.vl[ii + 16], ii))
         score = self.rcp.vl[ii+16]['SCORE']
         # print ii, self.valid_cnt[ii], score, cpt['VALID'], cpt['LONG_DIST'], cpt['LAT_DIST']
 
