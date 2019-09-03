@@ -62,11 +62,11 @@ class LanePlanner(object):
     self.lr_prob = self.l_prob + self.r_prob - self.l_prob * self.r_prob
 
     # Find current lanewidth
-    if l_prob > 0.49 and r_prob > 0.49:
+    if self.l_prob > 0.49 and self.r_prob > 0.49:
         self.frame += 1
         if self.frame % 20 == 0:
             self.frame = 0
-            current_lane_width = sorted((2.8, abs(l_poly[3] - r_poly[3]), 3.6))[1]
+            current_lane_width = sorted((2.8, abs(self.l_poly[3] - self.r_poly[3]), 3.6))[1]
             max_samples = 30
             self.readings.append(current_lane_width)
             avg = mean(self.readings)
@@ -75,8 +75,8 @@ class LanePlanner(object):
                 self.readings.pop(0)
 
     # Don't exit dive
-    if abs(l_poly[3] - r_poly[3]) > self.lane_width:
-        r_prob = r_prob / interp(l_prob, [0, 1], [1, 3])
+    if abs(self.l_poly[3] - self.r_poly[3]) > self.lane_width:
+        self.r_prob = self.r_prob / interp(self.l_prob, [0, 1], [1, 3])
 
     self.d_poly = calc_d_poly(self.l_poly, self.r_poly, self.p_poly, self.l_prob, self.r_prob, self.lane_width)
 
