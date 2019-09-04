@@ -39,7 +39,9 @@ def upload_data():
         try:
           ftp.storbinary("STOR /{}/{}".format(username, filename), f)
         except:
-          ftp.storbinary("STOR /{}/{}".format(username, "{}.{}".format(filename, ''.join([str(random.choice(range(10))) for i in range(7)]))), f)  # if exists
+          df_num += 1  # if exists on server, increment by 1
+          filename = "df-data.{}".format(df_num)
+          ftp.storbinary("STOR /{}/{}".format(username, filename), f)
       ftp.quit()
       os.remove(filepath)
       op_params.put('df_num', df_num + 1)  # increment number of files uploaded so we don't overwrite existing files on server
