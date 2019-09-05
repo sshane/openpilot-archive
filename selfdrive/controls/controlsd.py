@@ -269,14 +269,14 @@ def state_control(frame, rcv_frame, plan, path_plan, radar_state, CS, CP, state,
   if tracks is not None:
     track_data = []
     for track in tracks.liveTracks:
-      track_data.append([track.yRel, track.dRel, track.vRel])
+      track_data.append([track.yRel, track.dRel, track.vRel, track.aRel])
     last_track_data = track_data
   else:  # live track data not available, use last tracks
     track_data = last_track_data
 
   # Gas/Brake PID loop
   actuators.gas, actuators.brake = LoC.update(active, CS.vEgo, CS.aEgo, CS.cruiseState.speed, radar_state, CS.brakePressed, CS.standstill, CS.cruiseState.standstill,
-                                              v_cruise_kph, v_acc_sol, plan.vTargetFuture, a_acc_sol, CP, track_data, CS.steeringAngle)
+                                              v_cruise_kph, v_acc_sol, plan.vTargetFuture, a_acc_sol, CP, track_data, CS.steeringAngle, CS.steeringRate, CS.leftBlinker, CS.rightBlinker)
   # Steering PID loop and lateral MPC
   actuators.steer, actuators.steerAngle, lac_log = LaC.update(active, CS.vEgo, CS.steeringAngle, CS.steeringRate, CS.steeringTorqueEps, CS.steeringPressed, CP, VM, path_plan)
 
