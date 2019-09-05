@@ -49,6 +49,8 @@ model_output = df_model.run_model_live_tracks(df_input)
 print("Model output: {}".format(model_output))
 model_output = df_model.run_model_live_tracks(df_input)
 print("Model output: {}".format(model_output))
+
+
 #print(time.time()-s)
 '''model_output = df_model.run_model(.3, 0.0, .3, .5)
 print(model_output)
