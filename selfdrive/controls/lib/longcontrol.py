@@ -20,19 +20,8 @@ _MAX_SPEED_ERROR_V = [1.5, .8]  # max positive v_pid error VS actual speed; this
 
 RATE = 100.0
 
-
-'''def norm(data, min_max=None):
-  if min_max==None:
-    d_min = min(data)
-    d_max = max(data)
-    return [(i - d_min) / (d_max - d_min) for i in data], [d_min, d_max]
-  else:
-    return (data - min_max[0]) / (min_max[1] - min_max[0])'''
-
-
 def interp_fast(x, xp, fp=[0, 1]):  # extrapolates above range, np.interp does not
   return (((x - xp[0]) * (fp[1] - fp[0])) / (xp[1] - xp[0])) + fp[0]
-
 
 def pad_tracks(tracks, max_tracks):
   to_add = max_tracks - len(tracks)
@@ -90,14 +79,13 @@ class LongControl(object):
     self.model_wrapper.init_model()
     self.past_data = []
     self.scales = {'aRel': [-64.0, 63.0],
-              'a_ego': [-3.1749768257141113, 2.4656379222869873],
-              'dRel': [0.4399999976158142, 194.83999633789062],
-              'steer_angle': [-546.7999877929688, 589.9000244140625],
-              'steer_rate': [-633.0, 658.0],
-              'vRel': [-47.349998474121094, 24.350000381469727],
-              'v_ego': [-0.08757133036851883, 30.732589721679688],
-              'yRel': [-15.0, 15.0],
-              'max_tracks': 16}
+                   'dRel': [0.4399999976158142, 194.83999633789062],
+                   'max_tracks': 16,
+                   'steer_angle': [-546.7999877929688, 589.9000244140625],
+                   'steer_rate': [-633.0, 658.0],
+                   'vRel': [-47.349998474121094, 24.350000381469727],
+                   'v_ego': [-0.08757133036851883, 30.732589721679688],
+                   'yRel': [-15.0, 15.0]}
 
   def df_live_tracks(self, v_ego, a_ego, track_data, steering_angle, steering_rate, left_blinker, right_blinker):
     tracks_normalized = [[interp_fast(track[0], self.scales['yRel']), interp_fast(track[1], self.scales['dRel']),  # normalize track data
@@ -111,10 +99,9 @@ class LongControl(object):
     steering_rate = interp_fast(steering_rate, self.scales['steer_rate'])
     left_blinker = 1 if left_blinker else 0
     right_blinker = 1 if right_blinker else 0
-    a_ego = interp_fast(a_ego, self.scales['a_ego'])
     
 
-    final_input = [v_ego, steering_angle, steering_rate, a_ego, left_blinker, right_blinker] + flat_tracks
+    final_input = [v_ego, steering_angle, steering_rate, left_blinker, right_blinker] + flat_tracks
     model_output = float(self.model_wrapper.run_model_live_tracks(final_input))
     model_output = (model_output - 0.45) * 2.15
     return clip(model_output, -1.0, 1.0)
