@@ -108,7 +108,7 @@ class LongControl(object):
     flat_tracks = [i for x in padded_tracks for i in x]  # flatten track data for model
     v_ego = interp_fast(v_ego, self.scales['v_ego'])
     steering_angle = interp_fast(steering_angle, self.scales['steer_angle'])
-    steering_rate = interp_fast(steering_rate, self.scales['steering_rate'])
+    steering_rate = interp_fast(steering_rate, self.scales['steer_rate'])
     left_blinker = 1 if left_blinker else 0
     right_blinker = 1 if right_blinker else 0
 
