@@ -111,6 +111,8 @@ class LongControl(object):
     steering_rate = interp_fast(steering_rate, self.scales['steer_rate'])
     left_blinker = 1 if left_blinker else 0
     right_blinker = 1 if right_blinker else 0
+    a_ego = interp_fast(a_ego, self.scales['a_ego'])
+    
 
     final_input = [v_ego, steering_angle, steering_rate, a_ego, left_blinker, right_blinker] + flat_tracks
     model_output = float(self.model_wrapper.run_model_live_tracks(final_input))
