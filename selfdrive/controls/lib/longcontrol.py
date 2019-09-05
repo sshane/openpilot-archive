@@ -79,12 +79,12 @@ class LongControl(object):
     self.model_wrapper.init_model()
     self.past_data = []
     self.scales = {'aRel': [-64.0, 63.0],
-                   'dRel': [0.4399999976158142, 194.83999633789062],
+                   'dRel': [1.2400000095367432, 195.24000549316406],
                    'max_tracks': 16,
-                   'steer_angle': [-546.7999877929688, 589.9000244140625],
-                   'steer_rate': [-633.0, 658.0],
-                   'vRel': [-47.349998474121094, 24.350000381469727],
-                   'v_ego': [-0.08757133036851883, 30.732589721679688],
+                   'steer_angle': [-423.79998779296875, 574.9000244140625],
+                   'steer_rate': [-433.0, 716.0],
+                   'vRel': [-50.82500076293945, 23.899999618530273],
+                   'v_ego': [-0.09209410101175308, 34.109962463378906],
                    'yRel': [-15.0, 15.0]}
 
   def df_live_tracks(self, v_ego, a_ego, track_data, steering_angle, steering_rate, left_blinker, right_blinker):
