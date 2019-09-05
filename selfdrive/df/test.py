@@ -32,6 +32,8 @@ data = [0.50559583, 0.42775607, 0.37859008, 0., 0.,
 s = time.time()
 for i in range(39):
   model_output = df_model.run_model_live_tracks(data)
+  print(model_output)
+  break
 
 model_output = df_model.run_model_live_tracks(data)
 
