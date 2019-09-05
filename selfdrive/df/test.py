@@ -12,39 +12,28 @@ for i in range(30):
 print(time.time() - startl)'''
 
 df_input = [0.50559583, 0.42775607, 0.37859008, 0., 0.,
-        0., 0., 0., 0., 0.,
-        0., 0., 0., 0., 0.,
-        0., 0., 0., 0., 0.,
-        0., 0., 0., 0., 0.,
-        0., 0., 0., 0., 0.,
-        0., 0., 0., 0., 0.,
-        0., 0., 0., 0., 0.,
-        0., 0., 0., 0., 0.,
-        0., 0., 0., 0., 0.,
-        0., 0., 0., 0., 0.,
-        0., 0., 0., 0., 0.,
-        0., 0., 0., 0., 0.,
-        0., 0., 0., 0., 0.,
-        0., 0., 0., 0., 0.,
-        0., 0., 0., 0., 0.,
-        0., 0., 0., 0., 0.]
+            0., 0., 0., 0., 0.,
+            0., 0., 0., 0., 0.,
+            0., 0., 0., 0., 0.,
+            0., 0., 0., 0., 0.,
+            0., 0., 0., 0., 0.,
+            0., 0., 0., 0., 0.,
+            0., 0., 0., 0., 0.,
+            0., 0., 0., 0., 0.,
+            0., 0., 0., 0., 0.,
+            0., 0., 0., 0., 0.,
+            0., 0., 0., 0., 0.,
+            0., 0., 0., 0., 0.,
+            0., 0., 0., 0., 0.,
+            0., 0., 0., 0., 0.,
+            0., 0., 0., 0., 0.,
+            0., 0., 0., 0., 0.]
 
 #s = time.time()
 
-model_output = df_model.run_model_live_tracks(df_input)
-print("Model output: {}".format(model_output))
-model_output = df_model.run_model_live_tracks(df_input)
-print("Model output: {}".format(model_output))
-model_output = df_model.run_model_live_tracks(df_input)
-print("Model output: {}".format(model_output))
-model_output = df_model.run_model_live_tracks(df_input)
-print("Model output: {}".format(model_output))
-model_output = df_model.run_model_live_tracks(df_input)
-print("Model output: {}".format(model_output))
-model_output = df_model.run_model_live_tracks(df_input)
-print("Model output: {}".format(model_output))
-model_output = df_model.run_model_live_tracks(df_input)
-print("Model output: {}".format(model_output))
+for i in range(100):
+  model_output = df_model.run_model_live_tracks(df_input)
+
 model_output = df_model.run_model_live_tracks(df_input)
 print("Model output: {}".format(model_output))
 model_output = df_model.run_model_live_tracks(df_input)
