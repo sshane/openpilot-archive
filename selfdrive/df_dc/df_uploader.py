@@ -7,7 +7,7 @@ from selfdrive.op_params import opParams
 op_params = opParams()
 
 def upload_data():
-  filepath = "/data/openpilot/selfdrive/data_collection/df-data"
+  filepath = "/data/openpilot/selfdrive/df_dc/df-data"
   if os.path.isfile(filepath):
     if op_params.get("uniqueID") is None:
       op_params.put("uniqueID", ''.join([random.choice(string.lowercase + string.uppercase + string.digits) for i in range(15)]))

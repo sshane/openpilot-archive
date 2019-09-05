@@ -102,7 +102,7 @@ class LongitudinalMpc(object):
                            'car_gas': car_gas, 'left_blinker': left_blinker, 'right_blinker': right_blinker, 'decel_for_model': decel_for_model})
       if self.df_frame >= 800:  # every 20 seconds, write to file
         try:
-          with open("/data/openpilot/selfdrive/data_collection/df-data", "a") as f:
+          with open("/data/openpilot/selfdrive/df_dc/df-data", "a") as f:
             f.write('{}\n'.format("\n".join([str(i) for i in self.df_data])))
           self.df_data = []
           self.df_frame = 0

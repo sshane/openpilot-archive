@@ -15,7 +15,7 @@ import subprocess
 from collections import Counter
 from selfdrive.swaglog import cloudlog
 from selfdrive.loggerd.config import ROOT
-from selfdrive.data_collection import df_uploader
+from selfdrive.df_dc import df_uploader
 
 from common.params import Params
 from common.api import Api
