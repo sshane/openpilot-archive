@@ -11,7 +11,7 @@ for i in range(30):
   0.01075646532123655)
 print(time.time() - startl)'''
 
-data = [0.50559583, 0.42775607, 0.37859008, 0., 0.,
+df_input = [0.50559583, 0.42775607, 0.37859008, 0., 0.,
         0., 0., 0., 0., 0.,
         0., 0., 0., 0., 0.,
         0., 0., 0., 0., 0.,
@@ -29,16 +29,25 @@ data = [0.50559583, 0.42775607, 0.37859008, 0., 0.,
         0., 0., 0., 0., 0.,
         0., 0., 0., 0., 0.]
 
-s = time.time()
-for i in range(39):
-  model_output = df_model.run_model_live_tracks(data)
-  print(model_output)
-  break
+#s = time.time()
 
-model_output = df_model.run_model_live_tracks(data)
-
+model_output = df_model.run_model_live_tracks(df_input)
 print("Model output: ".format(model_output))
-print(time.time()-s)
+model_output = df_model.run_model_live_tracks(df_input)
+print("Model output: ".format(model_output))
+model_output = df_model.run_model_live_tracks(df_input)
+print("Model output: ".format(model_output))
+model_output = df_model.run_model_live_tracks(df_input)
+print("Model output: ".format(model_output))
+model_output = df_model.run_model_live_tracks(df_input)
+print("Model output: ".format(model_output))
+model_output = df_model.run_model_live_tracks(df_input)
+print("Model output: ".format(model_output))
+model_output = df_model.run_model_live_tracks(df_input)
+print("Model output: ".format(model_output))
+model_output = df_model.run_model_live_tracks(df_input)
+print("Model output: ".format(model_output))
+#print(time.time()-s)
 '''model_output = df_model.run_model(.3, 0.0, .3, .5)
 print(model_output)
 model_output = df_model.run_model(.05, .3, .4, .6)
