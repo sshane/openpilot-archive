@@ -104,7 +104,7 @@ class LongControl(object):
     with open('/data/testshape', 'a') as f:
       f.write('{}\n'.format(len(final_input)))
     model_output = float(self.model_wrapper.run_model_live_tracks(final_input))
-    model_output = (model_output - 0.5) * 2.0
+    model_output = (model_output - 0.55) * 2.03
     return clip(model_output, -1.0, 1.0)
 
 
