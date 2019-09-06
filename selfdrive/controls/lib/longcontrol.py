@@ -27,7 +27,7 @@ def pad_tracks(tracks, max_tracks):
   to_add = max_tracks - len(tracks)
   to_add_left = to_add - (to_add // 2)
   to_add_right = to_add - to_add_left
-  to_pad = [[0, 0, 0, 0, 0]]
+  to_pad = [[0, 0, 0, 0]]
   return (to_pad * to_add_left) + tracks + (to_pad * to_add_right)
 
 def long_control_state_trans(active, long_control_state, v_ego, v_target, v_pid,
@@ -78,8 +78,7 @@ class LongControl(object):
     self.model_wrapper = df_wrapper.get_wrapper()
     self.model_wrapper.init_model()
     self.past_data = []
-    self.scales = {'aRel': [-64.0, 63.0],
-                   'dRel': [1.2400000095367432, 195.24000549316406],
+    self.scales = {'dRel': [1.2400000095367432, 195.24000549316406],
                    'max_tracks': 16,
                    'steer_angle': [-423.79998779296875, 574.9000244140625],
                    'steer_rate': [-433.0, 716.0],
@@ -88,8 +87,9 @@ class LongControl(object):
                    'yRel': [-15.0, 15.0]}
 
   def df_live_tracks(self, v_ego, a_ego, track_data, steering_angle, steering_rate, left_blinker, right_blinker):
-    tracks_normalized = [[interp_fast(track[0], self.scales['yRel']), interp_fast(track[1], self.scales['dRel']),  # normalize track data
-                          interp_fast(track[2], self.scales['vRel']), 1.0, interp_fast(track[3], self.scales['aRel']), 1.0] for track in track_data]  # 1 means it's a real track, not padded
+    tracks_normalized = [[interp_fast(track[0], self.scales['yRel']),
+                          interp_fast(track[1], self.scales['dRel']),  # normalize track data
+                          interp_fast(track[2], self.scales['vRel']), 1.0] for track in track_data]  # 1 means it's a real track, not padded
     tracks_sorted = sorted(tracks_normalized, key=lambda track: track[0])  # sort tracks by yRel
     padded_tracks = pad_tracks(tracks_sorted, self.scales['max_tracks'])  # pad tracks, keeping data in the center, sorted by yRel
 
@@ -99,9 +99,10 @@ class LongControl(object):
     steering_rate = interp_fast(steering_rate, self.scales['steer_rate'])
     left_blinker = 1 if left_blinker else 0
     right_blinker = 1 if right_blinker else 0
-    
 
     final_input = [v_ego, steering_angle, steering_rate, left_blinker, right_blinker] + flat_tracks
+    with open('/data/testshape', 'a') as f:
+      f.write('{}\n'.format(len(final_input)))
     model_output = float(self.model_wrapper.run_model_live_tracks(final_input))
     model_output = (model_output - 0.5) * 2.0
     return clip(model_output, -1.0, 1.0)
