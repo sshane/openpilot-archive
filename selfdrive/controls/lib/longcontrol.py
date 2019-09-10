@@ -20,14 +20,16 @@ _MAX_SPEED_ERROR_V = [1.5, .8]  # max positive v_pid error VS actual speed; this
 
 RATE = 100.0
 
-def interp_fast(x, xp, fp=[0, 1]):  # extrapolates above range, np.interp does not
-  return (((x - xp[0]) * (fp[1] - fp[0])) / (xp[1] - xp[0])) + fp[0]
+
+def interp_fast(x, xp, fp=[0, 1], ext=False):  # extrapolates above range when ext is True
+  interped = (((x - xp[0]) * (fp[1] - fp[0])) / (xp[1] - xp[0])) + fp[0]
+  return interped if ext else min(max(fp[0], interped), fp[1])
 
 def pad_tracks(tracks, max_tracks):
   to_add = max_tracks - len(tracks)
   to_add_left = to_add - (to_add // 2)
   to_add_right = to_add - to_add_left
-  to_pad = [[0, 0, 0, 0]]
+  to_pad = [[0, 0, 0]]
   return (to_pad * to_add_left) + tracks + (to_pad * to_add_right)
 
 def long_control_state_trans(active, long_control_state, v_ego, v_target, v_pid,
@@ -87,10 +89,11 @@ class LongControl(object):
                    'v_ego': [-0.09209410101175308, 34.109962463378906],
                    'yRel': [-15.0, 15.0]}
 
-  def df_live_tracks(self, v_ego, a_ego, track_data, steering_angle, steering_rate, left_blinker, right_blinker):
+  def df_live_tracks(self, v_ego, a_ego, track_data, steering_angle, steering_rate, left_blinker, right_blinker, radar_state):
     tracks_normalized = [[interp_fast(track[0], self.scales['yRel']),
                           interp_fast(track[1], self.scales['dRel']),  # normalize track data
-                          interp_fast(track[2], self.scales['vRel']), 1.0] for track in track_data]  # 1 means it's a real track, not padded
+                          interp_fast(track[2], self.scales['vRel'])] for track in track_data]
+
     tracks_sorted = sorted(tracks_normalized, key=lambda track: track[0])  # sort tracks by yRel
     padded_tracks = pad_tracks(tracks_sorted, self.scales['max_tracks'])  # pad tracks, keeping data in the center, sorted by yRel
 
@@ -100,15 +103,23 @@ class LongControl(object):
     steering_rate = interp_fast(steering_rate, self.scales['steer_rate'])
     left_blinker = 1 if left_blinker else 0
     right_blinker = 1 if right_blinker else 0
+    a_lead, lead_status = self.get_lead(radar_state)
+    a_lead = interp_fast(a_lead, self.scales['a_lead'])
 
     final_input = [v_ego, steering_angle, steering_rate, a_lead, left_blinker, right_blinker, lead_status] + flat_tracks
     with open('/data/testshape', 'a') as f:
       f.write('{}\n'.format(len(final_input)))
     model_output = float(self.model_wrapper.run_model_live_tracks(final_input))
-    model_output = (model_output - 0.55) * 2.03
+    model_output = (model_output - 0.5) * 2.03
     return clip(model_output, -1.0, 1.0)
 
 
+  def get_lead(self, radar_state):
+    if radar_state is not None:
+      lead_1 = radar_state.leadOne
+      if lead_1 is not None and lead_1.status:
+        return lead_1.aLeadK, lead_1.status
+    return 0, 0  # second 0 tells model to not care about 0 a_lead instead of interpreting it as 0 accel
 
   def df(self, radar_state, v_ego, a_ego, set_speed):
     scales = {'v_ego_scale': [0.0, 40.755523681641],
@@ -154,7 +165,8 @@ class LongControl(object):
              steering_rate, left_blinker, right_blinker):
     """Update longitudinal control. This updates the state machine and runs a PID loop"""
     # Actuation limits
-    df_output = self.df_live_tracks(v_ego, a_ego, track_data, steering_angle, steering_rate, left_blinker, right_blinker)
+    df_output = self.df_live_tracks(v_ego, a_ego, track_data, steering_angle, steering_rate, left_blinker,
+                                    right_blinker, radar_state)
     #df_output = self.df(radar_state, v_ego, a_ego, set_speed)
     if df_output is not None:
       return max(df_output, 0), -min(df_output, 0.0) 
