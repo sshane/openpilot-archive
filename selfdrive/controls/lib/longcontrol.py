@@ -78,11 +78,12 @@ class LongControl(object):
     self.model_wrapper = df_wrapper.get_wrapper()
     self.model_wrapper.init_model()
     self.past_data = []
-    self.scales = {'dRel': [1.2400000095367432, 195.24000549316406],
+    self.scales = {'a_lead': [-2.766974449157715, 3.778874158859253],
+                   'dRel': [0.4399999976158142, 195.75999450683594],
                    'max_tracks': 16,
-                   'steer_angle': [-423.79998779296875, 574.9000244140625],
-                   'steer_rate': [-433.0, 716.0],
-                   'vRel': [-50.82500076293945, 23.899999618530273],
+                   'steer_angle': [-563.0999755859375, 587.9000244140625],
+                   'steer_rate': [-633.0, 766.0],
+                   'vRel': [-51.20000076293945, 23.899999618530273],
                    'v_ego': [-0.09209410101175308, 34.109962463378906],
                    'yRel': [-15.0, 15.0]}
 
@@ -100,7 +101,7 @@ class LongControl(object):
     left_blinker = 1 if left_blinker else 0
     right_blinker = 1 if right_blinker else 0
 
-    final_input = [v_ego, steering_angle, steering_rate, left_blinker, right_blinker] + flat_tracks
+    final_input = [v_ego, steering_angle, steering_rate, a_lead, left_blinker, right_blinker, lead_status] + flat_tracks
     with open('/data/testshape', 'a') as f:
       f.write('{}\n'.format(len(final_input)))
     model_output = float(self.model_wrapper.run_model_live_tracks(final_input))
