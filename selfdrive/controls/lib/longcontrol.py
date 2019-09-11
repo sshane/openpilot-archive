@@ -118,7 +118,7 @@ class LongControl(object):
     if radar_state is not None:
       lead_1 = radar_state.leadOne
       if lead_1 is not None and lead_1.status:
-        return lead_1.aLeadK, lead_1.status
+        return lead_1.aLeadK, 1
     return 0, 0  # second 0 tells model to not care about 0 a_lead instead of interpreting it as 0 accel
 
   def df(self, radar_state, v_ego, a_ego, set_speed):
