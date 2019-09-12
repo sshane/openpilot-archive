@@ -36,12 +36,12 @@ def upload_data():
           ftp.mkd("/{}".format(username))
         except:
           pass
-        try:
-          ftp.storbinary("STOR /{}/{}".format(username, filename), f)
-        except:
+        #try:
+        ftp.storbinary("STOR /{}/{}".format(username, filename), f)
+        '''except:
           df_num += 1  # if exists on server, increment by 1
           filename = "df-data.{}".format(df_num)
-          ftp.storbinary("STOR /{}/{}".format(username, filename), f)
+          ftp.storbinary("STOR /{}/{}".format(username, filename), f)'''
       ftp.quit()
       os.remove(filepath)
       op_params.put('df_num', df_num + 1)  # increment number of files uploaded so we don't overwrite existing files on server
@@ -52,3 +52,4 @@ def upload_data():
   else:
     print('file does not exist')
     return False
+upload_data()
