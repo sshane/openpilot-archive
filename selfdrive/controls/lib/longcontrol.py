@@ -80,16 +80,17 @@ class LongControl(object):
     self.model_wrapper = df_wrapper.get_wrapper()
     self.model_wrapper.init_model()
     self.past_data = []
-    self.scales = {'a_lead': [-2.766974449157715, 3.778874158859253],
-                   'dRel': [0.4399999976158142, 195.75999450683594],
+    self.scales = {'a_lead': [-3.154085159301758, 2.9096145629882812],
+                   'dRel': [1.7200000286102295, 196.32000732421875],
                    'max_tracks': 16,
-                   'steer_angle': [-563.0999755859375, 587.9000244140625],
-                   'steer_rate': [-633.0, 766.0],
-                   'vRel': [-51.20000076293945, 23.899999618530273],
-                   'v_ego': [-0.09209410101175308, 34.109962463378906],
+                   'set_speed': [0.0, 35.27777862548828],
+                   'steer_angle': [-547.5999755859375, 548.2999877929688],
+                   'steer_rate': [-658.0, 458.0],
+                   'vRel': [-51.20000076293945, 27.549999237060547],
+                   'v_ego': [-0.087776318192482, 36.29853057861328],
                    'yRel': [-15.0, 15.0]}
 
-  def df_live_tracks(self, v_ego, a_ego, track_data, steering_angle, steering_rate, left_blinker, right_blinker, radar_state):
+  def df_live_tracks(self, v_ego, a_ego, track_data, steering_angle, steering_rate, left_blinker, right_blinker, radar_state, set_speed):
     tracks_normalized = [[interp_fast(track[0], self.scales['yRel']),
                           interp_fast(track[1], self.scales['dRel']),  # normalize track data
                           interp_fast(track[2], self.scales['vRel'])] for track in track_data]
@@ -105,8 +106,9 @@ class LongControl(object):
     right_blinker = 1 if right_blinker else 0
     a_lead, lead_status = self.get_lead(radar_state)
     a_lead = interp_fast(a_lead, self.scales['a_lead'])
+    set_speed = interp_fast(set_speed, self.scales['set_speed'])
 
-    final_input = [v_ego, steering_angle, steering_rate, a_lead, left_blinker, right_blinker, lead_status] + flat_tracks
+    final_input = [v_ego, steering_angle, steering_rate, a_lead, set_speed, left_blinker, right_blinker, lead_status] + flat_tracks
     with open('/data/testshape', 'a') as f:
       f.write('{}\n'.format(len(final_input)))
     model_output = float(self.model_wrapper.run_model_live_tracks(final_input))
@@ -166,7 +168,7 @@ class LongControl(object):
     """Update longitudinal control. This updates the state machine and runs a PID loop"""
     # Actuation limits
     df_output = self.df_live_tracks(v_ego, a_ego, track_data, steering_angle, steering_rate, left_blinker,
-                                    right_blinker, radar_state)
+                                    right_blinker, radar_state, set_speed)
     #df_output = self.df(radar_state, v_ego, a_ego, set_speed)
     if df_output is not None:
       return max(df_output, 0), -min(df_output, 0.0) 
