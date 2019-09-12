@@ -74,6 +74,7 @@ class LongitudinalMpc(object):
     decel_for_model = controlsState.decelForModel
     left_blinker = CS.leftBlinker
     right_blinker = CS.rightBlinker
+    set_speed = CS.cruiseState.speed
 
     # Setup current mpc state
     self.cur_state[0].x_ego = 0.0
@@ -99,7 +100,7 @@ class LongitudinalMpc(object):
       self.df_data.append({'v_ego': v_ego, 'a_ego': a_ego, 'v_lead': v_lead, 'status': lead_status, 'x_lead': x_lead, 'y_lead': y_lead,
                            'a_lead': a_lead, 'a_rel': a_rel, 'v_lat': v_lat, 'steer_angle': steer_angle, 'steer_rate': steer_rate,
                            'path_curvature': path_curvature, 'live_tracks': track_data, 'time': time.time(), 'gas': gas, 'brake': brake,
-                           'car_gas': car_gas, 'left_blinker': left_blinker, 'right_blinker': right_blinker, 'decel_for_model': decel_for_model})
+                           'car_gas': car_gas, 'left_blinker': left_blinker, 'right_blinker': right_blinker, 'decel_for_model': decel_for_model, 'set_speed': set_speed})
       if self.df_frame >= 800:  # every 20 seconds, write to file
         try:
           with open("/data/openpilot/selfdrive/df_dc/df-data", "a") as f:
