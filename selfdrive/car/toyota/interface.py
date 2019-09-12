@@ -311,6 +311,7 @@ class CarInterface(object):
 
     # gear shifter
     ret.gearShifter = self.CS.gear_shifter
+    ret.sportOn = True if self.CS.sport_on == 1 else False
 
     # gas pedal
     ret.gas = self.CS.car_gas

@@ -95,7 +95,7 @@ class LongitudinalMpc(object):
       a_rel = 0.0
       lead_status = False
 
-    if self.mpc_id == 1 and not CS.cruiseState.enabled and CS.gearShifter == 'drive':  # if openpilot not engaged and in drive, gather data
+    if self.mpc_id == 1 and not CS.cruiseState.enabled and CS.gearShifter == 'drive' and (CS.sportOn is False or CS.sportOn == 0):  # if openpilot not engaged and in drive, gather data
       self.df_data.append({'v_ego': v_ego, 'a_ego': a_ego, 'v_lead': v_lead, 'status': lead_status, 'x_lead': x_lead, 'y_lead': y_lead,
                            'a_lead': a_lead, 'a_rel': a_rel, 'v_lat': v_lat, 'steer_angle': steer_angle, 'steer_rate': steer_rate,
                            'path_curvature': path_curvature, 'live_tracks': track_data, 'time': time.time(), 'gas': gas, 'brake': brake,
