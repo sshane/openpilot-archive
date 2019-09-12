@@ -36,14 +36,17 @@ def upload_data():
           ftp.mkd("/{}".format(username))
         except:
           pass
-        try:
-          ftp.storbinary("STOR /{}/{}".format(username, filename), f)
-        except Exception,e:
-          print(e)
-          print(str(e)=='550 Permission denied')
-          df_num += 1  # if exists on server, increment by 1
-          filename = "df-data.{}".format(df_num)
-          ftp.storbinary("STOR /{}/{}".format(username, filename), f)
+        uploaded = False
+        tries = 0
+        while not uploaded and tries <= 5:
+          try:
+            ftp.storbinary("STOR /{}/{}".format(username, filename), f)
+            uploaded = True
+          except Exception,e:
+            if str(e)=='550 Permission denied':
+              df_num += 1  # if exists on server, increment by 1
+              filename = "df-data.{}".format(df_num)
+          tries += 1
       ftp.quit()
       os.remove(filepath)
       op_params.put('df_num', df_num + 1)  # increment number of files uploaded so we don't overwrite existing files on server
