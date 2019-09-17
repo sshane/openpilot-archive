@@ -80,14 +80,14 @@ class LongControl(object):
     self.model_wrapper = df_wrapper.get_wrapper()
     self.model_wrapper.init_model()
     self.past_data = []
-    self.scales = {'a_lead': [-3.154085159301758, 2.9096145629882812],
-                   'dRel': [1.7200000286102295, 196.32000732421875],
+    self.scales = {'a_lead': [-3.518455982208252, 3.2121474742889404],
+                   'dRel': [1.0800000429153442, 196.32000732421875],
                    'max_tracks': 16,
-                   'set_speed': [0.0, 35.27777862548828],
-                   'steer_angle': [-547.5999755859375, 548.2999877929688],
-                   'steer_rate': [-658.0, 458.0],
-                   'vRel': [-51.20000076293945, 27.549999237060547],
-                   'v_ego': [-0.087776318192482, 36.29853057861328],
+                   'set_speed': [11.94444465637207, 35.27777862548828],
+                   'steer_angle': [-558.7999877929688, 540.0999755859375],
+                   'steer_rate': [-733.0, 683.0],
+                   'vRel': [-51.20000076293945, 27.399999618530273],
+                   'v_ego': [-0.09665098041296005, 36.29853057861328],
                    'yRel': [-15.0, 15.0]}
 
   def df_live_tracks(self, v_ego, a_ego, track_data, steering_angle, steering_rate, left_blinker, right_blinker, radar_state, set_speed):
@@ -105,14 +105,17 @@ class LongControl(object):
     left_blinker = 1 if left_blinker else 0
     right_blinker = 1 if right_blinker else 0
     a_lead, lead_status = self.get_lead(radar_state)
-    a_lead = interp_fast(a_lead, self.scales['a_lead'])
+    if lead_status == 0:
+      a_lead = 0.0
+    else:
+      a_lead = interp_fast(a_lead, self.scales['a_lead'])
     set_speed = interp_fast(set_speed, self.scales['set_speed'])
 
-    final_input = [v_ego, steering_angle, steering_rate, a_lead, set_speed, left_blinker, right_blinker, lead_status] + flat_tracks
+    final_input = [v_ego, steering_angle, steering_rate, a_lead, set_speed, left_blinker, right_blinker] + flat_tracks
     with open('/data/testshape', 'a') as f:
       f.write('{}\n'.format(len(final_input)))
     model_output = float(self.model_wrapper.run_model_live_tracks(final_input))
-    model_output = (model_output - 0.5) * 2.03
+    model_output = (model_output - 0.5) * 2.1
     return clip(model_output, -1.0, 1.0)
 
 
@@ -171,7 +174,7 @@ class LongControl(object):
                                     right_blinker, radar_state, set_speed)
     #df_output = self.df(radar_state, v_ego, a_ego, set_speed)
     if df_output is not None:
-      return max(df_output, 0), -min(df_output, 0.0) 
+      return max(df_output, 0), -min(df_output, 0.0)
     else:  # use mpc when no lead
       gas_max = interp(v_ego, CP.gasMaxBP, CP.gasMaxV)
       brake_max = interp(v_ego, CP.brakeMaxBP, CP.brakeMaxV)
