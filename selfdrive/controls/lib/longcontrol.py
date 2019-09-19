@@ -155,7 +155,7 @@ class LongControl(object):
       model_output = self.model_wrapper.run_model_lstm([i for x in self.past_data for i in x])
       with open('/data/df_output', 'a') as f:
         f.write('\n' + str(model_output) + ' ' + str(self.past_data))
-      return clip((model_output - 0.50) * 3.0, -1.0, 1.0)
+      return clip((model_output - 0.50) * 4.0, -1.0, 1.0)
     else:
       with open('/data/noneh', 'a') as f:
         f.write('none\n')
