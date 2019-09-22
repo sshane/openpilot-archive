@@ -7,11 +7,8 @@ from common.numpy_fast import clip
 from selfdrive.car.toyota.carcontroller import SteerLimitParams
 from selfdrive.car import apply_toyota_steer_torque_limits
 from selfdrive.controls.lib.drive_helpers import get_steer_max
-from selfdrive.virtualZSS import virtualZSS_wrapper
+from selfdrive.virtualZSS import virtualZSS
 from selfdrive.kegman_conf import kegman_conf
-
-def interp_fast(x, xp, fp):  # extrapolates above range, np.interp does not
-  return (((x - xp[0]) * (fp[1] - fp[0])) / (xp[1] - xp[0])) + fp[0]
 
 def mean(numbers):
   return float(sum(numbers)) / max(len(numbers), 1)
@@ -47,9 +44,7 @@ class LatControlINDI(object):
     self.inner_loop_gain = CP.lateralTuning.indi.innerLoopGain
     self.alpha = 1. - DT_CTRL / (self.RC + DT_CTRL)
 
-    #virtualZSS
-    self.model_wrapper = virtualZSS_wrapper.get_wrapper()
-    self.model_wrapper.init_model()
+    self.ZSS = virtualZSS.vZSS()
     self.output_steer = 0
     self.readings = []
     # Live Tuning variable init
@@ -57,10 +52,6 @@ class LatControlINDI(object):
     self.mpc_frame = 0
 
     self.reset()
-    self.past_data = []
-    self.seq_len = 20
-    self.scales = {'zorro_sensor': [-31.666841506958008, 39.42588806152344],
-                   'stock_sensor': [-31.0, 37.599998474121094], 'steer_command': [-1.0, 1.0]}
 
   def reset(self):
     self.delayed_output = 0.
@@ -92,12 +83,10 @@ class LatControlINDI(object):
   def update(self, active, v_ego, angle_steers, angle_steers_rate, eps_torque, steer_override, CP, VM, path_plan, driver_torque):
 
     #virtualZSS
-    self.past_data.append([interp_fast(angle_steers, self.scales['stock_sensor'], [0, 1]), self.output_steer])  # steer command is already 'normalized'
-    while len(self.past_data) > self.seq_len:
-      del self.past_data[0]
+    if self.ZSS.can_predict():
+      angle_steers = self.ZSS.predict()
 
-    if len(self.past_data) == self.seq_len:
-      angle_steers = interp_fast(float(self.model_wrapper.run_model_time_series([i for x in self.past_data for i in x])), [0.0, 1.0], self.scales['zorro_sensor'])
+    self.ZSS.save_sample(['shitty_angle', 'output_steer', 'wheel_speeds.fl', 'wheel_speeds.fr', 'wheel_speeds.rl', 'wheel_speeds.rr'])
 
     # smooth angle
     #max_samples = 20

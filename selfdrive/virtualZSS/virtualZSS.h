@@ -16,7 +16,7 @@
 extern "C"{
   float run_model(float shitty_angle, float t_output);
   void init_model();
-  float run_model_time_series(float inputData[40]);
+  float run_model_time_series(float inputData[120]);
 }
 
 struct testvar_t {

@@ -12,7 +12,7 @@ def get_wrapper():  # initialize df model and process angle predictions
     ffi.cdef("""
     float run_model(float shitty_angle, float t_output);
     void init_model();
-    float run_model_time_series(float inputData[40]);
+    float run_model_time_series(float inputData[120]);
     """)
 
     return ffi.dlopen(libmpc_fn)
