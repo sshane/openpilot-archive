@@ -84,12 +84,14 @@ class LongitudinalMpc(object):
     left_blinker = CS.leftBlinker
     right_blinker = CS.rightBlinker
     set_speed = CS.cruiseState.speed
-    '''gyro = []
+    gyro = []
     sensors = messaging.recv_sock(self.sensor)
     if sensors is not None:
       for sensor in sensors.sensorEvents:
         if sensor.type == 4:  # gyro
-          gyro = list(sensor.gyro.v)'''
+          gyro = list(sensor.gyro.v)
+          with open('/data/gyrotest', 'a') as f:
+            f.write('{}\n'.format(gyro))
 
     # Setup current mpc state
     self.cur_state[0].x_ego = 0.0
