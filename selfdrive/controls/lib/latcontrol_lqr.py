@@ -32,12 +32,13 @@ class LatControlLQR(object):
     self.i_lqr = 0.0
     self.output_steer = 0.0
 
-  def update(self, active, v_ego, angle_steers, angle_steers_rate, eps_torque, steer_override, CP, VM, path_plan, driver_torque):
+  def update(self, active, v_ego, angle_steers, angle_steers_rate, eps_torque, steer_override, CP, VM, path_plan, driver_torque, wheel_speeds):
     #virtualZSS
+    stock_angle = float(angle_steers)
     if self.ZSS.can_predict():
       angle_steers = self.ZSS.predict()
 
-    self.ZSS.save_sample(['shitty_angle', 'output_steer', 'wheel_speeds.fl', 'wheel_speeds.fr', 'wheel_speeds.rl', 'wheel_speeds.rr'])
+    self.ZSS.save_sample([stock_angle, self.output_steer, wheel_speeds.fl, wheel_speeds.fr, wheel_speeds.rl, wheel_speeds.rr])
 
     lqr_log = log.ControlsState.LateralLQRState.new_message()
 
