@@ -80,14 +80,13 @@ class LongControl(object):
     self.model_wrapper = df_wrapper.get_wrapper()
     self.model_wrapper.init_model()
     self.past_data = []
-    self.scales = {'a_lead': [-3.518455982208252, 3.2121474742889404],
-                   'dRel': [1.0800000429153442, 196.32000732421875],
+    self.scales = {'a_lead': [-3.709836483001709, 3.4350156784057617],
+                   'dRel': [0.11999999731779099, 196.32000732421875],
                    'max_tracks': 16,
-                   'set_speed': [11.94444465637207, 35.27777862548828],
-                   'steer_angle': [-558.7999877929688, 540.0999755859375],
-                   'steer_rate': [-733.0, 683.0],
-                   'vRel': [-51.20000076293945, 27.399999618530273],
-                   'v_ego': [-0.09665098041296005, 36.29853057861328],
+                   'steer_angle': [-568.0, 591.5999755859375],
+                   'steer_rate': [-775.0, 816.0],
+                   'vRel': [-30.024999618530273, 28.100000381469727],
+                   'v_ego': [-0.15605801343917847, 36.29853057861328],
                    'yRel': [-15.0, 15.0]}
 
   def df_live_tracks(self, v_ego, a_ego, track_data, steering_angle, steering_rate, left_blinker, right_blinker, radar_state, set_speed):
@@ -109,9 +108,9 @@ class LongControl(object):
       a_lead = 0.0
     else:
       a_lead = interp_fast(a_lead, self.scales['a_lead'])
-    set_speed = interp_fast(set_speed, self.scales['set_speed'])
+    #set_speed = interp_fast(set_speed, self.scales['set_speed'])
 
-    final_input = [v_ego, steering_angle, steering_rate, a_lead, set_speed, left_blinker, right_blinker] + flat_tracks
+    final_input = [v_ego, steering_angle, steering_rate, a_lead, left_blinker, right_blinker] + flat_tracks
     with open('/data/testshape', 'a') as f:
       f.write('{}\n'.format(len(final_input)))
     model_output = float(self.model_wrapper.run_model_live_tracks(final_input))
