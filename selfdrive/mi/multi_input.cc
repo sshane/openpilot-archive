@@ -80,7 +80,7 @@ extern "C" {
     inputVec.push_back(a);
     inputVec2.push_back(b);
     printf("about to get input tensor");
-    std::unique_ptr<zdl::DlSystem::ITensor> inputTensor = loadInputTensor(snpe, inputVec);
+    loadInputTensor(snpe, inputVec);
     //std::unique_ptr<zdl::DlSystem::ITensor> inputTensor2 = loadInputTensor(snpe, inputVec2);
     printf("about to execute model");
     //zdl::DlSystem::ITensor* oTensor = executeNetwork(snpe, inputTensor);
