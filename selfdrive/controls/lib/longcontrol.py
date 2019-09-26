@@ -104,7 +104,7 @@ class LongControl(object):
     return gas
 
   def pid_a(self, des_acc, cur_acc, v_ego):
-    gas = self.pid_acc.update(setpoint=des_acc, measurement=cur_acc, speed=v_ego)
+    gas = clip(self.pid_acc.update(setpoint=des_acc, measurement=cur_acc, speed=v_ego), -1, 1)
     if abs(des_acc) < 0.11176 and v_ego < 0.22352:  # holds us at a stop
       gas = -0.2
     return gas
