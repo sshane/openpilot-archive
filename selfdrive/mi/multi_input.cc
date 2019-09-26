@@ -1,4 +1,4 @@
-#include "dynamic_follow.h"
+#include "multi_input.h"
 using namespace std;
 
 std::unique_ptr<zdl::SNPE::SNPE> snpe;
