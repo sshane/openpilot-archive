@@ -126,9 +126,9 @@ class LongControl(object):
     final_input = [v_ego, steering_angle, steering_rate, a_lead, left_blinker, right_blinker] + flat_tracks
     model_output = float(self.model_wrapper.run_model_live_tracks(final_input))
 
-    desired_accel = interp_fast(model_output, [0, 1], self.scales['a_ego'], ext=True)
-    gas_output = self.p_controller(desired_accel, a_ego, v_ego)
-    return clip(gas_output, -1.0, 1.0)
+    des_acc = interp_fast(model_output, [0, 1], self.scales['a_ego'], ext=True)
+    gas_output = self.p_controller(des_acc, a_ego, v_ego)
+    return gas_output
 
   def df_live_tracks(self, v_ego, a_ego, track_data, steering_angle, steering_rate, left_blinker, right_blinker,
                      radar_state, set_speed):
@@ -214,7 +214,7 @@ class LongControl(object):
              steering_rate, left_blinker, right_blinker):
     """Update longitudinal control. This updates the state machine and runs a PID loop"""
     # Actuation limits
-    df_output = self.df_live_tracks(v_ego, a_ego, track_data, steering_angle, steering_rate, left_blinker,
+    df_output = self.df_live_tracks_acc(v_ego, a_ego, track_data, steering_angle, steering_rate, left_blinker,
                                     right_blinker, radar_state, set_speed)
     #df_output = self.df(radar_state, v_ego, a_ego, set_speed)
     if df_output is not None:
