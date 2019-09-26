@@ -74,17 +74,6 @@ public:
    SNPEBuilder& setPerformanceProfile(
       zdl::DlSystem::PerformanceProfile_t performanceProfile);
 
-   /**
-    * @brief Sets the profiling level. Default profiling level for
-    *        SNPEBuilder is off. Off and basic only applies to DSP runtime.
-    *
-    * @param[in] profilingLevel The target profiling level.
-    *
-    * @return The current instance of SNPEBuilder.
-    */
-   SNPEBuilder& setProfilingLevel(
-      zdl::DlSystem::ProfilingLevel_t profilingLevel);
-
     /**
      * @brief Sets a preference for execution priority.
      *
@@ -195,22 +184,6 @@ public:
     * @return The current instance of SNPEBuilder.
     */
    SNPEBuilder& setInputDimensions(const zdl::DlSystem::TensorShapeMap& inputDimensionsMap);
-
-   /**
-    * @brief (EXPERIMENTAL) Sets the mode of init caching functionality.
-    *
-    * @param[in] mode   This flag enables/disables the functionality of init caching.
-    *                   When init caching functionality is enabled, a set of init caches
-    *                   will be created during network building/initialization process
-    *                   and will be added to DLC container. If such DLC container is saved
-    *                   by the user, in subsequent network building/initialization processes
-    *                   these init caches will be loaded from the DLC so as to reduce initialization time.
-    *                   In disable mode, no init caches will be added to DLC container.
-    *
-    * @return The current instance of SNPEBuilder.
-    */
-   SNPEBuilder& setInitCacheMode(
-      bool cacheMode);
 
    /**
     * @brief Returns an instance of SNPE based on the current parameters.

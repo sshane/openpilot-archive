@@ -43,16 +43,6 @@ enum class Runtime_t
    /// Math: float 16bit
    GPU_FLOAT16 = 3,
 
-   /// Run the processing on Snapdragon CPU.
-   /// Data: 8bit fixed point Tensorflow style format
-   /// Math: 8bit fixed point Tensorflow style format
-   CPU_FIXED8_TF = 4,
-
-   /// Run the processing on Snapdragon AIX+HVX.
-   /// Data: 8bit fixed point Tensorflow style format
-   /// Math: 8bit fixed point Tensorflow style format
-   AIP_FIXED8_TF = 5,
-
    /// Default legacy enum to retain backward compatibility.
    /// CPU = CPU_FLOAT32
    CPU = CPU_FLOAT32,
@@ -63,10 +53,7 @@ enum class Runtime_t
 
    /// Default legacy enum to retain backward compatibility.
    /// DSP = DSP_FIXED8_TF
-   DSP = DSP_FIXED8_TF,
-
-   /// Special value indicating the property is unset.
-   UNSET = -1
+   DSP = DSP_FIXED8_TF
 };
 
 /**
@@ -90,29 +77,8 @@ enum class PerformanceProfile_t
     SYSTEM_SETTINGS,
 
     /// Run in sustained high performance mode
-    SUSTAINED_HIGH_PERFORMANCE,
+    SUSTAINED_HIGH_PERFORMANCE
 
-    /// Run in burst mode
-    BURST
-};
-
-/**
- * Enumeration of various profilngLevels that can be requested.
- */
-enum class ProfilingLevel_t
-{
-    /// No profiling.
-    /// Collects no runtime stats in the DiagLog
-    OFF = 0,
-
-    /// Basic profiling
-    /// Collects some runtime stats in the DiagLog
-    BASIC = 1,
-
-    /// Detailed profiling
-    /// Collects more runtime stats in the DiagLog
-    /// Performance may be impacted
-    DETAILED = 2
 };
 
 /**

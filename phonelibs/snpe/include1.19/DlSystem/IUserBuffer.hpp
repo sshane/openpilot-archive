@@ -244,24 +244,6 @@ public:
     virtual size_t getSize() const = 0;
 
     /**
-      * @brief Retrieves the size of the inference data in the buffer, in bytes.
-      *
-      * The inference results from a dynamic-sized model may not be exactly the same size
-      * as the UserBuffer provided to SNPE. This function can be used to get the amount
-      * of output inference data, which may be less or greater than the size of the UserBuffer.
-      *
-      * If the inference results fit in the UserBuffer, getOutputSize() would be less than
-      * or equal to getSize(). But if the inference results were more than the capacity of
-      * the provided UserBuffer, the results would be truncated to fit the UserBuffer. But,
-      * getOutputSize() would be greater than getSize(), which indicates a bigger buffer
-      * needs to be provided to SNPE to hold all of the inference results.
-      *
-      * @return Size required for the buffer to hold all inference results, which can be less
-      * or more than the size of the buffer, in bytes.
-    */
-    virtual size_t getOutputSize() const = 0;
-
-    /**
       * @brief Changes the underlying memory that backs the UserBuffer.
       *
       * This can be used to avoid creating multiple UserBuffer objects
