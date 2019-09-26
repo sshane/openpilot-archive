@@ -38,16 +38,17 @@ void initializeSNPE(zdl::DlSystem::Runtime_t runtime) {
 void getInputTensors(std::unique_ptr<zdl::SNPE::SNPE> &snpe, std::vector<float> inputVec) {
   std::unique_ptr<zdl::DlSystem::ITensor> input;
   const auto &strList_opt = snpe->getInputTensorNames();
-  /*if (!strList_opt) throw std::runtime_error("Error obtaining Input tensor names");
-  const auto &strList = *strList_opt;
+  //if (!strList_opt) throw std::runtime_error("Error obtaining Input tensor names");
+  //const auto &strList = *strList_opt;
   std::cout << "input shape: " << inputShape << "\n";
-  const auto &inputDims_opt = snpe->getInputDimensions(strList.at(0));
-  const auto &inputShape = *inputDims_opt;
+  std::cout << "inputs: " << strList << "\n";
+  //const auto &inputDims_opt = snpe->getInputDimensions(strList.at(0));
+  //const auto &inputShape = *inputDims_opt;
 
-  input = zdl::SNPE::SNPEFactory::getTensorFactory().createTensor(inputShape);
-  std::copy(inputVec.begin(), inputVec.end(), input->begin());
+  //input = zdl::SNPE::SNPEFactory::getTensorFactory().createTensor(inputShape);
+  //std::copy(inputVec.begin(), inputVec.end(), input->begin());
 
-  return input;*/
+  return input;
 }
 
 std::unique_ptr<zdl::DlSystem::ITensor> loadInputTensor(std::unique_ptr<zdl::SNPE::SNPE> &snpe, std::vector<float> inputVec) {
