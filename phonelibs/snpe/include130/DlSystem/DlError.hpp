@@ -34,6 +34,7 @@ enum class ZDL_EXPORT ErrorCode : uint32_t {
    SNPE_CONFIG_WRONG_INPUT_NAME                          = 105,
    SNPE_CONFIG_INCORRECT_INPUT_DIMENSIONS                = 106,
    SNPE_CONFIG_DIMENSIONS_MODIFICATION_NOT_SUPPORTED     = 107,
+   SNPE_CONFIG_BOTH_OUTPUT_LAYER_TENSOR_NAMES_SET        = 108,
 
    SNPE_CONFIG_NNCONFIG_ONLY_TENSOR_SUPPORTED            = 120,
    SNPE_CONFIG_NNCONFIG_ONLY_USER_BUFFER_SUPPORTED       = 121,
@@ -122,6 +123,7 @@ enum class ZDL_EXPORT ErrorCode : uint32_t {
    SNPE_GPU_LAYER_PROXY_ERROR                            = 814,
    SNPE_GPU_BUFFER_IN_USE                                = 815,
    SNPE_GPU_BUFFER_MODIFICATION_ERROR                    = 816,
+   SNPE_GPU_DATA_ARRANGEMENT_INVALID                     = 817,
 
    // DSP runtime errors
    SNPE_DSP_LAYER_NOT_SUPPORTED                          = 900,

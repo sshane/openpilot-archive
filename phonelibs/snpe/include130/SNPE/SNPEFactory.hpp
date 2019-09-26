@@ -1,6 +1,6 @@
 //==============================================================================
 //
-//  Copyright (c) 2015-2016 Qualcomm Technologies, Inc.
+//  Copyright (c) 2015-2019 Qualcomm Technologies, Inc.
 //  All Rights Reserved.
 //  Confidential and Proprietary - Qualcomm Technologies, Inc.
 //
@@ -42,19 +42,22 @@ class ZDL_EXPORT SNPEFactory
 public:
 
    /**
-    * Indicates whether the supplied runtime is available on the 
+    * Indicates whether the supplied runtime is available on the
     * current platform.
-    * 
+    *
     * @param[in] runtime The target runtime to check.
-    *    
-    * @return True if the supplied runtime is available; false, 
+    *
+    * @param[in] option Extent to perform runtime available check.
+    *
+    * @return True if the supplied runtime is available; false,
     *         otherwise.
     */
-   static bool isRuntimeAvailable(zdl::DlSystem::Runtime_t runtime);
+   static bool isRuntimeAvailable(zdl::DlSystem::Runtime_t runtime,
+                                  zdl::DlSystem::RuntimeCheckOption_t option = zdl::DlSystem::RuntimeCheckOption_t::DEFAULT);
 
    /**
     * Gets a reference to the tensor factory.
-    * 
+    *
     * @return A reference to the tensor factory.
     */
    static zdl::DlSystem::ITensorFactory& getTensorFactory();

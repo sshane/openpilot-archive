@@ -23,11 +23,20 @@
 @{ */
 
 /**
+ *@ brief build snpe instance in serial or parallel
+ *
+ */
+enum class ZDL_EXPORT BuildMode {
+   SERIAL = 0,
+   PARALLEL = 1
+};
+/**
   * @brief .
   *
   * A structure snpe builder configuration
   */
 struct ZDL_EXPORT BuildConfig final{
+   BuildMode buildMode = BuildMode::SERIAL;
    zdl::DlContainer::IDlContainer* container;
    zdl::DlSystem::StringList outputBufferNames;
    RuntimeConfigList runtimeConfigList;
@@ -40,6 +49,8 @@ struct ZDL_EXPORT BuildConfig final{
   */
 class ZDL_EXPORT BulkSNPE {
 public:
+
+   ~BulkSNPE();
 
    /**
     * @brief Build snpe instance objects in parallel.
