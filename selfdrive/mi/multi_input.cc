@@ -35,20 +35,35 @@ void initializeSNPE(zdl::DlSystem::Runtime_t runtime) {
 
 
 
-void loadInputTensor(std::unique_ptr<zdl::SNPE::SNPE> &snpe, std::vector<float> inputVec) {
+
+getInputTensor1(std::unique_ptr<zdl::SNPE::SNPE> &snpe, std::vector<float> inputVec) {
   std::unique_ptr<zdl::DlSystem::ITensor> input;
-  //const auto &strList_opt = snpe->getInputTensorNames();
-  //if (!strList_opt) throw std::runtime_error("Error obtaining Input tensor names");
-  //const auto &strList = *strList_opt;
+  /*const auto &strList_opt = snpe->getInputTensorNames();
+  if (!strList_opt) throw std::runtime_error("Error obtaining Input tensor names");
+  const auto &strList = *strList_opt;
+  std::cout << "input shape: " << inputShape << "\n";
+  const auto &inputDims_opt = snpe->getInputDimensions(strList.at(0));
+  const auto &inputShape = *inputDims_opt;
 
-  //const auto &inputDims_opt = snpe->getInputDimensions(strList.at(0));
-  //const auto &inputShape = *inputDims_opt;
-  //std::cout << "input shape: " << inputShape << "\n";
+  input = zdl::SNPE::SNPEFactory::getTensorFactory().createTensor(inputShape);
+  std::copy(inputVec.begin(), inputVec.end(), input->begin());
 
-  //input = zdl::SNPE::SNPEFactory::getTensorFactory().createTensor(inputShape);
-  //std::copy(inputVec.begin(), inputVec.end(), input->begin());
+  return input;*/
+}
 
-  //return input;
+std::unique_ptr<zdl::DlSystem::ITensor> loadInputTensor(std::unique_ptr<zdl::SNPE::SNPE> &snpe, std::vector<float> inputVec) {
+  std::unique_ptr<zdl::DlSystem::ITensor> input;
+  const auto &strList_opt = snpe->getInputTensorNames();
+  if (!strList_opt) throw std::runtime_error("Error obtaining Input tensor names");
+  const auto &strList = *strList_opt;
+
+  const auto &inputDims_opt = snpe->getInputDimensions(strList.at(0));
+  const auto &inputShape = *inputDims_opt;
+
+  input = zdl::SNPE::SNPEFactory::getTensorFactory().createTensor(inputShape);
+  std::copy(inputVec.begin(), inputVec.end(), input->begin());
+
+  return input;
 }
 
 float returnOutput(const zdl::DlSystem::ITensor* tensor) {
@@ -80,7 +95,7 @@ extern "C" {
     inputVec.push_back(a);
     inputVec2.push_back(b);
     printf("about to get input tensor");
-    loadInputTensor(snpe, inputVec);
+    //std::unique_ptr<zdl::DlSystem::ITensor> inputTensor = loadInputTensor(snpe, inputVec);
     //std::unique_ptr<zdl::DlSystem::ITensor> inputTensor2 = loadInputTensor(snpe, inputVec2);
     printf("about to execute model");
     //zdl::DlSystem::ITensor* oTensor = executeNetwork(snpe, inputTensor);
