@@ -50,7 +50,7 @@ void getInputTensors(std::unique_ptr<zdl::SNPE::SNPE> &snpe, std::vector<float> 
   //input = zdl::SNPE::SNPEFactory::getTensorFactory().createTensor(inputShape);
   //std::copy(inputVec.begin(), inputVec.end(), input->begin());
 
-  return input;
+  //return input;
 }
 
 std::unique_ptr<zdl::DlSystem::ITensor> loadInputTensor(std::unique_ptr<zdl::SNPE::SNPE> &snpe, std::vector<float> inputVec) {
