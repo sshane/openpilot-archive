@@ -83,9 +83,10 @@ extern "C" {
     std::unique_ptr<zdl::DlSystem::ITensor> inputTensor = loadInputTensor(snpe, inputVec);
     std::unique_ptr<zdl::DlSystem::ITensor> inputTensor2 = loadInputTensor(snpe, inputVec2);
     printf("about to execute model");
-    zdl::DlSystem::ITensor* oTensor = executeNetwork(snpe, inputTensor);
-    printf("about to get output");
-    return returnOutput(oTensor);
+    //zdl::DlSystem::ITensor* oTensor = executeNetwork(snpe, inputTensor);
+    //printf("about to get output");
+    //return returnOutput(oTensor);
+    return 1.5;
   }
 
   float run_model_live_tracks(float inputData[54]){
