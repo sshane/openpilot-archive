@@ -89,7 +89,7 @@ class LongControl(object):
                    'vRel': [-51.20000076293945, 28.100000381469727],
                    'v_ego': [-0.15605801343917847, 36.29853057861328],
                    'yRel': [-15.0, 15.0]}
-    self.P = 0.1
+    self.P = 0.04
     self.prev_gas = 0.0
 
   def p_controller(self, des_acc, cur_acc, v_ego):  # desired acceleration
