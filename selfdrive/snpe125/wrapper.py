@@ -8,7 +8,7 @@ except:
 
 
 def get_model():
-    libmpc_fn = "/data/openpilot/selfdrive/df/dynamic_follow.so"
+    libmpc_fn = "/data/openpilot/selfdrive/snpe125/dynamic_follow.so"
 
     ffi = FFI()
     ffi.cdef("""    
