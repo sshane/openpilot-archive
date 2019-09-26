@@ -2,13 +2,13 @@ from cffi import FFI
 import subprocess
 
 try:
-    subprocess.check_call(["make", "-j4"], cwd="/data/openpilot/selfdrive/snpe125")
+    subprocess.check_call(["make", "-j4"], cwd="/data/openpilot/selfdrive/snpe130")
 except:
     pass
 
 
 def get_model():
-    libmpc_fn = "/data/openpilot/selfdrive/snpe125/dynamic_follow.so"
+    libmpc_fn = "/data/openpilot/selfdrive/snpe130/dynamic_follow.so"
 
     ffi = FFI()
     ffi.cdef("""    
