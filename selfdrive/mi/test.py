@@ -11,17 +11,10 @@ for i in range(30):
   0.01075646532123655)
 print(time.time() - startl)'''
 
-df_input = [0]*54
 
-#s = time.time()
-
-for i in range(100):
-  model_output = df_model.run_model_live_tracks(df_input)
-  print("Model output: {}".format(model_output))
-
-
-model_output = df_model.run_model_live_tracks(df_input)
+model_output = df_model.run_mode(.2, .5)
 print("Model output: {}".format(model_output))
+
 
 
 #print(time.time()-s)
