@@ -75,8 +75,8 @@ class LongControl(object):
                             rate=RATE,
                             sat_limit=0.8,
                             convert=compute_gb)
-    self.pid_acc = PIController(([0., 35.], [.0, .2]),
-                                 ([0, 35], [8, 1]),
+    self.pid_acc = PIController(([0., 35.], [.0, .1]),
+                                 ([0, 35], [2, .5]),
                                  k_f=1, pos_limit=1.0, neg_limit=-1.0, rate=20)
     self.v_pid = 0.0
     self.last_output_gb = 0.0
