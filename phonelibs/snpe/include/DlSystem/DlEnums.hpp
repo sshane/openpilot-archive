@@ -1,6 +1,6 @@
 //==============================================================================
 //
-//  Copyright (c) 2014-2019 Qualcomm Technologies, Inc.
+//  Copyright (c) 2014-2018 Qualcomm Technologies, Inc.
 //  All Rights Reserved.
 //  Confidential and Proprietary - Qualcomm Technologies, Inc.
 //
@@ -43,6 +43,11 @@ enum class Runtime_t
    /// Math: float 16bit
    GPU_FLOAT16 = 3,
 
+   /// Run the processing on Snapdragon CPU.
+   /// Data: 8bit fixed point Tensorflow style format
+   /// Math: 8bit fixed point Tensorflow style format
+   CPU_FIXED8_TF = 4,
+
    /// Run the processing on Snapdragon AIX+HVX.
    /// Data: 8bit fixed point Tensorflow style format
    /// Math: 8bit fixed point Tensorflow style format
@@ -62,19 +67,6 @@ enum class Runtime_t
 
    /// Special value indicating the property is unset.
    UNSET = -1
-};
-
-/**
- * Enumeration of runtime available check options.
- */
-enum class RuntimeCheckOption_t
-{
-   /// Perform standard runtime available check
-   DEFAULT = 0,
-   /// Perform standard runtime available check
-   NORMAL_CHECK = 0,
-   /// Perform basic runtime available check, may be runtime specific
-   BASIC_CHECK,
 };
 
 /**
