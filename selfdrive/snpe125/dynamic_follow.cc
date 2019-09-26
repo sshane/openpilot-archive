@@ -31,6 +31,8 @@ void initializeSNPE(zdl::DlSystem::Runtime_t runtime) {
                       .setPerformanceProfile(zdl::DlSystem::PerformanceProfile_t::HIGH_PERFORMANCE)
                       .build();
 
+   printf("set snpe");
+
 }
 
 
