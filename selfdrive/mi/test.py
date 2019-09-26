@@ -12,7 +12,7 @@ for i in range(30):
 print(time.time() - startl)'''
 
 
-model_output = mi_model.run_mode(.2, .5)
+model_output = mi_model.run_model(.2, .5)
 print("Model output: {}".format(model_output))
 
 
