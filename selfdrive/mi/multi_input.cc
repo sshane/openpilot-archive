@@ -37,7 +37,7 @@ void initializeSNPE(zdl::DlSystem::Runtime_t runtime) {
 
 void getInputTensors(std::unique_ptr<zdl::SNPE::SNPE> &snpe, std::vector<float> inputVec) {
   std::unique_ptr<zdl::DlSystem::ITensor> input;
-  const auto &strList_opt = snpe->getInputTensorNames();
+  snpe->getInputTensorNames();
   //if (!strList_opt) throw std::runtime_error("Error obtaining Input tensor names");
   //const auto &strList = *strList_opt;
 
