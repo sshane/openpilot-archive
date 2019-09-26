@@ -46,6 +46,7 @@ void getInputTensors(std::unique_ptr<zdl::SNPE::SNPE> &snpe, std::vector<float> 
 
   //std::cout << "input shape: " << inputShape << "\n";
   std::cout << "inputs: " << strList.at(0) << "\n";
+  std::cout << "inputs: " << strList.at(1) << "\n";
 
   //input = zdl::SNPE::SNPEFactory::getTensorFactory().createTensor(inputShape);
   //std::copy(inputVec.begin(), inputVec.end(), input->begin());
