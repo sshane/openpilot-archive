@@ -75,6 +75,9 @@ class LongControl(object):
                             rate=RATE,
                             sat_limit=0.8,
                             convert=compute_gb)
+    self.pid_acc = PIController(([0., 35.], [.0, .2]),
+                                 ([0, 35], [8, 1]),
+                                 k_f=1, pos_limit=1.0, neg_limit=-1.0, rate=20)
     self.v_pid = 0.0
     self.last_output_gb = 0.0
     self.model_wrapper = df_wrapper.get_wrapper()
@@ -96,6 +99,12 @@ class LongControl(object):
     error = cur_acc - des_acc
     gas = clip(self.prev_gas - (error * self.P), -1, 1)
     self.prev_gas = gas
+    if abs(des_acc) < 0.11176 and v_ego < 0.22352:  # holds us at a stop
+      gas = -0.2
+    return gas
+
+  def pid_a(self, des_acc, cur_acc, v_ego):
+    gas = self.pid_acc.update(setpoint=des_acc, measurement=cur_acc, speed=v_ego)
     if abs(des_acc) < 0.11176 and v_ego < 0.22352:  # holds us at a stop
       gas = -0.2
     return gas
@@ -127,7 +136,7 @@ class LongControl(object):
     model_output = float(self.model_wrapper.run_model_live_tracks(final_input))
 
     des_acc = interp_fast(model_output, [0, 1], self.scales['a_ego'], ext=True)
-    gas_output = self.p_controller(des_acc, a_ego, v_ego)
+    gas_output = self.pid_a(des_acc, a_ego, v_ego)
     return gas_output
 
   def df_live_tracks(self, v_ego, a_ego, track_data, steering_angle, steering_rate, left_blinker, right_blinker,
