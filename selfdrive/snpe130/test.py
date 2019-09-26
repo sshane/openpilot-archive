@@ -1,6 +1,6 @@
 import time
 #lib1 = cdll.LoadLibrary("/data/openpilot/selfdrive/df/libs/libSNPE.so")
-from selfdrive.snpe125 import wrapper
+from selfdrive.snpe130 import wrapper
 
 ffi, model = wrapper.get_model()
 model.init_model()
