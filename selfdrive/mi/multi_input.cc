@@ -10,7 +10,6 @@ zdl::DlSystem::Runtime_t checkRuntime()
     static zdl::DlSystem::Version_t Version = zdl::SNPE::SNPEFactory::getLibraryVersion();
     static zdl::DlSystem::Runtime_t Runtime;
     std::cout << "SNPE Version: " << Version.asString().c_str() << std::endl; //Print Version number
-    std::cout << "\ntest";
     if (zdl::SNPE::SNPEFactory::isRuntimeAvailable(zdl::DlSystem::Runtime_t::GPU)) {
         Runtime = zdl::DlSystem::Runtime_t::GPU;
     } else {
@@ -22,7 +21,7 @@ zdl::DlSystem::Runtime_t checkRuntime()
 
 void initializeSNPE(zdl::DlSystem::Runtime_t runtime) {
   std::unique_ptr<zdl::DlContainer::IDlContainer> container;
-  container = zdl::DlContainer::IDlContainer::open("/data/openpilot/selfdrive/mi/multi_input.dlc");
+  container = zdl::DlContainer::IDlContainer::open("/data/openpilot/selfdrive/df/dynamic_follow.dlc");
   //printf("loaded model\n");
   int counter = 0;
   zdl::SNPE::SNPEBuilder snpeBuilder(container.get());
