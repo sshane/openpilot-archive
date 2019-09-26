@@ -1,7 +1,7 @@
 import time
-from selfdrive.df import df_wrapper
-df_model = df_wrapper.get_wrapper()
-df_model.init_model()
+from selfdrive.mi import mi_wrapper
+mi_model = mi_wrapper.get_wrapper()
+mi_model.init_model()
 '''start = time.time()
 for i in range(30):
  model_output = df_model.run_model(0.8653078153514447,
@@ -12,7 +12,7 @@ for i in range(30):
 print(time.time() - startl)'''
 
 
-model_output = df_model.run_mode(.2, .5)
+model_output = mi_model.run_mode(.2, .5)
 print("Model output: {}".format(model_output))
 
 
