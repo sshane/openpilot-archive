@@ -69,9 +69,11 @@ extern "C" {
     std::vector<float> inputVec;
     inputVec.push_back(a);
     inputVec.push_back(b);
-
+    printf("about to get input tensor");
     std::unique_ptr<zdl::DlSystem::ITensor> inputTensor = loadInputTensor(snpe, inputVec);
+    printf("about to execute model");
     zdl::DlSystem::ITensor* oTensor = executeNetwork(snpe, inputTensor);
+    printf("about to get output");
     return returnOutput(oTensor);
   }
 
