@@ -15,6 +15,7 @@ zdl::DlSystem::Runtime_t checkRuntime()
     } else {
         Runtime = zdl::DlSystem::Runtime_t::CPU;
     }
+    printf("got runtime");
     return Runtime;
 }
 
