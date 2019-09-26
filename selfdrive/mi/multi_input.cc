@@ -90,11 +90,11 @@ extern "C" {
 
   float run_model(float a, float b){
     std::vector<float> inputVec;
-    std::vector<float> inputVec2;
+    //std::vector<float> inputVec2;
     inputVec.push_back(a);
-    inputVec2.push_back(b);
+    //inputVec2.push_back(b);
     printf("about to get input tensor");
-    getInputTensor1(snpe, inputVec);
+    //getInputTensor1(snpe, inputVec);
     //std::unique_ptr<zdl::DlSystem::ITensor> inputTensor = loadInputTensor(snpe, inputVec);
     //std::unique_ptr<zdl::DlSystem::ITensor> inputTensor2 = loadInputTensor(snpe, inputVec2);
     printf("about to execute model");
