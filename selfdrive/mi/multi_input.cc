@@ -43,6 +43,7 @@ std::unique_ptr<zdl::DlSystem::ITensor> loadInputTensor(std::unique_ptr<zdl::SNP
 
   const auto &inputDims_opt = snpe->getInputDimensions(strList.at(0));
   const auto &inputShape = *inputDims_opt;
+  std::cout << "input shape: " << inputShape << "\n";
 
   input = zdl::SNPE::SNPEFactory::getTensorFactory().createTensor(inputShape);
   std::copy(inputVec.begin(), inputVec.end(), input->begin());
@@ -67,21 +68,24 @@ zdl::DlSystem::ITensor* executeNetwork(std::unique_ptr<zdl::SNPE::SNPE>& snpe,
 }
 
 extern "C" {
-  float run_model(float a, float b){
-    std::vector<float> inputVec;
-    inputVec.push_back(a);
-    inputVec.push_back(b);
-    printf("about to get input tensor");
-    std::unique_ptr<zdl::DlSystem::ITensor> inputTensor = loadInputTensor(snpe, inputVec);
-    printf("about to execute model");
-    zdl::DlSystem::ITensor* oTensor = executeNetwork(snpe, inputTensor);
-    printf("about to get output");
-    return returnOutput(oTensor);
-  }
 
   void init_model(){
     zdl::DlSystem::Runtime_t runt=checkRuntime();
     initializeSNPE(runt);
+  }
+
+  float run_model(float a, float b){
+    std::vector<float> inputVec;
+    std::vector<float> inputVec2;
+    inputVec.push_back(a);
+    inputVec2.push_back(b);
+    printf("about to get input tensor");
+    std::unique_ptr<zdl::DlSystem::ITensor> inputTensor = loadInputTensor(snpe, inputVec);
+    std::unique_ptr<zdl::DlSystem::ITensor> inputTensor2 = loadInputTensor(snpe, inputVec2);
+    printf("about to execute model");
+    zdl::DlSystem::ITensor* oTensor = executeNetwork(snpe, inputTensor);
+    printf("about to get output");
+    return returnOutput(oTensor);
   }
 
   float run_model_live_tracks(float inputData[54]){
