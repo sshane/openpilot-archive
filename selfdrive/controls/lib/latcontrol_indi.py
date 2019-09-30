@@ -7,7 +7,7 @@ from common.numpy_fast import clip
 from selfdrive.car.toyota.carcontroller import SteerLimitParams
 from selfdrive.car import apply_toyota_steer_torque_limits
 from selfdrive.controls.lib.drive_helpers import get_steer_max
-from selfdrive.virtualZSS import virtualZSS
+from selfdrive.virtualZSS import virtualZSS_class
 from selfdrive.kegman_conf import kegman_conf
 
 def mean(numbers):
@@ -44,7 +44,7 @@ class LatControlINDI(object):
     self.inner_loop_gain = CP.lateralTuning.indi.innerLoopGain
     self.alpha = 1. - DT_CTRL / (self.RC + DT_CTRL)
 
-    self.ZSS = virtualZSS.vZSS()
+    self.ZSS = virtualZSS_class.vZSS()
     self.output_steer = 0
     self.readings = []
     # Live Tuning variable init

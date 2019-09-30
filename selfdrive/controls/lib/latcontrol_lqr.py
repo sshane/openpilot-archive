@@ -2,7 +2,7 @@ import numpy as np
 from selfdrive.controls.lib.drive_helpers import get_steer_max
 from common.numpy_fast import clip
 from cereal import log
-from selfdrive.virtualZSS import virtualZSS
+from selfdrive.virtualZSS import virtualZSS_class
 
 
 class LatControlLQR(object):
@@ -23,7 +23,7 @@ class LatControlLQR(object):
     self.i_unwind_rate = 0.3 / rate
     self.i_rate = 1.0 / rate
 
-    self.ZSS = virtualZSS.vZSS()
+    self.ZSS = virtualZSS_class.vZSS()
     self.output_steer = 0
 
     self.reset()

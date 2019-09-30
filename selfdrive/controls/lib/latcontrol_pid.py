@@ -2,7 +2,7 @@ from selfdrive.controls.lib.pid import PIController
 from selfdrive.controls.lib.drive_helpers import get_steer_max
 from cereal import car
 from cereal import log
-from selfdrive.virtualZSS import virtualZSS
+from selfdrive.virtualZSS import virtualZSS_class
 
 class LatControlPID(object):
   def __init__(self, CP):
@@ -12,7 +12,7 @@ class LatControlPID(object):
     self.angle_steers_des = 0.
 
     # virtualZSS
-    self.ZSS = virtualZSS.vZSS()
+    self.ZSS = virtualZSS_class.vZSS()
     self.output_steer = 0
 
   def reset(self):
