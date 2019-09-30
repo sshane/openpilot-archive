@@ -5,7 +5,7 @@ from selfdrive.op_params import opParams
 
 
 op_params = opParams()
-CAMERA_OFFSET = op_params.get('cameraOffset', 0.04)  # m from center car to camera
+CAMERA_OFFSET = op_params.get('cameraOffset', 0.06)  # m from center car to camera
 
 def mean(numbers):
     return float(sum(numbers)) / max(len(numbers), 1)
