@@ -2,7 +2,7 @@ from common.numpy_fast import interp
 import numpy as np
 from selfdrive.controls.lib.latcontrol_helpers import model_polyfit, compute_path_pinv
 
-CAMERA_OFFSET = 0.04  # m from center car to camera
+CAMERA_OFFSET = -0.18  # m from center car to camera
 
 def mean(numbers):
     return float(sum(numbers)) / max(len(numbers), 1)
