@@ -2,6 +2,12 @@ import os
 import json
 import time
 
+
+def write_config(params_file, params):
+  with open(params_file, "w") as f:
+    json.dump(params, f, indent=2, sort_keys=True)
+  os.chmod(params_file, 0o764)
+
 class opParams:
   def __init__(self):
     self.params_file = "/data/op_params.json"
@@ -31,19 +37,14 @@ class opParams:
           self.params = json.load(f)
       except:
         self.params = default_params
-      self.write_config()
+      write_config(self.params_file, self.params)
     else:
       self.params = default_params
-      self.write_config()
-
-  def write_config(self):  # never to be called outside of class
-    with open(self.params_file, "w") as f:
-      json.dump(self.params, f, indent=2, sort_keys=True)
-    os.chmod(self.params_file, 0o764)
+      write_config(self.params_file, self.params)
 
   def put(self, key, value):
     self.params.update({key: value})
-    self.write_config()
+    write_config(self.params_file, self.params)
 
   def get(self, key=None, default=None):  # can specify a default value if key doesn't exist
     if time.time() - self.last_read_time >= 0.5:  # make sure we aren't reading file too often
