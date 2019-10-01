@@ -35,7 +35,7 @@ class vZSS():
       del self.past_data[0]
 
   def predict(self):
-    return interp_fast(float(self.model_wrapper.run_model_time_series(np.concatenate(self.past_data).ravel())), [0.0, 1.0], self.scales['angle_steers'])
+    return interp_fast(float(self.model_wrapper.run_model_time_series(np.array(self.past_data).flatten().tolist())), [0.0, 1.0], self.scales['angle_steers'])
 
   def normalize(self, data):
     return [interp_fast(d, self.scales[name]) for name, d in zip(self.inputs, data)]
