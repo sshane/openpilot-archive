@@ -118,7 +118,7 @@ class LongitudinalMpc(object):
         [v_ego, a_ego, v_lead, lead_status, x_lead, y_lead, a_lead, a_rel, v_lat, steer_angle, steer_rate,
          path_curvature, track_data, time.time(), gas, brake, car_gas, left_blinker, right_blinker, decel_for_model,
          set_speed])
-      if self.df_frame >= 3200:  # every 20 seconds, write to file
+      if self.df_frame >= 3200:  # every 160 seconds, write to file
         try:
           with open(self.df_file_path, "a") as f:
             f.write('{}\n'.format("\n".join([str(i) for i in self.df_data])))
