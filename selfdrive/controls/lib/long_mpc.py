@@ -35,10 +35,14 @@ class LongitudinalMpc(object):
     self.df_file_path = "/data/openpilot/selfdrive/df_dc/df-data"
     self.inputs_list = ['v_ego', 'a_ego', 'v_lead', 'lead_status', 'x_lead', 'y_lead', 'a_lead', 'a_rel', 'v_lat',
                         'steer_angle', 'steer_rate', 'path_curvature', 'track_data', 'time.time()', 'gas', 'brake',
-                        'car_gas', 'left_blinker', 'right_blinker', 'decel_for_model', 'set_speed']
+                        'car_gas', 'left_blinker', 'right_blinker', 'decel_for_model', 'set_speed', 'new_accel', 'gyro']
     if not os.path.exists(self.df_file_path):
       with open(self.df_file_path, "a") as f:
         f.write('{}\n'.format(self.inputs_list))
+
+    self.last_velocity = 0
+    self.last_time = time.time()
+    self.last_gyro = None
 
   def send_mpc_solution(self, qp_iterations, calculation_time):
     qp_iterations = max(0, qp_iterations)
@@ -73,6 +77,9 @@ class LongitudinalMpc(object):
 
   def update(self, CS, lead, track_data, controlsState, v_cruise_setpoint):
     v_ego = CS.vEgo
+    new_accel = (v_ego - self.last_velocity) / (time.time() - self.last_time)
+    self.last_time = time.time()
+    self.last_velocity = v_ego
     a_ego = CS.aEgo
     gas = CS.gas
     car_gas = CS.gasSensor
@@ -84,14 +91,16 @@ class LongitudinalMpc(object):
     left_blinker = CS.leftBlinker
     right_blinker = CS.rightBlinker
     set_speed = CS.cruiseState.speed
-    gyro = []
+    gyro = None
     sensors = messaging.recv_sock(self.sensor)
     if sensors is not None:
       for sensor in sensors.sensorEvents:
         if sensor.type == 4:  # gyro
           gyro = list(sensor.gyro.v)
-          with open('/data/gyrotest', 'a') as f:
-            f.write('{}\n'.format(gyro))
+    if gyro is None:
+      gyro = self.last_gyro
+    else:
+      self.last_gyro = gyro
 
     # Setup current mpc state
     self.cur_state[0].x_ego = 0.0
@@ -117,7 +126,7 @@ class LongitudinalMpc(object):
       self.df_data.append(
         [v_ego, a_ego, v_lead, lead_status, x_lead, y_lead, a_lead, a_rel, v_lat, steer_angle, steer_rate,
          path_curvature, track_data, time.time(), gas, brake, car_gas, left_blinker, right_blinker, decel_for_model,
-         set_speed])
+         set_speed, new_accel, gyro])
       if self.df_frame >= 3200:  # every 160 seconds, write to file
         try:
           with open(self.df_file_path, "a") as f:
