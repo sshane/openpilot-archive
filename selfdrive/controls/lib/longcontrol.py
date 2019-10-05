@@ -163,8 +163,7 @@ class LongControl(object):
     # set_speed = interp_fast(set_speed, self.scales['set_speed'])
 
     final_input = [v_ego, steering_angle, steering_rate, a_lead, left_blinker, right_blinker] + flat_tracks
-    with open('/data/testshape', 'a') as f:
-      f.write('{}\n'.format(len(final_input)))
+
     model_output = float(self.model_wrapper.run_model_live_tracks(final_input))
     model_output = (model_output - 0.52) * 2.0
     if model_output < 0.0:
@@ -206,12 +205,8 @@ class LongControl(object):
 
     if len(self.past_data) == seq_len and has_lead:
       model_output = self.model_wrapper.run_model_lstm([i for x in self.past_data for i in x])
-      with open('/data/df_output', 'a') as f:
-        f.write('\n' + str(model_output) + ' ' + str(self.past_data))
       return clip((model_output - 0.50) * 4.0, -1.0, 1.0)
     else:
-      with open('/data/noneh', 'a') as f:
-        f.write('none\n')
       return None
 
   def reset(self, v_pid):
