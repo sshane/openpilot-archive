@@ -77,7 +77,8 @@ class LongitudinalMpc(object):
 
   def update(self, CS, lead, track_data, controlsState, v_cruise_setpoint):
     v_ego = CS.vEgo
-    new_accel = (v_ego - self.last_velocity) / (time.time() - self.last_time)
+    diviser = (time.time() - self.last_time)
+    new_accel = ((v_ego - self.last_velocity) / diviser) if diviser > 0 else None
     self.last_time = time.time()
     self.last_velocity = v_ego
     a_ego = CS.aEgo
