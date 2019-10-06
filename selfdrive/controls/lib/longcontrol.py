@@ -23,7 +23,8 @@ RATE = 100.0
 
 def interp_fast(x, xp, fp=[0, 1], ext=False):  # extrapolates above range when ext is True
   interped = (((x - xp[0]) * (fp[1] - fp[0])) / (xp[1] - xp[0])) + fp[0]
-  return interped if ext else min(max(fp[0], interped), fp[1])
+  return interped if ext else min(max(min(fp), interped), max(fp))
+
 
 def pad_tracks(tracks, max_tracks):
   to_add = max_tracks - len(tracks)
@@ -83,16 +84,12 @@ class LongControl(object):
     self.model_wrapper = df_wrapper.get_wrapper()
     self.model_wrapper.init_model()
     self.past_data = []
-    self.scales = {'a_ego': [-4.098987579345703, 3.713705539703369],
-                   'a_lead': [-3.709836483001709, 3.4350156784057617],
-                   'dRel': [0.11999999731779099, 196.32000732421875],
-                   'max_tracks': 16,
-                   'steer_angle': [-568.0, 591.5999755859375],
-                   'steer_rate': [-775.0, 816.0],
-                   'vRel': [-51.20000076293945, 28.100000381469727],
-                   'v_ego': [-0.15605801343917847, 36.29853057861328],
-                   'yRel': [-15.0, 15.0]}
-    self.P = 0.17
+    self.scales = {'yRel': [-15.0, 15.0], 'dRel': [0.11999999731779099, 196.32000732421875],
+                   'vRel': [-51.20000076293945, 28.100000381469727], 'v_ego': [-0.15605801343917847, 36.42853927612305],
+                   'steer_angle': [-568.0, 591.5999755859375], 'steer_rate': [-775.0, 850.0],
+                   'a_lead': [-3.709836483001709, 3.4350156784057617], 'max_tracks': 16,
+                   'a_ego': [-4.098987579345703, 3.713705539703369]}
+    self.P = 0.1
     self.prev_gas = 0.0
 
   def p_controller(self, des_acc, cur_acc, v_ego):  # desired acceleration
@@ -136,7 +133,7 @@ class LongControl(object):
     model_output = float(self.model_wrapper.run_model_live_tracks(final_input))
 
     des_acc = interp_fast(model_output, [0, 1], self.scales['a_ego'], ext=True)
-    gas_output = self.pid_a(des_acc, a_ego, v_ego)
+    gas_output = self.p_controller(des_acc, a_ego, v_ego)  # might want to manually calculate a_ego
     return gas_output
 
   def df_live_tracks(self, v_ego, a_ego, track_data, steering_angle, steering_rate, left_blinker, right_blinker,
