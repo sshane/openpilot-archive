@@ -90,7 +90,7 @@ class LongControl(object):
                    'steer_angle': [-568.0, 591.5999755859375], 'steer_rate': [-775.0, 850.0],
                    'a_lead': [-3.709836483001709, 3.4350156784057617], 'max_tracks': 16,
                    'a_ego': [-4.098987579345703, 3.713705539703369]}
-    self.P = 0.05
+    self.P = 0.04
     self.prev_gas = 0.0
     self.last_speed = None
     self.last_time = time.time()
