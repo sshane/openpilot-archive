@@ -34,7 +34,7 @@ class LongitudinalMpc(object):
     self.sensor = messaging.sub_sock(service_list['sensorEvents'].port)
     self.df_file_path = "/data/openpilot/selfdrive/df_dc/df-data"
     self.inputs_list = ['v_ego', 'a_ego', 'v_lead', 'lead_status', 'x_lead', 'y_lead', 'a_lead', 'a_rel', 'v_lat',
-                        'steer_angle', 'steer_rate', 'path_curvature', 'track_data', 'time.time()', 'gas', 'brake',
+                        'steer_angle', 'steer_rate', 'track_data', 'time', 'gas', 'brake',
                         'car_gas', 'left_blinker', 'right_blinker', 'decel_for_model', 'set_speed', 'new_accel', 'gyro']
     if not os.path.exists(self.df_file_path):
       with open(self.df_file_path, "a") as f:
@@ -87,7 +87,6 @@ class LongitudinalMpc(object):
     brake = CS.brake
     steer_angle = CS.steeringAngle
     steer_rate = CS.steeringRate
-    path_curvature = controlsState.curvature
     decel_for_model = controlsState.decelForModel
     left_blinker = CS.leftBlinker
     right_blinker = CS.rightBlinker
@@ -125,8 +124,8 @@ class LongitudinalMpc(object):
 
     if self.mpc_id == 1 and not CS.cruiseState.enabled and CS.gearShifter == 'drive' and CS.sportOn is False:  # if openpilot not engaged and in drive, gather data
       self.df_data.append(
-        [v_ego, a_ego, v_lead, lead_status, x_lead, y_lead, a_lead, a_rel, v_lat, steer_angle, steer_rate,
-         path_curvature, track_data, time.time(), gas, brake, car_gas, left_blinker, right_blinker, decel_for_model,
+        [v_ego, a_ego, v_lead, lead_status, x_lead, y_lead, a_lead, a_rel, v_lat, steer_angle, steer_rate, track_data,
+         time.time(), gas, brake, car_gas, left_blinker, right_blinker, decel_for_model,
          set_speed, new_accel, gyro])
       if self.df_frame >= 3200:  # every 160 seconds, write to file
         try:
