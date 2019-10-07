@@ -140,7 +140,7 @@ class LongControl(object):
     model_output = float(self.model_wrapper.run_model_live_tracks(final_input))
 
     des_acc = interp_fast(model_output, [0, 1], self.scales['a_ego'], ext=True)
-    gas_output = self.p_controller(des_acc, a_ego, v_ego, use_calc_accel=False)  # might want to manually calculate a_ego
+    gas_output = self.p_controller(des_acc, a_ego, v_ego, use_calc_accel=True)  # might want to manually calculate a_ego
     return gas_output
 
   def df_live_tracks(self, v_ego, a_ego, track_data, steering_angle, steering_rate, left_blinker, right_blinker,
