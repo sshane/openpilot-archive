@@ -17,7 +17,7 @@ extern "C"{
   float run_model(float v_ego, float a_ego, float v_lead, float x_lead, float a_lead);
   void init_model();
   float run_model_lstm(float inputData[60]);
-  float run_model_live_tracks(float inputData[52]);
+  float run_model_live_tracks(float inputData[54]);
 }
 
 struct testvar_t {

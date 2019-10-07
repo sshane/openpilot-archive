@@ -2,6 +2,7 @@ from cereal import log
 from common.numpy_fast import clip, interp
 from selfdrive.controls.lib.pid import PIController
 from selfdrive.df import df_wrapper
+import time
 
 LongCtrlState = log.ControlsState.LongControlState
 
@@ -91,11 +92,17 @@ class LongControl(object):
                    'a_ego': [-4.098987579345703, 3.713705539703369]}
     self.P = 0.1
     self.prev_gas = 0.0
+    self.last_speed = None
+    self.last_time = time.time()
 
-  def p_controller(self, des_acc, cur_acc, v_ego):  # desired acceleration
+  def p_controller(self, des_acc, cur_acc, v_ego, use_calc_accel=False):  # desired acceleration
+    if use_calc_accel and self.last_speed is not None:
+      cur_acc = (v_ego - self.last_speed) / (time.time() - self.last_time)
     error = cur_acc - des_acc
     gas = clip(self.prev_gas - (error * self.P), -1, 1)
     self.prev_gas = gas
+    self.last_speed = v_ego
+    self.last_time = time.time()
     if abs(des_acc) < 0.11176 and v_ego < 0.22352:  # holds us at a stop
       gas = -0.2
     return gas
@@ -133,7 +140,7 @@ class LongControl(object):
     model_output = float(self.model_wrapper.run_model_live_tracks(final_input))
 
     des_acc = interp_fast(model_output, [0, 1], self.scales['a_ego'], ext=True)
-    gas_output = self.p_controller(des_acc, a_ego, v_ego)  # might want to manually calculate a_ego
+    gas_output = self.p_controller(des_acc, a_ego, v_ego, use_calc_accel=False)  # might want to manually calculate a_ego
     return gas_output
 
   def df_live_tracks(self, v_ego, a_ego, track_data, steering_angle, steering_rate, left_blinker, right_blinker,
