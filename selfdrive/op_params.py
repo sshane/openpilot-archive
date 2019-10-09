@@ -21,8 +21,8 @@ def read_params(params_file, default_params):
 
 class opParams:
   def __init__(self):
-    self.params_file = "C:/Users/Shane/op_params/op_params.json"
-    self.kegman_file = "C:/Users/Shane/op_params/kegman.json"
+    self.params_file = "/data/op_params.json"
+    self.kegman_file = "/data/kegman.json"
     self.params = {}
     self.last_read_time = time.time()
     self.read_timeout = 1.0  # max frequency to read with self.put(...) (s)
