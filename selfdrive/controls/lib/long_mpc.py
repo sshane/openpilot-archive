@@ -14,8 +14,7 @@ LOG_MPC = os.environ.get('LOG_MPC', False)
 
 
 class LongitudinalMpc(object):
-  def __init__(self, mpc_id, live_longitudinal_mpc):
-    self.live_longitudinal_mpc = live_longitudinal_mpc
+  def __init__(self, mpc_id):
     self.mpc_id = mpc_id
 
     self.setup_mpc()
@@ -44,7 +43,7 @@ class LongitudinalMpc(object):
     self.last_time = time.time()
     self.last_gyro = None
 
-  def send_mpc_solution(self, qp_iterations, calculation_time):
+  def send_mpc_solution(self, pm, qp_iterations, calculation_time):
     qp_iterations = max(0, qp_iterations)
     dat = messaging.new_message()
     dat.init('liveLongitudinalMpc')
@@ -58,7 +57,7 @@ class LongitudinalMpc(object):
     dat.liveLongitudinalMpc.qpIterations = qp_iterations
     dat.liveLongitudinalMpc.mpcId = self.mpc_id
     dat.liveLongitudinalMpc.calculationTime = calculation_time
-    self.live_longitudinal_mpc.send(dat.to_bytes())
+    pm.send('liveLongitudinalMpc', dat)
 
   def setup_mpc(self):
     ffi, self.libmpc = libmpc_py.get_libmpc(self.mpc_id)
@@ -75,7 +74,7 @@ class LongitudinalMpc(object):
     self.cur_state[0].v_ego = v
     self.cur_state[0].a_ego = a
 
-  def update(self, CS, lead, track_data, controlsState, v_cruise_setpoint):
+  def update(self, pm, CS, lead, track_data, controlsState, v_cruise_setpoint):
     v_ego = CS.vEgo
     diviser = (time.time() - self.last_time)
     new_accel = ((v_ego - self.last_velocity) / diviser) if diviser > 0 else None
@@ -171,7 +170,7 @@ class LongitudinalMpc(object):
     duration = int((sec_since_boot() - t) * 1e9)
 
     if LOG_MPC:
-      self.send_mpc_solution(n_its, duration)
+      self.send_mpc_solution(pm, n_its, duration)
 
     # Get solution. MPC timestep is 0.2 s, so interpolation to 0.05 s is needed
     self.v_mpc = self.mpc_solution[0].v_ego[1]
