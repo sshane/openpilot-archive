@@ -88,8 +88,7 @@ class LongControl(object):
     self.scales = {'yRel': [-15.0, 15.0], 'dRel': [0.11999999731779099, 196.32000732421875],
                    'vRel': [-51.20000076293945, 28.100000381469727], 'v_ego': [-0.15605801343917847, 36.42853927612305],
                    'steer_angle': [-568.0, 591.5999755859375], 'steer_rate': [-775.0, 850.0],
-                   'a_lead': [-3.709836483001709, 3.4350156784057617], 'max_tracks': 16,
-                   'a_ego': [-4.098987579345703, 3.713705539703369]}
+                   'a_lead': [-3.8327078819274902, 3.4350156784057617], 'max_tracks': 16}
     self.P = 0.04
     self.prev_gas = 0.0
     self.last_speed = None
@@ -169,9 +168,9 @@ class LongControl(object):
     final_input = [v_ego, steering_angle, steering_rate, a_lead, left_blinker, right_blinker] + flat_tracks
 
     model_output = float(self.model_wrapper.run_model_live_tracks(final_input))
-    model_output = (model_output - 0.52) * 2.0
+    model_output = (model_output - 0.50) * 2.0
     if model_output < 0.0:
-      model_output *= 2.5
+      model_output *= 1.05
     return clip(model_output, -1.0, 1.0)
 
 
@@ -222,8 +221,9 @@ class LongControl(object):
              steering_rate, left_blinker, right_blinker):
     """Update longitudinal control. This updates the state machine and runs a PID loop"""
     # Actuation limits
-    df_output = self.df_live_tracks_acc(v_ego, a_ego, track_data, steering_angle, steering_rate, left_blinker,
-                                    right_blinker, radar_state, set_speed)
+    #df_output = self.df_live_tracks_acc(v_ego, a_ego, track_data, steering_angle, steering_rate, left_blinker, right_blinker, radar_state, set_speed)
+    df_output = self.df_live_tracks(v_ego, a_ego, track_data, steering_angle, steering_rate, left_blinker, right_blinker,
+                                    radar_state, set_speed)
     #df_output = self.df(radar_state, v_ego, a_ego, set_speed)
     if df_output is not None:
       return max(df_output, 0), -min(df_output, 0.0)
