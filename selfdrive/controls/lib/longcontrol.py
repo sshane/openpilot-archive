@@ -168,9 +168,9 @@ class LongControl(object):
     final_input = [v_ego, steering_angle, steering_rate, a_lead, left_blinker, right_blinker] + flat_tracks
 
     model_output = float(self.model_wrapper.run_model_live_tracks(final_input))
-    model_output = (model_output - 0.52) * 2.175
+    #model_output = (model_output - 0.52) * 2.175
     if model_output < 0.0:
-      model_output *= 1.05
+      model_output *= 1.2
     return clip(model_output, -1.0, 1.0)
 
 
