@@ -92,7 +92,7 @@ extern "C" {
     initializeSNPE(runt);
   }
 
-  float[2] run_model_live_tracks(float inputData[54]){
+  float * run_model_live_tracks(float inputData[54]){
       int size = 54;
       std::vector<float> inputVec;
       for (int i = 0; i < size; i++ ) {
