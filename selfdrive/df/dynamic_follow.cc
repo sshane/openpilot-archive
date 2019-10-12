@@ -103,7 +103,7 @@ extern "C" {
       //zdl::DlSystem::ITensor* oTensor = executeNetwork(snpe, inputTensor);
       //return returnOutputMulti(oTensor);
       float testt[2] = {1.5, 2.5};
-      return testt;
+      return *testt;
       }
 
   float run_model_live_tracks_old(float inputData[54]){
