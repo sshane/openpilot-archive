@@ -53,14 +53,13 @@ float returnOutput(const zdl::DlSystem::ITensor* tensor) {
   return op;
 }
 
-void returnOutputNew(const zdl::DlSystem::ITensor* tensor) {
-  //auto op = tensor->cbegin();
-  //return op;
-  for ( auto it = tensor->cbegin(); it != tensor->cend(); ++it )
-     {
-        float f = *it;
-        std::cout << f << "\n";
-     }
+std::list<float> returnOutputMultiOutput(const zdl::DlSystem::ITensor* tensor) {
+  std::list<float> outputs;
+  for (auto it = tensor->cbegin(); it != tensor->cend(); ++it ){
+    float op = *it;
+    outputs.push_back(op);
+    }
+  return outputs;
 }
 
 zdl::DlSystem::ITensor* executeNetwork(std::unique_ptr<zdl::SNPE::SNPE>& snpe,
@@ -93,18 +92,29 @@ extern "C" {
     initializeSNPE(runt);
   }
 
-  float run_model_live_tracks(float inputData[54]){
-    int size = 54;
-    std::vector<float> inputVec;
-    for (int i = 0; i < size; i++ ) {
-      inputVec.push_back(inputData[i]);
-    }
+  std::list<float> run_model_live_tracks(float inputData[54]){
+      int size = 54;
+      std::vector<float> inputVec;
+      for (int i = 0; i < size; i++ ) {
+        inputVec.push_back(inputData[i]);
+      }
 
-    std::unique_ptr<zdl::DlSystem::ITensor> inputTensor = loadInputTensor(snpe, inputVec);
-    zdl::DlSystem::ITensor* oTensor = executeNetwork(snpe, inputTensor);
-    returnOutputNew(oTensor);
-    return 1.0;
-    }
+      std::unique_ptr<zdl::DlSystem::ITensor> inputTensor = loadInputTensor(snpe, inputVec);
+      zdl::DlSystem::ITensor* oTensor = executeNetwork(snpe, inputTensor);
+      return returnOutputMultiOutput(oTensor);
+      }
+
+  float run_model_live_tracks_old(float inputData[54]){
+      int size = 54;
+      std::vector<float> inputVec;
+      for (int i = 0; i < size; i++ ) {
+        inputVec.push_back(inputData[i]);
+      }
+
+      std::unique_ptr<zdl::DlSystem::ITensor> inputTensor = loadInputTensor(snpe, inputVec);
+      zdl::DlSystem::ITensor* oTensor = executeNetwork(snpe, inputTensor);
+      return returnOutput(oTensor);
+  }
 
   float run_model_lstm(float inputData[60]){
     int size = 60;
