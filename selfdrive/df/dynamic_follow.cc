@@ -102,7 +102,7 @@ extern "C" {
       //std::unique_ptr<zdl::DlSystem::ITensor> inputTensor = loadInputTensor(snpe, inputVec);
       //zdl::DlSystem::ITensor* oTensor = executeNetwork(snpe, inputTensor);
       //return returnOutputMulti(oTensor);
-      float[2] testt = {1.5, 2.5};
+      float testt[2] = {1.5, 2.5};
       return testt;
       }
 
