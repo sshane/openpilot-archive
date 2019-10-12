@@ -15,10 +15,6 @@ df_input = [0]*54
 
 #s = time.time()
 
-for i in range(100):
-  model_output = df_model.run_model_live_tracks(df_input)
-  print("Model output: {}".format(model_output))
-
 
 model_output = df_model.run_model_live_tracks(df_input)
 print("Model output: {}".format(model_output))
