@@ -53,7 +53,7 @@ float returnOutput(const zdl::DlSystem::ITensor* tensor) {
   return op;
 }
 
-std::vector<float> inputVec returnOutputMultiOutput(const zdl::DlSystem::ITensor* tensor) {
+std::vector<float> returnOutputMultiOutput(const zdl::DlSystem::ITensor* tensor) {
   std::vector<float> outputs;
   for (auto it = tensor->cbegin(); it != tensor->cend(); ++it ){
     float op = *it;
