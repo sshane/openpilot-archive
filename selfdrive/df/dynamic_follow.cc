@@ -53,7 +53,7 @@ float returnOutput(const zdl::DlSystem::ITensor* tensor) {
   return op;
 }
 
-vector<float> returnOutputMulti(const zdl::DlSystem::ITensor* tensor) {
+float * returnOutputMulti(const zdl::DlSystem::ITensor* tensor) {
   vector<float> outputs;
   for (auto it = tensor->cbegin(); it != tensor->cend(); ++it ){
     float op = *it;
@@ -92,18 +92,19 @@ extern "C" {
     initializeSNPE(runt);
   }
 
-  float * run_model_live_tracks(float inputData[54]){
+  float run_model_live_tracks(float inputData[54]){
       int size = 54;
       std::vector<float> inputVec;
       for (int i = 0; i < size; i++ ) {
         inputVec.push_back(inputData[i]);
       }
 
-      //std::unique_ptr<zdl::DlSystem::ITensor> inputTensor = loadInputTensor(snpe, inputVec);
-      //zdl::DlSystem::ITensor* oTensor = executeNetwork(snpe, inputTensor);
+      std::unique_ptr<zdl::DlSystem::ITensor> inputTensor = loadInputTensor(snpe, inputVec);
+      zdl::DlSystem::ITensor* oTensor = executeNetwork(snpe, inputTensor);
       //return returnOutputMulti(oTensor);
-      float testt[2] = {1.5, 2.5};
-      return *testt;
+      float *testt = returnOutputMulti(oTensor);
+      std::cout << testt.front();
+      return 1.0;
       }
 
   float run_model_live_tracks_old(float inputData[54]){
