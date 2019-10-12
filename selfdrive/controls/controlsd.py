@@ -452,7 +452,7 @@ def controlsd_thread(sm=None, pm=None, can_sock=None):
 
   if sm is None:
     sm = messaging.SubMaster(['thermal', 'health', 'liveCalibration', 'driverMonitoring', 'plan', 'pathPlan', \
-                              'gpsLocation', 'radarState], ignore_alive=['gpsLocation'])
+                              'gpsLocation', 'radarState'], ignore_alive=['gpsLocation'])
 
   if can_sock is None:
     can_timeout = None if os.environ.get('NO_CAN_TIMEOUT', False) else 100
