@@ -53,13 +53,23 @@ float returnOutput(const zdl::DlSystem::ITensor* tensor) {
   return op;
 }
 
-float * returnOutputMulti(const zdl::DlSystem::ITensor* tensor) {
+float returnOutputMulti(const zdl::DlSystem::ITensor* tensor) {
   vector<float> outputs;
   for (auto it = tensor->cbegin(); it != tensor->cend(); ++it ){
     float op = *it;
     outputs.push_back(op);
     }
-  return outputs;
+  float gas = outputs.at(0);
+  float brake = outputs.at(1);
+  if (gas > brake) {
+    std::cout << "gas!";
+    return gas;
+  } else if (brake > gas){
+    std::cout << "brake!";
+    return -brake;
+  } else {
+    return 0.0;
+  }
 }
 
 zdl::DlSystem::ITensor* executeNetwork(std::unique_ptr<zdl::SNPE::SNPE>& snpe,
@@ -101,10 +111,7 @@ extern "C" {
 
       std::unique_ptr<zdl::DlSystem::ITensor> inputTensor = loadInputTensor(snpe, inputVec);
       zdl::DlSystem::ITensor* oTensor = executeNetwork(snpe, inputTensor);
-      //return returnOutputMulti(oTensor);
-      float *testt = returnOutputMulti(oTensor);
-      std::cout << testt.front();
-      return 1.0;
+      return returnOutputMulti(oTensor);
       }
 
   float run_model_live_tracks_old(float inputData[54]){
