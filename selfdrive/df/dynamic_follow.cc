@@ -53,6 +53,16 @@ float returnOutput(const zdl::DlSystem::ITensor* tensor) {
   return op;
 }
 
+void returnOutputNew(const zdl::DlSystem::ITensor* tensor) {
+  //auto op = tensor->cbegin();
+  //return op;
+  for ( auto it = tensor->cbegin(); it != tensor->cend(); ++it )
+     {
+        float f = *it;
+        std::cout << f << "\n";
+     }
+}
+
 zdl::DlSystem::ITensor* executeNetwork(std::unique_ptr<zdl::SNPE::SNPE>& snpe,
                     std::unique_ptr<zdl::DlSystem::ITensor>& input) {
   static zdl::DlSystem::TensorMap outputTensorMap;
@@ -92,7 +102,8 @@ extern "C" {
 
     std::unique_ptr<zdl::DlSystem::ITensor> inputTensor = loadInputTensor(snpe, inputVec);
     zdl::DlSystem::ITensor* oTensor = executeNetwork(snpe, inputTensor);
-    return returnOutput(oTensor);
+    returnOutputNew(oTensor);
+    return 1.0;
     }
 
   float run_model_lstm(float inputData[60]){
