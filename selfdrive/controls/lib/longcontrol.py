@@ -180,8 +180,8 @@ class LongControl():
 
     model_output = float(self.model_wrapper.run_model_live_tracks(final_input))
     #model_output = (model_output - 0.52) * 2.175
-    if model_output < 0.0:
-      model_output *= 1.2
+
+
     return clip(model_output, -1.0, 1.0)
 
 
