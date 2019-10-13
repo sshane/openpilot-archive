@@ -145,7 +145,7 @@ class LongControl():
 
   def df_controller(self, v_ego, a_ego, track_data, steering_angle, steering_rate, left_blinker, right_blinker, radar_state, set_speed):
     predict_rate = 0.25  # seconds
-    if time.time() - self.last_time >= predict_rate:
+    if time.time() - self.last_time >= predict_rate or self.last_model_output is None:
       self.last_time = time.time()
       model_output = self.df_live_tracks(v_ego, a_ego, track_data, steering_angle, steering_rate, left_blinker,
                                          right_blinker, radar_state, set_speed)
