@@ -144,7 +144,7 @@ class LongControl():
   #   return gas_output
 
   def df_controller(self, v_ego, a_ego, track_data, steering_angle, steering_rate, left_blinker, right_blinker, radar_state, set_speed):
-    predict_rate = 0.75  # seconds
+    predict_rate = 0.25  # seconds
     if time.time() - self.last_time >= predict_rate:
       self.last_time = time.time()
       model_output = self.df_live_tracks(v_ego, a_ego, track_data, steering_angle, steering_rate, left_blinker,
