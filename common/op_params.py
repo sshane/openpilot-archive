@@ -4,7 +4,7 @@ import time
 from common.travis_checker import travis
 
 
-def write_params(params_file, params):
+def write_params(params, params_file):
   with open(params_file, "w") as f:
     json.dump(params, f, indent=2, sort_keys=True)
   os.chmod(params_file, 0o764)
@@ -71,19 +71,23 @@ class opParams:
     else:
       no_params = True  # user's first time running a fork with kegman_conf or op_params
     if to_write or no_params:
-      write_params(self.params_file, self.params)
+      write_params(self.params, self.params_file)
 
   def put(self, key, value):
     if not travis:
       self.params.update({key: value})
-      write_params(self.params_file, self.params)
+      write_params(self.params, self.params_file)
 
   def get(self, key=None, default=None):  # can specify a default value if key doesn't exist
-    if (
-            time.time() - self.last_read_time) >= self.read_timeout and not travis:  # make sure we aren't reading file too often
+    if (time.time() - self.last_read_time) >= self.read_timeout and not travis:  # make sure we aren't reading file too often
       self.params, read_status = read_params(self.params_file, self.default_params)
       self.last_read_time = time.time()
     if key is None:  # get all
       return self.params
     else:
       return self.params[key] if key in self.params else default
+
+  def delete(self, key):
+    if key in self.params:
+      del self.params[key]
+      write_params(self.params, self.params_file)
