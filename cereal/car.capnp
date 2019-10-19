@@ -104,6 +104,7 @@ struct CarState {
 
   # gas pedal, 0.0-1.0
   gas @3 :Float32;        # this is user + computer
+  stockGas @30 :Float32;
   gasPressed @4 :Bool;    # this is user pedal only
 
   # brake pedal, 0.0-1.0
@@ -123,6 +124,7 @@ struct CarState {
 
   # gear
   gearShifter @14 :GearShifter;
+  sportOn @29 :Bool;
 
   # button presses
   buttonEvents @11 :List(ButtonEvent);
