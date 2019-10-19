@@ -5,9 +5,10 @@ from common.travis_checker import travis
 
 
 def write_params(params, params_file):
-  with open(params_file, "w") as f:
-    json.dump(params, f, indent=2, sort_keys=True)
-  os.chmod(params_file, 0o764)
+  if not travis:
+    with open(params_file, "w") as f:
+      json.dump(params, f, indent=2, sort_keys=True)
+    os.chmod(params_file, 0o764)
 
 
 def read_params(params_file, default_params):
@@ -74,9 +75,8 @@ class opParams:
       write_params(self.params, self.params_file)
 
   def put(self, key, value):
-    if not travis:
-      self.params.update({key: value})
-      write_params(self.params, self.params_file)
+    self.params.update({key: value})
+    write_params(self.params, self.params_file)
 
   def get(self, key=None, default=None):  # can specify a default value if key doesn't exist
     if (time.time() - self.last_read_time) >= self.read_timeout and not travis:  # make sure we aren't reading file too often
