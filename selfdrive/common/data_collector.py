@@ -6,14 +6,14 @@ import os
 
 
 class DataCollector:
-  def __init__(self, file_path, keys, write_frequency=60, write_threshold=1):  # write_frequency is in seconds
+  def __init__(self, file_path, keys, write_frequency=60, write_threshold=2):
     """
     This class provides an easy way to set up your own custom data collector to gather custom data.
     Parameters:
       file_path (str): The path you want your custom data to be written to.
       keys: (list): A string list containing the names of the values you want to collect.
                     Your data list needs to be in this order.
-      write_frequency (int/float): The rate at which to write data.
+      write_frequency (int/float): The rate at which to write data in seconds.
       write_threshold (int): The length of the data list we need to collect before considering writing.
 
     Example:
@@ -26,13 +26,14 @@ class DataCollector:
     self.write_threshold = write_threshold
     self.data = []
     self.last_write_time = time.time()
-    self.initialize()
     self.thread_running = False
+    self.is_initialized = False
 
   def initialize(self):  # add keys to top of data file
     if not os.path.exists(self.file_path) and not travis:
       with open(self.file_path, "w") as f:
         f.write('{}\n'.format(self.keys))
+    self.is_initialized = True
 
   def append(self, sample):
     """
@@ -42,14 +43,17 @@ class DataCollector:
       Or a combination: dictionaries, booleans, and floats in a list
 
     Continuing from the example above, we assume that the first value is your velocity, and the second
-    is your acceleration. IMPORTANT: If your values and keys do not relate, you will have trouble figuring
+    is your acceleration. IMPORTANT: If your values and keys are not in the same order, you will have trouble figuring
     what data is what when you want to process it later.
 
     Example:
       data_collector.append([17, 0.5, {'a': 1}])
     """
+
     if len(sample) != len(self.keys):
       raise Exception("You need the same amount of data as you specified in your keys")
+    if not self.is_initialized:
+      self.initialize()
     self.data.append(sample)
     self.check_if_can_write()
 
@@ -70,7 +74,7 @@ class DataCollector:
     """
 
     if ((time.time() - self.last_write_time) >= self.write_frequency
-            and len(self.data) > self.write_threshold and not travis):
+            and len(self.data) >= self.write_threshold and not travis):
       if not self.thread_running:
         threading.Thread(target=self.write, args=(self.data,)).start()
         self.reset(reset_type='all')
@@ -81,7 +85,7 @@ class DataCollector:
     """
     Only write data that has been added so far in background. self.data is still being appended to in
     foreground so in the next write event, new data will be written. This eliminates lag causing openpilot
-    critical processes to pause while lot of data is being written.
+    critical processes to pause while a lot of data is being written.
     """
 
     self.thread_running = True
