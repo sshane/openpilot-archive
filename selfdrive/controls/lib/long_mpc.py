@@ -7,6 +7,9 @@ from common.realtime import sec_since_boot
 from selfdrive.controls.lib.radar_helpers import _LEAD_ACCEL_TAU
 from selfdrive.controls.lib.longitudinal_mpc import libmpc_py
 from selfdrive.controls.lib.drive_helpers import MPC_COST_LONG
+from selfdrive.services import service_list
+from common.travis_checker import travis
+import time
 
 LOG_MPC = os.environ.get('LOG_MPC', False)
 
@@ -25,6 +28,23 @@ class LongitudinalMpc():
     self.new_lead = False
 
     self.last_cloudlog_t = 0.0
+
+    self.liveTracks = messaging.sub_sock(service_list['liveTracks'].port)
+    self.last_track_data = {'tracks': []}
+    self.df_data = []
+    self.sensor = messaging.sub_sock(service_list['sensorEvents'].port)
+    self.df_file_path = "/data/openpilot/selfdrive/df_dc/df-data"
+    self.inputs_list = ['v_ego', 'a_ego', 'v_lead', 'lead_status', 'x_lead', 'y_lead', 'a_lead', 'a_rel', 'v_lat',
+                        'steer_angle', 'steer_rate', 'track_data', 'time', 'gas', 'brake',
+                        'car_gas', 'left_blinker', 'right_blinker', 'set_speed', 'new_accel', 'gyro']
+    if not os.path.exists(self.df_file_path) and not travis:
+      with open(self.df_file_path, "a") as f:
+        f.write('{}\n'.format(self.inputs_list))
+
+    self.last_velocity = 0
+    self.last_time = time.time()
+    self.last_gyro = None
+    self.write_time = time.time()
 
   def send_mpc_solution(self, pm, qp_iterations, calculation_time):
     qp_iterations = max(0, qp_iterations)
@@ -57,8 +77,81 @@ class LongitudinalMpc():
     self.cur_state[0].v_ego = v
     self.cur_state[0].a_ego = a
 
+  def get_track_data(self):
+    tracks = messaging.recv_sock(self.liveTracks)
+    if tracks is not None:
+      track_data = {'tracks': [], 'live': True}  # true tells us it's live data
+      for track in tracks.liveTracks:
+        track_data['tracks'].append(
+          {'trackID': track.trackId, 'yRel': track.yRel, 'dRel': track.dRel, 'vRel': track.vRel,
+           'stationary': track.stationary, 'oncoming': track.oncoming, 'status': track.status})
+      self.last_track_data = track_data
+    else:  # live track data not available, use last tracks
+      track_data = self.last_track_data
+      track_data['live'] = False  # false tells us it's old data
+    return track_data
+
+  def get_gyro(self):
+    gyro = None
+    sensors = messaging.recv_sock(self.sensor)
+    if sensors is not None:
+      for sensor in sensors.sensorEvents:
+        if sensor.type == 4:  # gyro
+          gyro = list(sensor.gyro.v)
+    if gyro is None:
+      gyro = self.last_gyro
+    else:
+      self.last_gyro = gyro
+    return gyro
+
   def update(self, pm, CS, lead, v_cruise_setpoint):
     v_ego = CS.vEgo
+    abs_time = (time.time() - self.last_time)
+    new_accel = ((v_ego - self.last_velocity) / abs_time) if abs_time > 0 else None
+    self.last_time = time.time()
+    self.last_velocity = v_ego
+    a_ego = CS.aEgo
+    gas = CS.gas
+    car_gas = CS.stockGas
+    brake = CS.brake
+    steer_angle = CS.steeringAngle
+    steer_rate = CS.steeringRate
+    left_blinker = CS.leftBlinker
+    right_blinker = CS.rightBlinker
+    set_speed = CS.cruiseState.speed
+    track_data = self.get_track_data()
+    gyro = self.get_gyro()
+
+    if lead is not None and lead.status:
+      x_lead = lead.dRel
+      y_lead = lead.yRel
+      v_lat = lead.vLat
+      v_lead = max(0.0, lead.vLead)
+      a_lead = lead.aLeadK
+      a_rel = lead.aRel
+      lead_status = lead.status
+    else:
+      x_lead = 0.0
+      y_lead = 0.0
+      v_lat = 0.0
+      v_lead = 0.0
+      a_lead = 0.0
+      a_rel = 0.0
+      lead_status = False
+
+    if self.mpc_id == 1 and not CS.cruiseState.enabled and CS.gearShifter == 'drive' and CS.sportOn is False and not travis:  # if openpilot not engaged and in drive, gather data
+      self.df_data.append([v_ego, a_ego, v_lead, lead_status, x_lead, y_lead, a_lead, a_rel, v_lat, steer_angle, steer_rate,
+                           track_data, time.time(), gas, brake, car_gas, left_blinker, right_blinker, set_speed, new_accel, gyro])
+
+      if time.time() - self.write_time > 2*60 and len(self.df_data) > 1:
+        try:
+          with open(self.df_file_path, "a") as f:
+            f.write('{}\n'.format("\n".join([str(i) for i in self.df_data])))
+          self.df_data = []
+          self.write_time = time.time()
+        except Exception as e:
+          with open('/data/write_errors', 'a') as f:
+            f.write('write error: {}\n'.format(e))
 
     # Setup current mpc state
     self.cur_state[0].x_ego = 0.0
