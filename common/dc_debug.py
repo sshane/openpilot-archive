@@ -5,6 +5,21 @@ import os
 
 travis = False
 
+class AsyncWrite(threading.Thread):
+  def __init__(self, data, path):
+    threading.Thread.__init__(self)
+    self.data = data
+    self.path = path
+
+  def write(self):
+    t=time.time()
+    #self.thread_running = True
+    with open(self.path, "a") as f:
+      f.write('{}\n'.format('\n'.join(map(str, self.data))))  # json takes twice as long to write
+    #self.reset(reset_type='time')
+    #self.thread_running = False
+    print('background: {}'.format(time.time() - t))
+
 class DataCollector:
   def __init__(self, file_path, keys, write_frequency=60, write_threshold=2):
     """
@@ -28,6 +43,7 @@ class DataCollector:
     self.last_write_time = time.time()
     self.thread_running = False
     self.is_initialized = False
+    self.last_thread = None
 
   def initialize(self):  # add keys to top of data file
     if not os.path.exists(self.file_path) and not travis:
@@ -75,10 +91,12 @@ class DataCollector:
 
     if ((time.time() - self.last_write_time) >= self.write_frequency
             and len(self.data) >= self.write_threshold and not travis):
-      if not self.thread_running:
+      if not self.last_thread.is_alive():
 
         t1=time.time()
-        threading.Thread(target=self.write, args=(self.data,)).start()
+        #t=threading.Thread(target=self.write, args=(self.data,)).start()
+        self.last_thread = AsyncWrite(self.data, self.file_path)
+        self.last_thread.start()
         self.reset(reset_type='all')
         print('foreground: {}'.format(time.time() - t1))
 
