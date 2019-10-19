@@ -313,9 +313,11 @@ class CarInterface(CarInterfaceBase):
 
     # gear shifter
     ret.gearShifter = self.CS.gear_shifter
+    ret.sportOn = self.CS.sport_on
 
     # gas pedal
     ret.gas = self.CS.car_gas
+    ret.stockGas = self.CS.stock_gas
     if self.CP.enableGasInterceptor:
     # use interceptor values to disengage on pedal press
       ret.gasPressed = self.CS.pedal_gas > 15
