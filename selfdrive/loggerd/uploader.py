@@ -13,6 +13,7 @@ import subprocess
 
 from selfdrive.swaglog import cloudlog
 from selfdrive.loggerd.config import ROOT
+from selfdrive.df_dc import df_uploader
 
 from common.params import Params
 from common.api import Api
@@ -246,6 +247,9 @@ def uploader_fn(exit_event):
     on_hotspot = is_on_hotspot()
     on_wifi = is_on_wifi()
     should_upload = allow_cellular or (on_wifi and not on_hotspot)
+
+    if on_wifi and not on_hotspot:
+      df_uploader.upload_data()
 
     if exit_event.is_set():
       return

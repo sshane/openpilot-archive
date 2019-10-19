@@ -5,21 +5,6 @@ import os
 
 travis = False
 
-class AsyncWrite(threading.Thread):
-  def __init__(self, data, path):
-    threading.Thread.__init__(self)
-    self.data = data
-    self.path = path
-
-  def write(self):
-    t=time.time()
-    #self.thread_running = True
-    with open(self.path, "a") as f:
-      f.write('{}\n'.format('\n'.join(map(str, self.data))))  # json takes twice as long to write
-    #self.reset(reset_type='time')
-    #self.thread_running = False
-    print('background: {}'.format(time.time() - t))
-
 class DataCollector:
   def __init__(self, file_path, keys, write_frequency=60, write_threshold=2):
     """
@@ -43,7 +28,6 @@ class DataCollector:
     self.last_write_time = time.time()
     self.thread_running = False
     self.is_initialized = False
-    self.last_thread = None
 
   def initialize(self):  # add keys to top of data file
     if not os.path.exists(self.file_path) and not travis:
@@ -81,24 +65,22 @@ class DataCollector:
 
   def check_if_can_write(self):
     """
-    You shouldn't ever need to call this. It checks if we should write, then calls a thread to do so
+    You shouldn't ever call this yourself. It checks if we should write, then calls a thread to do so
     with a copy of the current gathered data. Then it clears the self.data variable so that new data
     can be added and it won't be duplicated in the next write.
     If the thread is still writing by the time of the next write, which shouldn't ever happen unless
     you set a low write frequency, it will skip creating another write thread. If this occurs,
     something is wrong with writing.
     """
-
+    print(time.time() - self.last_write_time)
+    print(self.thread_running)
     if ((time.time() - self.last_write_time) >= self.write_frequency
             and len(self.data) >= self.write_threshold and not travis):
-      if self.last_thread is None or not self.last_thread.is_alive():
-
-        t1=time.time()
-        #t=threading.Thread(target=self.write, args=(self.data,)).start()
-        self.last_thread = AsyncWrite(self.data, self.file_path)
-        self.last_thread.start()
+      if not self.thread_running:
+        write_thread = threading.Thread(target=self.write, args=(self.data,))
+        write_thread.daemon = True
+        write_thread.start()
         self.reset(reset_type='all')
-        print('foreground: {}'.format(time.time() - t1))
 
   def write(self, current_data):
     """
@@ -107,10 +89,9 @@ class DataCollector:
     critical processes to pause while a lot of data is being written.
     """
 
-    t=time.time()
     self.thread_running = True
     with open(self.file_path, "a") as f:
       f.write('{}\n'.format('\n'.join(map(str, current_data))))  # json takes twice as long to write
     self.reset(reset_type='time')
+    time.sleep(5)
     self.thread_running = False
-    print('background: {}'.format(time.time() - t))
