@@ -8,6 +8,9 @@ from selfdrive.car.vin import get_vin, VIN_UNKNOWN
 from selfdrive.swaglog import cloudlog
 import selfdrive.messaging as messaging
 from selfdrive.car import gen_empty_fingerprint
+from common.op_params import opParams
+
+op_params = opParams()
 
 
 def get_one_can(logcan):
@@ -127,6 +130,7 @@ def fingerprint(logcan, sendcan, has_relay):
     frame += 1
 
   cloudlog.warning("fingerprinted %s", car_fingerprint)
+  op_params.put("car_model", str(car_fingerprint))
   return car_fingerprint, finger, vin
 
 
