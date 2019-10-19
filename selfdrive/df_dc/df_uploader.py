@@ -4,8 +4,11 @@ import string
 import random
 import os
 from common.op_params import opParams
-
 op_params = opParams()
+
+
+def generate_random_username():
+  return ''.join([random.choice(string.ascii_lowercase + string.ascii_uppercase + string.digits) for i in range(15)])
 
 
 def upload_data():
@@ -19,12 +22,9 @@ def upload_data():
 
       username = op_params.get("uniqueID", None)
       if username is None:
-        op_params.put("uniqueID", ''.join(
-          [random.choice(string.ascii_lowercase + string.ascii_uppercase + string.digits) for i in range(15)]))
+        op_params.put("uniqueID", generate_random_username())
         username = op_params.get("uniqueID", "u-error")
-      car = op_params.get("car_model", None)
-      if car is not None:
-        username += "-{}".format(car[0])
+      username += "-{}".format(op_params.get("car_model", 'unknown-car'))
 
       try:
         new_folder = False
@@ -68,4 +68,4 @@ def upload_data():
       except Exception as e:
         print(e)
     else:
-      print('{} does not exist'.format(file_path))
+      print('{} does not exist or is too small'.format(file_path))
