@@ -91,7 +91,7 @@ class DataCollector:
 
     if ((time.time() - self.last_write_time) >= self.write_frequency
             and len(self.data) >= self.write_threshold and not travis):
-      if not self.last_thread.is_alive():
+      if self.last_thread is None or not self.last_thread.is_alive():
 
         t1=time.time()
         #t=threading.Thread(target=self.write, args=(self.data,)).start()
