@@ -76,9 +76,10 @@ class DataCollector:
     if ((time.time() - self.last_write_time) >= self.write_frequency
             and len(self.data) >= self.write_threshold and not travis):
       if not self.thread_running:
-        write_thread = threading.Thread(target=self.write, args=(self.data,))
-        write_thread.daemon = True
-        write_thread.start()
+        # write_thread = threading.Thread(target=self.write, args=(self.data,))
+        # write_thread.daemon = True
+        # write_thread.start()
+        self.write(self.data)
         self.reset(reset_type='all')
       elif self.write_frequency > 30:
           cloudlog.warning('DataCollector write thread is taking a while to write data.')

@@ -1,6 +1,8 @@
 from cereal import log
 from common.numpy_fast import clip, interp
 from selfdrive.controls.lib.pid import PIController
+from common.data_collector import DataCollector
+import time
 
 LongCtrlState = log.ControlsState.LongControlState
 
@@ -66,12 +68,16 @@ class LongControl():
     self.v_pid = 0.0
     self.last_output_gb = 0.0
 
+    self.inputs_list = ['gas', 'brake', 'v_ego', 'a_ego', 'time']
+    self.df_file_path = "/data/openpilot/selfdrive/df_dc/brake-data"
+    self.data_collector = DataCollector(self.df_file_path, self.inputs_list)
+
   def reset(self, v_pid):
     """Reset PID controller and change setpoint"""
     self.pid.reset()
     self.v_pid = v_pid
 
-  def update(self, active, v_ego, brake_pressed, standstill, cruise_standstill, v_cruise, v_target, v_target_future, a_target, CP):
+  def update(self, active, v_ego, brake_pressed, standstill, cruise_standstill, v_cruise, v_target, v_target_future, a_target, CP, a_ego, enabled):
     """Update longitudinal control. This updates the state machine and runs a PID loop"""
     # Actuation limits
     gas_max = interp(v_ego, CP.gasMaxBP, CP.gasMaxV)
@@ -126,5 +132,8 @@ class LongControl():
     self.last_output_gb = output_gb
     final_gas = clip(output_gb, 0., gas_max)
     final_brake = -clip(output_gb, -brake_max, 0.)
+
+    if enabled:
+      self.data_collector.append([final_gas, final_brake, v_ego, a_ego, time.time()])
 
     return final_gas, final_brake
