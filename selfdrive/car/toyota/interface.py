@@ -313,7 +313,7 @@ class CarInterface(CarInterfaceBase):
 
     # gear shifter
     ret.gearShifter = self.CS.gear_shifter
-    ret.sportOn = 0#self.CS.sport_on
+    ret.sportOn = False#self.CS.sport_on
 
     # gas pedal
     ret.gas = self.CS.car_gas
