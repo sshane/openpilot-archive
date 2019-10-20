@@ -75,6 +75,10 @@ def get_can_parser(CP):
   if CP.carFingerprint == CAR.PRIUS:
     signals += [("STATE", "AUTOPARK_STATUS", 0)]
 
+  if CP.carFingerprint == CAR.COROLLA:
+    signals.append(("SPORT_ON", "GEAR_PACKET", 0))
+    signals.append(("BRAKE_PRESSURE", "BRAKE_MODULE", 0))
+
   # add gas interceptor reading if we are using it
   if CP.enableGasInterceptor:
     signals.append(("INTERCEPTOR_GAS", "GAS_SENSOR", 0))
@@ -165,9 +169,16 @@ class CarState():
         self.angle_offset = self.angle_steers - angle_wheel
     else:
       self.angle_steers = cp.vl["STEER_ANGLE_SENSOR"]['STEER_ANGLE'] + cp.vl["STEER_ANGLE_SENSOR"]['STEER_FRACTION']
+
+    if self.CP.carFingerprint == CAR.COROLLA:
+      self.sport_on = bool(int(cp.vl["GEAR_PACKET"]['SPORT_ON']))
+      self.user_brake = cp.vl["BRAKE_MODULE"]['BRAKE_PRESSURE']
+    else:
+      self.sport_on = False
+      self.user_brake = 0
+
     self.angle_steers_rate = cp.vl["STEER_ANGLE_SENSOR"]['STEER_RATE']
     can_gear = int(cp.vl["GEAR_PACKET"]['GEAR'])
-    self.sport_on = 0#bool(int(cp.vl["GEAR_PACKET"]['SPORT_ON']))
     self.gear_shifter = parse_gear_shifter(can_gear, self.shifter_values)
     if self.CP.carFingerprint == CAR.LEXUS_IS:
       self.main_on = cp.vl["DSU_CRUISE"]['MAIN_ON']
@@ -186,7 +197,6 @@ class CarState():
     # we could use the override bit from dbc, but it's triggered at too high torque values
     self.steer_override = abs(self.steer_torque_driver) > STEER_THRESHOLD
 
-    self.user_brake = 0 # cp.vl["BRAKE_MODULE"]['BRAKE_PRESSURE']
     if self.CP.carFingerprint == CAR.LEXUS_IS:
       self.v_cruise_pcm = cp.vl["DSU_CRUISE"]['SET_SPEED']
       self.low_speed_lockout = False

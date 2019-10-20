@@ -13,4 +13,4 @@ docker run --rm tmppilot /bin/sh -c 'cd /tmp/openpilot/ && make -C cereal && pyt
 docker run --rm tmppilot /bin/sh -c 'cd /tmp/openpilot/ && python -m unittest discover selfdrive/loggerd'
 docker run --rm -v "$(pwd)"/selfdrive/test/longitudinal_maneuvers/out:/tmp/openpilot/selfdrive/test/longitudinal_maneuvers/out tmppilot /bin/sh -c 'cd /tmp/openpilot/selfdrive/test/longitudinal_maneuvers && OPTEST=1 ./test_longitudinal.py'
 docker run --rm tmppilot /bin/sh -c 'cd /tmp/openpilot/ && make -C cereal && cd /tmp/openpilot/selfdrive/test/process_replay/ && ./test_processes.py'
-#docker run --rm tmppilot /bin/sh -c 'mkdir -p /data/params && cd /tmp/openpilot/ && make -C cereal && cd /tmp/openpilot/selfdrive/test/ && ./test_car_models.py'
+docker run --rm tmppilot /bin/sh -c 'mkdir -p /data/params && cd /tmp/openpilot/ && make -C cereal && cd /tmp/openpilot/selfdrive/test/ && ./test_car_models.py'
