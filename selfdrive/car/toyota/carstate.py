@@ -5,6 +5,7 @@ from selfdrive.can.can_define import CANDefine
 from selfdrive.can.parser import CANParser
 from selfdrive.config import Conversions as CV
 from selfdrive.car.toyota.values import CAR, DBC, STEER_THRESHOLD, TSS2_CAR, NO_DSU_CAR
+from common.travis_checker import travis
 
 GearShifter = car.CarState.GearShifter
 
@@ -75,7 +76,7 @@ def get_can_parser(CP):
   if CP.carFingerprint == CAR.PRIUS:
     signals += [("STATE", "AUTOPARK_STATUS", 0)]
 
-  if CP.carFingerprint == CAR.COROLLA:
+  if CP.carFingerprint == CAR.COROLLA and not travis:
     signals.append(("SPORT_ON", "GEAR_PACKET", 0))
     signals.append(("BRAKE_PRESSURE", "BRAKE_MODULE", 0))
 
@@ -170,7 +171,7 @@ class CarState():
     else:
       self.angle_steers = cp.vl["STEER_ANGLE_SENSOR"]['STEER_ANGLE'] + cp.vl["STEER_ANGLE_SENSOR"]['STEER_FRACTION']
 
-    if self.CP.carFingerprint == CAR.COROLLA:
+    if self.CP.carFingerprint == CAR.COROLLA and not travis:
       self.sport_on = bool(int(cp.vl["GEAR_PACKET"]['SPORT_ON']))
       self.user_brake = cp.vl["BRAKE_MODULE"]['BRAKE_PRESSURE']
     else:
