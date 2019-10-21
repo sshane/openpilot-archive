@@ -139,6 +139,8 @@ class CarState():
       self.pedal_gas = cp.vl["GAS_PEDAL"]['GAS_PEDAL']
     if not travis:
       self.stock_gas = cp.vl["GAS_PEDAL"]['GAS_PEDAL']
+    else:
+      self.stock_gas = 0
     self.car_gas = self.pedal_gas
     self.esp_disabled = cp.vl["ESP_CONTROL"]['TC_DISABLED']
 
