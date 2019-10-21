@@ -2,6 +2,8 @@ from cereal import log
 from common.numpy_fast import clip, interp
 from selfdrive.controls.lib.pid import PIController
 from common.data_collector import DataCollector
+import selfdrive.messaging as messaging
+from selfdrive.services import service_list
 import time
 
 LongCtrlState = log.ControlsState.LongControlState
@@ -71,16 +73,76 @@ class LongControl():
     self.inputs_list = ['gas', 'brake', 'v_ego', 'a_ego', 'time']
     self.df_file_path = "/data/openpilot/selfdrive/df_dc/brake-data"
     self.data_collector = DataCollector(self.df_file_path, self.inputs_list)
+    self.radarState = messaging.sub_sock(service_list['radarState'].port, conflate=True)
+    self.last_lead = None
+    self.num_nones = 0
 
   def reset(self, v_pid):
     """Reset PID controller and change setpoint"""
     self.pid.reset()
     self.v_pid = v_pid
 
+  def get_lead_data(self):
+    radar_state = messaging.recv_one_or_none(self.radarState)
+    if radar_state is not None and radar_state.radarState.leadOne.status is True:
+      self.last_lead = radar_state.radarState.leadOne
+      self.num_nones = 0
+    else:
+      self.num_nones = clip(self.num_nones + 1, 0, 20)
+
+    if self.num_nones <= 10 and self.last_lead is not None:  # if the number of iterations where None is returned is less than 10, assume we have a lead
+      v_rel = self.last_lead.vRel
+      a_lead = self.last_lead.aLeadK
+      x_lead = self.last_lead.dRel
+    else:
+      v_rel = None
+      a_lead = None
+      x_lead = None
+
+    return v_rel, a_lead, x_lead
+
+  def dynamic_gas(self, v_ego):
+    x = [0.0, 1.4082, 2.80311, 4.22661, 5.38271, 6.16561, 7.24781, 8.28308, 10.24465, 12.96402, 15.42303, 18.11903, 20.11703, 24.46614, 29.05805, 32.71015, 35.76326]
+    y = [0.2, 0.20443, 0.21592, 0.23334, 0.25734, 0.27916, 0.3229, 0.34784, 0.36765, 0.38, 0.396, 0.409, 0.425, 0.478, 0.55, 0.621, 0.7]
+    #x = [0.0, 0.6422, 1.36595, 2.25989, 3.22941, 4.06505, 5.64084, 7.00847, 9.2202, 12.96404, 15.42305, 18.11906, 20.11706, 24.46618, 29.0581, 32.7102, 35.76332]  # need to test, all this is is a quicker accel 0 to 15 mph
+    #y = [0.2, 0.20443, 0.21592, 0.23334, 0.25734, 0.27916, 0.3229, 0.34784, 0.36765, 0.38, 0.396, 0.409, 0.425, 0.478, 0.55, 0.621, 0.7]
+
+    gas = interp(v_ego, x, y)
+
+    v_rel, x_lead, a_lead = self.get_lead_data()
+
+    if None not in [v_rel, x_lead, a_lead]:  # if lead
+      if v_ego <= 8.9408:  # if under 20 mph
+        TR = 1.8  # desired TR, might need to switch this to hardcoded distance values
+        current_TR = x_lead / v_ego if v_ego > 0 else TR
+
+        x = [0.0, 0.24588812499999999, 0.432818589, 0.593044697, 0.730381365, 1.050833588, 1.3965, 1.714627481]  # relative velocity mod
+        y = [-(gas / 1.1022), -(gas / 1.133), -(gas / 1.243), -(gas / 1.6), -(gas / 2.32), -(gas / 4.8), -(gas / 15), 0]
+        gas_mod = interp(v_rel, x, y)
+
+        #x = [0.0, 0.22, 0.44518483, 0.675, 1.0, 1.76361684]  # lead accel mod
+        #y = [0.0, (gas * 0.08), (gas * 0.20), (gas * 0.4), (gas * 0.52), (gas * 0.6)]
+        #gas_mod += interp(a_lead, x, y)
+
+        x = [TR * 0.5, TR, TR * 1.5]  # as lead gets further from car, lessen gas mod
+        y = [gas_mod * 1.5, gas_mod, gas_mod * 0.5]
+        new_gas = gas + gas_mod  # (interp(current_TR, x, y))
+
+        x = [1.78816, 5.36448, 8.9408]  # slowly ramp mods down as we approach 20 mph
+        y = [new_gas, (new_gas * 0.6 + gas * 0.4), gas]
+        gas = interp(v_ego, x, y)
+      else:
+        x = [-0.89408, 0, 0.89408, 4.4704]  # need to tune this
+        y = [-.15, -.05, .005, .05]
+        gas += interp(v_rel, x, y)
+
+    return round(clip(gas, 0.0, 1.0), 5)
+
   def update(self, active, v_ego, brake_pressed, standstill, cruise_standstill, v_cruise, v_target, v_target_future, a_target, CP, a_ego, enabled):
     """Update longitudinal control. This updates the state machine and runs a PID loop"""
     # Actuation limits
-    gas_max = interp(v_ego, CP.gasMaxBP, CP.gasMaxV)
+
+    gas_max = self.dynamic_gas(v_ego)  # interp(v_ego, CP.gasMaxBP, CP.gasMaxV)
     brake_max = interp(v_ego, CP.brakeMaxBP, CP.brakeMaxV)
 
     # Update state machine
