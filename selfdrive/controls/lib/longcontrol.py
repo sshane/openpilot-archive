@@ -118,7 +118,7 @@ class LongControl():
                                self.scales['max_tracks'])  # pad tracks, keeping data in the center, sorted by yRel
 
     flat_tracks = [i for x in padded_tracks for i in x]  # flatten track data for model
-    v_ego = interp_fast(v_ego, self.scales['v_ego'])
+    v_ego_normalized = interp_fast(v_ego, self.scales['v_ego'])
     steering_angle = interp_fast(steering_angle, self.scales['steer_angle'])
     steering_rate = interp_fast(steering_rate, self.scales['steer_rate'])
     left_blinker = 1 if left_blinker else 0
@@ -130,7 +130,7 @@ class LongControl():
       a_lead = interp_fast(a_lead, self.scales['a_lead'])
     # set_speed = interp_fast(set_speed, self.scales['set_speed'])
 
-    final_input = [v_ego, steering_angle, steering_rate, a_lead, left_blinker, right_blinker] + flat_tracks
+    final_input = [v_ego_normalized, steering_angle, steering_rate, a_lead, left_blinker, right_blinker] + flat_tracks
 
     model_output = float(self.model_wrapper.run_model_live_tracks(final_input))
     # return clip(model_output, -1.0, 1.0)
@@ -191,12 +191,12 @@ class LongControl():
 
     # df_output = self.df_controller(v_ego, a_ego, track_data, steering_angle, steering_rate, left_blinker, right_blinker,
     #                                radar_state, set_speed)
-    old_v_target = float(v_target)
-    if True:
-      v_target, model_out = self.df_live_tracks(v_ego, a_ego, track_data, steering_angle, steering_rate, left_blinker,
-                                     right_blinker, radar_state, set_speed)  # predicts velocity .2s into the future
-    with open("/data/df_d", "a") as f:
-      f.write("{}\n".format([old_v_target, v_target, model_out, v_ego]))
+    #old_v_target = float(v_target)
+    #if not travis:
+    v_target, model_out = self.df_live_tracks(v_ego, a_ego, track_data, steering_angle, steering_rate, left_blinker,
+                                   right_blinker, radar_state, set_speed)  # predicts velocity .2s into the future
+    # with open("/data/df_d", "a") as f:
+    #   f.write("{}\n".format([old_v_target, v_target, model_out, v_ego]))
     
 
     gas_max = interp(v_ego, CP.gasMaxBP, CP.gasMaxV)
