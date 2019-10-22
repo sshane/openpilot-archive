@@ -191,12 +191,14 @@ class LongControl():
 
     # df_output = self.df_controller(v_ego, a_ego, track_data, steering_angle, steering_rate, left_blinker, right_blinker,
     #                                radar_state, set_speed)
-    #old_v_target = float(v_target)
+    mpc_v_target = float(v_target)
     #if not travis:
     v_target, model_out = self.df_live_tracks(v_ego, a_ego, track_data, steering_angle, steering_rate, left_blinker,
                                    right_blinker, radar_state, set_speed)  # predicts velocity .2s into the future
-    # with open("/data/df_d", "a") as f:
-    #   f.write("{}\n".format([old_v_target, v_target, model_out, v_ego]))
+
+    with open("/data/df_d", "a") as f:
+      f.write("{}\n".format([v_ego, mpc_v_target, v_target, model_out,
+                             interp_fast(model_out, [0, 1], self.scales['v_diff'], ext=True)]))
     
 
     gas_max = interp(v_ego, CP.gasMaxBP, CP.gasMaxV)
