@@ -137,7 +137,7 @@ class LongControl():
     # the following is for speed model
     desired_vel = v_ego + interp_fast(model_output, [0, 1], self.scales['v_diff'], ext=True)
 
-    return desired_vel
+    return desired_vel, model_output
 
   def get_lead(self, radar_state):
     if radar_state is not None:
@@ -191,10 +191,13 @@ class LongControl():
 
     # df_output = self.df_controller(v_ego, a_ego, track_data, steering_angle, steering_rate, left_blinker, right_blinker,
     #                                radar_state, set_speed)
-
-    if 1==2:
-      v_target = self.df_live_tracks(v_ego, a_ego, track_data, steering_angle, steering_rate, left_blinker,
+    old_v_target = float(v_target)
+    if True:
+      v_target, model_out = self.df_live_tracks(v_ego, a_ego, track_data, steering_angle, steering_rate, left_blinker,
                                      right_blinker, radar_state, set_speed)  # predicts velocity .2s into the future
+    with open("/data/df_d", "a") as f:
+      f.write("{}\n".format([old_v_target, v_target, model_out, v_ego]))
+    
 
     gas_max = interp(v_ego, CP.gasMaxBP, CP.gasMaxV)
     brake_max = interp(v_ego, CP.brakeMaxBP, CP.brakeMaxV)
