@@ -2,6 +2,7 @@ from cereal import log
 from common.numpy_fast import clip, interp
 from selfdrive.controls.lib.pid import PIController
 from selfdrive.df import df_wrapper
+from common.travis_checker import travis
 import time
 
 LongCtrlState = log.ControlsState.LongControlState
@@ -191,8 +192,9 @@ class LongControl():
     # df_output = self.df_controller(v_ego, a_ego, track_data, steering_angle, steering_rate, left_blinker, right_blinker,
     #                                radar_state, set_speed)
 
-    v_target = self.df_live_tracks(v_ego, a_ego, track_data, steering_angle, steering_rate, left_blinker,
-                                   right_blinker, radar_state, set_speed)  # predicts velocity .2s into the future
+    if not travis:
+      v_target = self.df_live_tracks(v_ego, a_ego, track_data, steering_angle, steering_rate, left_blinker,
+                                     right_blinker, radar_state, set_speed)  # predicts velocity .2s into the future
 
     gas_max = interp(v_ego, CP.gasMaxBP, CP.gasMaxV)
     brake_max = interp(v_ego, CP.brakeMaxBP, CP.brakeMaxV)
