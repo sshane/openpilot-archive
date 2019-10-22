@@ -28,11 +28,10 @@ class opParams:
     self.kegman_file = "/data/kegman.json"
     self.last_read_time = time.time()
     self.read_timeout = 1.0  # max frequency to read with self.get(...) (sec)
-    self.default_params = {'camera_offset': 0.06, 'awareness_factor': 5.0, 'lane_hug_direction': None, 'lane_hug_mod': 1.2, 'lane_hug_angle': 10}
-    self.travis_params = {}  # optional params to overwrite default_params for travis
+    self.default_params = {'camera_offset': 0.06, 'awareness_factor': 2.0, 'lane_hug_direction': None, 'lane_hug_mod': 1.2, 'lane_hug_angle': 10}
     self.run_init()  # restores, reads, and updates params
 
-  def add_default_params(self, force_update=False, travis=False):
+  def add_default_params(self, force_update=False):
     prev_params = dict(self.params)
     if not travis:
       for i in self.default_params:
@@ -40,16 +39,13 @@ class opParams:
           self.params.update({i: self.default_params[i]})
         elif i not in self.params:
           self.params.update({i: self.default_params[i]})
-    else:
-      for i in self.travis_params:
-        self.params.update({i: self.travis_params[i]})
     return prev_params == self.params
 
   def run_init(self):  # does first time initializing of default params, and/or restoring from kegman.json
     if travis:
       print("Travis detected...")
       self.params = self.default_params
-      self.add_default_params(travis=True)
+      self.add_default_params()
       return
     force_update = False  # replaces values with default params if True, not just add add missing key/value pairs
     self.params = self.default_params  # in case any file is corrupted
