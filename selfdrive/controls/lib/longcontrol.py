@@ -132,7 +132,7 @@ class LongControl():
     final_input = [v_ego_normalized, steering_angle, steering_rate, a_lead, left_blinker, right_blinker] + flat_tracks
 
     model_output = float(self.model_wrapper.run_model_live_tracks(final_input))
-    model_output = (model_output - 0.505) * 2.05
+    model_output = (model_output - 0.525) * 2.15
     model_output = clip(model_output, -1.0, 1.0)
     # the following is for speed model
     #desired_vel = v_ego + interp_fast(model_output, [0, 1], self.scales['v_diff'], ext=True)
