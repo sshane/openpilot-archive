@@ -85,63 +85,16 @@ class LongControl():
     self.model_wrapper = df_wrapper.get_wrapper()
     self.model_wrapper.init_model()
     self.past_data = []
-    self.scales = {'yRel': [-15.0, 15.0], 'dRel': [0.11999999731779099, 196.32000732421875],
-                   'vRel': [-51.20000076293945, 28.100000381469727], 'v_ego': [-0.15605801343917847, 36.42853927612305],
-                   'steer_angle': [-568.0, 591.5999755859375], 'steer_rate': [-775.0, 850.0],
-                   'a_lead': [-3.8327078819274902, 3.4350156784057617], 'max_tracks': 16}
+    self.scales = {'yRel': [-40.91999816894531, 40.959999084472656], 'dRel': [0.0, 196.36000061035156],
+                   'vRel': [-51.20000076293945, 28.100000381469727], 'v_ego': [0.0, 36.945838928222656],
+                   'steer_angle': [-568.0, 591.7000122070312], 'steer_rate': [-775.0, 850.0],
+                   'a_lead': [-4.377740383148193, 6.122258186340332], 'max_tracks': 16,
+                   'v_diff': [-1.1174330711364746, 1.3596081025898457]}
     self.P = 0.04
     self.prev_gas = 0.0
     self.last_speed = None
     self.last_model_output = None
     self.last_time = time.time()
-
-  # def p_controller(self, des_acc, cur_acc, v_ego, use_calc_accel=False):  # desired acceleration
-  #   if use_calc_accel and self.last_speed is not None:
-  #     cur_acc = (v_ego - self.last_speed) / (time.time() - self.last_time)
-  #   error = cur_acc - des_acc
-  #   gas = clip(self.prev_gas - (error * self.P), -1, 1)
-  #   self.prev_gas = gas
-  #   self.last_speed = v_ego
-  #   self.last_time = time.time()
-  #   if abs(des_acc) < 0.11176 and v_ego < 0.22352:  # holds us at a stop
-  #     gas = -0.2
-  #   return gas
-
-  # def pid_a(self, des_acc, cur_acc, v_ego):
-  #   gas = clip(self.pid_acc.update(setpoint=des_acc, measurement=cur_acc, speed=v_ego), -1, 1)
-  #   if abs(des_acc) < 0.11176 and v_ego < 0.22352:  # holds us at a stop
-  #     gas = -0.2
-  #   return gas
-
-  # def df_live_tracks_acc(self, v_ego, a_ego, track_data, steering_angle, steering_rate, left_blinker, right_blinker,
-  #                    radar_state, set_speed):
-  #   tracks_normalized = [[interp_fast(track[0], self.scales['yRel']),
-  #                         interp_fast(track[1], self.scales['dRel']),  # normalize track data
-  #                         interp_fast(track[2], self.scales['vRel'])] for track in track_data]
-  #
-  #   tracks_sorted = sorted(tracks_normalized, key=lambda track: track[0])  # sort tracks by yRel
-  #   padded_tracks = pad_tracks(tracks_sorted,
-  #                              self.scales['max_tracks'])  # pad tracks, keeping data in the center, sorted by yRel
-  #
-  #   flat_tracks = [i for x in padded_tracks for i in x]  # flatten track data for model
-  #   v_ego = interp_fast(v_ego, self.scales['v_ego'])
-  #   steering_angle = interp_fast(steering_angle, self.scales['steer_angle'])
-  #   steering_rate = interp_fast(steering_rate, self.scales['steer_rate'])
-  #   left_blinker = 1 if left_blinker else 0
-  #   right_blinker = 1 if right_blinker else 0
-  #   a_lead, lead_status = self.get_lead(radar_state)
-  #   if lead_status == 0:
-  #     a_lead = 0.0
-  #   else:
-  #     a_lead = interp_fast(a_lead, self.scales['a_lead'])
-  #   # set_speed = interp_fast(set_speed, self.scales['set_speed'])
-  #
-  #   final_input = [v_ego, steering_angle, steering_rate, a_lead, left_blinker, right_blinker] + flat_tracks
-  #   model_output = float(self.model_wrapper.run_model_live_tracks(final_input))
-  #
-  #   des_acc = interp_fast(model_output, [0, 1], self.scales['a_ego'], ext=True)
-  #   gas_output = self.p_controller(des_acc, a_ego, v_ego, use_calc_accel=True)  # might want to manually calculate a_ego
-  #   return gas_output
 
   def df_controller(self, v_ego, a_ego, track_data, steering_angle, steering_rate, left_blinker, right_blinker, radar_state, set_speed):
     predict_rate = 0.25  # seconds
@@ -179,11 +132,11 @@ class LongControl():
     final_input = [v_ego, steering_angle, steering_rate, a_lead, left_blinker, right_blinker] + flat_tracks
 
     model_output = float(self.model_wrapper.run_model_live_tracks(final_input))
-    #model_output = (model_output - 0.52) * 2.175
+    # return clip(model_output, -1.0, 1.0)
+    # the following is for speed model
+    desired_vel = v_ego + interp_fast(model_output, [0, 1], self.scales['v_diff'], ext=True)
 
-
-    return clip(model_output, -1.0, 1.0)
-
+    return desired_vel
 
   def get_lead(self, radar_state):
     if radar_state is not None:
@@ -232,23 +185,26 @@ class LongControl():
              steering_rate, left_blinker, right_blinker):
     """Update longitudinal control. This updates the state machine and runs a PID loop"""
     # Actuation limits
-    #df_output = self.df_live_tracks_acc(v_ego, a_ego, track_data, steering_angle, steering_rate, left_blinker, right_blinker, radar_state, set_speed)
-    '''df_output = self.df_live_tracks(v_ego, a_ego, track_data, steering_angle, steering_rate, left_blinker, right_blinker,
-                                    radar_state, set_speed)'''
-    df_output = self.df_controller(v_ego, a_ego, track_data, steering_angle, steering_rate, left_blinker, right_blinker,
-                                   radar_state, set_speed)
+    # df_output = self.df_live_tracks(v_ego, a_ego, track_data, steering_angle, steering_rate, left_blinker, right_blinker,
+    #                                 radar_state, set_speed)
 
-    #df_output = self.df(radar_state, v_ego, a_ego, set_speed)
-    # if df_output is not None:
-    #   return max(df_output, 0), -min(df_output, 0.0)
-    #else:  # use mpc when no lead
+    # df_output = self.df_controller(v_ego, a_ego, track_data, steering_angle, steering_rate, left_blinker, right_blinker,
+    #                                radar_state, set_speed)
+
+    v_target = self.df_live_tracks(v_ego, a_ego, track_data, steering_angle, steering_rate, left_blinker,
+                                   right_blinker, radar_state, set_speed)  # predicts velocity .2s into the future
+
     gas_max = interp(v_ego, CP.gasMaxBP, CP.gasMaxV)
     brake_max = interp(v_ego, CP.brakeMaxBP, CP.brakeMaxV)
 
     # Update state machine
     output_gb = self.last_output_gb
+    # self.long_control_state = long_control_state_trans(active, self.long_control_state, v_ego,
+    #                                                    v_target_future, self.v_pid, output_gb,
+    #                                                    brake_pressed, cruise_standstill)
+
     self.long_control_state = long_control_state_trans(active, self.long_control_state, v_ego,
-                                                       v_target_future, self.v_pid, output_gb,
+                                                       v_target, self.v_pid, output_gb,
                                                        brake_pressed, cruise_standstill)
 
     v_ego_pid = max(v_ego, MIN_CAN_SPEED)  # Without this we get jumps, CAN bus reports 0 when speed < 0.3
@@ -266,10 +222,14 @@ class LongControl():
 
       # Toyota starts braking more when it thinks you want to stop
       # Freeze the integrator so we don't accelerate to compensate, and don't allow positive acceleration
-      prevent_overshoot = not CP.stoppingControl and v_ego < 1.5 and v_target_future < 0.7
+      # prevent_overshoot = not CP.stoppingControl and v_ego < 1.5 and v_target_future < 0.7
+      prevent_overshoot = not CP.stoppingControl and v_ego < 1.5 and v_target < 0.7
       deadzone = interp(v_ego_pid, CP.longitudinalTuning.deadzoneBP, CP.longitudinalTuning.deadzoneV)
 
-      output_gb = self.pid.update(self.v_pid, v_ego_pid, speed=v_ego_pid, deadzone=deadzone, feedforward=a_target, freeze_integrator=prevent_overshoot)
+      # output_gb = self.pid.update(self.v_pid, v_ego_pid, speed=v_ego_pid, deadzone=deadzone, feedforward=a_target, freeze_integrator=prevent_overshoot)
+      # output_gb = self.pid.update(self.v_pid, v_ego_pid, speed=v_ego_pid, deadzone=deadzone, feedforward=a_target,
+      #                             freeze_integrator=prevent_overshoot)
+      output_gb = self.pid.update(self.v_pid, v_ego_pid, speed=v_ego_pid, deadzone=deadzone, freeze_integrator=prevent_overshoot)
 
       if prevent_overshoot:
         output_gb = min(output_gb, 0.0)
@@ -295,6 +255,4 @@ class LongControl():
     final_gas = clip(output_gb, 0., gas_max)
     final_brake = -clip(output_gb, -brake_max, 0.)
 
-    mpc_output = final_gas - final_brake
-    final_output = (df_output * 0.6) + (mpc_output * 0.4)
-    return [max(final_output, 0), -min(final_output, 0.0)]
+    return final_gas, final_brake
