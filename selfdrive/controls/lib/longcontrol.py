@@ -192,7 +192,7 @@ class LongControl():
     # df_output = self.df_controller(v_ego, a_ego, track_data, steering_angle, steering_rate, left_blinker, right_blinker,
     #                                radar_state, set_speed)
 
-    if not travis:
+    if 1==2:
       v_target = self.df_live_tracks(v_ego, a_ego, track_data, steering_angle, steering_rate, left_blinker,
                                      right_blinker, radar_state, set_speed)  # predicts velocity .2s into the future
 
