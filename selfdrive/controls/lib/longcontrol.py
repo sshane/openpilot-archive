@@ -86,10 +86,10 @@ class LongControl():
     self.model_wrapper = df_wrapper.get_wrapper()
     self.model_wrapper.init_model()
     self.past_data = []
-    self.scales = {'yRel': [-23.416223526000977, 23.289180755615234], 'dRel': [0.75, 151.5], 'vRel': [-32.875, 30.0],
-                   'v_ego': [0.0, 29.5767879486084], 'steer_angle': [-506.0, 449.8125], 'steer_rate': [-360.0, 369.5],
-                   'a_lead': [-4.980541229248047, 8.461540222167969], 'x_lead': [-16.047168731689453, 169.9757843017578],
-                   'v_lead': [0.0, 30.18574333190918], 'max_tracks': 18}
+    self.scales = {'yRel': [-40.91999816894531, 40.959999084472656], 'dRel': [0.0, 196.36000061035156],
+                   'vRel': [-51.20000076293945, 28.100000381469727], 'v_ego': [0.0, 36.945838928222656],
+                   'steer_angle': [-568.0, 591.7000122070312], 'steer_rate': [-775.0, 850.0],
+                   'a_lead': [-4.377740383148193, 6.122258186340332], 'max_tracks': 16, 'gas': [-0.45302397, 1.0]}
     self.P = 0.04
     self.prev_gas = 0.0
     self.last_speed = None
@@ -108,8 +108,6 @@ class LongControl():
 
   def df_live_tracks(self, v_ego, a_ego, track_data, steering_angle, steering_rate, left_blinker, right_blinker,
                      radar_state, set_speed):
-
-    track_data = [track for track in track_data if (v_ego >= 11.176 and track['vRel'] + v_ego > 2.2352) or v_ego < 11.176]
     tracks_normalized = [[interp_fast(track[0], self.scales['yRel']),
                           interp_fast(track[1], self.scales['dRel']),  # normalize track data
                           interp_fast(track[2], self.scales['vRel'])] for track in track_data]
@@ -124,16 +122,14 @@ class LongControl():
     steering_rate = interp_fast(steering_rate, self.scales['steer_rate'])
     left_blinker = int(left_blinker)
     right_blinker = int(right_blinker)
-    lead_status, lead_data = self.get_lead(radar_state)
-    if lead_status:
-      a_lead = interp_fast(lead_data[0], self.scales['a_lead'])
-      x_lead = interp_fast(lead_data[1], self.scales['x_lead'])
-      v_lead = interp_fast(lead_data[2], self.scales['v_lead'])
+    a_lead, lead_status = self.get_lead(radar_state)
+    if lead_status == 0:
+      a_lead = 0.0
     else:
-      a_lead, x_lead, v_lead = 0.0, 0.0, 0.0
+      a_lead = interp_fast(a_lead, self.scales['a_lead'])
     # set_speed = interp_fast(set_speed, self.scales['set_speed'])
 
-    final_input = [v_ego_normalized, steering_angle, steering_rate, a_lead, x_lead, v_lead, left_blinker, right_blinker] + flat_tracks
+    final_input = [v_ego_normalized, steering_angle, steering_rate, a_lead, left_blinker, right_blinker] + flat_tracks
 
     model_output = float(self.model_wrapper.run_model_live_tracks(final_input))
     model_output = (model_output - 0.505) * 2.05
@@ -148,9 +144,8 @@ class LongControl():
     if radar_state is not None:
       lead_1 = radar_state.leadOne
       if lead_1 is not None and lead_1.status:
-        a_lead, x_lead, v_lead = lead_1.aLeadK, lead_1.dRel, lead_1.vLead
-        return True, [a_lead, x_lead, v_lead]
-    return False, None  # second 0 tells model to not care about 0 a_lead instead of interpreting it as 0 accel
+        return lead_1.aLeadK, 1
+    return 0, 0  # second 0 tells model to not care about 0 a_lead instead of interpreting it as 0 accel
 
   # def df(self, radar_state, v_ego, a_ego, set_speed):
   #   scales = {'v_ego_scale': [0.0, 40.755523681641],
