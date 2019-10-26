@@ -1,3 +1,7 @@
+Version 0.6.5.vWOW (2019-10-26)
+========================
+ * New model based off Corolla data with brake data predicted from a Holden.
+ 
 Version 0.6.5 (2019-10-07)
 ========================
  * NEOS update: upgrade to Python3 and new installer!
