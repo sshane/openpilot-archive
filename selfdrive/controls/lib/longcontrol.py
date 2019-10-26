@@ -86,11 +86,11 @@ class LongControl():
     self.model_wrapper = df_wrapper.get_wrapper()
     self.model_wrapper.init_model()
     self.past_data = []
-    self.scales = {'yRel': [-23.416223526000977, 23.289180755615234], 'dRel': [0.75, 151.5], 'vRel': [-32.875, 30.0],
-                   'v_ego': [0.0, 29.5767879486084], 'steer_angle': [-506.0, 449.8125], 'steer_rate': [-360.0, 369.5],
-                   'a_lead': [-4.980541229248047, 8.461540222167969],
-                   'x_lead': [-16.047168731689453, 169.9757843017578],
-                   'v_lead': [0.0, 30.18574333190918], 'max_tracks': 18}
+    self.scales = {'v_lead': [0.0, 39.566612243652344], 'max_tracks': 16, 'yRel': [-15.0, 15.0],
+                   'vRel': [-32.349998474121094, 28.100000381469727], 'steer_angle': [-568.0, 591.5999755859375],
+                   'x_lead': [-13.466601371765137, 195.32000732421875],
+                   'dRel': [0.11999999731779099, 196.32000732421875], 'steer_rate': [-725.0, 850.0],
+                   'v_ego': [0.0, 36.945838928222656], 'a_lead': [-3.8327078819274902, 3.4350156784057617]}
     self.P = 0.04
     self.prev_gas = 0.0
     self.last_speed = None
@@ -141,7 +141,7 @@ class LongControl():
     final_input = [v_ego_normalized, steering_angle, steering_rate, a_lead, x_lead, v_lead, left_blinker, right_blinker] + flat_tracks
 
     model_output = float(self.model_wrapper.run_model_live_tracks(final_input))
-    model_output = (model_output - 0.5075) * 2.075
+    model_output = (model_output - 0.50) * 2.0
     model_output = clip(model_output, -1.0, 1.0)
     # the following is for speed model
     #desired_vel = v_ego + interp_fast(model_output, [0, 1], self.scales['v_diff'], ext=True)
