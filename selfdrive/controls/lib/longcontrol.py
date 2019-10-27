@@ -85,35 +85,45 @@ class LongControl():
     self.last_output_gb = 0.0
     self.model_wrapper = df_wrapper.get_wrapper()
     self.model_wrapper.init_model()
-    self.past_data = []
-    self.scales = {'v_lead': [0.0, 39.566612243652344], 'max_tracks': 16, 'yRel': [-15.0, 15.0],
-                   'vRel': [-32.349998474121094, 28.100000381469727], 'steer_angle': [-568.0, 591.5999755859375],
-                   'x_lead': [-13.466601371765137, 195.32000732421875],
-                   'dRel': [0.11999999731779099, 196.32000732421875], 'steer_rate': [-725.0, 850.0],
-                   'v_ego': [0.0, 36.945838928222656], 'a_lead': [-3.8327078819274902, 3.4350156784057617]}
-    self.P = 0.04
-    self.prev_gas = 0.0
-    self.last_speed = None
-    self.last_model_output = None
-    self.last_time = time.time()
+    # self.past_data = []
+    self.scales = {'x_lead': [-13.466601371765137, 195.32000732421875],
+                   'a_lead': [-3.8327078819274902, 3.4350156784057617], 'yRel': [-15.0, 15.0],
+                   'dRel': [0.0, 196.32000732421875], 'max_tracks': 16, 'steer_rate': [-725.0, 816.0],
+                   'vRel': [-51.20000076293945, 28.100000381469727], 'v_lead': [0.0, 39.566612243652344],
+                   'steer_angle': [-564.9000244140625, 591.5999755859375], 'v_ego': [0.0, 36.945838928222656]}
+    # self.P = 0.04
+    # self.prev_gas = 0.0
+    # self.last_speed = None
+    # self.last_model_output = None
+    # self.last_time = time.time()
+    self.last_lead_data = None
+    self.last_lead_time = None
 
-  def df_controller(self, v_ego, a_ego, track_data, steering_angle, steering_rate, left_blinker, right_blinker, radar_state, set_speed):  # out of date with current architecture
-    predict_rate = 0.25  # seconds
-    if time.time() - self.last_time >= predict_rate or self.last_model_output is None:
-      self.last_time = time.time()
-      model_output = self.df_live_tracks(v_ego, a_ego, track_data, steering_angle, steering_rate, left_blinker,
-                                         right_blinker, radar_state, set_speed)
-      self.last_model_output = float(model_output)
+  # def df_controller(self, v_ego, a_ego, track_data, steering_angle, steering_rate, left_blinker, right_blinker, radar_state, set_speed):  # out of date with current architecture
+  #   predict_rate = 0.25  # seconds
+  #   if time.time() - self.last_time >= predict_rate or self.last_model_output is None:
+  #     self.last_time = time.time()
+  #     model_output = self.df_live_tracks(v_ego, a_ego, track_data, steering_angle, steering_rate, left_blinker,
+  #                                        right_blinker, radar_state, set_speed)
+  #     self.last_model_output = float(model_output)
+  #
+  #   return self.last_model_output
 
-    return self.last_model_output
+  def df_controller(self, v_ego, a_ego, track_data, steering_angle, steering_rate, left_blinker, right_blinker,
+                    radar_state, set_speed):
+    lead_data = self.get_lead(radar_state)
+    if lead_data['lead_status'] is False:
+      return False,
+    else:
+      return True, self.df_live_tracks(v_ego, a_ego, track_data, steering_angle, steering_rate, left_blinker,
+                                       right_blinker, lead_data, set_speed)
 
   def df_live_tracks(self, v_ego, a_ego, track_data, steering_angle, steering_rate, left_blinker, right_blinker,
-                     radar_state, set_speed):
-
-    try:  # removes tracks under 5 mph when above 25 mph to help the model
-      track_data = [track for track in track_data if (v_ego >= 11.176 and track[2] + v_ego > 2.2352) or v_ego < 11.176]
-    except:
-      pass
+                     lead_data, set_speed):
+    # try:  # removes tracks under 5 mph when above 25 mph to help the model
+    #   track_data = [track for track in track_data if (v_ego >= 11.176 and track[2] + v_ego > 2.2352) or v_ego < 11.176]
+    # except:
+    #   pass
 
     tracks_normalized = [[interp_fast(track[0], self.scales['yRel']),
                           interp_fast(track[1], self.scales['dRel']),  # normalize track data
@@ -129,13 +139,7 @@ class LongControl():
     steering_rate = interp_fast(steering_rate, self.scales['steer_rate'])
     left_blinker = int(left_blinker)
     right_blinker = int(right_blinker)
-    lead_status, lead_data = self.get_lead(radar_state)
-    if lead_status:
-      a_lead = interp_fast(lead_data[0], self.scales['a_lead'])
-      x_lead = interp_fast(lead_data[1], self.scales['x_lead'])
-      v_lead = interp_fast(lead_data[2], self.scales['v_lead'])
-    else:
-      a_lead, x_lead, v_lead = 0.0, 0.0, 0.0
+    a_lead, x_lead, v_lead = lead_data['a_lead'], lead_data['x_lead'], lead_data['v_lead']
     # set_speed = interp_fast(set_speed, self.scales['set_speed'])
 
     final_input = [v_ego_normalized, steering_angle, steering_rate, a_lead, x_lead, v_lead, left_blinker, right_blinker] + flat_tracks
@@ -143,9 +147,7 @@ class LongControl():
     model_output = float(self.model_wrapper.run_model_live_tracks(final_input))
     model_output = (model_output - 0.50) * 2.0
     model_output = clip(model_output, -1.0, 1.0)
-    # the following is for speed model
-    #desired_vel = v_ego + interp_fast(model_output, [0, 1], self.scales['v_diff'], ext=True)
-    #return desired_vel, model_output
+
     gas, brake = max(model_output, 0), -min(model_output, 0)
     return gas, brake
 
@@ -153,9 +155,16 @@ class LongControl():
     if radar_state is not None:
       lead_1 = radar_state.leadOne
       if lead_1 is not None and lead_1.status:
-        a_lead, x_lead, v_lead = lead_1.aLeadK, lead_1.dRel, lead_1.vLead
-        return True, [a_lead, x_lead, v_lead]
-    return False, None  # second 0 tells model to not care about 0 a_lead instead of interpreting it as 0 accel
+        a_lead = interp_fast(lead_1.aLeadK, self.scales['a_lead'])
+        x_lead = interp_fast(lead_1.dRel, self.scales['x_lead'])
+        v_lead = interp_fast(lead_1.vLead, self.scales['v_lead'])
+        self.last_lead_data = {'a_lead': a_lead, 'x_lead': x_lead, 'v_lead': v_lead, 'lead_status': True}
+        self.last_lead_time = time.time()
+        return self.last_lead_data
+    if time.time() - self.last_lead_time < 0.5:  # if less than 0.5 seconds since last lead message, assume we still have lead. might want to extrapolate in the future!
+      return self.last_lead_data
+    else:
+      return {'a_lead': 0, 'x_lead': 0, 'v_lead': 0, 'lead_status': False}
 
   # def df(self, radar_state, v_ego, a_ego, set_speed):
   #   scales = {'v_ego_scale': [0.0, 40.755523681641],
@@ -200,17 +209,10 @@ class LongControl():
     # df_output = self.df_live_tracks(v_ego, a_ego, track_data, steering_angle, steering_rate, left_blinker, right_blinker,
     #                                 radar_state, set_speed)
 
-    # df_output = self.df_controller(v_ego, a_ego, track_data, steering_angle, steering_rate, left_blinker, right_blinker,
-    #                                radar_state, set_speed)
-    # mpc_v_target = float(v_target)
-    # if not travis:
-    return self.df_live_tracks(v_ego, a_ego, track_data, steering_angle, steering_rate, left_blinker,
-                               right_blinker, radar_state, set_speed)
-
-    # with open("/data/df_d", "a") as f:
-    #   f.write("{}\n".format([v_ego, mpc_v_target, v_target, model_out,
-    #                          interp_fast(model_out, [0, 1], self.scales['v_diff'], ext=True)]))
-    
+    df_output = self.df_controller(v_ego, a_ego, track_data, steering_angle, steering_rate, left_blinker, right_blinker,
+                                   radar_state, set_speed)
+    if df_output[0]:
+      return df_output[1]  # else, use openpilot when no lead
 
     gas_max = interp(v_ego, CP.gasMaxBP, CP.gasMaxV)
     brake_max = interp(v_ego, CP.brakeMaxBP, CP.brakeMaxV)

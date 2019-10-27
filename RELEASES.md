@@ -1,3 +1,7 @@
+Version 0.6.5.vLEAD (2019-10-26)
+========================
+ * New model! Only trained on data when an openpilot lead was available. When openpilot identifies no lead, we will use stock MPC PID loop.
+
 Version 0.6.5.vWOW (2019-10-26)
 ========================
  * New model based off Corolla data with brake data predicted from a Holden Astra.
