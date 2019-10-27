@@ -97,7 +97,7 @@ class LongControl():
     # self.last_model_output = None
     # self.last_time = time.time()
     self.last_lead_data = None
-    self.last_lead_time = None
+    self.last_lead_time = time.time()
 
   # def df_controller(self, v_ego, a_ego, track_data, steering_angle, steering_rate, left_blinker, right_blinker, radar_state, set_speed):  # out of date with current architecture
   #   predict_rate = 0.25  # seconds
@@ -161,7 +161,7 @@ class LongControl():
         self.last_lead_data = {'a_lead': a_lead, 'x_lead': x_lead, 'v_lead': v_lead, 'lead_status': True}
         self.last_lead_time = time.time()
         return self.last_lead_data
-    if time.time() - self.last_lead_time < 0.5:  # if less than 0.5 seconds since last lead message, assume we still have lead. might want to extrapolate in the future!
+    if time.time() - self.last_lead_time < 0.5 and self.last_lead_data is not None:  # if less than 0.5 seconds since last lead message, assume we still have lead. might want to extrapolate in the future!
       return self.last_lead_data
     else:
       return {'a_lead': 0, 'x_lead': 0, 'v_lead': 0, 'lead_status': False}
