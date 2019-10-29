@@ -16,16 +16,18 @@ def upload_data():
   file_names = ["df-data", "brake-data"]
 
   for file_name in file_names:
+    print(file_name)
     file_path = os.path.join(base_dir, file_name)
+    print(file_path)
     if os.path.isfile(file_path) and os.path.getsize(file_path) > 2*10**6:  # ensure the file is at least 2 mb
       file_name += '.{}'
-
+      print(file_name)
       username = op_params.get("uniqueID", None)
       if username is None:
         op_params.put("uniqueID", generate_random_username())
         username = op_params.get("uniqueID", "u-error")
       username += "-{}".format(op_params.get("car_model", 'unknown-car'))
-
+      print(username)
       try:
         new_folder = False
         ftp = ftplib.FTP("smiskol.com")
@@ -34,7 +36,7 @@ def upload_data():
           ftp.mkd("/{}".format(username))
           new_folder = True
         ftp.cwd("/{}".format(username))
-
+        print(new_folder)
         if not new_folder:
           data_files = ftp.nlst()
           files = []
@@ -48,7 +50,7 @@ def upload_data():
           file_num = max([int(i.split('.')[1]) for i in files]) + 1
         else:
           file_num = 0
-
+        print(file_num)
         uploaded = False
         tries = 0
 
