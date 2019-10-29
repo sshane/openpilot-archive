@@ -19,7 +19,7 @@ def upload_data():
     print(file_name)
     file_path = os.path.join(base_dir, file_name)
     print(file_path)
-    if os.path.isfile(file_path) and os.path.getsize(file_path) > 2*10**6:  # ensure the file is at least 2 mb
+    if os.path.isfile(file_path) and os.path.getsize(file_path) > 10e6:  # ensure the file is at least 1 mb
       file_name += '.{}'
       print(file_name)
       username = op_params.get("uniqueID", None)
