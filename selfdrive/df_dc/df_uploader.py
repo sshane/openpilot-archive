@@ -71,3 +71,6 @@ def upload_data():
         print(e)
     else:
       print('{} does not exist or is too small'.format(file_path))
+
+
+upload_data()
