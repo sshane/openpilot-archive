@@ -94,7 +94,7 @@ class LongControl():
                    'dRel': [0.0, 196.36000061035156], 'v_lead': [0.0, 39.63964080810547],
                    'v_ego': [0.0, 36.945838928222656], 'vRel': [-51.20000076293945, 28.100000381469727],
                    'a_lead': [-3.884178638458252, 3.4350156784057617]}
-    self.P = 1.5  # multiplied by model output
+    self.P = 2.0  # multiplied by model output
     # self.prev_gas = 0.0
     # self.last_speed = None
     # self.last_model_output = None
