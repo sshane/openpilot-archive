@@ -257,7 +257,7 @@ class LongControl():
     '''self.df_live_tracks_v_future(v_ego, a_ego, track_data, steering_angle, steering_rate, left_blinker, right_blinker,
                                         radar_state, set_speed)'''
 
-    v_target = v_ego + .22352  # let's see if the car will accelerate .5 mph every second
+    v_target = v_ego + .22352*4  # let's see if the car will accelerate .5 mph every second
     gas_max = interp(v_ego, CP.gasMaxBP, CP.gasMaxV)
     brake_max = interp(v_ego, CP.brakeMaxBP, CP.brakeMaxV)
 
