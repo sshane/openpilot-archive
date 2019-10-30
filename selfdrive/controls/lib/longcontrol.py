@@ -1,6 +1,7 @@
 from cereal import log
 from common.numpy_fast import clip, interp
 from selfdrive.controls.lib.pid import PIController
+from selfdrive.controls.lib.pi import CustomPID
 from selfdrive.df import df_wrapper
 from common.travis_checker import travis
 import time
@@ -78,9 +79,10 @@ class LongControl():
                             rate=RATE,
                             sat_limit=0.8,
                             convert=compute_gb)
-    self.pid_acc = PIController(([0., 35.], [.0, .1]),
-                                 ([0, 35], [2, .5]),
-                                 k_f=1, pos_limit=1.0, neg_limit=-1.0, rate=20)
+
+    self.pid_v_future = CustomPID((CP.longitudinalTuning.kpBP, CP.longitudinalTuning.kpV),
+                                  (CP.longitudinalTuning.kiBP, CP.longitudinalTuning.kiV),
+                                  limits=[-1, 1], rate=RATE)
     self.v_pid = 0.0
     self.last_output_gb = 0.0
     self.model_wrapper = df_wrapper.get_wrapper()
@@ -251,11 +253,14 @@ class LongControl():
     #                                radar_state, set_speed)
     # if df_output[0]:
     #   return df_output[1]  # else, use openpilot when no lead
-    return self.df_live_tracks_v_future(v_ego, a_ego, track_data, steering_angle, steering_rate, left_blinker, right_blinker,
-                                        radar_state, set_speed)
+    '''return self.df_live_tracks_v_future(v_ego, a_ego, track_data, steering_angle, steering_rate, left_blinker, right_blinker,
+                                        radar_state, set_speed)'''
 
     gas_max = interp(v_ego, CP.gasMaxBP, CP.gasMaxV)
     brake_max = interp(v_ego, CP.brakeMaxBP, CP.brakeMaxV)
+
+    pi_output = clip(self.pid_v_future.update(v_target, v_ego, speed=v_ego), -brake_max, gas_max)
+    return max(pi_output, 0), -min(pi_output, 0)
 
     # Update state machine
     output_gb = self.last_output_gb
