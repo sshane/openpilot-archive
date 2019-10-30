@@ -195,7 +195,7 @@ class LongControl():
     final_gas = clip(output_gb, 0., gas_max)
     final_brake = -clip(output_gb, -brake_max, 0.)
 
-    if enabled:
-      self.data_collector.append([final_gas, final_brake, v_ego, a_ego, time.time()])
+    # if enabled:
+    #   self.data_collector.append([final_gas, final_brake, v_ego, a_ego, time.time()])
 
     return final_gas, final_brake

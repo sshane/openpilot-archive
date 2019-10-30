@@ -73,8 +73,7 @@ class DataCollector:
     something is wrong with writing.
     """
 
-    if ((time.time() - self.last_write_time) >= self.write_frequency
-            and len(self.data) >= self.write_threshold and not travis):
+    if (time.time() - self.last_write_time) >= self.write_frequency and len(self.data) >= self.write_threshold and not travis:
       if not self.thread_running:
         # write_thread = threading.Thread(target=self.write, args=(self.data,))
         # write_thread.daemon = True
