@@ -255,6 +255,9 @@ class LongControl():
     #   return df_output[1]  # else, use openpilot when no lead
     '''return self.df_live_tracks_v_future(v_ego, a_ego, track_data, steering_angle, steering_rate, left_blinker, right_blinker,
                                         radar_state, set_speed)'''
+    error = 20.1168 - v_ego
+    out = clip(error * .08, 0, 1)
+    return float(max(out, 0)), float(-min(out, 0))
 
     gas_max = interp(v_ego, CP.gasMaxBP, CP.gasMaxV)
     brake_max = interp(v_ego, CP.brakeMaxBP, CP.brakeMaxV)
