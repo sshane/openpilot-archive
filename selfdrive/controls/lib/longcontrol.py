@@ -260,7 +260,7 @@ class LongControl():
     brake_max = interp(v_ego, CP.brakeMaxBP, CP.brakeMaxV)
 
     pi_output = clip(self.pid_v_future.update(v_target, v_ego, speed=v_ego), -brake_max, gas_max)
-    return max(pi_output, 0), -min(pi_output, 0)
+    return float(max(pi_output, 0)), float(-min(pi_output, 0))
 
     # Update state machine
     output_gb = self.last_output_gb
