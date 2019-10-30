@@ -152,6 +152,7 @@ class LongControl():
 
     model_output = float(self.model_wrapper.run_model_live_tracks(final_input))
     model_output = interp_fast(model_output, [0, 1], self.scales['v_diff'], ext=True)
+    return model_output
     x = [-4.053194046020508, 0, 4.142895743250847]
     y = [-1, 0, 1]
     output_gas = interp_fast(model_output, x, y)
@@ -253,9 +254,10 @@ class LongControl():
     #                                radar_state, set_speed)
     # if df_output[0]:
     #   return df_output[1]  # else, use openpilot when no lead
-    '''return self.df_live_tracks_v_future(v_ego, a_ego, track_data, steering_angle, steering_rate, left_blinker, right_blinker,
-                                        radar_state, set_speed)'''
-    error = 20.1168 - v_ego
+    desired = self.df_live_tracks_v_future(v_ego, a_ego, track_data, steering_angle, steering_rate, left_blinker, right_blinker,
+                                        radar_state, set_speed)
+    #desired = 20.1168
+    error = desired - v_ego
     out = clip(error * .08, 0, 1)
     return float(max(out, 0)), float(-min(out, 0))
 
