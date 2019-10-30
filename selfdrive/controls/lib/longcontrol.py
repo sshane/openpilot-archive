@@ -1,7 +1,7 @@
 from cereal import log
 from common.numpy_fast import clip, interp
 from selfdrive.controls.lib.pid import PIController
-from common.data_collector import DataCollector
+# from common.data_collector import DataCollector
 import selfdrive.messaging as messaging
 from selfdrive.services import service_list
 import time
@@ -72,7 +72,7 @@ class LongControl():
 
     self.inputs_list = ['gas', 'brake', 'v_ego', 'a_ego', 'time']
     self.df_file_path = "/data/openpilot/selfdrive/df_dc/brake-data"
-    self.data_collector = DataCollector(self.df_file_path, self.inputs_list)
+    # self.data_collector = DataCollector(self.df_file_path, self.inputs_list)
     self.radarState = messaging.sub_sock(service_list['radarState'].port, conflate=True)
     self.last_lead = None
     self.num_nones = 0
