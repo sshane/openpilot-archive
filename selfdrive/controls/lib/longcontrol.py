@@ -254,18 +254,12 @@ class LongControl():
     #                                radar_state, set_speed)
     # if df_output[0]:
     #   return df_output[1]  # else, use openpilot when no lead
-    desired = self.df_live_tracks_v_future(v_ego, a_ego, track_data, steering_angle, steering_rate, left_blinker, right_blinker,
-                                        radar_state, set_speed)
-    #desired = 20.1168
-    error = desired - v_ego
-    out = clip(error * .08, 0, 1)
-    return float(max(out, 0)), float(-min(out, 0))
+    '''self.df_live_tracks_v_future(v_ego, a_ego, track_data, steering_angle, steering_rate, left_blinker, right_blinker,
+                                        radar_state, set_speed)'''
 
+    v_target = v_ego + .22352  # let's see if the car will accelerate .5 mph every second
     gas_max = interp(v_ego, CP.gasMaxBP, CP.gasMaxV)
     brake_max = interp(v_ego, CP.brakeMaxBP, CP.brakeMaxV)
-
-    pi_output = clip(self.pid_v_future.update(v_target, v_ego, speed=v_ego), -brake_max, gas_max)
-    return float(max(pi_output, 0)), float(-min(pi_output, 0))
 
     # Update state machine
     output_gb = self.last_output_gb
