@@ -254,7 +254,7 @@ class LongControl():
     #                                radar_state, set_speed)
     # if df_output[0]:
     #   return df_output[1]  # else, use openpilot when no lead
-    v_target = self.df_live_tracks_v_future(v_ego, a_ego, track_data, steering_angle, steering_rate, left_blinker, right_blinker,
+    v_target = v_ego + self.df_live_tracks_v_future(v_ego, a_ego, track_data, steering_angle, steering_rate, left_blinker, right_blinker,
                                         radar_state, set_speed)
 
     gas_max = interp(v_ego, CP.gasMaxBP, CP.gasMaxV)
