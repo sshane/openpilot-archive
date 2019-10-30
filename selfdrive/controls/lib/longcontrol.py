@@ -94,7 +94,7 @@ class LongControl():
                    'dRel': [0.0, 196.36000061035156], 'v_lead': [0.0, 39.63964080810547],
                    'v_ego': [0.0, 36.945838928222656], 'vRel': [-51.20000076293945, 28.100000381469727],
                    'a_lead': [-3.884178638458252, 3.4350156784057617]}
-    # self.P = 0.04
+    self.P = 3.0  # multiplied by model output
     # self.prev_gas = 0.0
     # self.last_speed = None
     # self.last_model_output = None
@@ -151,13 +151,13 @@ class LongControl():
                    right_blinker] + flat_tracks
 
     model_output = float(self.model_wrapper.run_model_live_tracks(final_input))
-    model_output = interp_fast(model_output, [0, 1], self.scales['v_diff'], ext=True)
+    model_output = interp_fast(model_output, [0, 1], self.scales['v_diff'], ext=True) * self.P
     return model_output
-    x = [-4.053194046020508, 0, 4.142895743250847]
-    y = [-1, 0, 1]
-    output_gas = interp_fast(model_output, x, y)
-    gas, brake = max(output_gas, 0), -min(output_gas, 0)
-    return gas, brake
+    # x = [-4.053194046020508, 0, 4.142895743250847]
+    # y = [-1, 0, 1]
+    # output_gas = interp_fast(model_output, x, y)
+    # gas, brake = max(output_gas, 0), -min(output_gas, 0)
+    # return gas, brake
 
   def df_live_tracks(self, v_ego, a_ego, track_data, steering_angle, steering_rate, left_blinker, right_blinker,
                      lead_data, set_speed):
@@ -254,10 +254,9 @@ class LongControl():
     #                                radar_state, set_speed)
     # if df_output[0]:
     #   return df_output[1]  # else, use openpilot when no lead
-    '''self.df_live_tracks_v_future(v_ego, a_ego, track_data, steering_angle, steering_rate, left_blinker, right_blinker,
-                                        radar_state, set_speed)'''
+    v_target = self.df_live_tracks_v_future(v_ego, a_ego, track_data, steering_angle, steering_rate, left_blinker, right_blinker,
+                                        radar_state, set_speed)
 
-    v_target = v_ego + .22352*4  # let's see if the car will accelerate .5 mph every second
     gas_max = interp(v_ego, CP.gasMaxBP, CP.gasMaxV)
     brake_max = interp(v_ego, CP.brakeMaxBP, CP.brakeMaxV)
 
