@@ -3,7 +3,9 @@ from selfdrive.swaglog import cloudlog
 import threading
 import time
 import os
+from common.op_params import opParams
 
+op_params = opParams()
 
 class DataCollector:
   def __init__(self, file_path, keys, write_frequency=60, write_threshold=2):
@@ -20,6 +22,7 @@ class DataCollector:
       data_collector = DataCollector('/data/openpilot/custom_data', ['v_ego', 'a_ego', 'custom_dict'], write_frequency=120)
     """
 
+    self.log_data = op_params.get('log_data', False)
     self.file_path = file_path
     self.keys = keys
     self.write_frequency = write_frequency
@@ -50,12 +53,13 @@ class DataCollector:
       data_collector.append([17, 0.5, {'a': 1}])
     """
 
-    if len(sample) != len(self.keys):
-      raise Exception("You need the same amount of data as you specified in your keys")
-    if not self.is_initialized:
-      self.initialize()
-    self.data.append(sample)
-    self.check_if_can_write()
+    if self.log_data:
+      if len(sample) != len(self.keys):
+        raise Exception("You need the same amount of data as you specified in your keys")
+      if not self.is_initialized:
+        self.initialize()
+      self.data.append(sample)
+      self.check_if_can_write()
 
   def reset(self, reset_type=None):
     if reset_type in ['data', 'all']:
@@ -75,10 +79,10 @@ class DataCollector:
 
     if (time.time() - self.last_write_time) >= self.write_frequency and len(self.data) >= self.write_threshold and not travis:
       if not self.thread_running:
-        # write_thread = threading.Thread(target=self.write, args=(self.data,))
-        # write_thread.daemon = True
-        # write_thread.start()
-        self.write(self.data)
+        write_thread = threading.Thread(target=self.write, args=(self.data,))
+        write_thread.daemon = True
+        write_thread.start()
+        # self.write(self.data)  # non threaded approach
         self.reset(reset_type='all')
       elif self.write_frequency > 30:
           cloudlog.warning('DataCollector write thread is taking a while to write data.')
