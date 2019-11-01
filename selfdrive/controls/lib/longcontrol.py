@@ -257,13 +257,11 @@ class LongControl():
              steering_rate, left_blinker, right_blinker):
     """Update longitudinal control. This updates the state machine and runs a PID loop"""
     # Actuation limits
-    # df_output = self.df_live_tracks(v_ego, a_ego, track_data, steering_angle, steering_rate, left_blinker, right_blinker,
-    #                                 radar_state, set_speed)
 
-    df_output = self.df_controller(v_ego, a_ego, track_data, steering_angle, steering_rate, left_blinker, right_blinker,
+    dynamic_follow_tfv2 = self.df_controller(v_ego, a_ego, track_data, steering_angle, steering_rate, left_blinker, right_blinker,
                                    radar_state, set_speed)
-    if df_output['status']:
-      return df_output['output']  # else, use openpilot when no lead
+    if dynamic_follow_tfv2['status']:
+      return dynamic_follow_tfv2['output']  # else, use openpilot when no lead
 
     # v_target = v_ego + self.df_live_tracks_v_future(v_ego, a_ego, track_data, steering_angle, steering_rate, left_blinker, right_blinker,
     #                                     radar_state, set_speed)
