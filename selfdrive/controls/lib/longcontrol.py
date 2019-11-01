@@ -89,11 +89,9 @@ class LongControl():
     self.model_wrapper = df_wrapper.get_wrapper()
     self.model_wrapper.init_model()
     # self.past_data = []
-    self.scales = {'v_ego': [0.0, 30.08179473876953], 'yRel': [-24.200105667114258, 27.49478530883789],
-                   'steer_rate': [-360.0, 293.0], 'gas': [-0.4711538553237915, 1.0], 'steer_angle': [-506.0, 465.1875],
-                   'v_lead': [0.0, 30.18574333190918], 'dRel': [0.75, 151.5], 'vRel': [-59.75, 30.0],
-                   'a_lead': [-5.971687316894531, 9.852273941040039],
-                   'x_lead': [-16.047168731689453, 169.9757843017578], 'max_tracks': 19}
+    self.scales = {'v_lead': [0.0, 29.392393112182617],
+                   'x_lead': [-10.638232231140137, 169.9757843017578],
+                   'a_lead': [-5.971687316894531, 9.852273941040039], 'v_ego': [0.0, 30.08179473876953]}
     self.P = 1.0  # multiplied by model output
     # self.prev_gas = 0.0
     # self.last_speed = None
@@ -193,13 +191,14 @@ class LongControl():
     a_lead, x_lead, v_lead = lead_data['a_lead'], lead_data['x_lead'], lead_data['v_lead']
     # set_speed = interp_fast(set_speed, self.scales['set_speed'])
 
-    final_input = [v_ego_normalized, steering_angle, steering_rate, a_lead, left_blinker, right_blinker] + flat_tracks
+    # final_input = [v_ego_normalized, steering_angle, steering_rate, a_lead, left_blinker, right_blinker] + flat_tracks
+    final_input = [v_ego_normalized, a_lead, x_lead, v_lead]
 
     model_output = float(self.model_wrapper.run_model_live_tracks(final_input))
     with open('/data/dftf_input', 'a') as f:
       f.write('{}\n{}\n'.format(final_input, model_output))
 
-    model_output = (model_output - 0.515) * 2.15
+    model_output = (model_output - 0.515) * 2.10
     model_output = clip(model_output, -1.0, 1.0)
 
     if abs(model_output) < .02:

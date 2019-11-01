@@ -20,7 +20,7 @@ zdl::DlSystem::Runtime_t checkRuntime()
 
 void initializeSNPE(zdl::DlSystem::Runtime_t runtime) {
   std::unique_ptr<zdl::DlContainer::IDlContainer> container;
-  container = zdl::DlContainer::IDlContainer::open("/data/openpilot/selfdrive/df/live_tracksvHOLDENONLYLEADS.dlc");
+  container = zdl::DlContainer::IDlContainer::open("/data/openpilot/selfdrive/df/longmodelv1.dlc");
   //printf("loaded model\n");
   int counter = 0;
   zdl::SNPE::SNPEBuilder snpeBuilder(container.get());
@@ -82,13 +82,12 @@ zdl::DlSystem::ITensor* executeNetwork(std::unique_ptr<zdl::SNPE::SNPE>& snpe,
 }
 
 extern "C" {
-  float run_model(float v_ego, float a_ego, float v_lead, float x_lead, float a_lead){
+  float run_model(float v_ego, float a_lead, float x_lead, float v_lead){
     std::vector<float> inputVec;
     inputVec.push_back(v_ego);
-    inputVec.push_back(a_ego);
-    inputVec.push_back(v_lead);
-    inputVec.push_back(x_lead);
     inputVec.push_back(a_lead);
+    inputVec.push_back(x_lead);
+    inputVec.push_back(v_lead);
 
     std::unique_ptr<zdl::DlSystem::ITensor> inputTensor = loadInputTensor(snpe, inputVec);
     zdl::DlSystem::ITensor* oTensor = executeNetwork(snpe, inputTensor);
