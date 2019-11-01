@@ -199,7 +199,7 @@ class LongControl():
     with open('/data/dftf_input', 'a') as f:
       f.write('{}\n{}\n'.format(final_input, model_output))
 
-    model_output = (model_output - 0.50) * 2.0
+    model_output = (model_output - 0.515) * 2.15
     model_output = clip(model_output, -1.0, 1.0)
 
     if abs(model_output) < .02:
