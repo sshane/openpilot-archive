@@ -184,6 +184,7 @@ class LongControl():
                                self.scales['max_tracks'])  # pad tracks, keeping data in the center, sorted by yRel
 
     flat_tracks = [i for x in padded_tracks for i in x]  # flatten track data for model
+    v_ego = max(v_ego, 0)
     v_ego_normalized = interp_fast(v_ego, self.scales['v_ego'])
     steering_angle = interp_fast(steering_angle, self.scales['steer_angle'])
     steering_rate = interp_fast(steering_rate, self.scales['steer_rate'])
