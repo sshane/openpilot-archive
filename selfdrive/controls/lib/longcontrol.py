@@ -198,8 +198,12 @@ class LongControl():
     model_output = float(self.model_wrapper.run_model_live_tracks(final_input))
     with open('/data/dftf_input', 'a') as f:
       f.write('{}\n{}\n'.format(final_input, model_output))
+
     model_output = (model_output - 0.50) * 2.0
     model_output = clip(model_output, -1.0, 1.0)
+
+    if abs(model_output) < .02:
+      model_output = 0
 
     gas, brake = max(model_output, 0), -min(model_output, 0)
     return gas, brake
