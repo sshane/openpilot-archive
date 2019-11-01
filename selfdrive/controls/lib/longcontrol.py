@@ -190,7 +190,6 @@ class LongControl():
     left_blinker = int(left_blinker)
     right_blinker = int(right_blinker)
     a_lead, x_lead, v_lead = lead_data['a_lead'], lead_data['x_lead'], lead_data['v_lead']
-    a_lead = interp_fast(a_lead, self.scales['a_lead'])
     # set_speed = interp_fast(set_speed, self.scales['set_speed'])
 
     final_input = [v_ego_normalized, steering_angle, steering_rate, a_lead, left_blinker, right_blinker] + flat_tracks
