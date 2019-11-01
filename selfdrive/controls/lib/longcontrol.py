@@ -24,7 +24,7 @@ _MAX_SPEED_ERROR_V = [1.5, .8]  # max positive v_pid error VS actual speed; this
 RATE = 100.0
 
 
-def interp_fast(x, xp, fp=[0, 1], ext=False):  # extrapolates above range when ext is True
+def interp_fast(x, xp, fp=[0, 1], ext=True):  # extrapolates above range when ext is True
   interped = (((x - xp[0]) * (fp[1] - fp[0])) / (xp[1] - xp[0])) + fp[0]
   return interped if ext else min(max(min(fp), interped), max(fp))
 
@@ -196,6 +196,8 @@ class LongControl():
     final_input = [v_ego_normalized, steering_angle, steering_rate, a_lead, left_blinker, right_blinker] + flat_tracks
 
     model_output = float(self.model_wrapper.run_model_live_tracks(final_input))
+    with open('/data/dftf_input', 'a') as f:
+      f.write('{}\n{}\n'.format(final_input, model_output))
     model_output = (model_output - 0.50) * 2.0
     model_output = clip(model_output, -1.0, 1.0)
 
@@ -258,10 +260,10 @@ class LongControl():
     """Update longitudinal control. This updates the state machine and runs a PID loop"""
     # Actuation limits
 
-    dynamic_follow_tfv2 = self.df_controller(v_ego, a_ego, track_data, steering_angle, steering_rate, left_blinker, right_blinker,
-                                   radar_state, set_speed)
-    if dynamic_follow_tfv2['status']:
-      return dynamic_follow_tfv2['output']  # else, use openpilot when no lead
+    dynamic_follow_tf_v2 = self.df_controller(v_ego, a_ego, track_data, steering_angle, steering_rate, left_blinker, right_blinker,
+                                              radar_state, set_speed)
+    if dynamic_follow_tf_v2['status']:
+      return dynamic_follow_tf_v2['output']  # else, use openpilot when no lead
 
     # v_target = v_ego + self.df_live_tracks_v_future(v_ego, a_ego, track_data, steering_angle, steering_rate, left_blinker, right_blinker,
     #                                     radar_state, set_speed)
