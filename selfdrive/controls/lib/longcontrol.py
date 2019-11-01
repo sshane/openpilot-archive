@@ -136,8 +136,8 @@ class LongControl():
 
     flat_tracks = [i for x in padded_tracks for i in x]  # flatten track data for model
     v_ego_normalized = interp_fast(v_ego, self.scales['v_ego'])
-    steering_angle = interp_fast(steering_angle, self.scales['steer_angle'])
-    steering_rate = interp_fast(steering_rate, self.scales['steer_rate'])
+    #steering_angle = interp_fast(steering_angle, self.scales['steer_angle'])
+    #steering_rate = interp_fast(steering_rate, self.scales['steer_rate'])
     left_blinker = int(left_blinker)
     right_blinker = int(right_blinker)
 
@@ -173,7 +173,7 @@ class LongControl():
     # except:
     #   pass
 
-    tracks_normalized = [[interp_fast(track[0], self.scales['yRel']),
+    '''tracks_normalized = [[interp_fast(track[0], self.scales['yRel']),
                           interp_fast(track[1], self.scales['dRel']),  # normalize track data
                           interp_fast(track[2], self.scales['vRel'])] for track in track_data]
 
@@ -181,11 +181,11 @@ class LongControl():
     padded_tracks = pad_tracks(tracks_normalized,
                                self.scales['max_tracks'])  # pad tracks, keeping data in the center, sorted by yRel
 
-    flat_tracks = [i for x in padded_tracks for i in x]  # flatten track data for model
+    flat_tracks = [i for x in padded_tracks for i in x]  # flatten track data for model'''
     v_ego = max(v_ego, 0)
     v_ego_normalized = interp_fast(v_ego, self.scales['v_ego'])
-    steering_angle = interp_fast(steering_angle, self.scales['steer_angle'])
-    steering_rate = interp_fast(steering_rate, self.scales['steer_rate'])
+    #steering_angle = interp_fast(steering_angle, self.scales['steer_angle'])
+    #steering_rate = interp_fast(steering_rate, self.scales['steer_rate'])
     left_blinker = int(left_blinker)
     right_blinker = int(right_blinker)
     a_lead, x_lead, v_lead = lead_data['a_lead'], lead_data['x_lead'], lead_data['v_lead']
