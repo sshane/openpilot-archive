@@ -228,7 +228,9 @@ class LongControl():
   def df(self, v_ego, lead_data):
     model_inputs = [interp_fast(v_ego, self.scales['v_ego']), lead_data['v_lead'], lead_data['x_lead'], lead_data['a_lead']]
     model_output = float(self.model_wrapper.run_model(*model_inputs))
-    return clip((model_output - 0.50) * 2.0, -1.0, 1.0)
+    model_output = clip((model_output - 0.50) * 2.0, -1.0, 1.0)
+    gas, brake = max(model_output, 0), -min(model_output, 0)
+    return gas, brake
 
   # def df_time_series(self, radar_state, v_ego, a_ego, set_speed):
   #   scales = {'v_ego_scale': [0.0, 40.755523681641],
