@@ -206,7 +206,7 @@ class LongControl():
 
     final_input = [v_ego_normalized, steering_angle, steering_rate, a_lead, left_blinker, right_blinker] + flat_tracks
 
-    model_output = float(self.model_wrapper.run_model(final_input))
+    model_output = float(self.model_wrapper.run_model_live_tracks(final_input))
     # with open('/data/dftf_input', 'a') as f:
     #   f.write('{}\n{}\n'.format(final_input, model_output))
 
