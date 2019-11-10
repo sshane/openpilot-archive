@@ -207,14 +207,16 @@ class LongControl():
     final_input = [v_ego_normalized, steering_angle, steering_rate, a_lead, left_blinker, right_blinker] + flat_tracks
 
     model_output = float(self.model_wrapper.run_model_live_tracks(final_input))
-    # with open('/data/dftf_input', 'a') as f:
-    #   f.write('{}\n{}\n'.format(final_input, model_output))
+    with open('/data/dftf_output', 'a') as f:
+      f.write('{}\n{}\n'.format(final_input, model_output))
 
-    if model_output <= 0.042:
+    if abs(model_output) <= 0.042:
       model_output = 0.
-    model_output = clip(model_output, 0.0, 1.0)
 
-    return model_output, 0.0
+    gas = clip(model_output, 0.0, 1.0)
+    brake = -clip(model_output, -1.0, 0.0)
+
+    return gas, brake
 
   def get_lead(self, radar_state):
     if radar_state is not None:
