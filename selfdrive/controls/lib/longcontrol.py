@@ -89,9 +89,8 @@ class LongControl():
     self.model_wrapper = df_wrapper.get_wrapper()
     self.model_wrapper.init_model()
     # self.past_data = []
-    self.scales = {'v_lead': [0.0, 29.392393112182617],
-                   'x_lead': [-10.638232231140137, 169.9757843017578],
-                   'a_lead': [-5.971687316894531, 9.852273941040039], 'v_ego': [0.0, 30.08179473876953]}
+    self.scales = {'v_ego': [0.0, 39.12937927246094], 'x_lead': [0.125, 138.625], 'v_lead': [0.0, 34.16797637939453],
+                   'a_lead': [-6.480010509490967, 14.326614379882812]}
     self.P = 1.0  # multiplied by model output
     # self.prev_gas = 0.0
     # self.last_speed = None
@@ -163,8 +162,12 @@ class LongControl():
     if lead_data['lead_status'] is False:
       return {'status': False}
     else:
-      return {'status': True, 'output': self.df_live_tracks(v_ego, a_ego, track_data, steering_angle, steering_rate, left_blinker, right_blinker,
-                                       lead_data, set_speed)}
+      to_use_live_tracks = False
+      if to_use_live_tracks:
+        return {'status': True, 'output': self.df_live_tracks(v_ego, a_ego, track_data, steering_angle, steering_rate,
+                                                              left_blinker, right_blinker, lead_data, set_speed)}
+      else:
+        return {'status': True, 'output': self.df(v_ego, lead_data)}
 
   def df_live_tracks(self, v_ego, a_ego, track_data, steering_angle, steering_rate, left_blinker, right_blinker,
                      lead_data, set_speed):
@@ -222,7 +225,12 @@ class LongControl():
     else:
       return {'a_lead': 0, 'x_lead': 0, 'v_lead': 0, 'lead_status': False}
 
-  # def df(self, radar_state, v_ego, a_ego, set_speed):
+  def df(self, v_ego, lead_data):
+    model_inputs = [interp_fast(v_ego, self.scales['v_ego']), lead_data['v_lead', lead_data['x_lead']], lead_data['a_lead']]
+    model_output = float(self.model_wrapper.run_model(*model_inputs))
+    return clip((model_output - 0.50) * 2.0, -1.0, 1.0)
+
+  # def df_time_series(self, radar_state, v_ego, a_ego, set_speed):
   #   scales = {'v_ego_scale': [0.0, 40.755523681641],
   #             'v_lead_scale': [0.0, 44.508262634277],
   #             'x_lead_scale': [0.125, 146.375]}
@@ -263,10 +271,10 @@ class LongControl():
     """Update longitudinal control. This updates the state machine and runs a PID loop"""
     # Actuation limits
 
-    dynamic_follow_tf_v2 = self.df_controller(v_ego, a_ego, track_data, steering_angle, steering_rate, left_blinker, right_blinker,
-                                              radar_state, set_speed)
-    if dynamic_follow_tf_v2['status']:
-      return dynamic_follow_tf_v2['output']  # else, use openpilot when no lead
+    long_model_output = self.df_controller(v_ego, a_ego, track_data, steering_angle, steering_rate, left_blinker, right_blinker,
+                                           radar_state, set_speed)
+    if long_model_output['status']:
+      return long_model_output['output']  # else, use openpilot when no lead
 
     # v_target = v_ego + self.df_live_tracks_v_future(v_ego, a_ego, track_data, steering_angle, steering_rate, left_blinker, right_blinker,
     #                                     radar_state, set_speed)
