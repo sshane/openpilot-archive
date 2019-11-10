@@ -226,7 +226,7 @@ class LongControl():
       return {'a_lead': 0, 'x_lead': 0, 'v_lead': 0, 'lead_status': False}
 
   def df(self, v_ego, lead_data):
-    model_inputs = [interp_fast(v_ego, self.scales['v_ego']), lead_data['v_lead', lead_data['x_lead']], lead_data['a_lead']]
+    model_inputs = [interp_fast(v_ego, self.scales['v_ego']), lead_data['v_lead'], lead_data['x_lead'], lead_data['a_lead']]
     model_output = float(self.model_wrapper.run_model(*model_inputs))
     return clip((model_output - 0.50) * 2.0, -1.0, 1.0)
 
