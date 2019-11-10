@@ -20,7 +20,7 @@ zdl::DlSystem::Runtime_t checkRuntime()
 
 void initializeSNPE(zdl::DlSystem::Runtime_t runtime) {
   std::unique_ptr<zdl::DlContainer::IDlContainer> container;
-  container = zdl::DlContainer::IDlContainer::open("/data/openpilot/selfdrive/df/basic_long_modelv1.dlc");
+  container = zdl::DlContainer::IDlContainer::open("/data/openpilot/selfdrive/df/live_tracksvHIGHWAY.dlc");
   //printf("loaded model\n");
   int counter = 0;
   zdl::SNPE::SNPEBuilder snpeBuilder(container.get());
@@ -111,8 +111,8 @@ extern "C" {
 //      return returnOutputMulti(oTensor);
 //  }
 
-  float run_model_live_tracks(float inputData[63]){
-      int size = 63;
+  float run_model_live_tracks(float inputData[54]){
+      int size = 54;
       std::vector<float> inputVec;
       for (int i = 0; i < size; i++ ) {
         inputVec.push_back(inputData[i]);
