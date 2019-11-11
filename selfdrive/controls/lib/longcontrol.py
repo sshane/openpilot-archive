@@ -168,6 +168,8 @@ class LongControl():
     model_inputs = [interp_fast(v_ego, self.scales['v_ego']), lead_data['v_lead'], lead_data['x_lead'],
                     lead_data['a_lead']]
     model_output = float(self.model_wrapper.run_model(*model_inputs))
+    with open('/data/dftf_output', 'a') as f:
+      f.write('{}\n{}\n'.format(model_inputs, model_output))
     if abs(model_output) < .1:
       model_output = 0.
     gas, brake = clip(model_output, 0.0, 1.0), -clip(model_output, -1.0, 0.0)
