@@ -18,17 +18,9 @@ df_input = [0.3100386107362524, 0.488660855464849, 0.47692307692307695, 0.0, 0.0
             0.5652173895319448, 0.3053575010088472, 0.504413623914486, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
             0.0, 0.0, 0.0, 0.0, 0.0]
 
-#s = time.time()
-
+s = time.time()
 
 model_output = df_model.run_model_live_tracks(df_input)
 print("Model output: {}".format(model_output))
 
-
-#print(time.time()-s)
-'''model_output = df_model.run_model(.3, 0.0, .3, .5)
-print(model_output)
-model_output = df_model.run_model(.05, .3, .4, .6)
-print(model_output)
-model_output = df_model.run_model(.7, .85, .55, .5)
-print(model_output)'''
+print('Took: {} seconds'.format(time.time() - s))
