@@ -32,7 +32,6 @@ void initializeSNPE(zdl::DlSystem::Runtime_t runtime) {
 }
 
 
-
 std::unique_ptr<zdl::DlSystem::ITensor> loadInputTensor(std::unique_ptr<zdl::SNPE::SNPE> &snpe, std::vector<float> inputVec) {
   std::unique_ptr<zdl::DlSystem::ITensor> input;
   const auto &strList_opt = snpe->getInputTensorNames();
@@ -82,6 +81,11 @@ zdl::DlSystem::ITensor* executeNetwork(std::unique_ptr<zdl::SNPE::SNPE>& snpe,
 }
 
 extern "C" {
+  void init_model(){
+      zdl::DlSystem::Runtime_t runt=checkRuntime();
+      initializeSNPE(runt);
+  }
+
   float run_model(float v_ego, float v_lead, float x_lead, float a_lead){
     std::vector<float> inputVec;
     inputVec.push_back(v_ego);
@@ -94,22 +98,17 @@ extern "C" {
     return returnOutput(oTensor);
   }
 
-  void init_model(){
-    zdl::DlSystem::Runtime_t runt=checkRuntime();
-    initializeSNPE(runt);
-  }
+  float run_model_live_tracks_multi(float inputData[54]){
+      int size = 54;
+      std::vector<float> inputVec;
+      for (int i = 0; i < size; i++ ) {
+        inputVec.push_back(inputData[i]);
+      }
 
-//  float run_model_live_tracks_multi(float inputData[54]){
-//      int size = 54;
-//      std::vector<float> inputVec;
-//      for (int i = 0; i < size; i++ ) {
-//        inputVec.push_back(inputData[i]);
-//      }
-//
-//      std::unique_ptr<zdl::DlSystem::ITensor> inputTensor = loadInputTensor(snpe, inputVec);
-//      zdl::DlSystem::ITensor* oTensor = executeNetwork(snpe, inputTensor);
-//      return returnOutputMulti(oTensor);
-//  }
+      std::unique_ptr<zdl::DlSystem::ITensor> inputTensor = loadInputTensor(snpe, inputVec);
+      zdl::DlSystem::ITensor* oTensor = executeNetwork(snpe, inputTensor);
+      return returnOutputMulti(oTensor);
+  }
 
   float run_model_live_tracks(float inputData[54]){
       int size = 54;
@@ -122,19 +121,6 @@ extern "C" {
       zdl::DlSystem::ITensor* oTensor = executeNetwork(snpe, inputTensor);
       return returnOutput(oTensor);
   }
-
-  float run_model_lstm(float inputData[60]){
-    int size = 60;
-    std::vector<float> inputVec;
-    for (int i = 0; i < size; i++ ) {
-      inputVec.push_back(inputData[i]);
-    }
-
-    std::unique_ptr<zdl::DlSystem::ITensor> inputTensor = loadInputTensor(snpe, inputVec);
-    zdl::DlSystem::ITensor* oTensor = executeNetwork(snpe, inputTensor);
-    return returnOutput(oTensor);
-  }
-
 
 int main(){
   std::cout << "hello";

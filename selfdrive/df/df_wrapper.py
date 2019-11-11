@@ -10,9 +10,8 @@ def get_wrapper():  # initialize df model and process long predictions
 
     ffi = FFI()
     ffi.cdef("""    
-    float run_model(float v_ego, float v_lead, float x_lead, float a_lead);
     void init_model();
-    float run_model_lstm(float inputData[60]);
+    float run_model(float v_ego, float v_lead, float x_lead, float a_lead);
     float run_model_live_tracks(float inputData[54]);
     """)
 
