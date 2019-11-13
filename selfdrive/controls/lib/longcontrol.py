@@ -89,9 +89,8 @@ class LongControl():
     self.model_wrapper = df_wrapper.get_wrapper()
     self.model_wrapper.init_model()
     # self.past_data = []
-    self.scales = {'x_lead': [-5.408740043640137, 195.32000732421875],
-                   'v_ego': [-0.1302846223115921, 36.945838928222656],
-                   'a_lead': [-3.884178638458252, 3.4350156784057617], 'v_lead': [0.0, 39.63964080810547]}
+    self.scales = {'v_ego': [2.235201835632324, 40.9425048828125], 'x_lead': [0.125, 59.875],
+                   'a_lead': [-7.870049476623535, 15.343225479125977], 'v_lead': [0.0, 44.508262634277344]}
     self.P = 1.0  # multiplied by model output
     # self.prev_gas = 0.0
     # self.last_speed = None
@@ -170,8 +169,6 @@ class LongControl():
     model_output = float(self.model_wrapper.run_model(*model_inputs))
     with open('/data/dftf_output', 'a') as f:
       f.write('{}\n{}\n'.format(model_inputs, model_output))
-    if abs(model_output) < .1:
-      model_output = 0.
     gas, brake = clip(model_output, 0.0, 1.0), -clip(model_output, -1.0, 0.0)
     return gas, brake
 
