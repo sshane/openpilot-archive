@@ -1,10 +1,11 @@
 import time
 from selfdrive.df import df_wrapper
+
 df_model = df_wrapper.get_wrapper()
 df_model.init_model()
 start = time.time()
 for i in range(100):
- model_output = df_model.run_model(0.8653078153514447,0.46805728618371273,0.46805728618371273,0.28780443294609244)
+  model_output = df_model.run_model(0.8653078153514447, 0.46805728618371273, 0.46805728618371273, 0.28780443294609244)
 print(time.time() - start)
 
 # df_input = [0.3100386107362524, 0.488660855464849, 0.47692307692307695, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
