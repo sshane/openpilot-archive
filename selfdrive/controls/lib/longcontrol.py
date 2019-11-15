@@ -24,7 +24,7 @@ _MAX_SPEED_ERROR_V = [1.5, .8]  # max positive v_pid error VS actual speed; this
 RATE = 100.0
 
 
-def interp_fast(x, xp, fp=[0, 1], ext=True):  # extrapolates above range when ext is True
+def interp_fast(x, xp, fp=[-1, 1], ext=True):  # extrapolates above range when ext is True
   interped = (((x - xp[0]) * (fp[1] - fp[0])) / (xp[1] - xp[0])) + fp[0]
   return interped if ext else min(max(min(fp), interped), max(fp))
 
