@@ -24,7 +24,7 @@ _MAX_SPEED_ERROR_V = [1.5, .8]  # max positive v_pid error VS actual speed; this
 RATE = 100.0
 
 
-def interp_fast(x, xp, fp=[-1, 1], ext=True):  # extrapolates above range when ext is True
+def interp_fast(x, xp, fp=[0, 1], ext=True):  # extrapolates above range when ext is True
   interped = (((x - xp[0]) * (fp[1] - fp[0])) / (xp[1] - xp[0])) + fp[0]
   return interped if ext else min(max(min(fp), interped), max(fp))
 
@@ -89,8 +89,8 @@ class LongControl():
     self.model_wrapper = df_wrapper.get_wrapper()
     self.model_wrapper.init_model()
     # self.past_data = []
-    self.scales = {'v_ego': [2.235201835632324, 40.9425048828125], 'x_lead': [0.125, 59.875],
-                   'a_lead': [-7.870049476623535, 15.343225479125977], 'v_lead': [0.0, 44.508262634277344]}
+    self.scales = {'v_lead': [0.0, 44.508262634277344], 'v_ego': [0.44709867238998413, 41.497596740722656],
+                   'a_lead': [-7.870049476623535, 10.76121997833252], 'x_lead': [0.125, 138.625]}
     self.P = 1.0  # multiplied by model output
     # self.prev_gas = 0.0
     # self.last_speed = None
@@ -169,6 +169,7 @@ class LongControl():
     model_output = float(self.model_wrapper.run_model(*model_inputs))
     with open('/data/dftf_output', 'a') as f:
       f.write('{}\n{}\n'.format(model_inputs, model_output))
+    model_output = (model_output - 0.5) * 2.0
     gas, brake = clip(model_output, 0.0, 1.0), -clip(model_output, -1.0, 0.0)
     return gas, brake
 
