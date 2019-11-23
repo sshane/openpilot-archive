@@ -169,7 +169,7 @@ class LongitudinalMpc():
 
     # Calculate mpc
     t = sec_since_boot()
-    self.get_TR()
+    self.set_TR()
     n_its = self.libmpc.run_mpc(self.cur_state, self.mpc_solution, self.a_lead_tau, a_lead, self.TR)
     duration = int((sec_since_boot() - t) * 1e9)
 
