@@ -7,7 +7,7 @@ This branch is simply stock openpilot with some additions to help it drive as sm
 Highlight Features
 ====
 
-1. **Dynamic gas**: This aims to provide a smoother driving experience in stop and go traffic by modifying the maximum gas that can be applied based on your current velocity and the relative velocity of the lead car. It'll also of course increase the maximum gas when the lead is accelerating to help you get up to speed quicker than stock. And smoother; this eliminates the jerking you get from stock openpilot. Better tuning will be next.
+1. **Dynamic gas**: This aims to provide a smoother driving experience in stop and go traffic by modifying the maximum gas that can be applied based on your current velocity and the relative velocity of the lead car. It'll also of course increase the maximum gas when the lead is accelerating to help you get up to speed quicker than stock. And smoother; this eliminates the jerking you get from stock openpilot with comma pedal. Better tuning will be next.
 2. **Dynamic follow**: This is my dynamic follow from 0.5, where it changes your TR (following distance) dynamically based on multiple vehicle factors, as well as data from the lead vehicle. [Here's an old write up from a while ago explaining how it works exactly. Some of it might be out of date, but how it functions is the same.](https://github.com/ShaneSmiskol/openpilot/blob/dynamic-follow/README.md)
 3. **Tuning to reduce lane hugging**: From a suggestion from [zorrobyte](https://github.com/zorrobyte), I'm using some logic to reduce the decision steering angle for the respective direction that my car is hugging (left). By default, this is disabled, to enable you can:
     - Use the `opEdit` class in the root directory of openpilot. To use it, simply open an `ssh` shell and enter the commands below:
@@ -16,7 +16,7 @@ Highlight Features
         python op_edit.py
         ```
         You'll be greeted with a list of your parameters you can change or delete, enter the number corresponding to `lane_hug_direction`. Your options are to now enter `'left'` or `'right'` for whichever direction your car has a tendency to hug toward. `None` will disable the feature.
-4. **Custom following distance**: Using the `following_distance` parameter in `opParams`, you can specify a custom TR value to always be used. Afraid of technology and want to give yourself the highest following distance out there? Try out 2.7s! Are you daredevil and don't care about pissing the car you're tailgating? Try 0.9s!
+4. **Custom following distance**: Using the `following_distance` parameter in `opParams`, you can specify a custom TR value to always be used. Afraid of technology and want to give yourself the highest following distance out there? Try out 2.7s! Are you daredevil and don't care about pissing off the car you're tailgating ahead? Try 0.9s!
     - Again, you can use `opEdit` to change this:
         ```python
         cd /data/openpilot
