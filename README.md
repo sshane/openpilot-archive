@@ -16,7 +16,7 @@ Highlight Features
         python op_edit.py
         ```
         You'll be greeted with a list of your parameters you can change or delete, enter the number corresponding to `lane_hug_direction`. Your options are to now enter `'left'` or `'right'` for whichever direction your car has a tendency to hug toward. `None` will disable the feature.
-        Further modification is available with the `op_params` variables: `lane_hug_mod`, and `lane_hug_angle`.
+        Further modification is available with the `opParams` parameter: `lane_hug_multiplier`.
 4. **Custom following distance**: Using the `following_distance` parameter in `opParams`, you can specify a custom TR value to always be used. Afraid of technology and want to give yourself the highest following distance out there? Try out 2.7s! Are you daredevil and don't care about pissing off the car you're tailgating ahead? Try 0.9s!
     - Again, you can use `opEdit` to change this:
         ```python
