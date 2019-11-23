@@ -31,11 +31,8 @@ class opParams:
                            'lane_hug_direction': {'default': None, 'allowed_types': [type(None), str], 'description': "(NoneType, 'left', 'right'): Direction of your lane hugging, if present, else, None"},
                            'lane_hug_multiplier': {'default': 0.83, 'allowed_types': [float, int], 'description': 'How much to reduce angle by'},
                            'use_car_caching': {'default': True, 'allowed_types': [bool], 'description': 'Whether to use fingerprint caching'},
-                           'osm': {'default': True, 'allowed_types': [bool], 'description': 'Whether to use OSM for drives'},
                            'force_pedal': {'default': False, 'allowed_types': [bool], 'description': "If openpilot isn't recognizing your comma pedal, set this to True"},
-                           'following_distance': {'default': None, 'allowed_types': [type(None), float], 'description': 'None has no effect, while setting this to a float will let you change the TR'},
-                           'keep_openpilot_engaged': {'default': True, 'allowed_types': [bool], 'description': 'True is stock behavior in this fork. False lets you use the brake and cruise control stalk to disengage as usual'},
-                           'speed_offset': {'default': 0, 'allowed_types': [float, int], 'description': 'Speed limit offset'}}
+                           'following_distance': {'default': None, 'allowed_types': [type(None), float], 'description': 'None has no effect, while setting this to a float will let you change the TR'}}
 
     self.params = {}
     self.params_file = "/data/op_params.json"
