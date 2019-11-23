@@ -6,6 +6,10 @@ from selfdrive.car.vin import get_vin, VIN_UNKNOWN
 from selfdrive.swaglog import cloudlog
 import selfdrive.messaging as messaging
 from selfdrive.car import gen_empty_fingerprint
+from common.op_params import opParams
+
+op_params = opParams()
+
 
 def get_startup_alert(car_recognized, controller_available):
   alert = 'startup'
@@ -108,6 +112,10 @@ def fingerprint(logcan, sendcan, has_relay):
     frame += 1
 
   cloudlog.warning("fingerprinted %s", car_fingerprint)
+
+  if op_params.get('car_model', None) is None:
+    op_params.put('car_model', str(car_fingerprint))
+
   return car_fingerprint, finger, vin
 
 
