@@ -219,6 +219,7 @@ def state_transition(frame, CS, CP, state, events, soft_disable_timer, v_cruise_
 def state_control(frame, rcv_frame, plan, path_plan, CS, CP, state, events, v_cruise_kph, v_cruise_kph_last,
                   AM, rk, driver_status, LaC, LoC, read_only, is_metric, cal_perc, sm):
   """Given the state, this function returns an actuators packet"""
+  sm.update(0)
 
   actuators = car.CarControl.Actuators.new_message()
 
