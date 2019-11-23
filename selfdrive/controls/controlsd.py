@@ -27,6 +27,7 @@ from selfdrive.controls.lib.driver_monitor import DriverStatus, MAX_TERMINAL_ALE
 from selfdrive.controls.lib.planner import LON_MPC_STEP
 from selfdrive.controls.lib.gps_helpers import is_rhd_region
 from selfdrive.locationd.calibration_helpers import Calibration, Filter
+from common.travis_checker import travis
 
 ThermalStatus = log.ThermalData.ThermalStatus
 State = log.ControlsState.OpenpilotState
@@ -59,8 +60,6 @@ def data_sample(CI, CC, sm, can_sock, cal_status, cal_perc, overtemp, free_space
   # Update carstate from CAN and create events
   can_strs = messaging.drain_sock_raw(can_sock, wait_for_one=True)
   CS = CI.update(CC, can_strs)
-
-  sm.update(0)
 
   events = list(CS.events)
   enabled = isEnabled(state)
@@ -219,7 +218,6 @@ def state_transition(frame, CS, CP, state, events, soft_disable_timer, v_cruise_
 def state_control(frame, rcv_frame, plan, path_plan, CS, CP, state, events, v_cruise_kph, v_cruise_kph_last,
                   AM, rk, driver_status, LaC, LoC, read_only, is_metric, cal_perc, sm):
   """Given the state, this function returns an actuators packet"""
-  sm.update(0)
 
   actuators = car.CarControl.Actuators.new_message()
 
@@ -262,8 +260,12 @@ def state_control(frame, rcv_frame, plan, path_plan, CS, CP, state, events, v_cr
   v_acc_sol = plan.vStart + dt * (a_acc_sol + plan.aStart) / 2.0
 
   # Gas/Brake PID loop
+  if not travis:
+    lead_one = sm['radarState'].leadOne
+  else:
+    lead_one = None
   actuators.gas, actuators.brake = LoC.update(active, CS.vEgo, CS.brakePressed, CS.standstill, CS.cruiseState.standstill,
-                                              v_cruise_kph, v_acc_sol, plan.vTargetFuture, a_acc_sol, CP, sm['radarState'].leadOne)
+                                              v_cruise_kph, v_acc_sol, plan.vTargetFuture, a_acc_sol, CP, lead_one)
   # Steering PID loop and lateral MPC
   actuators.steer, actuators.steerAngle, lac_log = LaC.update(active, CS.vEgo, CS.steeringAngle, CS.steeringRate, CS.steeringTorqueEps, CS.steeringPressed, CP, path_plan)
 
@@ -510,6 +512,7 @@ def controlsd_thread(sm=None, pm=None, can_sock=None):
   prof = Profiler(False)  # off by default
 
   while True:
+    sm.update(0)
     start_time = sec_since_boot()
     prof.checkpoint("Ratekeeper", ignore=True)
 

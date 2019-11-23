@@ -65,7 +65,7 @@ class LongControl():
                             convert=compute_gb)
     self.v_pid = 0.0
     self.last_output_gb = 0.0
-    self.lead = {'v_rel': None, 'a_lead': None, 'x_lead': None, 'status': False}
+    self.lead_data = {'v_rel': None, 'a_lead': None, 'x_lead': None, 'status': False}
     self.v_ego = 0.0
 
   def reset(self, v_pid):
@@ -81,14 +81,14 @@ class LongControl():
 
     gas = interp(self.v_ego, x, y)
 
-    if self.lead['status']:  # if lead
+    if self.lead_data['status']:  # if lead
       if self.v_ego <= 8.9408:  # if under 20 mph
         TR = 1.8  # desired TR, might need to switch this to hardcoded distance values
-        current_TR = self.lead['x_lead'] / self.v_ego if self.v_ego > 0 else TR
+        current_TR = self.lead_data['x_lead'] / self.v_ego if self.v_ego > 0 else TR
 
         x = [0.0, 0.24588812499999999, 0.432818589, 0.593044697, 0.730381365, 1.050833588, 1.3965, 1.714627481]  # relative velocity mod
         y = [-(gas / 1.1022), -(gas / 1.133), -(gas / 1.243), -(gas / 1.6), -(gas / 2.32), -(gas / 4.8), -(gas / 15), 0]
-        gas_mod = interp(self.lead['v_rel'], x, y)
+        gas_mod = interp(self.lead_data['v_rel'], x, y)
 
         # x = [0.0, 0.22, 0.44518483, 0.675, 1.0, 1.76361684]  # lead accel mod
         # y = [0.0, (gas * 0.08), (gas * 0.20), (gas * 0.4), (gas * 0.52), (gas * 0.6)]
@@ -105,15 +105,16 @@ class LongControl():
       else:
         x = [-0.89408, 0, 0.89408, 4.4704]  # need to tune this
         y = [-.15, -.05, .005, .05]
-        gas += interp(self.lead['v_rel'], x, y)
+        gas += interp(self.lead_data['v_rel'], x, y)
 
     return round(clip(gas, 0.0, 1.0), 4)
 
   def process_lead(self, lead_one):
-    self.lead['v_rel'] = lead_one.vRel
-    self.lead['a_lead'] = lead_one.aLeadK
-    self.lead['x_lead'] = lead_one.dRel
-    self.lead['status'] = lead_one.status
+    if lead_one is not None:
+      self.lead_data['v_rel'] = lead_one.vRel
+      self.lead_data['a_lead'] = lead_one.aLeadK
+      self.lead_data['x_lead'] = lead_one.dRel
+      self.lead_data['status'] = lead_one.status
 
   def update(self, active, v_ego, brake_pressed, standstill, cruise_standstill, v_cruise, v_target, v_target_future, a_target, CP, lead_one):
     """Update longitudinal control. This updates the state machine and runs a PID loop"""
