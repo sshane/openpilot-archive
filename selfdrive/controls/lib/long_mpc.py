@@ -1,4 +1,5 @@
 import os
+from common.numpy_fast import interp
 import math
 
 import selfdrive.messaging as messaging
@@ -23,6 +24,9 @@ class LongitudinalMpc():
     self.prev_lead_status = False
     self.prev_lead_x = 0.0
     self.new_lead = False
+    self.lead_data = {'v_lead': None, 'x_lead': None, 'a_lead': None, 'status': False}
+    self.v_ego = 0
+    self.a_ego = 0
 
     self.last_cloudlog_t = 0.0
 
@@ -57,11 +61,25 @@ class LongitudinalMpc():
     self.cur_state[0].v_ego = v
     self.cur_state[0].a_ego = a
 
+  def save_lead(self, lead):
+    x_lead = lead.dRel
+    v_lead = max(0.0, lead.vLead)
+    a_lead = lead.aLeadK
+    if v_lead < 0.1 or -a_lead / 2.0 > v_lead:
+      v_lead = 0.0
+      a_lead = 0.0
+    self.lead_data['v_lead'] = v_lead
+    self.lead_data['a_lead'] = a_lead
+    self.lead_data['x_lead'] = x_lead
+    self.lead_data['status'] = lead.status
+
   def update(self, pm, CS, lead, v_cruise_setpoint):
-    v_ego = CS.vEgo
+    self.v_ego = CS.vEgo
+    self.a_ego = CS.aEgo
 
     # Setup current mpc state
     self.cur_state[0].x_ego = 0.0
+    self.save_lead(lead)
 
     if lead is not None and lead.status:
       x_lead = lead.dRel
@@ -86,7 +104,7 @@ class LongitudinalMpc():
       self.prev_lead_status = False
       # Fake a fast lead car, so mpc keeps running
       self.cur_state[0].x_l = 50.0
-      self.cur_state[0].v_l = v_ego + 10.0
+      self.cur_state[0].v_l = self.v_ego + 10.0
       a_lead = 0.0
       self.a_lead_tau = _LEAD_ACCEL_TAU
 
@@ -116,8 +134,8 @@ class LongitudinalMpc():
 
       self.libmpc.init(MPC_COST_LONG.TTC, MPC_COST_LONG.DISTANCE,
                        MPC_COST_LONG.ACCELERATION, MPC_COST_LONG.JERK)
-      self.cur_state[0].v_ego = v_ego
+      self.cur_state[0].v_ego = self.v_ego
       self.cur_state[0].a_ego = 0.0
-      self.v_mpc = v_ego
+      self.v_mpc = self.v_ego
       self.a_mpc = CS.aEgo
       self.prev_lead_status = False
