@@ -7,8 +7,8 @@ docker build -t tmppilot -f Dockerfile.openpilot .
 
 
 docker run --rm tmppilot /bin/sh -c "$SETUP cd /tmp/openpilot/selfdrive/test/ && ./test_fingerprints.py"
-docker run --rm tmppilot /bin/sh -c 'cd /tmp/openpilot/ && flake8 --select=F $(find . -iname "*.py" | grep -vi "^\./pyextra.*" | grep -vi "^\./panda" | grep -vi "^\./tools")'
-docker run --rm tmppilot /bin/sh -c 'cd /tmp/openpilot/ && pylint $(find . -iname "*.py" | grep -vi "^\./pyextra.*" | grep -vi "^\./panda" | grep -vi "^\./tools"); exit $(($? & 3))'
+# docker run --rm tmppilot /bin/sh -c 'cd /tmp/openpilot/ && flake8 --select=F $(find . -iname "*.py" | grep -vi "^\./pyextra.*" | grep -vi "^\./panda" | grep -vi "^\./tools")'
+# docker run --rm tmppilot /bin/sh -c 'cd /tmp/openpilot/ && pylint $(find . -iname "*.py" | grep -vi "^\./pyextra.*" | grep -vi "^\./panda" | grep -vi "^\./tools"); exit $(($? & 3))'
 docker run --rm tmppilot /bin/sh -c "$SETUP python -m unittest discover common"
 docker run --rm tmppilot /bin/sh -c "$SETUP make -C selfdrive/can -j4 && python -m unittest discover selfdrive/can"
 docker run --rm tmppilot /bin/sh -c "$SETUP python -m unittest discover selfdrive/boardd"
