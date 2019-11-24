@@ -2,6 +2,7 @@
 import os
 import subprocess
 from selfdrive.swaglog import cloudlog
+from common.travis_checker import travis
 
 
 def get_git_commit():
@@ -23,7 +24,10 @@ def get_git_remote():
     return subprocess.check_output(["git", "config", "remote." + tracking_remote + ".url"], encoding='utf8').strip()  # pylint: disable=unexpected-keyword-arg
   except subprocess.CalledProcessError:
     # Not on a branch, fallback
-    return subprocess.check_output(["git", "config", "--get", "remote.origin.url"], encoding='utf8').strip()  # pylint: disable=unexpected-keyword-arg
+    if not travis:
+      return subprocess.check_output(["git", "config", "--get", "remote.origin.url"], encoding='utf8').strip()  # pylint: disable=unexpected-keyword-arg
+    else:
+      return "https://github.com/ShaneSmiskol/openpilot"
 
 
 with open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "common", "version.h")) as _versionf:
