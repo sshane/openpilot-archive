@@ -16,4 +16,4 @@ docker run --rm tmppilot /bin/sh -c "$SETUP make -C selfdrive/can -j4 && python 
 docker run --rm tmppilot /bin/sh -c "$SETUP python -m unittest discover selfdrive/loggerd"
 # docker run --rm -v "$(pwd)"/selfdrive/test/longitudinal_maneuvers/out:/tmp/openpilot/selfdrive/test/longitudinal_maneuvers/out tmppilot /bin/sh -c "$SETUP make -C selfdrive/can -j4 && cd /tmp/openpilot/selfdrive/test/longitudinal_maneuvers && OPTEST=1 ./test_longitudinal.py"
 docker run --rm tmppilot /bin/sh -c "$SETUP make -C selfdrive/can -j4 && cd /tmp/openpilot/selfdrive/test/process_replay/ && ./test_processes.py"
-# docker run --rm tmppilot /bin/sh -c "$SETUP make -C selfdrive/can -j4 && mkdir -p /data/params && cd /tmp/openpilot/selfdrive/test/ && ./test_car_models.py"
+docker run --rm tmppilot /bin/sh -c "$SETUP make -C selfdrive/can -j4 && mkdir -p /data/params && cd /tmp/openpilot/selfdrive/test/ && ./test_car_models.py"
