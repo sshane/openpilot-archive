@@ -64,7 +64,7 @@ class CarInterface(CarInterfaceBase):
       ret.longitudinalTuning.kpV = [3.6, 2.4, 1.5]
       ret.longitudinalTuning.kiV = [0.54, 0.36]
 
-    if candidate not in [CAR.PRIUS, CAR.RAV4, CAR.RAV4H]: # These cars use LQR/INDI
+    if candidate not in [CAR.PRIUS, CAR.RAV4, CAR.RAV4H, CAR.COROLLA]: # These cars use LQR/INDI
       ret.lateralTuning.init('pid')
       ret.lateralTuning.pid.kiBP, ret.lateralTuning.pid.kpBP = [[0.], [0.]]
 
@@ -122,11 +122,15 @@ class CarInterface(CarInterfaceBase):
       ret.steerRatio = 17.8
       tire_stiffness_factor = 0.444  # not optimized yet
       ret.mass = 2860. * CV.LB_TO_KG + STD_CARGO_KG  # mean between normal and hybrid
-      ret.lateralTuning.pid.kpV, ret.lateralTuning.pid.kiV = [[0.2], [0.05]]
-      ret.lateralTuning.pid.kf = 0.000027   # full torque for 20 deg at 80mph means 0.00007818594
       if ret.enableGasInterceptor:
         ret.longitudinalTuning.kpV = [1.0, 0.66, 0.42]
         ret.longitudinalTuning.kiV = [0.135, 0.09]
+
+      ret.lateralTuning.init('indi')
+      ret.lateralTuning.indi.innerLoopGain = 4.2
+      ret.lateralTuning.indi.outerLoopGain = 6.0
+      ret.lateralTuning.indi.timeConstant = 0.2
+      ret.lateralTuning.indi.actuatorEffectiveness = 2.0
 
 
     elif candidate == CAR.LEXUS_RXH:
