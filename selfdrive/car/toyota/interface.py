@@ -127,10 +127,10 @@ class CarInterface(CarInterfaceBase):
         ret.longitudinalTuning.kiV = [0.135, 0.09]
 
       ret.lateralTuning.init('indi')
-      ret.lateralTuning.indi.innerLoopGain = 4.2
-      ret.lateralTuning.indi.outerLoopGain = 6.0
-      ret.lateralTuning.indi.timeConstant = 0.2
-      ret.lateralTuning.indi.actuatorEffectiveness = 2.0
+      ret.lateralTuning.indi.innerLoopGain = 4.0
+      ret.lateralTuning.indi.outerLoopGain = 3.0
+      ret.lateralTuning.indi.timeConstant = 1.0
+      ret.lateralTuning.indi.actuatorEffectiveness = 0.8
 
 
     elif candidate == CAR.LEXUS_RXH:
