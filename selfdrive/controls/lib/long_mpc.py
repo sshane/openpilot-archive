@@ -108,9 +108,8 @@ class LongitudinalMpc():
       if elapsed > min_consider_time:
         v_diff = self.df_data['v_leads'][-1][0] - self.df_data['v_leads'][0][0]
         return v_diff / elapsed
-    else:
-      return 0
 
+    return 0
 
   def dynamic_follow(self):  # in m/s
     x_vel = [0.0, 5.222, 11.164, 14.937, 20.973, 33.975, 42.469]
