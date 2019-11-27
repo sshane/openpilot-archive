@@ -116,9 +116,10 @@ class LongControl():
       self.lead_data['x_lead'] = lead_one.dRel
       self.lead_data['status'] = lead_one.status
 
-  def update(self, active, v_ego, brake_pressed, standstill, cruise_standstill, v_cruise, v_target, v_target_future, a_target, CP, lead_one):
+  def update(self, active, v_ego, brake_pressed, standstill, cruise_standstill, v_cruise, v_target, v_target_future, a_target, CP, passable):
     """Update longitudinal control. This updates the state machine and runs a PID loop"""
-    self.process_lead(lead_one)
+    self.process_lead(passable['lead_one'])
+    gas_pressed = passable['gas_pressed']
     self.v_ego = v_ego
     # Actuation limits
     gas_max = self.dynamic_gas()  # interp(v_ego, CP.gasMaxBP, CP.gasMaxV)
@@ -131,6 +132,9 @@ class LongControl():
                                                        brake_pressed, cruise_standstill)
 
     v_ego_pid = max(v_ego, MIN_CAN_SPEED)  # Without this we get jumps, CAN bus reports 0 when speed < 0.3
+
+    if gas_pressed or brake_pressed:  # it shouldn't be bad to constantly reset pid loop while pedals are held down. saves some code
+      self.pid.reset()
 
     if self.long_control_state == LongCtrlState.off:
       self.v_pid = v_ego_pid
