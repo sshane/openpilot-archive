@@ -9,7 +9,7 @@ from selfdrive.controls.lib.radar_helpers import _LEAD_ACCEL_TAU
 from selfdrive.controls.lib.longitudinal_mpc import libmpc_py
 from selfdrive.controls.lib.drive_helpers import MPC_COST_LONG
 from common.op_params import opParams
-from common.travis_checker import travis
+import time
 
 LOG_MPC = os.environ.get('LOG_MPC', False)
 
@@ -30,6 +30,7 @@ class LongitudinalMpc():
     self.op_params = opParams()
     self.car_state = None
     self.lead_data = {'v_lead': None, 'x_lead': None, 'a_lead': None, 'status': False}
+    self.df_data = {"v_leads": []}
     self.v_ego = 0.0
     self.a_ego = 0.0
     self.last_cost = 0.0
@@ -70,13 +71,14 @@ class LongitudinalMpc():
     self.cur_state[0].a_ego = a
 
   def set_TR(self):
-    if not self.lead_data['status'] or travis:  # travis ensures 1.8 is used, as tests expect this
+    if not self.lead_data['status']:  # travis ensures 1.8 is used, as tests expect this
       self.TR = 1.8
 
     elif self.customTR is not None:
       self.TR = clip(self.customTR, 0.9, 2.7)
 
     else:
+      self.store_lead_data()
       self.TR = self.dynamic_follow()
 
     self.change_cost()
@@ -92,9 +94,27 @@ class LongitudinalMpc():
     costs = [1.0, 0.1, 0.05]
     return interp(self.TR, TRs, costs)
 
+  def store_lead_data(self):
+    keep_data_for = 3  # seconds
+    if self.lead_data['status']:
+      self.df_data['v_leads'] = [(velocity, t) for velocity, t in self.df_data['v_leads'] if time.time() - t < keep_data_for]
+      self.df_data['v_leads'].append((self.lead_data['v_lead'], time.time()))
+
+  def accel_over_time(self):
+    min_consider_time = 1.5
+    if len(self.df_data['v_leads']) != 0:
+      pass
+      elapsed = self.df_data['v_leads'][-1][1] - self.df_data['v_leads'][0][1]
+      if elapsed > min_consider_time:
+        v_diff = self.df_data['v_leads'][-1][0] - self.df_data['v_leads'][0][0]
+        return v_diff / elapsed
+    else:
+      return 0
+
+
   def dynamic_follow(self):  # in m/s
     x_vel = [0.0, 5.222, 11.164, 14.937, 20.973, 33.975, 42.469]
-    y_mod = [1.542, 1.553, 1.599, 1.68, 1.75, 1.855, 1.9]
+    y_mod = [1.55742, 1.56853, 1.61499, 1.68, 1.75, 1.855, 1.9]
 
     if self.v_ego > 6.7056:  # 15 mph
       TR = interp(self.v_ego, x_vel, y_mod)
@@ -109,9 +129,8 @@ class LongitudinalMpc():
     TR_mod = interp(self.lead_data['v_lead'] - self.v_ego, x, y)
 
     x = [-2.235, -1.49, -1.1, -0.67, -0.224, 0.0, 0.67, 1.1, 1.49]  # lead acceleration values
-    y = [0.26, 0.182, 0.104, 0.052, 0.039, 0.0, -0.016, -0.032, -0.056]  # modification values
-    TR_mod += interp(self.lead_data['a_lead'], x, y)
-    # TR_mod += interp(self.get_acceleration(), x, y)  # todo: when lead car has been braking over the past 3 seconds, slightly increase TR
+    y = [0.26, 0.182, 0.104, 0.06, 0.039, 0.0, -0.016, -0.032, -0.056]  # modification values
+    TR_mod += interp(self.accel_over_time(), x, y)
 
     TR += TR_mod
 
