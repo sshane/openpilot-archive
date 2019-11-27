@@ -80,6 +80,7 @@ class LongControl():
     # y = [0.2, 0.20443, 0.21592, 0.23334, 0.25734, 0.27916, 0.3229, 0.34784, 0.36765, 0.38, 0.396, 0.409, 0.425, 0.478, 0.55, 0.621, 0.7]
 
     gas = interp(self.v_ego, x, y)
+    original_gas = float(gas)
 
     if self.lead_data['status']:  # if lead
       if self.v_ego <= 8.9408:  # if under 20 mph
@@ -106,6 +107,9 @@ class LongControl():
         x = [-0.89408, 0, 2.0]  # need to tune this
         y = [-.17, -.08, .01]
         gas += interp(self.lead_data['v_rel'], x, y)
+
+    with open('/data/debug/longcontrol', 'a') as f:
+      f.write('{}:{}:{}\n'.format(self.lead_data, original_gas, gas))
 
     return round(clip(gas, 0.0, 1.0), 4)
 
