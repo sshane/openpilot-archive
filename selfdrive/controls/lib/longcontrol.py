@@ -1,6 +1,7 @@
 from cereal import log
 from common.numpy_fast import clip, interp
 from selfdrive.controls.lib.pid import PIController
+from common.op_params import opParams
 
 LongCtrlState = log.ControlsState.LongControlState
 
@@ -68,6 +69,8 @@ class LongControl():
     self.lead_data = {'v_rel': None, 'a_lead': None, 'x_lead': None, 'status': False}
     self.v_ego = 0.0
 
+    self.is_shane = opParams().get('uniqueID', '') == 'ShaneSmiskol'
+
   def reset(self, v_pid):
     """Reset PID controller and change setpoint"""
     self.pid.reset()
@@ -108,8 +111,9 @@ class LongControl():
         y = [-.17, -.08, .01]
         gas += interp(self.lead_data['v_rel'], x, y)
 
-    with open('/data/debug/longcontrol', 'a') as f:
-      f.write('{}:{}:{}\n'.format(self.lead_data, original_gas, gas))
+    if self.is_shane:
+      with open('/data/debug/longcontrol', 'a') as f:
+        f.write('{}:{}:{}\n'.format(self.lead_data, original_gas, gas))
 
     return round(clip(gas, 0.0, 1.0), 4)
 

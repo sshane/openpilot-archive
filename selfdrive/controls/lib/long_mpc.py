@@ -36,6 +36,7 @@ class LongitudinalMpc():
     self.last_cost = 0.0
     self.TR = 1.8
     self.customTR = self.op_params.get('following_distance', None)
+    self.is_shane = self.op_params.get('uniqueID', '') == 'ShaneSmiskol'
 
     self.last_cloudlog_t = 0.0
 
@@ -112,8 +113,9 @@ class LongitudinalMpc():
     return 0
 
   def dynamic_follow(self):  # in m/s
-    with open('/data/debug/long_mpc', 'a') as f:
-      f.write('{}\n'.format(self.lead_data))
+    if self.is_shane:
+      with open('/data/debug/long_mpc', 'a') as f:
+        f.write('{}\n'.format(self.lead_data))
 
     x_vel = [0.0, 5.222, 11.164, 14.937, 20.973, 33.975, 42.469]
     y_mod = [1.55742, 1.56853, 1.61499, 1.68, 1.75, 1.855, 1.9]
