@@ -87,7 +87,7 @@ class LongControl():
         current_TR = self.lead_data['x_lead'] / self.v_ego if self.v_ego > 0 else TR
 
         x = [0.0, 0.24588812499999999, 0.432818589, 0.593044697, 0.730381365, 1.050833588, 1.3965, 1.714627481]  # relative velocity mod
-        y = [-(gas / 1.1022), -(gas / 1.133), -(gas / 1.243), -(gas / 1.6), -(gas / 2.32), -(gas / 4.8), -(gas / 15), 0]
+        y = [-(gas / 1.01), -(gas / 1.105), -(gas / 1.243), -(gas / 1.6), -(gas / 2.32), -(gas / 4.8), -(gas / 15), 0]
         gas_mod = interp(self.lead_data['v_rel'], x, y)
 
         # x = [0.0, 0.22, 0.44518483, 0.675, 1.0, 1.76361684]  # lead accel mod
@@ -99,22 +99,21 @@ class LongControl():
         # gas_mod += (interp(current_TR, x, y))
         new_gas = gas + gas_mod  # (interp(current_TR, x, y))
 
-        x = [1.78816, 5.36448, 8.9408]  # slowly ramp mods down as we approach 20 mph
-        y = [new_gas, (new_gas * 0.6 + gas * 0.4), gas]
+        x = [1.78816, 6.0, 8.9408]  # slowly ramp mods down as we approach 20 mph
+        y = [new_gas, (new_gas * 0.8 + gas * 0.2), gas]
         gas = interp(self.v_ego, x, y)
       else:
-        x = [-0.89408, 0, 0.89408, 4.4704]  # need to tune this
-        y = [-.15, -.05, .005, .05]
+        x = [-0.89408, 0, 2.0]  # need to tune this
+        y = [-.17, -.08, .01]
         gas += interp(self.lead_data['v_rel'], x, y)
 
     return round(clip(gas, 0.0, 1.0), 4)
 
   def process_lead(self, lead_one):
-    if lead_one is not None:
-      self.lead_data['v_rel'] = lead_one.vRel
-      self.lead_data['a_lead'] = lead_one.aLeadK
-      self.lead_data['x_lead'] = lead_one.dRel
-      self.lead_data['status'] = lead_one.status
+    self.lead_data['v_rel'] = lead_one.vRel
+    self.lead_data['a_lead'] = lead_one.aLeadK
+    self.lead_data['x_lead'] = lead_one.dRel
+    self.lead_data['status'] = lead_one.status
 
   def update(self, active, v_ego, brake_pressed, standstill, cruise_standstill, v_cruise, v_target, v_target_future, a_target, CP, passable):
     """Update longitudinal control. This updates the state machine and runs a PID loop"""

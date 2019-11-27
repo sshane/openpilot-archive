@@ -215,7 +215,7 @@ def state_transition(frame, CS, CP, state, events, soft_disable_timer, v_cruise_
 
 
 def state_control(frame, rcv_frame, plan, path_plan, CS, CP, state, events, v_cruise_kph, v_cruise_kph_last,
-                  AM, rk, driver_status, LaC, LoC, read_only, is_metric, cal_perc, sm):
+                  AM, rk, driver_status, LaC, LoC, read_only, is_metric, cal_perc, radar_state):
   """Given the state, this function returns an actuators packet"""
 
   actuators = car.CarControl.Actuators.new_message()
@@ -259,7 +259,7 @@ def state_control(frame, rcv_frame, plan, path_plan, CS, CP, state, events, v_cr
   v_acc_sol = plan.vStart + dt * (a_acc_sol + plan.aStart) / 2.0
 
   # Gas/Brake PID loop
-  passable = {'lead_one': sm['radarState'].leadOne, 'gas_pressed': CS.gasPressed}
+  passable = {'lead_one': radar_state.leadOne, 'gas_pressed': CS.gasPressed}
 
   actuators.gas, actuators.brake = LoC.update(active, CS.vEgo, CS.brakePressed, CS.standstill, CS.cruiseState.standstill,
                                               v_cruise_kph, v_acc_sol, plan.vTargetFuture, a_acc_sol, CP, passable)
@@ -554,7 +554,7 @@ def controlsd_thread(sm=None, pm=None, can_sock=None):
     # Compute actuators (runs PID loops and lateral MPC)
     actuators, v_cruise_kph, driver_status, v_acc, a_acc, lac_log = \
       state_control(sm.frame, sm.rcv_frame, sm['plan'], sm['pathPlan'], CS, CP, state, events, v_cruise_kph, v_cruise_kph_last, AM, rk,
-                    driver_status, LaC, LoC, read_only, is_metric, cal_perc, sm)
+                    driver_status, LaC, LoC, read_only, is_metric, cal_perc, sm['radarState'])
 
     prof.checkpoint("State Control")
 
