@@ -96,7 +96,7 @@ class LongitudinalMpc():
     return interp(self.TR, TRs, costs)
 
   def store_lead_data(self):
-    keep_data_for = 3  # seconds
+    keep_data_for = 2.5  # seconds
     if self.lead_data['status']:
       self.df_data['v_leads'] = [(velocity, t) for velocity, t in self.df_data['v_leads'] if time.time() - t < keep_data_for]
       self.df_data['v_leads'].append((self.lead_data['v_lead'], time.time()))
