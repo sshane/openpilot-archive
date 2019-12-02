@@ -16,3 +16,15 @@ class LaneHugging:
       angle_steers *= interp(angle_steers, [0, -self.lane_hug_angle], [1.0, self.lane_hug_multiplier])
 
     return angle_steers
+
+  def lane_hug_angle_steers(self, angle_steers):  # only use this function for current steer angle, not desired
+    # negative angles: right
+    # positive angles: left
+    direction_hugging = 'left'
+    hug_angle = 2.5
+    if direction_hugging == 'left':
+      angle_steers += hug_angle
+    elif direction_hugging == 'right':
+      angle_steers -= hug_angle
+
+    return angle_steers

@@ -20,13 +20,15 @@ class LatControlPID():
     pid_log = log.ControlsState.LateralPIDState.new_message()
     pid_log.steerAngle = float(angle_steers)
     pid_log.steerRate = float(angle_steers_rate)
+    angle_steers = self.lane_hugging.lane_hug_angle_steers(angle_steers)
 
     if v_ego < 0.3 or not active:
       output_steer = 0.0
       pid_log.active = False
       self.pid.reset()
     else:
-      self.angle_steers_des = self.lane_hugging.lane_hug(path_plan.angleSteers)  # get from MPC/PathPlanner
+      self.angle_steers_des = path_plan.angleSteers  # get from MPC/PathPlanner
+      # self.angle_steers_des = self.lane_hugging.lane_hug_new(path_plan.angleSteers)  # get from MPC/PathPlanner
 
       steers_max = get_steer_max(CP, v_ego)
       self.pid.pos_limit = steers_max
