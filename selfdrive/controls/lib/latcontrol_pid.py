@@ -1,6 +1,5 @@
 from selfdrive.controls.lib.pid import PIController
 from selfdrive.controls.lib.drive_helpers import get_steer_max
-from selfdrive.controls.lane_hugging import LaneHugging
 from cereal import car
 from cereal import log
 
@@ -11,7 +10,6 @@ class LatControlPID():
                             (CP.lateralTuning.pid.kiBP, CP.lateralTuning.pid.kiV),
                             k_f=CP.lateralTuning.pid.kf, pos_limit=1.0)
     self.angle_steers_des = 0.
-    self.lane_hugging = LaneHugging()
 
   def reset(self):
     self.pid.reset()
@@ -20,8 +18,6 @@ class LatControlPID():
     pid_log = log.ControlsState.LateralPIDState.new_message()
     pid_log.steerAngle = float(angle_steers)
     pid_log.steerRate = float(angle_steers_rate)
-    # angle_steers = self.lane_hugging.lane_hug_angle_steers(angle_steers)
-    angle_steers += 2.5
 
     if v_ego < 0.3 or not active:
       output_steer = 0.0
@@ -29,7 +25,6 @@ class LatControlPID():
       self.pid.reset()
     else:
       self.angle_steers_des = path_plan.angleSteers  # get from MPC/PathPlanner
-      # self.angle_steers_des = self.lane_hugging.lane_hug_new(path_plan.angleSteers)  # get from MPC/PathPlanner
 
       steers_max = get_steer_max(CP, v_ego)
       self.pid.pos_limit = steers_max
