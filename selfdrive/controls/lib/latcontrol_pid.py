@@ -20,7 +20,8 @@ class LatControlPID():
     pid_log = log.ControlsState.LateralPIDState.new_message()
     pid_log.steerAngle = float(angle_steers)
     pid_log.steerRate = float(angle_steers_rate)
-    angle_steers = self.lane_hugging.lane_hug_angle_steers(angle_steers)
+    # angle_steers = self.lane_hugging.lane_hug_angle_steers(angle_steers)
+    angle_steers += 2.5
 
     if v_ego < 0.3 or not active:
       output_steer = 0.0
