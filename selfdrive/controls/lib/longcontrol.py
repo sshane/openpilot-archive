@@ -151,7 +151,7 @@ class LongControl():
       return stock_output
 
     pedal_output = self.update_pedal(active, v_ego, brake_pressed, standstill, cruise_standstill, v_cruise, v_target, v_target_future, a_target, CP)
-    if stock_output[0] == 0.0:
+    if stock_output[0] == 0.0:  # if stock tuning predicts to brake, use that
       return stock_output
     else:
       return pedal_output
