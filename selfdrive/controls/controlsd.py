@@ -299,7 +299,7 @@ def data_send(sm, pm, CS, CI, CP, VM, state, events, actuators, v_cruise_kph, rk
 
   # Some override values for Honda
   brake_discount = (1.0 - clip(actuators.brake * 3., 0.0, 1.0))  # brake discount removes a sharp nonlinearity
-  CC.cruiseControl.speedOverride = float(max(0.0, (LoC.v_pid + CS.cruiseState.speedOffset) * brake_discount) if CP.enableCruise else 0.0)
+  CC.cruiseControl.speedOverride = float(max(0.0, (LoC.v_pid_stock + CS.cruiseState.speedOffset) * brake_discount) if CP.enableCruise else 0.0)
   CC.cruiseControl.accelOverride = CI.calc_accel_override(CS.aEgo, sm['plan'].aTarget, CS.vEgo, sm['plan'].vTarget)
 
   CC.hudControl.setSpeed = float(v_cruise_kph * CV.KPH_TO_MS)
@@ -356,12 +356,12 @@ def data_send(sm, pm, CS, CI, CP, VM, state, events, actuators, v_cruise_kph, rk
     "steerOverride": CS.steeringPressed,
     "state": state,
     "engageable": not bool(get_events(events, [ET.NO_ENTRY])),
-    "longControlState": LoC.long_control_state,
-    "vPid": float(LoC.v_pid),
+    "longControlState": LoC.long_control_state_stock,
+    "vPid": float(LoC.v_pid_stock),
     "vCruise": float(v_cruise_kph),
-    "upAccelCmd": float(LoC.pid.p),
-    "uiAccelCmd": float(LoC.pid.i),
-    "ufAccelCmd": float(LoC.pid.f),
+    "upAccelCmd": float(LoC.pid_stock.p),
+    "uiAccelCmd": float(LoC.pid_stock.i),
+    "ufAccelCmd": float(LoC.pid_stock.f),
     "angleSteersDes": float(LaC.angle_steers_des),
     "vTargetLead": float(v_acc),
     "aTarget": float(a_acc),

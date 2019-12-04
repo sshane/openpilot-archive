@@ -151,10 +151,10 @@ class LongControl():
       return stock_output
 
     pedal_output = self.update_pedal(active, v_ego, brake_pressed, standstill, cruise_standstill, v_cruise, v_target, v_target_future, a_target, CP)
-    if stock_output[0] == 0.0:  # if stock tuning predicts to brake, use that
+    if stock_output[0] == 0.0:  # if stock tuning predicts to brake or coast, use that
       return stock_output
     else:
-      return pedal_output
+      return pedal_output  # use pedal output when accelerating
 
   def update_stock(self, active, v_ego, brake_pressed, standstill, cruise_standstill, v_cruise, v_target, v_target_future, a_target, CP):
     """Update longitudinal control. This updates the state machine and runs a PID loop"""
@@ -165,8 +165,8 @@ class LongControl():
     # Update state machine
     output_gb = self.last_output_gb_stock
     self.long_control_state_stock = long_control_state_trans(active, self.long_control_state_stock, v_ego,
-                                                       v_target_future, self.v_pid_stock, output_gb,
-                                                       brake_pressed, cruise_standstill)
+                                                             v_target_future, self.v_pid_stock, output_gb,
+                                                             brake_pressed, cruise_standstill)
 
     v_ego_pid = max(v_ego, MIN_CAN_SPEED)  # Without this we get jumps, CAN bus reports 0 when speed < 0.3
 
