@@ -328,7 +328,7 @@ class CarInterface(CarInterfaceBase):
     ret.brakeLights = self.CS.brake_lights
 
     # steering wheel
-    ret.steeringAngle = self.lane_hugging.lane_hug_angle_steers(self.CS.angle_steers)
+    ret.steeringAngle = self.CS.angle_steers  # self.lane_hugging.lane_hug_angle_steers(self.CS.angle_steers)
     ret.steeringRate = self.CS.angle_steers_rate
 
     ret.steeringTorque = self.CS.steer_torque_driver

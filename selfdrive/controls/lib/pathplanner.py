@@ -6,6 +6,8 @@ from selfdrive.controls.lib.lateral_mpc import libmpc_py
 from selfdrive.controls.lib.drive_helpers import MPC_COST_LAT
 from selfdrive.controls.lib.lane_planner import LanePlanner
 import selfdrive.messaging as messaging
+from common.op_params import opParams
+op_params = opParams()
 
 LOG_MPC = os.environ.get('LOG_MPC', False)
 
@@ -25,6 +27,8 @@ class PathPlanner():
     self.setup_mpc(CP.steerRateCost)
     self.solution_invalid_cnt = 0
     self.path_offset_i = 0.0
+    self.custom_angle_offset = op_params.get('lane_hug_angle_offset', None)
+
 
   def setup_mpc(self, steer_rate_cost):
     self.libmpc = libmpc_py.libmpc
@@ -46,8 +50,10 @@ class PathPlanner():
     v_ego = sm['carState'].vEgo
     angle_steers = sm['carState'].steeringAngle
     active = sm['controlsState'].active
-
-    angle_offset = sm['liveParameters'].angleOffset
+    if self.custom_angle_offset:
+      angle_offset = self.custom_angle_offset
+    else:
+      angle_offset = sm['liveParameters'].angleOffset
 
     self.LP.update(v_ego, sm['model'])
 
@@ -113,7 +119,7 @@ class PathPlanner():
 
     plan_send.pathPlan.angleSteers = float(self.angle_steers_des_mpc)
     plan_send.pathPlan.rateSteers = float(rate_desired)
-    plan_send.pathPlan.angleOffset = float(sm['liveParameters'].angleOffsetAverage)
+    plan_send.pathPlan.angleOffset = float(sm['liveParameters'].angleOffsetAverage)  # tod: do we need to replace this with the custom offset too? if so, i need to invert to negative
     plan_send.pathPlan.mpcSolutionValid = bool(plan_solution_valid)
     plan_send.pathPlan.paramsValid = bool(sm['liveParameters'].valid)
     plan_send.pathPlan.sensorValid = bool(sm['liveParameters'].sensorValid)
