@@ -60,9 +60,10 @@ class LongControl():
     try:
       self.gas_interceptor = CP.enableGasInterceptor
     except AttributeError:
-      with open('/data/attribute_error', 'a') as f:
-        f.write('yep\n')
       self.gas_interceptor = False
+
+    with open('/data/gas_interceptor', 'a') as f:
+      f.write('{}\n'.format(self.gas_interceptor))
 
     self.long_control_state_stock = LongCtrlState.off  # initialized to off
     self.long_control_state_pedal = LongCtrlState.off  # initialized to off
@@ -104,11 +105,13 @@ class LongControl():
   def dynamic_gas(self):
     x = [0.0, 1.4082, 2.80311, 4.22661, 5.38271, 6.16561, 7.24781, 8.28308, 10.24465, 12.96402, 15.42303, 18.11903, 20.11703, 24.46614, 29.05805, 32.71015, 35.76326]
     # y = [0.2, 0.20443, 0.21592, 0.23334, 0.25734, 0.27916, 0.3229, 0.34784, 0.36765, 0.38, 0.396, 0.409, 0.425, 0.478, 0.55, 0.621, 0.7]
-    y = [0.175, 0.178, 0.185, 0.195, 0.209, 0.222, 0.249, 0.264, 0.276, 0.283, 0.293, 0.3, 0.31, 0.342, 0.385, 0.428, 0.475]
+    y = [0.175, 0.178, 0.185, 0.195, 0.209, 0.222, 0.249, 0.264, 0.276, 0.283, 0.293, 0.3, 0.31, 0.342, 0.385, 0.428, 0.475]  # todo: elvaluate if this is better
 
     gas = interp(self.v_ego, x, y)
 
     if self.lead_data['status']:  # if lead
+      with open('/data/lead_data', 'a') as f:
+        f.write(str(self.lead_data) + '\n')
       if self.v_ego <= 8.9408:  # if under 20 mph
         # TR = 1.8  # desired TR, might need to switch this to hardcoded distance values
         # current_TR = self.lead_data['x_lead'] / self.v_ego if self.v_ego > 0 else TR
@@ -160,7 +163,7 @@ class LongControl():
   def update_stock(self, active, v_ego, brake_pressed, standstill, cruise_standstill, v_cruise, v_target, v_target_future, a_target, CP):
     """Update longitudinal control. This updates the state machine and runs a PID loop"""
     # Actuation limits
-    gas_max = self.dynamic_gas()  # interp(v_ego, CP.gasMaxBP, CP.gasMaxV)
+    gas_max = interp(v_ego, CP.gasMaxBP, CP.gasMaxV)
     brake_max = interp(v_ego, CP.brakeMaxBP, CP.brakeMaxV)
 
     # Update state machine
@@ -221,7 +224,7 @@ class LongControl():
   def update_pedal(self, active, v_ego, brake_pressed, standstill, cruise_standstill, v_cruise, v_target, v_target_future, a_target, CP):
     """Update longitudinal control. This updates the state machine and runs a PID loop"""
     # Actuation limits
-    gas_max = interp(v_ego, CP.gasMaxBP, CP.gasMaxV)  # don't need dynamic gas, as gas won't used from this output
+    gas_max = self.dynamic_gas()
     brake_max = interp(v_ego, CP.brakeMaxBP, CP.brakeMaxV)
 
     # Update state machine
