@@ -57,29 +57,19 @@ def long_control_state_trans(active, long_control_state, v_ego, v_target, v_pid,
 
 class LongControl():
   def __init__(self, CP, compute_gb):
-    try:
-      self.gas_interceptor = CP.enableGasInterceptor
-    except AttributeError:
-      self.gas_interceptor = False
+    self.gas_interceptor = CP.enableGasInterceptor
 
     self.long_control_state_stock = LongCtrlState.off  # initialized to off
     self.long_control_state_pedal = LongCtrlState.off  # initialized to off
 
-    if self.gas_interceptor:  # use hardcoded values for now
-      longitudinalTuning_kpV = [1.0, 0.66, 0.42]  # these are the values for my Corolla, not stock openpilot
-      longitudinalTuning_kiV = [0.135, 0.09]
-    else:
-      longitudinalTuning_kpV = [3.6, 2.4, 1.5]  # stock toyota tune, no pedal
-      longitudinalTuning_kiV = [0.54, 0.36]
-
-    self.pid_stock = PIController((CP.longitudinalTuning.kpBP, longitudinalTuning_kpV),
-                                  (CP.longitudinalTuning.kiBP, longitudinalTuning_kiV),
+    self.pid_stock = PIController((CP.longitudinalTuning.kpBP, CP.longitudinalTuning.kpV),  # stock toyota tune, no pedal. handles braking if pedal
+                                  (CP.longitudinalTuning.kiBP, CP.longitudinalTuning.kiV),
                                   rate=RATE,
                                   sat_limit=0.8,
                                   convert=compute_gb)
 
-    self.pid_pedal = PIController((CP.longitudinalTuning.kpBP, CP.longitudinalTuning.kpV),
-                                  (CP.longitudinalTuning.kiBP, CP.longitudinalTuning.kiV),
+    self.pid_pedal = PIController((CP.longitudinalTuning.kpBP, CP.longitudinalTuning.kpVPedal),  # if pedal, handles gas
+                                  (CP.longitudinalTuning.kiBP, CP.longitudinalTuning.kiVPedal),
                                   rate=RATE,
                                   sat_limit=0.8,
                                   convert=compute_gb)
