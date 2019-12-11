@@ -17,6 +17,7 @@ LOG_MPC = os.environ.get('LOG_MPC', False)
 class LongitudinalMpc():
   def __init__(self, mpc_id):
     self.mpc_id = mpc_id
+    self.MPH_TO_MS = 0.44704
 
     self.setup_mpc()
     self.v_mpc = 0.0
@@ -30,12 +31,13 @@ class LongitudinalMpc():
     self.op_params = opParams()
     self.car_state = None
     self.lead_data = {'v_lead': None, 'x_lead': None, 'a_lead': None, 'status': False}
-    self.df_data = {"v_leads": []}
+    self.df_data = {"v_leads": [], "v_egos": []}
     self.v_ego = 0.0
     self.a_ego = 0.0
     self.last_cost = 0.0
     self.TR = 1.8
     self.customTR = self.op_params.get('following_distance', None)
+    self.past_v_ego = 0.0
 
     self.last_cloudlog_t = 0.0
 
@@ -95,18 +97,21 @@ class LongitudinalMpc():
     return interp(self.TR, TRs, costs)
 
   def store_lead_data(self):
-    keep_data_for = 2.5  # seconds
+    v_lead_keep_data_for = 2.0  # seconds
+    v_ego_keep_data_for = 1.0
     if self.lead_data['status']:
-      self.df_data['v_leads'] = [(velocity, t) for velocity, t in self.df_data['v_leads'] if time.time() - t < keep_data_for]
-      self.df_data['v_leads'].append((self.lead_data['v_lead'], time.time()))
+      self.df_data['v_leads'] = [sample for sample in self.df_data['v_leads'] if time.time() - sample['time'] < v_lead_keep_data_for]
+      self.df_data['v_leads'].append({'v_lead': self.lead_data['v_lead'], 'time': time.time()})
+
+    self.df_data['v_egos'] = [sample for sample in self.df_data['v_egos'] if time.time() - sample['time'] < v_ego_keep_data_for]
+    self.df_data['v_egos'].append({'v_ego': self.v_ego, 'time': time.time()})
 
   def accel_over_time(self):
     min_consider_time = 1.5
-    if len(self.df_data['v_leads']) != 0:
-      pass
-      elapsed = self.df_data['v_leads'][-1][1] - self.df_data['v_leads'][0][1]
+    if len(self.df_data['v_leads']) > 0:
+      elapsed = self.df_data['v_leads'][-1]['time'] - self.df_data['v_leads'][0]['time']
       if elapsed > min_consider_time:
-        v_diff = self.df_data['v_leads'][-1][0] - self.df_data['v_leads'][0][0]
+        v_diff = self.df_data['v_leads'][-1]['v_lead'] - self.df_data['v_leads'][0]['v_lead']
         return v_diff / elapsed
 
     return 0
@@ -115,11 +120,14 @@ class LongitudinalMpc():
     x_vel = [0.0, 5.222, 11.164, 14.937, 20.973, 33.975, 42.469]
     y_mod = [1.55742, 1.5842153, 1.6392148499999997, 1.68, 1.7325, 1.83645, 1.881]
 
-    if self.v_ego > 6.7056:  # 15 mph
+    sng_TR = 1.8  # stop and go parameters
+    sng_speed = 15.0 * self.MPH_TO_MS
+
+    if self.v_ego >= sng_speed or self.df_data['v_egos'][-1]['v_ego'] >= self.v_ego:  # if above 15 mph OR we're decelerating to a stop, keep shorter TR. when we reaccelerate, use 1.8s and slowly decrease
       TR = interp(self.v_ego, x_vel, y_mod)
-    else:  # this allows us to get slightly closer to the lead car when stopping, while being able to have smooth stop and go
-      x = [4.4704, 6.7056]  # smoothly ramp TR between 10 and 15 mph from 1.8s to defined TR above at 15mph
-      y = [1.8, interp(x[1], x_vel, y_mod)]
+    else:  # this allows us to get closer to the lead car when stopping, while being able to have smooth stop and go when reaccelerating
+      x = [sng_speed / 3.0, sng_speed]  # ramp TR down between 5 and 15 mph from 1.8s to defined TR above at 15mph
+      y = [sng_TR, interp(sng_speed, x_vel, y_mod)]
       TR = interp(self.v_ego, x, y)
 
     # Dynamic follow modifications

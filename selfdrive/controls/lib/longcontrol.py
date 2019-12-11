@@ -62,9 +62,6 @@ class LongControl():
     except AttributeError:
       self.gas_interceptor = False
 
-    with open('/data/gas_interceptor', 'a') as f:
-      f.write('{}\n'.format(self.gas_interceptor))
-
     self.long_control_state_stock = LongCtrlState.off  # initialized to off
     self.long_control_state_pedal = LongCtrlState.off  # initialized to off
 
