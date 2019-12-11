@@ -35,7 +35,6 @@ class LongitudinalMpc():
     self.v_ego = 0.0
     self.a_ego = 0.0
     self.last_cost = 0.0
-    self.TR = 1.8
     self.customTR = self.op_params.get('following_distance', None)
     self.past_v_ego = 0.0
 
@@ -72,29 +71,28 @@ class LongitudinalMpc():
     self.cur_state[0].v_ego = v
     self.cur_state[0].a_ego = a
 
-  def set_TR(self):
-    if not self.lead_data['status']:  # travis ensures 1.8 is used, as tests expect this
-      self.TR = 1.8
-
+  def get_TR(self):
+    if not self.lead_data['status']:
+      TR = 1.8
     elif self.customTR is not None:
-      self.TR = clip(self.customTR, 0.9, 2.7)
-
+      TR = clip(self.customTR, 0.9, 2.7)
     else:
       self.store_lead_data()
-      self.TR = self.dynamic_follow()
+      TR = self.dynamic_follow()
 
-    self.change_cost()
+    self.change_cost(TR)
+    return TR
 
-  def change_cost(self):
-    new_cost = self.get_cost()
+  def change_cost(self, TR):
+    new_cost = self.get_cost(TR)
     if self.last_cost != new_cost:
       self.libmpc.change_tr(MPC_COST_LONG.TTC, new_cost, MPC_COST_LONG.ACCELERATION, MPC_COST_LONG.JERK)
       self.last_cost = new_cost
 
-  def get_cost(self):
+  def get_cost(self, TR):
     TRs = [0.9, 1.8, 2.7]
     costs = [1.0, 0.1, 0.05]
-    return interp(self.TR, TRs, costs)
+    return interp(TR, TRs, costs)
 
   def store_lead_data(self):
     v_lead_keep_data_for = 2.0  # seconds
@@ -146,7 +144,7 @@ class LongitudinalMpc():
       y = [1.0, .86, .84]  # reduce TR when changing lanes
       TR *= interp(self.v_ego, x, y)
 
-    #TR *= self.get_traffic_level()  # modify TR based on last minute of traffic data  # todo: look at getting this to work, a model could be used
+    # TR *= self.get_traffic_level()  # modify TR based on last minute of traffic data  # todo: look at getting this to work, a model could be used
 
     return clip(round(TR, 3), 0.9, 2.7)
 
@@ -196,8 +194,8 @@ class LongitudinalMpc():
 
     # Calculate mpc
     t = sec_since_boot()
-    self.set_TR()
-    n_its = self.libmpc.run_mpc(self.cur_state, self.mpc_solution, self.a_lead_tau, a_lead, self.TR)
+    TR = self.get_TR()
+    n_its = self.libmpc.run_mpc(self.cur_state, self.mpc_solution, self.a_lead_tau, a_lead, TR)
     duration = int((sec_since_boot() - t) * 1e9)
 
     if LOG_MPC:
