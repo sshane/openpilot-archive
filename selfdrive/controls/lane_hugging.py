@@ -5,13 +5,15 @@ class LaneHugging:
   def __init__(self):
     self.op_params = opParams()
     self.direction = self.op_params.get('lane_hug_direction', None)  # if lane hugging is present and which side. None, 'left', or 'right'
+    if isinstance(self.direction, str):
+      self.direction = self.direction.lower()
     self.angle_offset = abs(self.op_params.get('lane_hug_angle_offset', 0.0))
 
-  def lane_hug_angle_steers(self, angle_steers):  # only use this function for current steer angle, not desired
+  def offset_mod(self, angle_steers_des):
     # negative angles: right
     # positive angles: left
     if self.direction == 'left':
-      angle_steers += self.angle_offset
+      angle_steers_des -= self.angle_offset
     elif self.direction == 'right':
-      angle_steers -= self.angle_offset
-    return angle_steers
+      angle_steers_des += self.angle_offset
+    return angle_steers_des

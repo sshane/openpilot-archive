@@ -6,8 +6,6 @@ from selfdrive.controls.lib.lateral_mpc import libmpc_py
 from selfdrive.controls.lib.drive_helpers import MPC_COST_LAT
 from selfdrive.controls.lib.lane_planner import LanePlanner
 import selfdrive.messaging as messaging
-from common.op_params import opParams
-op_params = opParams()
 
 LOG_MPC = os.environ.get('LOG_MPC', False)
 
@@ -27,7 +25,6 @@ class PathPlanner():
     self.setup_mpc(CP.steerRateCost)
     self.solution_invalid_cnt = 0
     self.path_offset_i = 0.0
-    self.custom_angle_offset = op_params.get('lane_hug_angle_offset', None)
 
 
   def setup_mpc(self, steer_rate_cost):
@@ -50,10 +47,7 @@ class PathPlanner():
     v_ego = sm['carState'].vEgo
     angle_steers = sm['carState'].steeringAngle
     active = sm['controlsState'].active
-    if self.custom_angle_offset:
-      angle_offset = self.custom_angle_offset
-    else:
-      angle_offset = sm['liveParameters'].angleOffset
+    angle_offset = sm['liveParameters'].angleOffset
 
     self.LP.update(v_ego, sm['model'])
 
