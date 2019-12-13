@@ -95,7 +95,7 @@ class LongitudinalMpc():
     return interp(TR, TRs, costs)
 
   def store_lead_data(self):
-    v_lead_keep_data_for = 2.0  # seconds
+    v_lead_keep_data_for = 1.5  # seconds
     v_ego_keep_data_for = 1.0
     if self.lead_data['status']:
       self.df_data['v_leads'] = [sample for sample in self.df_data['v_leads'] if time.time() - sample['time'] < v_lead_keep_data_for]
@@ -118,7 +118,7 @@ class LongitudinalMpc():
     x_vel = [0.0, 5.222, 11.164, 14.937, 20.973, 33.975, 42.469]
     y_mod = [1.55742, 1.5842153, 1.6392148499999997, 1.68, 1.7325, 1.83645, 1.881]
 
-    sng_TR = 1.8  # stop and go parameters
+    sng_TR = 1.7  # stop and go parameters
     sng_speed = 15.0 * self.MPH_TO_MS
 
     if self.v_ego >= sng_speed or self.df_data['v_egos'][-1]['v_ego'] >= self.v_ego:  # if above 15 mph OR we're decelerating to a stop, keep shorter TR. when we reaccelerate, use 1.8s and slowly decrease
@@ -135,13 +135,13 @@ class LongitudinalMpc():
 
     x = [-2.235, -1.49, -1.1, -0.67, -0.224, 0.0, 0.67, 1.1, 1.49]  # lead acceleration values
     y = [0.26, 0.182, 0.104, 0.06, 0.039, 0.0, -0.016, -0.032, -0.056]  # modification values
-    TR_mod += interp(self.accel_over_time(), x, y)
+    # TR_mod += interp(self.accel_over_time(), x, y)
 
     TR += TR_mod
 
     if self.car_state.leftBlinker or self.car_state.rightBlinker:
       x = [8.9408, 22.352, 31.2928]  # 20, 50, 70 mph
-      y = [1.0, .86, .84]  # reduce TR when changing lanes
+      y = [1.0, .7, .65]  # reduce TR when changing lanes
       TR *= interp(self.v_ego, x, y)
 
     # TR *= self.get_traffic_level()  # modify TR based on last minute of traffic data  # todo: look at getting this to work, a model could be used
