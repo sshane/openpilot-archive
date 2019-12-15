@@ -106,7 +106,7 @@ class PathPlanner():
 
       # State transitions
       # off
-      if False: # self.lane_change_state == LaneChangeState.off and one_blinker and not self.prev_one_blinker:
+      if self.lane_change_state == LaneChangeState.off and one_blinker and not self.prev_one_blinker:
         self.lane_change_state = LaneChangeState.preLaneChange
 
       # pre
@@ -124,7 +124,7 @@ class PathPlanner():
         self.lane_change_state = LaneChangeState.preLaneChange
 
       # Don't allow starting lane change below 45 mph
-      if (v_ego < 45 * CV.MPH_TO_MS) and (self.lane_change_state == LaneChangeState.preLaneChange):
+      if (v_ego < 35 * CV.MPH_TO_MS) and (self.lane_change_state == LaneChangeState.preLaneChange):
         self.lane_change_state = LaneChangeState.off
 
     if self.lane_change_state in [LaneChangeState.off, LaneChangeState.preLaneChange]:
