@@ -1,5 +1,8 @@
 from common.op_params import opParams
+from cereal import log
 
+LaneChangeState = log.PathPlan.LaneChangeState
+LaneChangeDirection = log.PathPlan.LaneChangeDirection
 
 class LaneHugging:
   def __init__(self):
@@ -9,11 +12,15 @@ class LaneHugging:
       self.direction = self.direction.lower()
     self.angle_offset = abs(self.op_params.get('lane_hug_angle_offset', 0.0))
 
-  def offset_mod(self, angle_steers_des):
+  def offset_mod(self, path_plan):
     # negative angles: right
     # positive angles: left
-    if self.direction == 'left':
+    angle_steers_des = path_plan.angleSteers
+    lane_change_state = path_plan.laneChangeState
+    lane_change_direction = path_plan.laneChangeDirection
+    starting = LaneChangeState.laneChangeStarting
+    if self.direction == 'left' and ((lane_change_state == starting and not lane_change_direction.left) or lane_change_state != starting):
       angle_steers_des -= self.angle_offset
-    elif self.direction == 'right':
+    elif self.direction == 'right' and ((lane_change_state == starting and not lane_change_direction.right) or lane_change_state != starting):
       angle_steers_des += self.angle_offset
     return angle_steers_des

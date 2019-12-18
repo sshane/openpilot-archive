@@ -53,7 +53,7 @@ class LatControlLQR():
 
     # Subtract offset. Zero angle should correspond to zero torque
     # self.angle_steers_des = path_plan.angleSteers - path_plan.angleOffset
-    self.angle_steers_des = self.lane_hugging.offset_mod(path_plan.angleSteers - path_plan.angleOffset)
+    self.angle_steers_des = self.lane_hugging.offset_mod(path_plan) - path_plan.angleOffset
     angle_steers -= path_plan.angleOffset
 
     # Update Kalman filter
