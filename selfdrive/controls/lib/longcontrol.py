@@ -2,6 +2,8 @@ from cereal import log
 from common.numpy_fast import clip, interp
 from selfdrive.controls.lib.pid import PIController
 from common.travis_checker import travis
+from selfdrive.config import Conversions as CV
+import numpy as np
 
 LongCtrlState = log.ControlsState.LongControlState
 
@@ -69,6 +71,7 @@ class LongControl():
     self.lead_data = {'v_rel': None, 'a_lead': None, 'x_lead': None, 'status': False}
     self.v_ego = 0.0
     self.gas_pressed = False
+    self.track_data = []
 
   def reset(self, v_pid):
     """Reset PID controller and change setpoint"""
@@ -119,22 +122,46 @@ class LongControl():
 
     return clip(gas, 0.0, 1.0)
 
+  def handle_live_tracks(self, tracks):
+    if tracks is not None:  # if updated
+      self.track_data = []
+      for track in tracks:
+        self.track_data.append(self.v_ego + track.vRel)
+
   def handle_passable(self, passable):
-    self.gas_pressed = passable['gas_pressed']
-    self.lead_data['v_rel'] = passable['radar_state'].leadOne.vRel
-    self.lead_data['a_lead'] = passable['radar_state'].leadOne.aLeadK
-    self.lead_data['x_lead'] = passable['radar_state'].leadOne.dRel
+    self.lead_data['v_rel'] = passable['lead_one'].vRel
+    self.lead_data['a_lead'] = passable['lead_one'].aLeadK
+    self.lead_data['x_lead'] = passable['lead_one'].dRel
     self.lead_data['status'] = passable['has_lead']  # this fixes radarstate always reporting a lead, thanks to arne
+    self.gas_pressed = passable['gas_pressed']
+    self.handle_live_tracks(passable['live_tracks'])
 
-  def dynamic_lane_speed(self, v_target, v_target_future):
-    pass
+  def dynamic_lane_speed(self, v_target, v_target_future, v_cruise):
+    min_tracks = 3
+    track_speed_margin = .55  # 55 percent
+    min_speed = 30
+    self.track_data = [i for i in self.track_data if (v_cruise * track_speed_margin) < i]
+    if len(self.track_data) >= min_tracks and self.v_ego > (min_speed * CV.MPH_TO_MS):
+      average_track_speed = np.mean(self.track_data)
+      if average_track_speed < v_target and average_track_speed < v_target_future:
+        # so basically, if there's no lead, there's at least 3 tracks, the speeds of the tracks must be within 50% of set speed, if our speed is at least 30 mph,
+        # if the average speeds of tracks is less than v_target and v_target_future, then get a weight for how many tracks exist, with more tracks, the more we
+        # favor the average track speed, then weighted average it with our set_speed, if these conditions aren't met, then we just return original values
+        # this should work...?
+        x = [3, 8, 16]
+        y = [0.3, .55, 0.7]
+        track_speed_weight = interp(len(self.track_data), x, y)
+        v_target_slow = (v_cruise * (1 - track_speed_weight)) + (average_track_speed * track_speed_weight)
+        if v_target_slow < v_target:  # just a sanity check
+          v_target = v_target_slow
+          v_target_future = v_target_slow
 
-
-    return 0, 0
+    return v_target, v_target_future
 
   def update(self, active, v_ego, brake_pressed, standstill, cruise_standstill, v_cruise, v_target, v_target_future, a_target, CP, passable):
     """Update longitudinal control. This updates the state machine and runs a PID loop"""
     self.v_ego = v_ego
+    v_cruise *= CV.KPH_TO_MS  # convert to m/s
 
     # Actuation limits
     if not travis:
@@ -144,8 +171,8 @@ class LongControl():
       gas_max = interp(v_ego, CP.gasMaxBP, CP.gasMaxV)
     brake_max = interp(v_ego, CP.brakeMaxBP, CP.brakeMaxV)
 
-    if not travis:
-      v_target, v_target_future = self.dynamic_lane_speed(v_target, v_target_future)
+    if not travis and not self.lead_data['status']:  # want to make sure we don't mess with anything when there's a lead
+      v_target, v_target_future = self.dynamic_lane_speed(v_target, v_target_future, v_cruise)
 
     # Update state machine
     output_gb = self.last_output_gb
