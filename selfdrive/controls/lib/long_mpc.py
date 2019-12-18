@@ -144,8 +144,8 @@ class LongitudinalMpc():
       x = [8.9408, 22.352, 31.2928]  # 20, 50, 70 mph
       y = [1.0, .7, .65]  # reduce TR when changing lanes
       TR *= interp(self.car_data['v_ego'], x, y)
-      with open('/data/blinker_debug', 'a') as f:
-        f.write('{}\n'.format([self.CS.leftBlinker, self.CS.rightBlinker, self.car_data['v_ego'], old_TR, TR]))
+      # with open('/data/blinker_debug', 'a') as f:
+      #   f.write('{}\n'.format([self.CS.leftBlinker, self.CS.rightBlinker, self.car_data['v_ego'], old_TR, TR]))
 
     # TR *= self.get_traffic_level()  # modify TR based on last minute of traffic data  # todo: look at getting this to work, a model could be used
 
@@ -215,9 +215,9 @@ class LongitudinalMpc():
     n_its = self.libmpc.run_mpc(self.cur_state, self.mpc_solution, self.a_lead_tau, a_lead, self.get_TR())
     duration = int((sec_since_boot() - t) * 1e9)
 
-    if not travis:
-      with open('/data/mpc_debug.{}'.format(self.mpc_id), 'a') as f:
-        f.write('{}\n'.format(self.lead_data))
+    # if not travis:
+    #   with open('/data/mpc_debug.{}'.format(self.mpc_id), 'a') as f:
+    #     f.write('{}\n'.format(self.lead_data))
 
     if LOG_MPC:
       self.send_mpc_solution(pm, n_its, duration)
