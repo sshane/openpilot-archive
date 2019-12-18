@@ -126,6 +126,12 @@ class LongControl():
     self.lead_data['x_lead'] = passable['radar_state'].leadOne.dRel
     self.lead_data['status'] = passable['has_lead']  # this fixes radarstate always reporting a lead, thanks to arne
 
+  def dynamic_lane_speed(self, v_target, v_target_future):
+    pass
+
+
+    return 0, 0
+
   def update(self, active, v_ego, brake_pressed, standstill, cruise_standstill, v_cruise, v_target, v_target_future, a_target, CP, passable):
     """Update longitudinal control. This updates the state machine and runs a PID loop"""
     self.v_ego = v_ego
@@ -137,6 +143,9 @@ class LongControl():
     else:
       gas_max = interp(v_ego, CP.gasMaxBP, CP.gasMaxV)
     brake_max = interp(v_ego, CP.brakeMaxBP, CP.brakeMaxV)
+
+    if not travis:
+      v_target, v_target_future = self.dynamic_lane_speed(v_target, v_target_future)
 
     # Update state machine
     output_gb = self.last_output_gb
