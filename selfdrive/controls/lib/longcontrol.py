@@ -141,7 +141,7 @@ class LongControl():
       f.write('{}\n'.format(self.track_data))
     min_tracks = 3
     track_speed_margin = .55  # 55 percent
-    min_speed = 30
+    min_speed = 15
     self.track_data = [i for i in self.track_data if (self.v_ego * track_speed_margin) < i]
     if len(self.track_data) >= min_tracks and self.v_ego > (min_speed * CV.MPH_TO_MS):
       average_track_speed = np.mean(self.track_data)
