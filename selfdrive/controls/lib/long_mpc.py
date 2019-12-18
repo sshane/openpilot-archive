@@ -141,7 +141,7 @@ class LongitudinalMpc():
     TR += TR_mod
 
     if self.CS.leftBlinker or self.CS.rightBlinker:
-      old_TR = float(TR)
+      # old_TR = float(TR)
       x = [8.9408, 22.352, 31.2928]  # 20, 50, 70 mph
       y = [1.0, .7, .65]  # reduce TR when changing lanes
       TR *= interp(self.car_data['v_ego'], x, y)
