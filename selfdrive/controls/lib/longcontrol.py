@@ -137,6 +137,8 @@ class LongControl():
     self.handle_live_tracks(passable['live_tracks'])
 
   def dynamic_lane_speed(self, v_target, v_target_future, v_cruise):
+    with open('/data/live_tracks_test', 'a') as f:
+      f.write('{}\n'.format(self.track_data))
     min_tracks = 3
     track_speed_margin = .55  # 55 percent
     min_speed = 30
