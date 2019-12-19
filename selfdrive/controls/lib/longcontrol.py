@@ -121,10 +121,10 @@ class LongControl():
 
     return clip(gas, 0.0, 1.0)
 
-  def handle_live_tracks(self, tracks):
-    if tracks is not None:  # if updated
+  def handle_live_tracks(self, live_tracks):
+    if live_tracks['updated']:
       self.track_data = []
-      for track in tracks:
+      for track in live_tracks['tracks']:
         self.track_data.append(self.v_ego + track.vRel)
 
   def handle_passable(self, passable):
@@ -171,12 +171,10 @@ class LongControl():
     if not travis:
       self.handle_passable(passable)  # so travis doesn't call vRel... on None
       gas_max = self.dynamic_gas(CP)
+      v_target, v_target_future, a_target = self.dynamic_lane_speed(v_target, v_target_future, v_cruise, a_target)
     else:
       gas_max = interp(v_ego, CP.gasMaxBP, CP.gasMaxV)
     brake_max = interp(v_ego, CP.brakeMaxBP, CP.brakeMaxV)
-
-    if not travis:
-      v_target, v_target_future, a_target = self.dynamic_lane_speed(v_target, v_target_future, v_cruise, a_target)
 
     # Update state machine
     output_gb = self.last_output_gb
