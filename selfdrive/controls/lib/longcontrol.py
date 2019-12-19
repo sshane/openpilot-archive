@@ -143,6 +143,7 @@ class LongControl():
     #   f.write('{}\n'.format(self.track_data))
     min_tracks = 3
     track_speed_margin = .5  # 50 percent
+    MPC_TIME_STEP = 1 / 20.
     self.track_data = [trk_vel for trk_vel in self.track_data if (self.v_ego * track_speed_margin) <= trk_vel <= v_cruise]
     if len(self.track_data) >= min_tracks and self.v_ego > self.min_dynamic_lane_speed:
       average_track_speed = np.mean(self.track_data)
@@ -158,7 +159,7 @@ class LongControl():
           track_speed_weight = clip(1.2 * track_speed_weight, min(y), max(y))
         v_target_slow = (v_cruise * (1 - track_speed_weight)) + (average_track_speed * track_speed_weight)
         if v_target_slow < v_target and v_target_slow < v_target_future:  # just a sanity check, don't want to run into any leads if we somehow predict faster velocity
-          a_target_slow = (1 / 20.) * ((v_target_slow - v_target) / 1.0)  # mpc time_step is 0.2 s, so interpolate assuming a_target is 1 second into future?
+          a_target_slow = MPC_TIME_STEP * ((v_target_slow - v_target) / 1.0)  # long_mpc runs at 20 hz, so interpolate assuming a_target is 1 second into future? or since long_control is 100hz, should we interpolate using that?
           a_target = a_target_slow  # todo: should we mess with a_target, or leave it alone??
           v_target = v_target_slow
           v_target_future = v_target_slow
