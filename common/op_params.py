@@ -38,7 +38,8 @@ class opParams:
                            'alca_nudge_required': {'default': True, 'allowed_types': [bool], 'description': ('Whether to wait for applied torque to the wheel (nudge) before making lane changes. '
                                                                                                              'If False, lane change will occur IMMEDIATELY after signaling')},
                            'alca_min_speed': {'default': 30.0, 'allowed_types': [float, int], 'description': 'The minimum speed allowed for an automatic lane change (in MPH)'},
-                           'min_model_speed': {'default': 20.0, 'allowed_types': [float, int], 'description': 'The minimum speed the model will be allowed to slow down for curves (in MPH)'}}
+                           'min_model_speed': {'default': 20.0, 'allowed_types': [float, int], 'description': 'The minimum speed the model will be allowed to slow down for curves (in MPH)'},
+                           'min_dynamic_lane_speed': {'default': 20, 'allowed_types': [float, int], 'description': 'The minimum speed the dynamic lane speed controller will adjust your speed based on surrounding cars from the radar (in MPH)'}}
 
     self.params = {}
     self.params_file = "/data/op_params.json"

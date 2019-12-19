@@ -4,6 +4,7 @@ from selfdrive.controls.lib.pid import PIController
 from common.travis_checker import travis
 from selfdrive.config import Conversions as CV
 import numpy as np
+from common.op_params import opParams
 
 LongCtrlState = log.ControlsState.LongControlState
 
@@ -72,6 +73,7 @@ class LongControl():
     self.v_ego = 0.0
     self.gas_pressed = False
     self.track_data = []
+    self.min_dynamic_lane_speed = opParams().get('min_dynamic_lane_speed', default=20.) * CV.MPH_TO_MS
 
   def reset(self, v_pid):
     """Reset PID controller and change setpoint"""
@@ -141,12 +143,11 @@ class LongControl():
     #   f.write('{}\n'.format(self.track_data))
     min_tracks = 3
     track_speed_margin = .5  # 50 percent
-    min_speed = 15
     self.track_data = [trk_vel for trk_vel in self.track_data if (self.v_ego * track_speed_margin) <= trk_vel <= v_cruise]
-    if len(self.track_data) >= min_tracks and self.v_ego > (min_speed * CV.MPH_TO_MS):
+    if len(self.track_data) >= min_tracks and self.v_ego > self.min_dynamic_lane_speed:
       average_track_speed = np.mean(self.track_data)
       if average_track_speed < v_target and average_track_speed < v_target_future:
-        # so basically, if there's no lead, there's at least 3 tracks, the speeds of the tracks must be within 50% of set speed, if our speed is at least 30 mph,
+        # so basically, if there's at least 3 tracks, the speeds of the tracks must be within 50% of set speed, if our speed is at least set_speed mph,
         # if the average speeds of tracks is less than v_target and v_target_future, then get a weight for how many tracks exist, with more tracks, the more we
         # favor the average track speed, then weighted average it with our set_speed, if these conditions aren't met, then we just return original values
         # this should work...?
