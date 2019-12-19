@@ -17,10 +17,10 @@ class LaneHugging:
     # positive angles: left
     angle_steers_des = path_plan.angleSteers
     lane_change_state = path_plan.laneChangeState
-    lane_change_direction = path_plan.laneChangeDirection
+    direction = path_plan.laneChangeDirection
     starting = LaneChangeState.laneChangeStarting
-    if self.direction == 'left' and ((lane_change_state == starting and not lane_change_direction.left) or lane_change_state != starting):
+    if self.direction == 'left' and ((lane_change_state == starting and direction != LaneChangeDirection.left) or lane_change_state != starting):
       angle_steers_des -= self.angle_offset
-    elif self.direction == 'right' and ((lane_change_state == starting and not lane_change_direction.right) or lane_change_state != starting):
+    elif self.direction == 'right' and ((lane_change_state == starting and direction != LaneChangeDirection.right) or lane_change_state != starting):
       angle_steers_des += self.angle_offset
     return angle_steers_des
