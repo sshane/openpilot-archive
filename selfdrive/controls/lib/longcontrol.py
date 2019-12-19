@@ -136,13 +136,13 @@ class LongControl():
     self.gas_pressed = passable['gas_pressed']
     self.handle_live_tracks(passable['live_tracks'])
 
-  def dynamic_lane_speed(self, v_target, v_target_future, v_cruise):
-    with open('/data/live_tracks_test', 'a') as f:
-      f.write('{}\n'.format(self.track_data))
+  def dynamic_lane_speed(self, v_target, v_target_future, v_cruise, a_target):
+    # with open('/data/live_tracks_test', 'a') as f:  # looks like it's getting live_tracks nicely
+    #   f.write('{}\n'.format(self.track_data))
     min_tracks = 3
-    track_speed_margin = .55  # 55 percent
+    track_speed_margin = .5  # 50 percent
     min_speed = 15
-    self.track_data = [i for i in self.track_data if (self.v_ego * track_speed_margin) < i]
+    self.track_data = [trk_vel for trk_vel in self.track_data if (self.v_ego * track_speed_margin) <= trk_vel <= v_cruise]
     if len(self.track_data) >= min_tracks and self.v_ego > (min_speed * CV.MPH_TO_MS):
       average_track_speed = np.mean(self.track_data)
       if average_track_speed < v_target and average_track_speed < v_target_future:
@@ -150,15 +150,20 @@ class LongControl():
         # if the average speeds of tracks is less than v_target and v_target_future, then get a weight for how many tracks exist, with more tracks, the more we
         # favor the average track speed, then weighted average it with our set_speed, if these conditions aren't met, then we just return original values
         # this should work...?
-        x = [3, 8, 16]
-        y = [0.3, .55, 0.7]
+        x = [3, 6, 16]
+        y = [0.4, .6, 0.7]
         track_speed_weight = interp(len(self.track_data), x, y)
+        if self.lead_data['status']:  # if lead, give more weight to surrounding tracks (todo: this if check might need to be flipped, so if not lead...)
+          track_speed_weight = clip(1.2 * track_speed_weight, min(y), max(y))
         v_target_slow = (v_cruise * (1 - track_speed_weight)) + (average_track_speed * track_speed_weight)
-        if v_target_slow < v_target:  # just a sanity check
+        if v_target_slow < v_target and v_target_slow < v_target_future:  # just a sanity check, don't want to run into any leads if we somehow predict faster velocity
+          a_target_slow = (1 / 20.) * ((v_target_slow - v_target) / 1.0)  # mpc time_step is 0.2 s, so interpolate assuming a_target is 1 second into future?
+          a_target = a_target_slow  # todo: should we mess with a_target, or leave it alone??
           v_target = v_target_slow
           v_target_future = v_target_slow
 
-    return v_target, v_target_future
+
+    return v_target, v_target_future, a_target
 
   def update(self, active, v_ego, brake_pressed, standstill, cruise_standstill, v_cruise, v_target, v_target_future, a_target, CP, passable):
     """Update longitudinal control. This updates the state machine and runs a PID loop"""
@@ -173,8 +178,8 @@ class LongControl():
       gas_max = interp(v_ego, CP.gasMaxBP, CP.gasMaxV)
     brake_max = interp(v_ego, CP.brakeMaxBP, CP.brakeMaxV)
 
-    if not travis and not self.lead_data['status']:  # want to make sure we don't mess with anything when there's a lead
-      v_target, v_target_future = self.dynamic_lane_speed(v_target, v_target_future, v_cruise)
+    if not travis:
+      v_target, v_target_future, a_target = self.dynamic_lane_speed(v_target, v_target_future, v_cruise, a_target)
 
     # Update state machine
     output_gb = self.last_output_gb
