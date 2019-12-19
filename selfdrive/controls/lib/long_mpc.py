@@ -90,8 +90,8 @@ class LongitudinalMpc():
       self.last_cost = cost
 
   def store_lead_data(self):
-    v_lead_retention = 2.0  # seconds
-    v_ego_retention = 1.5
+    v_lead_retention = 2.25  # seconds
+    v_ego_retention = 2.5
 
     if self.lead_data['status']:
       self.df_data['v_leads'] = [sample for sample in self.df_data['v_leads'] if
@@ -110,7 +110,7 @@ class LongitudinalMpc():
       if elapsed > min_consider_time:  # if greater than min time (not 0)
         v_diff = self.df_data['v_leads'][-1]['v_lead'] - self.df_data['v_leads'][0]['v_lead']
         calculated_accel = v_diff / elapsed
-        if abs(calculated_accel) > abs(a_lead):  # if a_lead is greater than calculated accel (over last 1.5s, use that)
+        if abs(calculated_accel) > abs(a_lead):  # if a_lead is greater than calculated accel (over last 1.5s) use that
           a_lead = calculated_accel
     return a_lead  # if above doesn't execute, we'll return a_lead from radar
 
@@ -135,7 +135,7 @@ class LongitudinalMpc():
 
     x = [-4.4704, -1.77, -0.3145, 0.0, 0.1495, 0.5104, 0.7037, 0.9357]  # lead acceleration values
     y = [0.237, 0.12, 0.027, 0, -0.006, -0.036, -0.042, -0.045]  # modification values
-    TR_mod += interp(self.lead_accel_over_time(), x, y)  # todo: test if these modifications are too much
+    TR_mod += interp(self.lead_accel_over_time(), x, y)
 
     TR += TR_mod
 
