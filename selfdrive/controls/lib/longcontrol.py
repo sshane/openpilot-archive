@@ -93,9 +93,6 @@ class LongControl():
 
     gas = interp(self.v_ego, x, y)
 
-    with open('/data/lead_data', 'a') as f:
-      f.write(str(self.lead_data) + '\n')
-
     if self.lead_data['status']:  # if lead
       if self.v_ego <= 8.9408:  # if under 20 mph
         # TR = 1.8  # desired TR, might need to switch this to hardcoded distance values
@@ -139,8 +136,6 @@ class LongControl():
     self.handle_live_tracks(passable['live_tracks'])
 
   def dynamic_lane_speed(self, v_target, v_target_future, v_cruise, a_target):
-    # with open('/data/live_tracks_test', 'a') as f:  # looks like it's getting live_tracks nicely
-    #   f.write('{}\n'.format(self.track_data))
     min_tracks = 3
     track_speed_margin = .5  # 50 percent
     MPC_TIME_STEP = 1 / 20.
