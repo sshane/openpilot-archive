@@ -73,7 +73,9 @@ class LongControl():
     self.v_ego = 0.0
     self.gas_pressed = False
     self.track_data = []
-    self.min_dynamic_lane_speed = opParams().get('min_dynamic_lane_speed', default=20.) * CV.MPH_TO_MS
+    self.op_params = opParams()
+    self.min_dynamic_lane_speed = self.op_params.get('min_dynamic_lane_speed', default=20.) * CV.MPH_TO_MS
+    self.dynamic_lane_speed_active = self.op_params.get('dynamic_lane_speed', default=True)
 
   def reset(self, v_pid):
     """Reset PID controller and change setpoint"""
@@ -139,25 +141,26 @@ class LongControl():
     min_tracks = 3
     track_speed_margin = .5  # 50 percent
     MPC_TIME_STEP = 1 / 20.
-    self.track_data = [trk_vel for trk_vel in self.track_data if (self.v_ego * track_speed_margin) <= trk_vel <= v_cruise]
-    if len(self.track_data) >= min_tracks and self.v_ego > self.min_dynamic_lane_speed:
-      average_track_speed = np.mean(self.track_data)
-      if average_track_speed < v_target and average_track_speed < v_target_future:
-        # so basically, if there's at least 3 tracks, the speeds of the tracks must be within 50% of set speed, if our speed is at least set_speed mph,
-        # if the average speeds of tracks is less than v_target and v_target_future, then get a weight for how many tracks exist, with more tracks, the more we
-        # favor the average track speed, then weighted average it with our set_speed, if these conditions aren't met, then we just return original values
-        # this should work...?
-        x = [3, 6, 16]
-        y = [0.4, .6, 0.7]
-        track_speed_weight = interp(len(self.track_data), x, y)
-        if self.lead_data['status']:  # if lead, give more weight to surrounding tracks (todo: this if check might need to be flipped, so if not lead...)
-          track_speed_weight = clip(1.1 * track_speed_weight, min(y), max(y))
-        v_target_slow = (v_cruise * (1 - track_speed_weight)) + (average_track_speed * track_speed_weight)
-        if v_target_slow < v_target and v_target_slow < v_target_future:  # just a sanity check, don't want to run into any leads if we somehow predict faster velocity
-          a_target_slow = MPC_TIME_STEP * ((v_target_slow - v_target) / 1.0)  # long_mpc runs at 20 hz, so interpolate assuming a_target is 1 second into future? or since long_control is 100hz, should we interpolate using that?
-          a_target = a_target_slow  # todo: should we mess with a_target, or leave it alone??
-          v_target = v_target_slow
-          v_target_future = v_target_slow
+    if self.dynamic_lane_speed_active and self.v_ego > self.min_dynamic_lane_speed:
+      self.track_data = [trk_vel for trk_vel in self.track_data if (self.v_ego * track_speed_margin) <= trk_vel <= v_cruise]
+      if len(self.track_data) >= min_tracks:
+        average_track_speed = np.mean(self.track_data)
+        if average_track_speed < v_target and average_track_speed < v_target_future:
+          # so basically, if there's at least 3 tracks, the speeds of the tracks must be within 50% of set speed, if our speed is at least set_speed mph,
+          # if the average speeds of tracks is less than v_target and v_target_future, then get a weight for how many tracks exist, with more tracks, the more we
+          # favor the average track speed, then weighted average it with our set_speed, if these conditions aren't met, then we just return original values
+          # this should work...?
+          x = [3, 6, 16]
+          y = [0.4, .6, 0.7]
+          track_speed_weight = interp(len(self.track_data), x, y)
+          if self.lead_data['status']:  # if lead, give more weight to surrounding tracks (todo: this if check might need to be flipped, so if not lead...)
+            track_speed_weight = clip(1.1 * track_speed_weight, min(y), max(y))
+          v_target_slow = (v_cruise * (1 - track_speed_weight)) + (average_track_speed * track_speed_weight)
+          if v_target_slow < v_target and v_target_slow < v_target_future:  # just a sanity check, don't want to run into any leads if we somehow predict faster velocity
+            a_target_slow = MPC_TIME_STEP * ((v_target_slow - v_target) / 1.0)  # long_mpc runs at 20 hz, so interpolate assuming a_target is 1 second into future? or since long_control is 100hz, should we interpolate using that?
+            a_target = a_target_slow  # todo: should we mess with a_target, or leave it alone??
+            v_target = v_target_slow
+            v_target_future = v_target_slow
 
 
     return v_target, v_target_future, a_target

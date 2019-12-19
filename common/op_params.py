@@ -38,14 +38,15 @@ class opParams:
                            'alca_nudge_required': {'default': True, 'allowed_types': [bool], 'description': ('Whether to wait for applied torque to the wheel (nudge) before making lane changes. '
                                                                                                              'If False, lane change will occur IMMEDIATELY after signaling')},
                            'alca_min_speed': {'default': 30.0, 'allowed_types': [float, int], 'description': 'The minimum speed allowed for an automatic lane change (in MPH)'},
-                           'min_model_speed': {'default': 20.0, 'allowed_types': [float, int], 'description': 'The minimum speed the model will be allowed to slow down for curves (in MPH)'},
-                           'min_dynamic_lane_speed': {'default': 20, 'allowed_types': [float, int], 'description': 'The minimum speed the dynamic lane speed controller will adjust your speed based on surrounding cars from the radar (in MPH)'}}
+                           'min_model_slowdown_speed': {'default': 20.0, 'allowed_types': [float, int], 'description': 'The minimum speed the driving model will be allowed to slow you down for curves (in MPH)'},
+                           'dynamic_lane_speed': {'default': True, 'allowed_types': [bool], 'description': 'Whether to automatically adjust your speed based on vehicles in surrounding lanes'},
+                           'min_dynamic_lane_speed': {'default': 20.0, 'allowed_types': [float, int], 'description': 'The minimum speed the dynamic lane speed controller will be allowed to adjust your speed based on surrounding cars from the radar (in MPH)'}}
 
     self.params = {}
     self.params_file = "/data/op_params.json"
     self.kegman_file = "/data/kegman.json"
     self.last_read_time = time.time()
-    self.read_timeout = 1.0  # max frequency to read with self.get(...) (sec)
+    self.read_frequency = 10.0  # max frequency to read with self.get(...) (sec)
     self.force_update = False  # replaces values with default params if True, not just add add missing key/value pairs
     self.run_init()  # restores, reads, and updates params
 
@@ -104,7 +105,7 @@ class opParams:
     write_params(self.params, self.params_file)
 
   def get(self, key=None, default=None):  # can specify a default value if key doesn't exist
-    if (time.time() - self.last_read_time) >= self.read_timeout and not travis:  # make sure we aren't reading file too often
+    if (time.time() - self.last_read_time) >= self.read_frequency and not travis:  # make sure we aren't reading file too often
       self.params, read_status = read_params(self.params_file, self.format_default_params())
       self.last_read_time = time.time()
     if key is None:  # get all
