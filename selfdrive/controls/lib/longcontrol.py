@@ -163,7 +163,6 @@ class LongControl():
             v_target = v_target_slow
             v_target_future = v_target_slow
 
-
     return v_target, v_target_future, a_target
 
   def update(self, active, v_ego, brake_pressed, standstill, cruise_standstill, v_cruise, v_target, v_target_future, a_target, CP, passable):
