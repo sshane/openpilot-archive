@@ -138,6 +138,7 @@ class LongControl():
     self.handle_live_tracks(passable['live_tracks'])
 
   def dynamic_lane_speed(self, v_target, v_target_future, v_cruise, a_target):
+    v_cruise *= CV.KPH_TO_MS  # convert to m/s
     min_tracks = 3
     track_speed_margin = .5  # 50 percent
     MPC_TIME_STEP = 1 / 20.
@@ -168,7 +169,6 @@ class LongControl():
   def update(self, active, v_ego, brake_pressed, standstill, cruise_standstill, v_cruise, v_target, v_target_future, a_target, CP, passable):
     """Update longitudinal control. This updates the state machine and runs a PID loop"""
     self.v_ego = v_ego
-    v_cruise *= CV.KPH_TO_MS  # convert to m/s
 
     # Actuation limits
     if not travis:
