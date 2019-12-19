@@ -130,8 +130,8 @@ class LongitudinalMpc():
       TR = interp(self.car_data['v_ego'], x, y)
 
     # Dynamic follow modifications (the secret sauce)
-    x = [-20, -15.655, -11.1702, -7.8235, -4.6665, -2.5663, -1.1843, 0, 1.0107, 1.89, 2.6909]  # relative velocity values
-    y = [0.65, 0.525, 0.44, 0.341, 0.26, 0.159, 0.049, 0, -0.082, -0.18, -0.28]  # modification values
+    x = [-20.0, -15.655, -11.1702, -7.8235, -4.6665, -2.5663, -1.1843, 0.0, 1.3411, 1.89, 2.6909]  # relative velocity values
+    y = [0.65, 0.525, 0.44, 0.341, 0.26, 0.159, 0.049, 0, -0.06, -0.144, -0.224]  # modification values
     TR_mod = interp(self.lead_data['v_lead'] - self.car_data['v_ego'], x, y)
 
     x = [-4.4704, -1.77, -0.3145, 0, 0.446, 1.3411]  # lead acceleration values
