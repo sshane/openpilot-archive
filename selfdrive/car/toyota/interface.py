@@ -126,6 +126,9 @@ class CarInterface(CarInterfaceBase):
       ret.mass = 2860. * CV.LB_TO_KG + STD_CARGO_KG  # mean between normal and hybrid
       ret.lateralTuning.pid.kpV, ret.lateralTuning.pid.kiV = [[0.2], [0.05]]
       ret.lateralTuning.pid.kf = 0.00003   # full torque for 20 deg at 80mph means 0.00007818594
+      if ret.enableGasInterceptor:
+        ret.longitudinalTuning.kpVPedal = [1.0, 0.66, 0.42]
+        ret.longitudinalTuning.kiVPedal = [0.135, 0.09]
 
     elif candidate == CAR.LEXUS_RXH:
       stop_and_go = True
