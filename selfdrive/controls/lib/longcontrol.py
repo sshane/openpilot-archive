@@ -140,7 +140,9 @@ class LongControl():
   def dynamic_lane_speed(self, v_target, v_target_future, v_cruise, a_target):
     v_cruise *= CV.KPH_TO_MS  # convert to m/s
     min_tracks = 3
-    track_speed_margin = .7  # 70 percent
+    vels = [i * CV.MPH_TO_MS for i in [5, 20, 60]]
+    margins = [0.5, 0.6, 0.65]
+    track_speed_margin = interp(self.v_ego, vels, margins)
     MPC_TIME_STEP = 1 / 20.
     similar_track_tolerance = 0.025
     if self.dynamic_lane_speed_active and self.v_ego > self.min_dynamic_lane_speed:
