@@ -133,11 +133,10 @@ class CarController():
     new_steer = int(round(actuators.steer * SteerLimitParams.STEER_MAX))
     apply_steer = apply_toyota_steer_torque_limits(new_steer, self.last_steer, CS.steer_torque_motor, SteerLimitParams)
 
-    if not travis:
-      self.phantom.update()
-      if self.phantom['status']:
-        new_steer = int(round(self.phantom.data["angle"]))
-        apply_steer = int(round(self.phantom.data["angle"]))
+    self.phantom.update()
+    if self.phantom['status']:
+      new_steer = int(round(self.phantom.data["angle"]))
+      apply_steer = int(round(self.phantom.data["angle"]))
 
     self.steer_rate_limited = new_steer != apply_steer
 

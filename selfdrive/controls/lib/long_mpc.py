@@ -1,12 +1,14 @@
 import os
 import math
 
+from common.numpy_fast import interp, clip
 import cereal.messaging as messaging
 from selfdrive.swaglog import cloudlog
 from common.realtime import sec_since_boot
 from selfdrive.controls.lib.radar_helpers import _LEAD_ACCEL_TAU
 from selfdrive.controls.lib.longitudinal_mpc import libmpc_py
 from selfdrive.controls.lib.drive_helpers import MPC_COST_LONG
+from selfdrive.phantom.phantom import Phantom
 
 LOG_MPC = os.environ.get('LOG_MPC', False)
 
@@ -25,6 +27,7 @@ class LongitudinalMpc():
     self.new_lead = False
 
     self.last_cloudlog_t = 0.0
+    self.phantom = Phantom()
 
   def send_mpc_solution(self, pm, qp_iterations, calculation_time):
     qp_iterations = max(0, qp_iterations)
@@ -57,13 +60,54 @@ class LongitudinalMpc():
     self.cur_state[0].v_ego = v
     self.cur_state[0].a_ego = a
 
+  def process_phantom(self, lead):
+    if lead is not None and lead.status:
+      v_lead = max(0.0, lead.vLead)
+      if v_lead < 0.1 or -lead.aLeadK / 2.0 > v_lead:
+        v_lead = 0.0
+      # if radar lead is available, ensure we use that as the real lead rather than ignoring it and running into it
+      # todo: this is buggy and probably needs to be looked at
+      x_lead = min(9.144, lead.dRel)
+      v_lead = min(self.phantom["speed"], v_lead)
+    else:
+      x_lead = 9.144
+      v_lead = self.phantom["speed"]
+    return x_lead, v_lead
+
   def update(self, pm, CS, lead, v_cruise_setpoint):
     v_ego = CS.vEgo
-
+    self.phantom.update()
     # Setup current mpc state
     self.cur_state[0].x_ego = 0.0
 
-    if lead is not None and lead.status:
+    if self.phantom['status']:
+      a_lead = 0.0
+      if self.phantom["speed"] != 0.0:
+        x_lead, v_lead = self.process_phantom(lead)
+      elif self.phantom.lost_connection:
+        x = [0, 14.3053]  # 32 mph
+        y = [0.6096, 6.096]  # 2, 20 feet
+        x_lead = interp(v_ego, x, y)
+        v_lead = max(v_ego - 4.4704, 0)  # stop at a quick pace
+        x = [0, 14.3053]
+        y = [0, -2.2352 * 0.7]
+        a_lead = interp(v_ego, x, y)
+      else:  # else, smooth deceleration
+        x_lead = 3.75
+        v_lead = max(v_ego - 1.34112, 0)  # smoothly decelerate to 0
+        a_lead = -0.44704
+
+      self.a_lead_tau = lead.aLeadTau
+      self.new_lead = False
+      if not self.prev_lead_status or abs(x_lead - self.prev_lead_x) > 2.5:
+        self.libmpc.init_with_simulation(self.v_mpc, x_lead, v_lead, a_lead, self.a_lead_tau)
+        self.new_lead = True
+
+      self.prev_lead_status = True
+      self.prev_lead_x = x_lead
+      self.cur_state[0].x_l = x_lead
+      self.cur_state[0].v_l = v_lead
+    elif lead is not None and lead.status:
       x_lead = lead.dRel
       v_lead = max(0.0, lead.vLead)
       a_lead = lead.aLeadK
