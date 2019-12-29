@@ -17,6 +17,7 @@ from selfdrive.loggerd.config import ROOT
 from common import android
 from common.params import Params
 from common.api import Api
+from common.travis_checker import travis
 
 fake_upload = os.getenv("FAKEUPLOAD") is not None
 
@@ -135,7 +136,7 @@ class Uploader():
         yield (name, key, fn)
 
   def next_file_to_upload(self, with_raw):
-    if with_raw:
+    if with_raw or travis:
       upload_files = list(self.gen_upload_files())
       # try to upload qlog files first
       for name, key, fn in upload_files:
