@@ -136,7 +136,11 @@ class CarController():
 
     self.phantom.update()
     if self.phantom['status']:
-      apply_steer = int(round(self.phantom.data["angle"])) if abs(CS.angle_steers) <= 400 else 0
+      with open('/data/apply_steer', 'a') as f:
+        f.write('{}\n'.format(self.phantom['angle']))
+      apply_steer = int(round(self.phantom.data['angle'])) if abs(CS.angle_steers) <= 400 else 0
+      with open('/data/apply_steer', 'a') as f:
+        f.write('{}\n'.format(apply_steer))
       self.steer_rate_limited = False
     else:
       # only cut torque when steer state is a known fault
@@ -149,6 +153,9 @@ class CarController():
       apply_steer_req = 0
     else:
       apply_steer_req = 1
+
+    with open('/data/apply_steer', 'a') as f:
+      f.write('{}\n\n'.format(apply_steer))
 
     self.steer_angle_enabled, self.ipas_reset_counter = \
       ipas_state_transition(self.steer_angle_enabled, enabled, CS.ipas_active, self.ipas_reset_counter)
