@@ -3,9 +3,9 @@ const int TOYOTA_MAX_TORQUE = 4000;       // max torque cmd allowed ever
 
 // rate based torque limit + stay within actually applied
 // packet is sent at 100hz, so this limit is 1000/sec
-const int TOYOTA_MAX_RATE_UP = 150;        // ramp up slow
-const int TOYOTA_MAX_RATE_DOWN = 150;      // ramp down fast
-const int TOYOTA_MAX_TORQUE_ERROR = 2000;  // max torque cmd in excess of torque motor
+const int TOYOTA_MAX_RATE_UP = 60;        // ramp up slow
+const int TOYOTA_MAX_RATE_DOWN = 60;      // ramp down fast
+const int TOYOTA_MAX_TORQUE_ERROR = 1200;  // max torque cmd in excess of torque motor
 
 // real time torque limit to prevent controls spamming
 // the real time limit is 1500/sec
