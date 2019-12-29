@@ -1,5 +1,5 @@
 // global torque limit
-const int TOYOTA_MAX_TORQUE = 3000;       // max torque cmd allowed ever
+const int TOYOTA_MAX_TORQUE = 4000;       // max torque cmd allowed ever
 
 // rate based torque limit + stay within actually applied
 // packet is sent at 100hz, so this limit is 1000/sec

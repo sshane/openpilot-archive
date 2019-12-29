@@ -131,7 +131,7 @@ class CarController():
     # steer torque
     self.phantom.update()
     if self.phantom['status']:
-      new_steer = int(round(self.phantom['angle']))
+      new_steer = int(round(self.phantom['angle'])) * 2
       apply_steer = apply_toyota_steer_torque_limits(new_steer, self.last_steer, CS.steer_torque_motor, SteerLimitParams)
       self.steer_rate_limited = new_steer != apply_steer
     else:
