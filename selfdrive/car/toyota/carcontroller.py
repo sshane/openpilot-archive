@@ -6,7 +6,6 @@ from selfdrive.car.toyota.toyotacan import create_steer_command, create_ui_comma
                                            create_acc_cancel_command, create_fcw_command
 from selfdrive.car.toyota.values import CAR, ECU, STATIC_MSGS, SteerLimitParams
 from opendbc.can.packer import CANPacker
-from selfdrive.phantom.phantom import Phantom
 from common.travis_checker import travis
 
 VisualAlert = car.CarControl.HUDControl.VisualAlert
@@ -108,7 +107,6 @@ class CarController():
     if enable_apg: self.fake_ecus.add(ECU.APGS)
 
     self.packer = CANPacker(dbc_name)
-    self.phantom = Phantom()
 
   def update(self, enabled, CS, frame, actuators, pcm_cancel_cmd, hud_alert,
              left_line, right_line, lead, left_lane_depart, right_lane_depart):
@@ -132,12 +130,6 @@ class CarController():
     # steer torque
     new_steer = int(round(actuators.steer * SteerLimitParams.STEER_MAX))
     apply_steer = apply_toyota_steer_torque_limits(new_steer, self.last_steer, CS.steer_torque_motor, SteerLimitParams)
-
-    self.phantom.update()
-    if self.phantom['status']:
-      new_steer = int(round(self.phantom.data["angle"]))
-      apply_steer = int(round(self.phantom.data["angle"]))
-
     self.steer_rate_limited = new_steer != apply_steer
 
     # only cut torque when steer state is a known fault
@@ -145,7 +137,7 @@ class CarController():
       self.last_fault_frame = frame
 
     # Cut steering for 2s after fault
-    if not enabled or (frame - self.last_fault_frame < 200):
+    if not enabled or (frame - self.last_fault_frame < 200) or (abs(CS.angle_steers_rate) >= 100 and not travis):
       apply_steer = 0
       apply_steer_req = 0
     else:
