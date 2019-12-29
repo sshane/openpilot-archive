@@ -6,6 +6,7 @@ from selfdrive.car import create_gas_command
 from selfdrive.car.honda import hondacan
 from selfdrive.car.honda.values import AH, CruiseButtons, CAR
 from opendbc.can.packer import CANPacker
+from selfdrive.phantom.phantom import Phantom
 
 
 def actuator_hystereses(brake, braking, brake_steady, v_ego, car_fingerprint):
@@ -82,6 +83,7 @@ class CarController():
     self.last_pump_ts = 0.
     self.packer = CANPacker(dbc_name)
     self.new_radar_config = False
+    self.phantom = Phantom()
 
   def update(self, enabled, CS, frame, actuators, \
              pcm_speed, pcm_override, pcm_cancel_cmd, pcm_accel, \
@@ -133,7 +135,11 @@ class CarController():
     # steer torque is converted back to CAN reference (positive when steering right)
     apply_gas = clip(actuators.gas, 0., 1.)
     apply_brake = int(clip(self.brake_last * BRAKE_MAX, 0, BRAKE_MAX - 1))
-    apply_steer = int(clip(-actuators.steer * STEER_MAX, -STEER_MAX, STEER_MAX))
+    self.phantom.update()
+    if self.phantom['status']:
+      apply_steer = int(clip(-self.phantom['angle'], -STEER_MAX, STEER_MAX))
+    else:
+      apply_steer = int(clip(-actuators.steer * STEER_MAX, -STEER_MAX, STEER_MAX))
 
     lkas_active = enabled and not CS.steer_not_allowed
 
