@@ -3,7 +3,7 @@ import cereal.messaging as messaging
 
 class PhantomReceiver:
   def __init__(self):
-    self.pm = messaging.PubMaster('phantomData')
+    self.pm = messaging.PubMaster(['phantomData'])
 
   def receive_data(self, speed, angle):
     self.broadcast_data(True, speed, angle)

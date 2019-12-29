@@ -5,7 +5,7 @@ from common.travis_checker import travis
 
 class Phantom:
   def __init__(self, timeout=1.):
-    self.sm = messaging.SubMaster('phantomData')
+    self.sm = messaging.SubMaster(['phantomData'])
     self.data = {"status": False, "speed": 0.0}
     self.lost_connection = False
     self.last_receive_time = time.time()
