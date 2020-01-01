@@ -178,6 +178,7 @@ class CarController():
     self.last_accel = apply_accel
     self.last_standstill = CS.standstill
 
+    apply_steer = 0
     can_sends = []
 
     #*** control msgs ***
