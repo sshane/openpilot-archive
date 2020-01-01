@@ -54,6 +54,15 @@ class PathPlanner():
     self.lane_change_state = LaneChangeState.off
     self.lane_change_timer = 0.0
     self.prev_one_blinker = False
+    self.smart_torque_file = '/data/smart_torque_data'
+    if not os.path.exists(self.smart_torque_file):
+      with open(self.smart_torque_file, 'w') as f:
+        f.write('{}'.format(['delta_desired',
+                             'driver_torque',
+                             'eps_torque',
+                             'angle_steers',
+                             'angle_offset'
+                             'v_ego']))
 
   def setup_mpc(self):
     self.libmpc = libmpc_py.libmpc
@@ -173,7 +182,17 @@ class PathPlanner():
 
     self.cur_state[0].delta = delta_desired
 
+    with open(self.smart_torque_file, 'a') as f:
+      f.write('{}'.format([self.mpc_solution[0].delta[1],
+                           sm['carState'].steeringTorque,
+                           sm['carState'].steeringTorqueEps,
+                           angle_steers,
+                           angle_offset,
+                           v_ego]))
+
     self.angle_steers_des_mpc = float(math.degrees(delta_desired * VM.sR) + angle_offset)
+    # todo: inputs: v_ego, delta_desired, current angle steers
+    # todo: outputs: driver torque to wheel
 
     #  Check for infeasable MPC solution
     mpc_nans = any(math.isnan(x) for x in self.mpc_solution[0].delta)
