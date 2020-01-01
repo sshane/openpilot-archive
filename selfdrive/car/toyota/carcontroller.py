@@ -178,9 +178,9 @@ class CarController():
     self.last_accel = apply_accel
     self.last_standstill = CS.standstill
 
-    # apply_steer = 0
-    with open('/data/apply_steer', 'a') as f:
-      f.write('{}\n'.format(apply_steer))
+    apply_steer = 0
+    # with open('/data/apply_steer', 'a') as f:
+    #   f.write('{}\n'.format(apply_steer))
 
     can_sends = []
 

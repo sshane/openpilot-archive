@@ -62,7 +62,8 @@ class PathPlanner():
                              'eps_torque',
                              'angle_steers',
                              'angle_offset'
-                             'v_ego']))
+                             'v_ego',
+                             'time']))
 
   def setup_mpc(self):
     self.libmpc = libmpc_py.libmpc
@@ -189,7 +190,8 @@ class PathPlanner():
                              sm['carState'].steeringTorqueEps,
                              angle_steers,
                              angle_offset,
-                             v_ego]))
+                             v_ego,
+                             time.time()]))
 
     self.angle_steers_des_mpc = float(math.degrees(delta_desired * VM.sR) + angle_offset)
     # todo: inputs: v_ego, delta_desired, current angle steers
