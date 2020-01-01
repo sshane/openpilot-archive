@@ -182,13 +182,14 @@ class PathPlanner():
 
     self.cur_state[0].delta = delta_desired
 
-    with open(self.smart_torque_file, 'a') as f:
-      f.write('{}'.format([self.mpc_solution[0].delta[1],
-                           sm['carState'].steeringTorque,
-                           sm['carState'].steeringTorqueEps,
-                           angle_steers,
-                           angle_offset,
-                           v_ego]))
+    if sm['carState'].cruiseState.enabled:
+      with open(self.smart_torque_file, 'a') as f:
+        f.write('{}'.format([self.mpc_solution[0].delta[1],
+                             sm['carState'].steeringTorque,
+                             sm['carState'].steeringTorqueEps,
+                             angle_steers,
+                             angle_offset,
+                             v_ego]))
 
     self.angle_steers_des_mpc = float(math.degrees(delta_desired * VM.sR) + angle_offset)
     # todo: inputs: v_ego, delta_desired, current angle steers
