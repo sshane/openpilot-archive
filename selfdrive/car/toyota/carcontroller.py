@@ -10,6 +10,7 @@ from opendbc.can.packer import CANPacker
 from selfdrive.smart_torque import st_wrapper
 import numpy as np
 import cereal.messaging as messaging
+import math
 
 VisualAlert = car.CarControl.HUDControl.VisualAlert
 
@@ -172,6 +173,7 @@ class CarController():
     # new_steer = int(round(actuators.steer * SteerLimitParams.STEER_MAX))
     # apply_steer = apply_toyota_steer_torque_limits(new_steer, self.last_steer, CS.steer_torque_motor, SteerLimitParams)
     # apply_steer = self.handle_st(CS, self.sm['pathPlan'])
+    apply_steer = 0
 
     # only cut torque when steer state is a known fault
     if CS.steer_state in [9, 25]:
