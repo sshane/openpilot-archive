@@ -150,7 +150,7 @@ class CarController():
     model_output = np.interp(self.last_st_output, [0, 1], self.st_scales['driver_torque'])
     with open('/data/mout', 'a') as f:
       f.write('{}\n'.format(model_output))
-    return 100
+    return int(model_output)
 
   def update(self, enabled, CS, frame, actuators, pcm_cancel_cmd, hud_alert,
              left_line, right_line, lead, left_lane_depart, right_lane_depart):
@@ -174,8 +174,8 @@ class CarController():
 
     # steer torque
     # new_steer = int(round(actuators.steer * SteerLimitParams.STEER_MAX))
-    # apply_steer = apply_toyota_steer_torque_limits(new_steer, self.last_steer, CS.steer_torque_motor, SteerLimitParams)
-    apply_steer = self.handle_st(CS, self.sm['pathPlan'])
+    new_steer = self.handle_st(CS, self.sm['pathPlan'])
+    apply_steer = apply_toyota_steer_torque_limits(new_steer, self.last_steer, CS.steer_torque_motor, SteerLimitParams)
 
     # only cut torque when steer state is a known fault
     if CS.steer_state in [9, 25]:
@@ -183,8 +183,8 @@ class CarController():
 
     # Cut steering for 2s after fault
     if not enabled or (frame - self.last_fault_frame < 200):
-      apply_steer = 0
-      apply_steer_req = 0
+      # apply_steer = 0
+      apply_steer_req = 1  # 1
     else:
       apply_steer_req = 1
 
