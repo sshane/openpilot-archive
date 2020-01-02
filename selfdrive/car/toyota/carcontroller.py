@@ -147,7 +147,10 @@ class CarController():
       return 0.0
 
     self.last_st_output = self.st_model.run_model(np.array(self.st_data).flatten().tolist())
-    return np.interp(self.last_st_output, [0, 1], self.st_scales['driver_torque'])
+    model_output = np.interp(self.last_st_output, [0, 1], self.st_scales['driver_torque'])
+    with open('/data/mout', 'a') as f:
+      f.write('{}\n'.format(model_output))
+    return 100
 
   def update(self, enabled, CS, frame, actuators, pcm_cancel_cmd, hud_alert,
              left_line, right_line, lead, left_lane_depart, right_lane_depart):
