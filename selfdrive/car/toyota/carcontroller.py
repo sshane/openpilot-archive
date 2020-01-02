@@ -174,7 +174,7 @@ class CarController():
 
     # steer torque
     new_steer = int(round(actuators.steer * SteerLimitParams.STEER_MAX))
-    # new_steer = self.handle_st(CS, self.sm['pathPlan'])
+    new_steer_nn = self.handle_st(CS, self.sm['pathPlan'])
     apply_steer = apply_toyota_steer_torque_limits(new_steer, self.last_steer, CS.steer_torque_motor, SteerLimitParams)
     apply_steer_tmp = apply_toyota_steer_torque_limits(new_steer, self.last_steer, CS.steer_torque_motor, SteerLimitParams)
     self.steer_rate_limited = new_steer != apply_steer
@@ -189,8 +189,8 @@ class CarController():
       apply_steer_req = 0
     else:
       apply_steer_req = 1
-    with open('st_debug', 'a') as f:
-      f.write('{}\n'.format([new_steer, apply_steer_tmp, apply_steer]))
+    with open('/data/st_debug', 'a') as f:
+      f.write('{}\n'.format([new_steer, new_steer_nn, apply_steer_tmp, apply_steer]))
 
     self.steer_angle_enabled, self.ipas_reset_counter = \
       ipas_state_transition(self.steer_angle_enabled, enabled, CS.ipas_active, self.ipas_reset_counter)
