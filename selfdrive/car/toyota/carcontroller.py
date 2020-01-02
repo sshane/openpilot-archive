@@ -151,7 +151,7 @@ class CarController():
     self.last_st_output = self.st_model.run_model(np.array(self.st_data).flatten().tolist() + [v_ego, angle_offset])
     model_output = np.interp(self.last_st_output, [0, 1], self.st_scales['driver_torque'])
 
-    return int(round(model_output * 25))
+    return int(round(model_output * 100))
 
   def update(self, enabled, CS, frame, actuators, pcm_cancel_cmd, hud_alert,
              left_line, right_line, lead, left_lane_depart, right_lane_depart):
