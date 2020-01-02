@@ -15,5 +15,5 @@
 
 extern "C"{
   void init_model();
-  float run_model(float inputData[1000]);
+  float run_model(float inputData[902]);
 }
