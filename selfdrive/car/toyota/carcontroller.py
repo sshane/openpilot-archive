@@ -115,27 +115,26 @@ class CarController():
     self.sm = messaging.SubMaster(['pathPlan'])
     self.st_model = st_wrapper.get_wrapper()
     self.st_model.init_model()
-    self.st_scales = {'angle_offset': [-1.5868093967437744, 2.339749574661255],
-                      'angle_steers': [-59.099998474121094, 75.9000015258789],
-                      'delta_desired': [-5.2593878142219195, 6.793199853675723],
-                      'driver_torque': [-365.0, 372.0],
-                      'v_ego': [6.437766075134277, 32.0827522277832]}
+    self.st_scales = {'angle_offset': [-0.9905862808227539, 2.9584343433380127],
+                      'angle_steers': [-74.0, 80.19999694824219],
+                      'delta_desired': [-4.660910844332946, 7.277313843649296],
+                      'driver_torque': [-430.0, 409.0],
+                      'v_ego': [0.30057454109191895, 30.631441116333008]}
     self.last_st_output = None
     self.st_data = []
-    self.st_seq_len = 200  # seq length (2 seconds)
+    self.st_seq_len = 300  # seq length (2 seconds)
 
   def handle_st(self, CS, path_plan):
-    v_ego = np.interp(CS.v_ego, self.st_scales['v_ego'], [0, 1])
     angle_steers = np.interp(CS.angle_steers, self.st_scales['angle_steers'], [0, 1])
     delta_desired = np.interp(math.degrees(path_plan.deltaDesired), self.st_scales['delta_desired'], [0, 1])
-    angle_offset = np.interp(path_plan.angleOffsetLive, self.st_scales['angle_offset'], [0, 1])
+
     if self.last_st_output is None:
       driver_torque = CS.steer_torque_driver
     else:
       driver_torque = self.last_st_output
     driver_torque = np.interp(driver_torque, self.st_scales['driver_torque'], [0, 1])
 
-    self.st_data.append([v_ego, angle_steers, delta_desired, angle_offset, driver_torque])
+    self.st_data.append([angle_steers, delta_desired, driver_torque])
 
     with open('/data/delta_desired', 'a') as f:
       f.write('{}\n'.format(math.degrees(path_plan.deltaDesired)))
@@ -146,11 +145,13 @@ class CarController():
     if len(self.st_data) != self.st_seq_len:
       return 0.0
 
-    self.last_st_output = self.st_model.run_model(np.array(self.st_data).flatten().tolist())
+    v_ego = np.interp(CS.v_ego, self.st_scales['v_ego'], [0, 1])
+    angle_offset = np.interp(path_plan.angleOffsetLive, self.st_scales['angle_offset'], [0, 1])
+
+    self.last_st_output = self.st_model.run_model(np.array(self.st_data).flatten().tolist() + [v_ego, angle_offset])
     model_output = np.interp(self.last_st_output, [0, 1], self.st_scales['driver_torque'])
-    with open('/data/mout', 'a') as f:
-      f.write('{}\n'.format(model_output))
-    return int(round(model_output * 20))
+
+    return int(round(model_output * 25))
 
   def update(self, enabled, CS, frame, actuators, pcm_cancel_cmd, hud_alert,
              left_line, right_line, lead, left_lane_depart, right_lane_depart):
