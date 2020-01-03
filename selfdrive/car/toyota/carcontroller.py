@@ -147,7 +147,7 @@ class CarController():
 
     model_input = [item for sublist in self.st_data for item in sublist] + [v_ego, angle_offset]
     self.last_st_output = self.st_model.run_model(model_input)
-    model_output = np.interp(self.last_st_output, [0, 1], self.st_scales['driver_torque'])
+    model_output = np.interp(self.last_st_output, [0, 1], self.st_scales['driver_torque']) * 4.
 
     return int(round(model_output))
 
