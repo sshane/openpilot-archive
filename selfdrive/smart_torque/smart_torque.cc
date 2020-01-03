@@ -20,7 +20,7 @@ zdl::DlSystem::Runtime_t checkRuntime()
 
 void initializeSNPE(zdl::DlSystem::Runtime_t runtime) {
   std::unique_ptr<zdl::DlContainer::IDlContainer> container;
-  container = zdl::DlContainer::IDlContainer::open("/data/openpilot/selfdrive/smart_torque/st_modelv2.dlc");
+  container = zdl::DlContainer::IDlContainer::open("/data/openpilot/selfdrive/smart_torque/dropout_test.dlc");
   //printf("loaded model\n");
   int counter = 0;
   zdl::SNPE::SNPEBuilder snpeBuilder(container.get());
@@ -69,8 +69,8 @@ extern "C" {
       initializeSNPE(runt);
   }
 
-  float run_model(float inputData[902]){
-      int size = 902;
+  float run_model(float inputData[202]){
+      int size = 202;
       std::vector<float> inputVec;
       for (int i = 0; i < size; i++ ) {
         inputVec.push_back(inputData[i]);
