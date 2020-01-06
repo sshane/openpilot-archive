@@ -48,7 +48,7 @@ class DynamicLaneSpeed:
         if lead_data['status']:  # if lead, give more weight to surrounding tracks todo: this if check might need to be flipped, so if not lead...
           track_speed_weight = clip(1.05 * track_speed_weight, min(y), max(y))
         # v_ego_v_cruise = (v_ego + v_cruise) / 2.0
-        v_target_slow = (v_cruise * (1 - track_speed_weight)) + (weighted_average * track_speed_weight)  # average set speed and average of tracks
+        v_target_slow = (v_ego * (1 - track_speed_weight)) + (weighted_average * track_speed_weight)  # average set speed and average of tracks
         if v_target_slow < v_target and v_target_slow < v_target_future:  # just a sanity check, don't want to run into any leads if we somehow predict faster velocity
           future_time = 1.0
           a_target_slow = self.MPC_TIME_STEP * ((v_target_slow - v_target) / future_time)  # long_mpc runs at 20 hz, so interpolate assuming a_target is 1 second into future? or since long_control is 100hz, should we interpolate using that?
