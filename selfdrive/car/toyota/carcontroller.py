@@ -115,11 +115,11 @@ class CarController():
     self.sm = messaging.SubMaster(['pathPlan'])
     self.st_model = st_wrapper.get_wrapper()
     self.st_model.init_model()
-    self.st_scales = {'angle_offset': [-0.9905862808227539, 2.9584343433380127],
+    self.st_scales = {'angle_offset': [-2.1935179233551025, 2.9584343433380127],
                       'angle_steers': [-74.0, 80.19999694824219],
-                      'delta_desired': [-4.660910844332946, 7.277313843649296],
+                      'delta_desired': [-5.2593878142219195, 7.277313843649296],
                       'driver_torque': [-430.0, 409.0],
-                      'v_ego': [0.30057454109191895, 30.631441116333008]}
+                      'v_ego': [0.30057454109191895, 32.0827522277832]}
     self.last_st_output = None
     self.st_data = []
     self.st_seq_len = 100  # seq length (2 seconds)
@@ -134,7 +134,7 @@ class CarController():
     #   driver_torque = self.last_st_output
     # driver_torque = np.interp(driver_torque, self.st_scales['driver_torque'], [0, 1])
 
-    self.st_data.append([delta_desired, angle_steers])
+    self.st_data.append(delta_desired)
 
     while len(self.st_data) > self.st_seq_len:
       del self.st_data[0]
@@ -145,9 +145,10 @@ class CarController():
     v_ego = np.interp(CS.v_ego, self.st_scales['v_ego'], [0, 1])
     angle_offset = np.interp(path_plan.angleOffsetLive, self.st_scales['angle_offset'], [0, 1])
 
-    model_input = [item for sublist in self.st_data for item in sublist] + [v_ego, angle_offset]
+    # model_input = [item for sublist in self.st_data for item in sublist] + [v_ego, angle_offset]
+    model_input = self.st_data + [v_ego, angle_offset, angle_steers]
     self.last_st_output = self.st_model.run_model(model_input)
-    model_output = np.interp(self.last_st_output, [0, 1], self.st_scales['driver_torque']) * 4.
+    model_output = np.interp(self.last_st_output, [0, 1], self.st_scales['driver_torque']) * 2.
 
     return int(round(model_output))
 
