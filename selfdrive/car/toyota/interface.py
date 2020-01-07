@@ -122,10 +122,14 @@ class CarInterface(CarInterfaceBase):
       ret.lateralTuning.lqr.l = [0.3233671, 0.3185757]
       ret.lateralTuning.lqr.dcGain = 0.002237852961363602
       if ret.enableGasInterceptor:
-        # ret.longitudinalTuning.kpV = [1.2 * 0.925, 0.8 * 0.9125, 0.5 * 0.9]
-        # ret.longitudinalTuning.kiV = [0.18 * 1.05, 0.12 * 1.15]
-        ret.longitudinalTuning.kpV = [2.16, 1.44, 0.9000000000000001]
-        ret.longitudinalTuning.kiV = [0.324, 0.21599999999999997]
+        pedal_p = [1.2, 0.8, 0.5]
+        stock_p = [3.6, 2.4, 1.5]
+        ratio_p = 0.575  # percentage of how much to average pedal with stock (higher, more towards pedal)
+        ret.longitudinalTuning.kpV = [(p * ratio_p) + (s * (1 - ratio_p)) for p, s in zip(pedal_p, stock_p)]
+        pedal_i = [0.18, 0.12]
+        stock_i = [0.54, 0.36]
+        ratio_i = 0.425
+        ret.longitudinalTuning.kiV = [(p * ratio_i) + (s * (1 - ratio_i)) for p, s in zip(pedal_i, stock_i)]
 
     elif candidate == CAR.COROLLA:
       stop_and_go = False
@@ -139,8 +143,14 @@ class CarInterface(CarInterfaceBase):
       if ret.enableGasInterceptor:
         # ret.longitudinalTuning.kpV = [1.2 * 0.925, 0.8 * 0.9125, 0.5 * 0.9]
         # ret.longitudinalTuning.kiV = [0.18 * 1.05, 0.12 * 1.15]
-        ret.longitudinalTuning.kpV = [2.16, 1.44, 0.9000000000000001]
-        ret.longitudinalTuning.kiV = [0.324, 0.21599999999999997]
+        pedal_p = [1.2, 0.8, 0.5]
+        stock_p = [3.6, 2.4, 1.5]
+        ratio_p = 0.575  # percentage of how much to average pedal with stock (higher, more towards pedal)
+        ret.longitudinalTuning.kpV = [(p * ratio_p) + (s * (1 - ratio_p)) for p, s in zip(pedal_p, stock_p)]
+        pedal_i = [0.18, 0.12]
+        stock_i = [0.54, 0.36]
+        ratio_i = 0.425
+        ret.longitudinalTuning.kiV = [(p * ratio_i) + (s * (1 - ratio_i)) for p, s in zip(pedal_i, stock_i)]
 
 
     elif candidate == CAR.LEXUS_RXH:
