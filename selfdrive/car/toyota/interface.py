@@ -124,11 +124,11 @@ class CarInterface(CarInterfaceBase):
       if ret.enableGasInterceptor:
         pedal_p = [1.2, 0.8, 0.5]
         stock_p = [3.6, 2.4, 1.5]
-        ratio_p = 0.575  # percentage of how much to average pedal with stock (higher, more towards pedal)
+        ratio_p = 0.36  # percentage of how much to average pedal with stock (higher, more towards pedal)
         ret.longitudinalTuning.kpV = [(p * ratio_p) + (s * (1 - ratio_p)) for p, s in zip(pedal_p, stock_p)]
         pedal_i = [0.18, 0.12]
         stock_i = [0.54, 0.36]
-        ratio_i = 0.425
+        ratio_i = 0.2125
         ret.longitudinalTuning.kiV = [(p * ratio_i) + (s * (1 - ratio_i)) for p, s in zip(pedal_i, stock_i)]
 
     elif candidate == CAR.COROLLA:
@@ -139,17 +139,17 @@ class CarInterface(CarInterfaceBase):
       tire_stiffness_factor = 0.444  # not optimized yet
       ret.mass = 2860. * CV.LB_TO_KG + STD_CARGO_KG  # mean between normal and hybrid
       ret.lateralTuning.pid.kpV, ret.lateralTuning.pid.kiV = [[0.2], [0.05]]
-      ret.lateralTuning.pid.kf = 0.000035  # full torque for 20 deg at 80mph means 0.00007818594
+      ret.lateralTuning.pid.kf = 0.00003  # full torque for 20 deg at 80mph means 0.00007818594
       if ret.enableGasInterceptor:
         # ret.longitudinalTuning.kpV = [1.2 * 0.925, 0.8 * 0.9125, 0.5 * 0.9]
         # ret.longitudinalTuning.kiV = [0.18 * 1.05, 0.12 * 1.15]
         pedal_p = [1.2, 0.8, 0.5]
         stock_p = [3.6, 2.4, 1.5]
-        ratio_p = 0.32  # percentage of how much to average pedal with stock (higher, more towards pedal)
+        ratio_p = 0.36  # percentage of how much to average pedal with stock (higher, more towards pedal)
         ret.longitudinalTuning.kpV = [(p * ratio_p) + (s * (1 - ratio_p)) for p, s in zip(pedal_p, stock_p)]
         pedal_i = [0.18, 0.12]
         stock_i = [0.54, 0.36]
-        ratio_i = 0.2
+        ratio_i = 0.2125
         ret.longitudinalTuning.kiV = [(p * ratio_i) + (s * (1 - ratio_i)) for p, s in zip(pedal_i, stock_i)]
 
 
