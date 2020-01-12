@@ -135,11 +135,11 @@ class CarInterface(CarInterfaceBase):
       stop_and_go = False
       ret.safetyParam = 100
       ret.wheelbase = 2.70
-      ret.steerRatio = 16.2
+      ret.steerRatio = 16.2 * 0.9
       tire_stiffness_factor = 0.444  # not optimized yet
       ret.mass = 2860. * CV.LB_TO_KG + STD_CARGO_KG  # mean between normal and hybrid
       ret.lateralTuning.pid.kpV, ret.lateralTuning.pid.kiV = [[0.2], [0.05]]
-      ret.lateralTuning.pid.kf = 0.00003  # full torque for 20 deg at 80mph means 0.00007818594
+      ret.lateralTuning.pid.kf = 0.00004  # full torque for 20 deg at 80mph means 0.00007818594
       if ret.enableGasInterceptor:
         # ret.longitudinalTuning.kpV = [1.2 * 0.925, 0.8 * 0.9125, 0.5 * 0.9]
         # ret.longitudinalTuning.kiV = [0.18 * 1.05, 0.12 * 1.15]
