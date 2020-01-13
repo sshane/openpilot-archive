@@ -7,7 +7,7 @@ import numpy as np
 class DynamicLaneSpeed:
   def __init__(self):
     self.op_params = opParams()
-    self.use_dynamic_lane_speed = False  # self.op_params.get('use_dynamic_lane_speed', default=True)
+    self.use_dynamic_lane_speed = self.op_params.get('use_dynamic_lane_speed', default=True)
     self.min_dynamic_lane_speed = max(self.op_params.get('min_dynamic_lane_speed', default=20.), 5.) * CV.MPH_TO_MS
 
     self.track_tolerance_v = 0.05 * CV.MPH_TO_MS
@@ -43,12 +43,12 @@ class DynamicLaneSpeed:
       weighted_average, len_tracks = self.get_track_average(v_ego, v_cruise, track_data)
       if weighted_average < v_target and weighted_average < v_target_future and len_tracks > 0:
         x = [1, 3, 6, 19]
-        y = [0.075, 0.36, .46, 0.52]
+        y = [0.01, 0.34, .42, 0.52]
         track_speed_weight = interp(len_tracks, x, y)
         if lead_data['status']:  # if lead, give more weight to surrounding tracks todo: this if check might need to be flipped, so if not lead...
           track_speed_weight = clip(1.05 * track_speed_weight, min(y), max(y))
         # v_ego_v_cruise = (v_ego + v_cruise) / 2.0
-        v_target_slow = (v_ego * (1 - track_speed_weight)) + (weighted_average * track_speed_weight)  # average set speed and average of tracks
+        v_target_slow = (v_cruise * (1 - track_speed_weight)) + (weighted_average * track_speed_weight)  # average set speed and average of tracks
         if v_target_slow < v_target and v_target_slow < v_target_future:  # just a sanity check, don't want to run into any leads if we somehow predict faster velocity
           future_time = 1.0
           a_target_slow = self.MPC_TIME_STEP * ((v_target_slow - v_target) / future_time)  # long_mpc runs at 20 hz, so interpolate assuming a_target is 1 second into future? or since long_control is 100hz, should we interpolate using that?
