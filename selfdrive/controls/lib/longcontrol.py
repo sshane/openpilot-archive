@@ -151,9 +151,9 @@ class LongControl():
   def update(self, active, v_ego, brake_pressed, standstill, cruise_standstill, v_cruise, v_target, v_target_future, a_target, CP, passable):
     """Update longitudinal control. This updates the state machine and runs a PID loop"""
 
-    if v_ego <= self.last_v_target and v_ego >= v_target:
+    if self.last_v_target >= v_ego >= v_target:
       self.pid.i = 0.0
-    elif v_ego >= self.last_v_target and v_ego <= v_target:
+    elif self.last_v_target <= v_ego <= v_target:
       self.pid.i = 0.0
 
     self.last_v_target = v_target
