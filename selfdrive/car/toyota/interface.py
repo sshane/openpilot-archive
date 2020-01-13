@@ -53,6 +53,17 @@ class CarInterface(CarInterfaceBase):
     ret.steerActuatorDelay = 0.12  # Default delay, Prius has larger delay
     ret.steerLimitTimer = 0.4
 
+    if ret.enableGasInterceptor:
+      ret.gasMaxBP = [0., 9., 35]
+      ret.gasMaxV = [0.2, 0.5, 0.7]
+      ret.longitudinalTuning.kpV = [1.2, 0.8, 0.5]
+      ret.longitudinalTuning.kiV = [0.18, 0.12]
+    else:
+      ret.gasMaxBP = [0.]
+      ret.gasMaxV = [0.5]
+      ret.longitudinalTuning.kpV = [3.6, 2.4, 1.5]
+      ret.longitudinalTuning.kiV = [0.54, 0.36]
+
     if candidate not in [CAR.PRIUS, CAR.RAV4, CAR.RAV4H]: # These cars use LQR/INDI
       ret.lateralTuning.init('pid')
       ret.lateralTuning.pid.kiBP, ret.lateralTuning.pid.kpBP = [[0.], [0.]]
@@ -103,6 +114,15 @@ class CarInterface(CarInterfaceBase):
       ret.lateralTuning.lqr.k = [-110.73572306, 451.22718255]
       ret.lateralTuning.lqr.l = [0.3233671, 0.3185757]
       ret.lateralTuning.lqr.dcGain = 0.002237852961363602
+      if ret.enableGasInterceptor:
+        pedal_p = [1.2, 0.8, 0.5]
+        stock_p = [3.6, 2.4, 1.5]
+        ratio_p = 0.36  # percentage of how much to average pedal with stock (higher, more towards pedal)
+        ret.longitudinalTuning.kpV = [(p * ratio_p) + (s * (1 - ratio_p)) for p, s in zip(pedal_p, stock_p)]
+        pedal_i = [0.18, 0.12]
+        stock_i = [0.54, 0.36]
+        ratio_i = 0.2125
+        ret.longitudinalTuning.kiV = [(p * ratio_i) + (s * (1 - ratio_i)) for p, s in zip(pedal_i, stock_i)]
 
     elif candidate == CAR.COROLLA:
       stop_and_go = False
@@ -113,6 +133,17 @@ class CarInterface(CarInterfaceBase):
       ret.mass = 2860. * CV.LB_TO_KG + STD_CARGO_KG  # mean between normal and hybrid
       ret.lateralTuning.pid.kpV, ret.lateralTuning.pid.kiV = [[0.2], [0.05]]
       ret.lateralTuning.pid.kf = 0.00003   # full torque for 20 deg at 80mph means 0.00007818594
+      if ret.enableGasInterceptor:
+        # ret.longitudinalTuning.kpV = [1.2 * 0.925, 0.8 * 0.9125, 0.5 * 0.9]
+        # ret.longitudinalTuning.kiV = [0.18 * 1.05, 0.12 * 1.15]
+        pedal_p = [1.2, 0.8, 0.5]
+        stock_p = [3.6, 2.4, 1.5]
+        ratio_p = 0.4  # percentage of how much to average pedal with stock (higher, more towards pedal)
+        ret.longitudinalTuning.kpV = [(p * ratio_p) + (s * (1 - ratio_p)) for p, s in zip(pedal_p, stock_p)]
+        pedal_i = [0.18, 0.12]
+        stock_i = [0.54, 0.36]
+        ratio_i = 0.23
+        ret.longitudinalTuning.kiV = [(p * ratio_i) + (s * (1 - ratio_i)) for p, s in zip(pedal_i, stock_i)]
 
     elif candidate == CAR.LEXUS_RXH:
       stop_and_go = True
@@ -270,17 +301,6 @@ class CarInterface(CarInterfaceBase):
     ret.longitudinalTuning.kiBP = [0., 35.]
     ret.stoppingControl = False
     ret.startAccel = 0.0
-
-    if ret.enableGasInterceptor:
-      ret.gasMaxBP = [0., 9., 35]
-      ret.gasMaxV = [0.2, 0.5, 0.7]
-      ret.longitudinalTuning.kpV = [1.2, 0.8, 0.5]
-      ret.longitudinalTuning.kiV = [0.18, 0.12]
-    else:
-      ret.gasMaxBP = [0.]
-      ret.gasMaxV = [0.5]
-      ret.longitudinalTuning.kpV = [3.6, 2.4, 1.5]
-      ret.longitudinalTuning.kiV = [0.54, 0.36]
 
     return ret
 
