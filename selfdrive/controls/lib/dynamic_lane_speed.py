@@ -7,7 +7,7 @@ import numpy as np
 class DynamicLaneSpeed:
   def __init__(self):
     self.op_params = opParams()
-    self.use_dynamic_lane_speed = self.op_params.get('use_dynamic_lane_speed', default=True)
+    self.use_dynamic_lane_speed = False  # self.op_params.get('use_dynamic_lane_speed', default=True)
     self.min_dynamic_lane_speed = max(self.op_params.get('min_dynamic_lane_speed', default=20.), 5.) * CV.MPH_TO_MS
 
     self.track_tolerance_v = 0.05 * CV.MPH_TO_MS
