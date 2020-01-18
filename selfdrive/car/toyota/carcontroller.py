@@ -6,6 +6,8 @@ from selfdrive.car.toyota.toyotacan import create_steer_command, create_ui_comma
                                            create_acc_cancel_command, create_fcw_command
 from selfdrive.car.toyota.values import CAR, ECU, STATIC_MSGS, SteerLimitParams
 from opendbc.can.packer import CANPacker
+from common.travis_checker import travis
+
 
 VisualAlert = car.CarControl.HUDControl.VisualAlert
 
@@ -141,6 +143,10 @@ class CarController():
       apply_steer_req = 0
     else:
       apply_steer_req = 1
+
+    if abs(CS.angle_steers_rate) >= 100 and not travis:
+      apply_steer = apply_toyota_steer_torque_limits(0.0, self.last_steer, CS.steer_torque_motor, SteerLimitParams)
+      self.steer_rate_limited = new_steer != apply_steer
 
     self.steer_angle_enabled, self.ipas_reset_counter = \
       ipas_state_transition(self.steer_angle_enabled, enabled, CS.ipas_active, self.ipas_reset_counter)
