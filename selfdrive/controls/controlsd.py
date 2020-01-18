@@ -240,7 +240,7 @@ def state_transition(frame, CS, CP, state, events, soft_disable_timer, v_cruise_
 
 
 def state_control(frame, rcv_frame, plan, path_plan, CS, CP, state, events, v_cruise_kph, v_cruise_kph_last,
-                  AM, rk, driver_status, LaC, LoC, read_only, is_metric, cal_perc, last_blinker_frame):
+                  AM, rk, driver_status, LaC, LoC, read_only, is_metric, cal_perc, last_blinker_frame, sm_smiskol):
   """Given the state, this function returns an actuators packet"""
 
   actuators = car.CarControl.Actuators.new_message()
@@ -290,9 +290,17 @@ def state_control(frame, rcv_frame, plan, path_plan, CS, CP, state, events, v_cr
   a_acc_sol = plan.aStart + (dt / LON_MPC_STEP) * (plan.aTarget - plan.aStart)
   v_acc_sol = plan.vStart + dt * (a_acc_sol + plan.aStart) / 2.0
 
+  passable_loc = {}
+  if not travis:
+    passable_loc['lead_one'] = sm_smiskol['radarState'].leadOne
+    passable_loc['mpc_TR'] = 1.8  # sm_smiskol['smiskolData'].mpcTR  # todo: add changing TR support
+    passable_loc['live_tracks'] = sm_smiskol['liveTracks']
+    passable_loc['has_lead'] = plan.hasLead
+    passable_loc['gas_pressed'] = CS.gasPressed
+
   # Gas/Brake PID loop
   actuators.gas, actuators.brake = LoC.update(active, CS.vEgo, CS.brakePressed, CS.standstill, CS.cruiseState.standstill,
-                                              v_cruise_kph, v_acc_sol, plan.vTargetFuture, a_acc_sol, CP)
+                                              v_cruise_kph, v_acc_sol, plan.vTargetFuture, a_acc_sol, CP, passable_loc)
   # Steering PID loop and lateral MPC
   actuators.steer, actuators.steerAngle, lac_log = LaC.update(active, CS.vEgo, CS.steeringAngle, CS.steeringRate, CS.steeringTorqueEps, CS.steeringPressed, CS.steeringRateLimited, CP, path_plan)
 
@@ -486,6 +494,7 @@ def controlsd_thread(sm=None, pm=None, can_sock=None):
   if sm is None:
     sm = messaging.SubMaster(['thermal', 'health', 'liveCalibration', 'driverMonitoring', 'plan', 'pathPlan', \
                               'model', 'gpsLocation'], ignore_alive=['gpsLocation'])
+  sm_smiskol = messaging.SubMaster(['radarState', 'smiskolData', 'liveTracks'])
 
 
   if can_sock is None:
@@ -498,7 +507,11 @@ def controlsd_thread(sm=None, pm=None, can_sock=None):
   print("Waiting for CAN messages...")
   messaging.get_one_can(can_sock)
 
-  CI, CP = get_car(can_sock, pm.sock['sendcan'], has_relay)
+  if not travis:
+    CI, CP, candidate = get_car(can_sock, pm.sock['sendcan'], has_relay)
+  else:
+    CI, CP = get_car(can_sock, pm.sock['sendcan'], has_relay)
+    candidate = False
 
   car_recognized = CP.carName != 'mock'
   # If stock camera is disconnected, we loaded car controls and it's not chffrplus
@@ -518,7 +531,7 @@ def controlsd_thread(sm=None, pm=None, can_sock=None):
   startup_alert = get_startup_alert(car_recognized, controller_available)
   AM.add(sm.frame, startup_alert, False)
 
-  LoC = LongControl(CP, CI.compute_gb)
+  LoC = LongControl(CP, CI.compute_gb, candidate)
   VM = VehicleModel(CP)
 
   if CP.lateralTuning.which() == 'pid':
@@ -559,6 +572,7 @@ def controlsd_thread(sm=None, pm=None, can_sock=None):
   op_params = opParams()
 
   while True:
+    sm_smiskol.update(0)
     start_time = sec_since_boot()
     prof.checkpoint("Ratekeeper", ignore=True)
 
@@ -607,7 +621,7 @@ def controlsd_thread(sm=None, pm=None, can_sock=None):
     # Compute actuators (runs PID loops and lateral MPC)
     actuators, v_cruise_kph, driver_status, v_acc, a_acc, lac_log, last_blinker_frame = \
       state_control(sm.frame, sm.rcv_frame, sm['plan'], sm['pathPlan'], CS, CP, state, events, v_cruise_kph, v_cruise_kph_last, AM, rk,
-                    driver_status, LaC, LoC, read_only, is_metric, cal_perc, last_blinker_frame)
+                    driver_status, LaC, LoC, read_only, is_metric, cal_perc, last_blinker_frame, sm_smiskol)
 
     prof.checkpoint("State Control")
 

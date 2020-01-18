@@ -7,6 +7,7 @@ from selfdrive.car.fw_versions import get_fw_versions
 from selfdrive.swaglog import cloudlog
 import cereal.messaging as messaging
 from selfdrive.car import gen_empty_fingerprint
+from common.travis_checker import travis
 
 def get_startup_alert(car_recognized, controller_available):
   alert = 'startup'
@@ -126,4 +127,7 @@ def get_car(logcan, sendcan, has_relay=False):
   car_params.carVin = vin
   car_params.carFw = car_fw
 
-  return CarInterface(car_params, CarController), car_params
+  if not travis:
+    return CarInterface(car_params, CarController), car_params, candidate
+  else:
+    return CarInterface(car_params, CarController), car_params
