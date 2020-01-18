@@ -64,7 +64,7 @@ class PIController():
     self.p = error * self.k_p
     self.f = feedforward * self.k_f
 
-    if abs(setpoint - self.last_setpoint) >= (1.0 * CV.MPH_TO_MS) * self.i_rate:  # when setpoint is changing, unwind
+    if abs(setpoint - self.last_setpoint) >= (0.2 * CV.MPH_TO_MS) * self.i_rate:  # when setpoint is changing, unwind
       self.i -= self.i_unwind_rate * float(np.sign(self.i))
     else:
       i = self.i + error * self.k_i * self.i_rate
