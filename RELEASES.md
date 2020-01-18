@@ -1,11 +1,17 @@
-Version 0.7.1 (2020-01-20)
+Stock Additions 0.7.1 (version 0.1)
 ========================
- * comma two support!
- * Lane Change Assist above 45 mph!
- * Replace zmq with custom messaging library, msgq!
- * Supercombo model: calibration and driving models are combined for better lead estimate
- * More robust updater thanks to jyoung8607! Requires NEOS update
- * Improve low speed ACC tuning
+ * Nothing new yet
+
+Stock Additions 0.7 (version 0.1)
+========================
+ * Dynamic lane speed is a new feature that reduces your cruising speed if many vehicles around you are significantly slower than you. This works with and without an openpilot-identified lead.
+ * Dynamic gas tuning. Above 20 mph we take lead velocity and the following distance into account. Possibility of different tuning for different cars in the future. (DYNAMIC GAS NOW ONLY WORKS ON TOYOTA COROLLA AND RAV4 PEDAL)
+ * Dynamic follow tuning, don't get as close when lead is accelerating.
+ * Added static_steer_ratio parameter, if True openpilot will use the steer ratio in your interface file. Default is true, false uses the openpilot learned value which can vary through your drives.
+ * Added ability to live tune parameters with `op_tune.py`. Currently only the camera offset (`camera_offset`) is supported.
+ * Some Corolla tuning.
+ * Reduce max acceleration.
+ * TO NOTE: Dynamic Lane Speed will not work with stopped cars, at any speed. There is also a margin that cars must be traveling within in order to affect your speed. Don't expect anything magical, just minor quality of drive improvements.
 
 Version 0.7 (2019-12-13)
 ========================
