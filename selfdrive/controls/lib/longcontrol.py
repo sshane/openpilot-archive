@@ -1,6 +1,6 @@
 from cereal import log
 from common.numpy_fast import clip, interp
-from selfdrive.controls.lib.pid_long import PIController
+from selfdrive.controls.lib.pid import PIController
 from common.travis_checker import travis
 from selfdrive.car.toyota.values import CAR as CAR_TOYOTA
 from common.op_params import opParams
