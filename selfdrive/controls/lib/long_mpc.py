@@ -132,7 +132,7 @@ class LongitudinalMpc():
     x_vel = [0.0, 1.8627, 3.7253, 5.588, 7.4507, 9.3133, 11.5598, 13.645, 22.352, 31.2928, 33.528, 35.7632, 40.2336]
     y_mod = [1.352, 1.364, 1.378, 1.396, 1.424, 1.461, 1.511, 1.545, 1.643, 1.718, 1.748, 1.791, 1.861]
 
-    sng_TR = 1.8  # stop and go TR
+    sng_TR = 1.65  # stop and go TR
     sng_speed = 15.0 * CV.MPH_TO_MS
 
     if self.car_data['v_ego'] >= sng_speed or self.df_data['v_egos'][0]['v_ego'] >= self.car_data['v_ego']:  # if above 15 mph OR we're decelerating to a stop, keep shorter TR. when we reaccelerate, use 1.8s and slowly decrease
