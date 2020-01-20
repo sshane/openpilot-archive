@@ -69,8 +69,8 @@ class PIController():
       self.i -= self.i_unwind_rate * float(np.sign(self.i))
     else:
       i = self.i + error * self.k_i * self.i_rate
-      if (error == 0 or self.last_error > 0 > error or self.last_error < 0 < error) and not travis:
-        i, self.i = 0., 0.
+      # if (error == 0 or self.last_error > 0 > error or self.last_error < 0 < error) and not travis:
+      #   i, self.i = 0., 0.
 
       control = self.p + self.f + i
 
