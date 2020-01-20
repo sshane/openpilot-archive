@@ -152,7 +152,7 @@ class LongControl():
     self.v_ego = v_ego
 
     # Actuation limits
-    if not travis and 1==2:
+    if not travis:
       self.handle_passable(passable)
       gas_max = self.dynamic_gas(CP)
       v_target, v_target_future, a_target = self.dynamic_lane_speed.update(v_target, v_target_future, v_cruise, a_target, self.v_ego, self.track_data, self.lead_data)
