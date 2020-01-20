@@ -13,6 +13,7 @@ from selfdrive.controls.lib.speed_smoother import speed_smoother
 from selfdrive.controls.lib.longcontrol import LongCtrlState, MIN_CAN_SPEED
 from selfdrive.controls.lib.fcw import FCWChecker
 from selfdrive.controls.lib.long_mpc import LongitudinalMpc
+from common.travis_checker import travis
 
 MAX_SPEED = 255.0
 
@@ -68,6 +69,9 @@ class Planner():
 
     self.mpc1 = LongitudinalMpc(1)
     self.mpc2 = LongitudinalMpc(2)
+    if not travis:
+      pm = messaging.PubMaster(['smiskolData'])
+      self.mpc1.set_pm(pm)
 
     self.v_acc_start = 0.0
     self.a_acc_start = 0.0
