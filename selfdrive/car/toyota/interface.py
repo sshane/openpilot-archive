@@ -122,6 +122,15 @@ class CarInterface(CarInterfaceBase):
       ret.lateralTuning.lqr.k = [-110.73572306, 451.22718255]
       ret.lateralTuning.lqr.l = [0.3233671, 0.3185757]
       ret.lateralTuning.lqr.dcGain = 0.002237852961363602
+      if ret.enableGasInterceptor:
+        pedal_p = [1.2, 0.8, 0.5]
+        stock_p = [3.6, 2.4, 1.5]
+        ratio_p = 0.36  # percentage of how much to average pedal with stock (higher, more towards pedal)
+        ret.longitudinalTuning.kpV = [(p * ratio_p) + (s * (1 - ratio_p)) for p, s in zip(pedal_p, stock_p)]
+        pedal_i = [0.18, 0.12]
+        stock_i = [0.54, 0.36]
+        ratio_i = 0.2125
+        ret.longitudinalTuning.kiV = [(p * ratio_i) + (s * (1 - ratio_i)) for p, s in zip(pedal_i, stock_i)]
 
     elif candidate == CAR.COROLLA:
       stop_and_go = False
