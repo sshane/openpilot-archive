@@ -155,7 +155,7 @@ class LongControl():
     if not travis:
       self.handle_passable(passable)
       gas_max = self.dynamic_gas(CP)
-      v_target, v_target_future, a_target = self.dynamic_lane_speed.update(v_target, v_target_future, v_cruise, a_target, self.v_ego, self.track_data, self.lead_data)
+      # v_target, v_target_future, a_target = self.dynamic_lane_speed.update(v_target, v_target_future, v_cruise, a_target, self.v_ego, self.track_data, self.lead_data)
     else:
       gas_max = interp(v_ego, CP.gasMaxBP, CP.gasMaxV)
     brake_max = interp(v_ego, CP.brakeMaxBP, CP.brakeMaxV)
