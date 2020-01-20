@@ -80,7 +80,6 @@ class LongitudinalMpc():
     else:
       self.store_lead_data()
       TR = self.dynamic_follow(CS)
-    TR = 1.5
 
     if not travis:
       self.change_cost(TR)
