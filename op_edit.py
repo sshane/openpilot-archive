@@ -76,7 +76,7 @@ class opEdit:  # use by running `python /data/openpilot/op_edit.py`
       print('Chosen parameter: {}'.format(chosen_key))
       print('Current value: {} (type: {})'.format(old_value, str(type(old_value)).split("'")[1]))
       if extra_info:
-        print('\n- Description: {}'.format(description))
+        print('\n- Description: {}'.format(description.replace('\n', '\n  ')))
         print('- Allowed types: {}'.format(', '.join([str(i).split("'")[1] for i in allowed_types])))
         if live:
           print('- This parameter supports live tuning! Updates should take affect within 5 seconds.\n')
