@@ -25,6 +25,7 @@ class PIController():
     self.i_rate = 1.0 / rate
     self.sat_limit = sat_limit
     self.convert = convert
+    self.last_error = 0.
 
     self.reset()
 
@@ -55,6 +56,7 @@ class PIController():
     self.sat_count = 0.0
     self.saturated = False
     self.control = 0
+    self.last_error = 0.0
 
   def update(self, setpoint, measurement, speed=0.0, check_saturation=True, override=False, feedforward=0., deadzone=0., freeze_integrator=False):
     self.speed = speed
