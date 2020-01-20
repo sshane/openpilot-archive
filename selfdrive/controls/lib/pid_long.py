@@ -66,6 +66,10 @@ class PIController():
       self.i -= self.i_unwind_rate * float(np.sign(self.i))
     else:
       i = self.i + error * self.k_i * self.i_rate
+      if error == 0 or self.last_error > 0 > error or self.last_error < 0 < error:
+        i = 0.
+        self.i = 0.
+
       control = self.p + self.f + i
 
       if self.convert is not None:
@@ -85,4 +89,5 @@ class PIController():
     self.saturated = self._check_saturation(control, check_saturation, error)
 
     self.control = clip(control, self.neg_limit, self.pos_limit)
+    self.last_error = error
     return self.control
