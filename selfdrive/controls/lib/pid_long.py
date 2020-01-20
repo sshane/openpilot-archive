@@ -1,6 +1,7 @@
 import numpy as np
 from common.numpy_fast import clip, interp
 from common.travis_checker import travis
+from common.op_params import opParams
 
 def apply_deadzone(error, deadzone):
   if error > deadzone:
@@ -16,6 +17,7 @@ class PIController():
     self._k_p = k_p # proportional gain
     self._k_i = k_i # integral gain
     self.k_f = k_f  # feedforward gain
+    self.reset_integral = opParams().get('reset_integral', default=False)
 
     self.pos_limit = pos_limit
     self.neg_limit = neg_limit
@@ -69,7 +71,7 @@ class PIController():
       self.i -= self.i_unwind_rate * float(np.sign(self.i))
     else:
       i = self.i + error * self.k_i * self.i_rate
-      if (error == 0 or self.last_error > 0 > error or self.last_error < 0 < error) and not travis:
+      if (error == 0 or self.last_error > 0 > error or self.last_error < 0 < error) and not travis and self.reset_integral:
         i, self.i = 0., 0.
 
       control = self.p + self.f + i

@@ -40,7 +40,8 @@ class opParams:
                                                                                                             'automatically learned steering ratio. If True, it will use the static value in interface.py', 'live': False},
                            'use_dynamic_lane_speed': {'default': True, 'allowed_types': [bool], 'description': 'Whether you want openpilot to adjust your speed based on surrounding vehicles', 'live': False},
                            'min_dynamic_lane_speed': {'default': 20.0, 'allowed_types': [float, int], 'description': 'The minimum speed to allow dynamic lane speed to operate (in MPH)', 'live': False},
-                           'upload_on_hotspot': {'default': False, 'allowed_types': [bool], 'description': 'If False, openpilot will send absolutely no data when connected to your phone\'s hotspot', 'live': False}}
+                           'upload_on_hotspot': {'default': False, 'allowed_types': [bool], 'description': 'If False, openpilot will send absolutely no data when connected to your phone\'s hotspot', 'live': False},
+                           'reset_integral': {'default': False, 'allowed_types': [bool], 'description': 'This resets integral whenever the longitudinal PID error crosses or is zero.\nShould help it recover from overshoot quicker', 'live': False}}
 
     self.params = {}
     self.params_file = "/data/op_params.json"
