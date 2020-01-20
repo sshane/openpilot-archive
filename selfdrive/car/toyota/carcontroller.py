@@ -6,8 +6,6 @@ from selfdrive.car.toyota.toyotacan import create_steer_command, create_ui_comma
                                            create_acc_cancel_command, create_fcw_command
 from selfdrive.car.toyota.values import CAR, ECU, STATIC_MSGS, SteerLimitParams
 from opendbc.can.packer import CANPacker
-from common.travis_checker import travis
-
 
 VisualAlert = car.CarControl.HUDControl.VisualAlert
 
@@ -130,24 +128,19 @@ class CarController():
 
     # steer torque
     new_steer = int(round(actuators.steer * SteerLimitParams.STEER_MAX))
+    apply_steer = apply_toyota_steer_torque_limits(new_steer, self.last_steer, CS.steer_torque_motor, SteerLimitParams)
+    self.steer_rate_limited = new_steer != apply_steer
 
     # only cut torque when steer state is a known fault
     if CS.steer_state in [9, 25]:
       self.last_fault_frame = frame
 
     # Cut steering for 2s after fault
-    if (frame - self.last_fault_frame < 200) or abs(CS.angle_steers_rate) > 100:
-      new_steer = 0
+    if not enabled or (frame - self.last_fault_frame < 200):
+      apply_steer = 0
       apply_steer_req = 0
     else:
       apply_steer_req = 1
-
-    apply_steer = apply_toyota_steer_torque_limits(new_steer, self.last_steer, CS.steer_torque_motor, SteerLimitParams)
-    self.steer_rate_limited = new_steer != apply_steer
-
-    if not enabled:
-      apply_steer = 0
-      apply_steer_req = 0
 
     self.steer_angle_enabled, self.ipas_reset_counter = \
       ipas_state_transition(self.steer_angle_enabled, enabled, CS.ipas_active, self.ipas_reset_counter)
