@@ -36,7 +36,7 @@ class CarInterface(CarInterfaceBase):
   @staticmethod
   def compute_gb(accel, speed):
     x = [0, 22, 31]
-    y = [.6, 1.1, 1.55]
+    y = [.6, 1.15, 1.55]
     return float(accel / 3.0 * np.interp(speed, x, y))
 
   @staticmethod
