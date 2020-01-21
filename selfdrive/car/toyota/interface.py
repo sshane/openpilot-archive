@@ -35,7 +35,8 @@ class CarInterface(CarInterfaceBase):
 
   @staticmethod
   def compute_gb(accel, speed):
-    return float(accel) / 3.0
+    # return float(accel) / 3.0
+    return float(accel / 3.0 * (0.5 + speed / 60.0)) # 0.5x at 0mph, 1x at 70mph
 
   @staticmethod
   def get_params(candidate, fingerprint=gen_empty_fingerprint(), has_relay=False, car_fw=[]):
@@ -141,8 +142,8 @@ class CarInterface(CarInterfaceBase):
       ret.mass = 2860. * CV.LB_TO_KG + STD_CARGO_KG  # mean between normal and hybrid
       ret.lateralTuning.pid.kpV, ret.lateralTuning.pid.kiV = [[0.2], [0.05]]
       ret.lateralTuning.pid.kf = 0.00003   # full torque for 20 deg at 80mph means 0.00007818594
-      ret.longitudinalTuning.kpV = [3.6, 2.4, 1.5]
-      ret.longitudinalTuning.kiV = [0.54, 0.36]
+      # ret.longitudinalTuning.kpV = [3.6, 2.4, 1.5]
+      # ret.longitudinalTuning.kiV = [0.54, 0.36]
 
     elif candidate == CAR.LEXUS_RXH:
       stop_and_go = True
