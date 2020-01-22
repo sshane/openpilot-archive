@@ -49,6 +49,25 @@ class CarInterface(CarInterfaceBase):
 
     ret.enableCruise = True
 
+    ret.longitudinalTuning.deadzoneBP = [0., 9.]
+    ret.longitudinalTuning.deadzoneV = [0., .15]
+    ret.longitudinalTuning.kpBP = [0., 5., 35.]
+    ret.longitudinalTuning.kiBP = [0., 35.]
+    ret.stoppingControl = False
+    ret.startAccel = 0.0
+
+    ret.enableGasInterceptor = 0x201 in fingerprint[0]
+    if ret.enableGasInterceptor:
+      ret.gasMaxBP = [0., 9., 35]
+      ret.gasMaxV = [0.2, 0.5, 0.7]
+      ret.longitudinalTuning.kpV = [1.2, 0.8, 0.5]
+      ret.longitudinalTuning.kiV = [0.18, 0.12]
+    else:
+      ret.gasMaxBP = [0.]
+      ret.gasMaxV = [0.5]
+      ret.longitudinalTuning.kpV = [3.6, 2.4, 1.5]
+      ret.longitudinalTuning.kiV = [0.54, 0.36]
+
     ret.steerActuatorDelay = 0.12  # Default delay, Prius has larger delay
     ret.steerLimitTimer = 0.4
 
@@ -112,6 +131,8 @@ class CarInterface(CarInterfaceBase):
       ret.mass = 2860. * CV.LB_TO_KG + STD_CARGO_KG  # mean between normal and hybrid
       ret.lateralTuning.pid.kpV, ret.lateralTuning.pid.kiV = [[0.2], [0.05]]
       ret.lateralTuning.pid.kf = 0.00003   # full torque for 20 deg at 80mph means 0.00007818594
+      ret.longitudinalTuning.kpV = [3.6, 2.4, 1.5]
+      ret.longitudinalTuning.kiV = [0.54, 0.36]
 
     elif candidate == CAR.LEXUS_RXH:
       stop_and_go = True
@@ -249,7 +270,6 @@ class CarInterface(CarInterfaceBase):
     # In TSS2 cars the camera does long control
     ret.enableDsu = is_ecu_disconnected(fingerprint[0], FINGERPRINTS, ECU_FINGERPRINT, candidate, ECU.DSU) and candidate not in TSS2_CAR
     ret.enableApgs = False  # is_ecu_disconnected(fingerprint[0], FINGERPRINTS, ECU_FINGERPRINT, candidate, ECU.APGS)
-    ret.enableGasInterceptor = 0x201 in fingerprint[0]
     ret.openpilotLongitudinalControl = ret.enableCamera and (ret.enableDsu or candidate in TSS2_CAR)
     cloudlog.warning("ECU Camera Simulated: %r", ret.enableCamera)
     cloudlog.warning("ECU DSU Simulated: %r", ret.enableDsu)
@@ -262,24 +282,6 @@ class CarInterface(CarInterfaceBase):
 
     # removing the DSU disables AEB and it's considered a community maintained feature
     ret.communityFeature = ret.enableGasInterceptor or ret.enableDsu
-
-    ret.longitudinalTuning.deadzoneBP = [0., 9.]
-    ret.longitudinalTuning.deadzoneV = [0., .15]
-    ret.longitudinalTuning.kpBP = [0., 5., 35.]
-    ret.longitudinalTuning.kiBP = [0., 35.]
-    ret.stoppingControl = False
-    ret.startAccel = 0.0
-
-    if ret.enableGasInterceptor:
-      ret.gasMaxBP = [0., 9., 35]
-      ret.gasMaxV = [0.2, 0.5, 0.7]
-      ret.longitudinalTuning.kpV = [1.2, 0.8, 0.5]
-      ret.longitudinalTuning.kiV = [0.18, 0.12]
-    else:
-      ret.gasMaxBP = [0.]
-      ret.gasMaxV = [0.5]
-      ret.longitudinalTuning.kpV = [3.6, 2.4, 1.5]
-      ret.longitudinalTuning.kiV = [0.54, 0.36]
 
     return ret
 
