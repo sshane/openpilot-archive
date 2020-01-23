@@ -152,7 +152,7 @@ class LongitudinalMpc():
     TR_mod += interp(self.lead_accel_over_time(), x, y)
 
     x = [4.4704, 22.352]  # 10 to 50 mph
-    y = [0.95, 1.0]
+    y = [0.875, 1.0]
     TR_mod *= interp(self.car_data['v_ego'], x, y)  # modify TR less at lower speeds
 
     TR += TR_mod
