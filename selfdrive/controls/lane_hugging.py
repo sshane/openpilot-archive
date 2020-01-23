@@ -18,6 +18,7 @@ class LaneHugging:
     # positive angles: left
     self.angle_offset = abs(self.op_params.get('lane_hug_angle_offset', 0.0))
     if not travis:
+      offset = 0.0
       starting = LaneChangeState.laneChangeStarting
       if self.direction == 'left' and ((lane_change_state == starting and lane_change_direction != LaneChangeDirection.left) or lane_change_state != starting):
         offset = -self.angle_offset  # todo: not totally sure if this needs to be negative or positive lolol, will test and update
