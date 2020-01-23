@@ -12,11 +12,11 @@ class LaneHugging:
     self.direction = self.op_params.get('lane_hug_direction', None)  # if lane hugging is present and which side. None, 'left', or 'right'
     if isinstance(self.direction, str):
       self.direction = self.direction.lower()
-    self.angle_offset = abs(self.op_params.get('lane_hug_angle_offset', 0.0))
 
   def modify_offset(self, offset, lane_change_direction, lane_change_state):
     # negative angles: right
     # positive angles: left
+    self.angle_offset = abs(self.op_params.get('lane_hug_angle_offset', 0.0))
     if not travis:
       starting = LaneChangeState.laneChangeStarting
       if self.direction == 'left' and ((lane_change_state == starting and lane_change_direction != LaneChangeDirection.left) or lane_change_state != starting):
