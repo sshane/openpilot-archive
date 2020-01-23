@@ -139,6 +139,8 @@ class CarInterface(CarInterfaceBase):
       if ret.enableGasInterceptor:
         ret.longitudinalTuning.kpV = [(1.2 * 0.9) + (3.6 * 0.1), (0.8 * 0.5) + (2.4 * 0.5), (0.5 * 0.24) + (1.5 * 0.76)]
         ret.longitudinalTuning.kiV = [(0.18 * 0.9) + (0.54 * 0.1), (0.12 * 0.2125) + (0.36 * 0.7875)]
+        ret.longitudinalTuning.kpV = [1.0, 0.66, 0.42]  # braking tune
+        ret.longitudinalTuning.kiV = [0.135, 0.09]
 
       ret.lateralTuning.init('lqr')
 
