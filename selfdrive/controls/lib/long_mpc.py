@@ -122,7 +122,7 @@ class LongitudinalMpc():
       if elapsed > min_consider_time:  # if greater than min time (not 0)
         v_diff = self.df_data['v_leads'][-1]['v_lead'] - self.df_data['v_leads'][0]['v_lead']
         calculated_accel = v_diff / elapsed
-        if abs(calculated_accel) > abs(a_lead):  # if a_lead is greater than calculated accel (over last 1.5s, use that)
+        if abs(calculated_accel) > abs(a_lead) and a_lead < 0.33528:  # if a_lead is greater than calculated accel (over last 1.5s, use that) and if lead accel is not above 0.75 mph/s
           a_lead = calculated_accel
     return a_lead  # if above doesn't execute, we'll return a_lead from radar
 
@@ -150,6 +150,10 @@ class LongitudinalMpc():
     x = [-4.4795, -2.8122, -1.5727, -1.1129, -0.6611, -0.2692, 0.0, 0.1466, 0.5144, 0.6903, 0.9302]  # lead acceleration values
     y = [0.225, 0.159, 0.082, 0.046, 0.026, 0.017, 0.0, -0.005, -0.036, -0.045, -0.05]  # modification values
     TR_mod += interp(self.lead_accel_over_time(), x, y)
+
+    x = [4.4704, 22.352]  # 10 to 50 mph
+    y = [0.7, 1.0]
+    TR_mod *= interp(self.car_data['v_ego'], x, y)  # modify TR less at lower speeds
 
     TR += TR_mod
 
