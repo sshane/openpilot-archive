@@ -20,7 +20,11 @@ Highlight Features
 
 Dynamic gas
 -----
-This aims to provide a smoother driving experience in stop and go traffic by modifying the maximum gas that can be applied based on your current velocity and the relative velocity of the lead car. It'll also of course increase the maximum gas when the lead is accelerating to help you get up to speed quicker than stock. And smoother; this eliminates the jerking you get from stock openpilot with comma pedal. It tries to coast if the lead is only moving slowly, it doesn't use maximum gas as soon as the lead inches forward :). Better tuning for distance will be next.
+Currently supported vehicles (w/ comma pedal only):
+  * 2017 Toyota Corolla (non-TSS2)
+  * Toyota RAV4 (non-TSS2)
+
+This aims to provide a smoother driving experience in stop and go traffic (under 20 mph) by modifying the maximum gas that can be applied based on your current velocity and the relative velocity of the lead car. It'll also of course increase the maximum gas when the lead is accelerating to help you get up to speed quicker than stock. And smoother; this eliminates the jerking you get from stock openpilot with comma pedal. It tries to coast if the lead is only moving slowly, it doesn't use maximum gas as soon as the lead inches forward :). When you are above 20 mph, relative velocity and the following distance is taken into consideration.
 
 Dynamic follow
 -----
