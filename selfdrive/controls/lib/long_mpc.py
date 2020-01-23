@@ -147,8 +147,8 @@ class LongitudinalMpc():
     y = [0.641, 0.506, 0.418, 0.334, 0.24, 0.115, 0.065, 0.0, -0.049, -0.068, -0.142, -0.221]  # modification values
     TR_mod = interp(self.lead_data['v_lead'] - self.car_data['v_ego'], x, y)
 
-    x = [-4.4704, -1.77, -0.3145, 0.0, 0.1495, 0.5104, 0.7037, 0.9357]  # lead acceleration values
-    y = [0.237, 0.12, 0.027, 0, -0.006, -0.036, -0.042, -0.045]  # modification values
+    x = [-4.4795, -2.8122, -1.5727, -1.1129, -0.6611, -0.2692, 0.0, 0.1466, 0.5144, 0.6903, 0.9302]  # lead acceleration values
+    y = [0.225, 0.159, 0.082, 0.046, 0.026, 0.017, 0.0, -0.005, -0.036, -0.045, -0.05]  # modification values
     TR_mod += interp(self.lead_accel_over_time(), x, y)
 
     TR += TR_mod
