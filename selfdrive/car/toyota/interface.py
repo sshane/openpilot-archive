@@ -35,8 +35,8 @@ class CarInterface(CarInterfaceBase):
 
   @staticmethod
   def compute_gb(accel, speed):
-    # return float(accel) / 3.0
-    return float(accel / 3.0 * (0.5 + speed / 60.0)) # 0.5x at 0mph, 1x at 70mph
+    return float(accel) / 3.0
+    # return float(accel / 3.0 * (0.5 + speed / 60.0)) # 0.5x at 0mph, 1x at 70mph
 
   @staticmethod
   def get_params(candidate, fingerprint=gen_empty_fingerprint(), has_relay=False, car_fw=[]):
