@@ -73,7 +73,7 @@ class CarInterface(CarInterfaceBase):
       ret.longitudinalTuning.kpV = [3.6, 2.4, 1.5]
       ret.longitudinalTuning.kiV = [0.54, 0.36]
 
-    if candidate not in [CAR.PRIUS, CAR.RAV4, CAR.RAV4H, CAR.COROLLA]: # These cars use LQR/INDI
+    if candidate not in [CAR.PRIUS, CAR.RAV4, CAR.RAV4H, CAR.COROLLA]:  # These cars use LQR/INDI
       ret.lateralTuning.init('pid')
       ret.lateralTuning.pid.kiBP, ret.lateralTuning.pid.kpBP = [[0.], [0.]]
 
@@ -142,8 +142,10 @@ class CarInterface(CarInterfaceBase):
       ret.mass = 2860. * CV.LB_TO_KG + STD_CARGO_KG  # mean between normal and hybrid
       # ret.lateralTuning.pid.kpV, ret.lateralTuning.pid.kiV = [[0.2], [0.05]]
       # ret.lateralTuning.pid.kf = 0.00003   # full torque for 20 deg at 80mph means 0.00007818594
-      ret.longitudinalTuning.kpV = [3.6, 2.4, 1.5]
-      ret.longitudinalTuning.kiV = [0.54, 0.36]
+      if ret.enableGasInterceptor:
+        ret.longitudinalTuning.kpV = [(1.2 * 0.9) + (3.6 * 0.1), (0.8 * 0.5) + (2.4 * 0.5), (0.5 * 0.24) + (1.5 * 0.76)]
+        ret.longitudinalTuning.kiV = [(0.18 * 0.9) + (0.54 * 0.1), (0.12 * 0.2125) + (0.36 * 0.7875)]
+
       ret.lateralTuning.init('lqr')
 
       ret.lateralTuning.lqr.scale = 1500.0
