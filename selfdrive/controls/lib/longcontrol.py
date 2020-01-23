@@ -3,6 +3,7 @@ from common.numpy_fast import clip, interp
 from selfdrive.controls.lib.pid_long import PIController
 from common.travis_checker import travis
 from selfdrive.car.toyota.values import CAR as CAR_TOYOTA
+from selfdrive.car.honda.values import CAR as CAR_HONDA
 from common.op_params import opParams
 from selfdrive.controls.lib.dynamic_lane_speed import DynamicLaneSpeed
 
@@ -73,6 +74,7 @@ class LongControl():
     self.op_params = opParams()
     self.candidate = candidate
     self.toyota_candidates = [attr for attr in dir(CAR_TOYOTA) if not attr.startswith("__")]
+    self.honda_candidates = [attr for attr in dir(CAR_HONDA) if not attr.startswith("__")]
 
     self.gas_pressed = False
     self.lead_data = {'v_rel': None, 'a_lead': None, 'x_lead': None, 'status': False}
@@ -94,6 +96,9 @@ class LongControl():
         x = [0.0, 1.4082, 2.80311, 4.22661, 5.38271, 6.16561, 7.24781, 8.28308, 10.24465, 12.96402, 15.42303, 18.11903, 20.11703, 24.46614, 29.05805, 32.71015, 35.76326]
         y = [0.2, 0.20443, 0.21592, 0.23334, 0.25734, 0.27916, 0.3229, 0.35, 0.368, 0.377, 0.389, 0.399, 0.411, 0.45, 0.504, 0.558, 0.617]
       elif self.candidate == CAR_TOYOTA.RAV4:
+        x = [0.0, 1.4082, 2.80311, 4.22661, 5.38271, 6.16561, 7.24781, 8.28308, 10.24465, 12.96402, 15.42303, 18.11903, 20.11703, 24.46614, 29.05805, 32.71015, 35.76326]
+        y = [0.234, 0.237, 0.246, 0.26, 0.279, 0.297, 0.332, 0.354, 0.368, 0.377, 0.389, 0.399, 0.411, 0.45, 0.504, 0.558, 0.617]
+      elif self.candidate == CAR_HONDA.PILOT_2019:
         x = [0.0, 1.4082, 2.80311, 4.22661, 5.38271, 6.16561, 7.24781, 8.28308, 10.24465, 12.96402, 15.42303, 18.11903, 20.11703, 24.46614, 29.05805, 32.71015, 35.76326]
         y = [0.234, 0.237, 0.246, 0.26, 0.279, 0.297, 0.332, 0.354, 0.368, 0.377, 0.389, 0.399, 0.411, 0.45, 0.504, 0.558, 0.617]
 
