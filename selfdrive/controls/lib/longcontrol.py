@@ -90,7 +90,7 @@ class LongControl():
     self.v_pid = v_pid
 
   def dynamic_gas(self, CP):
-    x, y = [], []
+    x, y = [], []  # gasMaxBP, gasMaxV
     if CP.enableGasInterceptor:  # todo: make different profiles for different vehicles
       if self.candidate == CAR_TOYOTA.COROLLA:
         x = [0.0, 1.4082, 2.80311, 4.22661, 5.38271, 6.16561, 7.24781, 8.28308, 10.24465, 12.96402, 15.42303, 18.11903, 20.11703, 24.46614, 29.05805, 32.71015, 35.76326]
@@ -101,6 +101,10 @@ class LongControl():
       elif self.candidate == CAR_HONDA.PILOT_2019:
         x = [0.0, 1.4082, 2.80311, 4.22661, 5.38271, 6.16561, 7.24781, 8.28308, 10.24465, 12.96402, 15.42303, 18.11903, 20.11703, 24.46614, 29.05805, 32.71015, 35.76326]
         y = [0.234, 0.237, 0.246, 0.26, 0.279, 0.297, 0.332, 0.354, 0.368, 0.377, 0.389, 0.399, 0.411, 0.45, 0.504, 0.558, 0.617]
+    # else:
+    #   if self.candidate in [CAR_TOYOTA.CAMRY, CAR_TOYOTA.CAMRYH]:
+    #     x = [0.]
+    #     y = [0.5]
 
     if not x:
       # x, y = CP.gasMaxBP, CP.gasMaxV  # if unsupported car, use stock.
