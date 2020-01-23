@@ -1,6 +1,8 @@
 from cereal import log
 from common.numpy_fast import clip, interp
 from selfdrive.controls.lib.pid import PIController
+import time
+import os
 
 LongCtrlState = log.ControlsState.LongControlState
 
@@ -66,6 +68,14 @@ class LongControl():
     self.v_pid = 0.0
     self.last_output_gb = 0.0
 
+    self.overshoot_data = []
+    self.overshoot_file_path = '/data/overshoot_data'
+    self.inputs_list = ['v_ego', 'v_target', 'v_target_future', 'v_cruise',
+                        'pid_output', 'pid_i', 'pid_p', 'active', 'time']
+    if not os.path.exists(self.overshoot_file_path):
+      with open(self.overshoot_file_path, "a") as f:
+        f.write('{}\n'.format(self.inputs_list))
+
   def reset(self, v_pid):
     """Reset PID controller and change setpoint"""
     self.pid.reset()
@@ -126,5 +136,12 @@ class LongControl():
     self.last_output_gb = output_gb
     final_gas = clip(output_gb, 0., gas_max)
     final_brake = -clip(output_gb, -brake_max, 0.)
+
+    if active:
+      self.overshoot_data.append([v_ego, v_target, v_target_future, v_cruise, output_gb, self.pid.i, self.pid.p, active, time.time()])
+    if len(self.overshoot_data) > 120 * 100:  # every 30 seconds
+      with open(self.overshoot_file_path, 'a') as f:
+        f.write('{}\n'.format("\n".join([str(i) for i in self.overshoot_data])))
+      self.overshoot_data = []
 
     return final_gas, final_brake
