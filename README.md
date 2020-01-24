@@ -38,6 +38,8 @@ This is my dynamic follow from 0.5, where it changes your TR (following distance
 
 Dynamic lane speed
 -----
+*This feature is disabled until I can figure out how to improve it.*
+
 This is a new feature that reduces your cruising speed if many vehicles around you are significantly slower than you. This works with and without an openpilot-identified lead. Ex.: It will slow you down if traveling in an open lane with cars in adjacent lanes that are slower than you. Or if the lead in front of the lead is slowing down, as well as cars in other lanes far ahead. The most it will slow you down is some average of: (the set speed and the average of the surrounding cars) The more the radar points, the more weight goes to the speeds of surrounding vehicles.
 
 ~~Two PID loops to control gas and brakes independently~~
@@ -46,9 +48,9 @@ This is a new feature that reduces your cruising speed if many vehicles around y
 
 If you have a Toyota Corolla with a comma pedal, you'll love this addition. Two longitudinal PID loops are set up in `longcontrol.py` so that one is running with comma pedal tuning to control the gas, and the other is running stock non-pedal tuning for better braking control. In the car, this feels miles better than stock openpilot, and nearly as good as your stock Toyota cruise control before you pulled out your DSU! It won't accelerate up to stopped cars and brake at the last moment anymore.
 
-~~Custom wheel offset to reduce lane hugging~~
+Custom wheel offset to reduce lane hugging
 -----
-***Update**: This also may be removed, I was able to get good results live tuning camera offset. Perhaps angle offset isn't needed?*
+***Update**: The performance of this modification is iffy at best, but it definitely is more apparant than just tuning your camera offset value. Removing the immediate angle offset can have some weird oscilating effect when it's windy or on roads with camber (slant to one side). Will be left in, but disabled.*
 
 Stock openpilot doesn't seem to be able to identify your car's true angle offset. With the `LaneHugging` module you can specify a custom angle offset to be added to your desired steering angle. Simply find the angle your wheel is at when you're driving on a straight highway. By default, this is disabled, to enable you can:
 - Use the `opEdit` class in the root directory of openpilot. To use it, simply open an `ssh` shell and enter the commands below:
@@ -76,13 +78,13 @@ This is a handy tool to change your `opParams` parameters without diving into an
 cd /data/openpilot
 python op_edit.py
 ```
-A list of parameters that you can change are located [here](common/op_params.py#L29).
+A list of parameters that you can modify are located [here](common/op_params.py#L42).
 
 Parameters are stored at `/data/op_params.json`
 
 Live tuning support
 -----
-This has just been added and currently only the `camera_offset` parameter is officially supported.
+This has just been added and currently only the `camera_offset` and `lane_hug_angle_offset` parameters are supported.
 - Just start opEdit with the instructions above and pick a parameter. It will let you know if it supports live tuning, if so, updates will take affect within 5 seconds!
 - Alternatively, you can use the new opTune module to live tune quicker and easier! It stays in the parameter edit view so you can more easily experiment with values. opTune show below:
 
