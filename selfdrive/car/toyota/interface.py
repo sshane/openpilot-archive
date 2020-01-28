@@ -128,7 +128,7 @@ class CarInterface(CarInterfaceBase):
       stop_and_go = False
       ret.safetyParam = 100
       ret.wheelbase = 2.70
-      ret.steerRatio = 17.8
+      ret.steerRatio = 18.26 * 0.9
       tire_stiffness_factor = 0.444  # not optimized yet
       ret.mass = 2860. * CV.LB_TO_KG + STD_CARGO_KG  # mean between normal and hybrid
       # ret.lateralTuning.pid.kpV, ret.lateralTuning.pid.kiV = [[0.2], [0.05]]
@@ -430,7 +430,7 @@ class CarInterface(CarInterfaceBase):
       events.append(create_event('pcmDisable', [ET.USER_DISABLE]))
 
     # disable on pedals rising edge or when brake is pressed and speed isn't zero
-    if (ret.gasPressed and not self.gas_pressed_prev) or \
+    if (ret.gasPressed and not self.gas_pressed_prev and travis) or \
        (ret.brakePressed and (not self.brake_pressed_prev or ret.vEgo > 0.001)):
       events.append(create_event('pedalPressed', [ET.NO_ENTRY, ET.USER_DISABLE]))
 

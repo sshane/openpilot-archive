@@ -23,8 +23,11 @@ AWARENESS_DECEL = -0.2     # car smoothly decel at .2m/s^2 when user is distract
 
 # lookup tables VS speed to determine min and max accels in cruise
 # make sure these accelerations are smaller than mpc limits
-_A_CRUISE_MIN_V  = [-1.0, -.8, -.67, -.5, -.30]
-_A_CRUISE_MIN_BP = [   0., 5.,  10., 20.,  40.]
+if travis:
+  _A_CRUISE_MIN_V  = [-1.0, -.8, -.67, -.5, -.30]
+else:
+  _A_CRUISE_MIN_V = [-1.2, -.9, -.73, -.6, -.35]
+_A_CRUISE_MIN_BP = [0., 5., 10., 20., 40.]
 
 # need fast accel at very low speed for stop and go
 # make sure these accelerations are smaller than mpc limits
@@ -32,12 +35,15 @@ if travis:
   _A_CRUISE_MAX_V = [1.2, 1.2, 0.65, .4]
   _A_CRUISE_MAX_V_FOLLOWING = [1.6, 1.6, 0.65, .4]
 else:
-  _A_CRUISE_MAX_V = [1.6, 1.4, 0.65, .4]
-  _A_CRUISE_MAX_V_FOLLOWING = [1.9, 1.9, 0.75, .6]
+  _A_CRUISE_MAX_V = [1.6, 1.4, 0.7, .4]
+  _A_CRUISE_MAX_V_FOLLOWING = [1.75, 1.75, 0.7, .6]
 _A_CRUISE_MAX_BP = [0.,  6.4, 22.5, 40.]
 
 # Lookup table for turns
-_A_TOTAL_MAX_V = [1.7, 3.2]
+if travis:
+  _A_TOTAL_MAX_V = [1.7, 3.2]
+else:
+  _A_TOTAL_MAX_V = [2.618, 4.928]
 _A_TOTAL_MAX_BP = [20., 40.]
 
 # 75th percentile
@@ -74,7 +80,7 @@ class Planner():
     self.mpc1 = LongitudinalMpc(1)
     self.mpc2 = LongitudinalMpc(2)
     if not travis:
-      pm = messaging.PubMaster(['smiskolData'])
+      pm = messaging.PubMaster(['smiskolData'])  # why is this here?
       self.mpc1.set_pm(pm)
 
     self.v_acc_start = 0.0
@@ -148,8 +154,10 @@ class Planner():
       y_p = 3 * path[0] * self.path_x**2 + 2 * path[1] * self.path_x + path[2]
       y_pp = 6 * path[0] * self.path_x + 2 * path[1]
       curv = y_pp / (1. + y_p**2)**1.5
-
-      a_y_max = 2.975 - v_ego * 0.0375  # ~1.85 @ 75mph, ~2.6 @ 25mph
+      if travis:
+        a_y_max = 2.975 - v_ego * 0.0375  # ~1.85 @ 75mph, ~2.6 @ 25mph
+      else:
+        a_y_max = 3.05 - v_ego * 0.034
       v_curvature = np.sqrt(a_y_max / np.clip(np.abs(curv), 1e-4, None))
       model_speed = np.min(v_curvature)
       model_speed = max(20.0 * CV.MPH_TO_MS, model_speed) # Don't slow down below 20mph
