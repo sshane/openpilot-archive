@@ -69,8 +69,8 @@ extern "C" {
       initializeSNPE(runt);
   }
 
-  float run_model(float inputData[103]){
-      int size = 103;
+  float run_model(float inputData[49]){
+      int size = 49;
       std::vector<float> inputVec;
       for (int i = 0; i < size; i++ ) {
         inputVec.push_back(inputData[i]);
