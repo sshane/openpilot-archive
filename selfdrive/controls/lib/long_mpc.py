@@ -31,16 +31,16 @@ class LongitudinalMpc():
     self.new_lead = False
     self.last_cloudlog_t = 0.0
 
-    self.pm = None
+    if not travis and mpc_id == 1:
+      self.pm = messaging.PubMaster(['smiskolData'])
+    else:
+      self.pm = None
     self.car_data = {'v_ego': 0.0, 'a_ego': 0.0}
     self.lead_data = {'v_lead': None, 'x_lead': None, 'a_lead': None, 'status': False}
     self.df_data = {"v_leads": [], "v_egos": []}  # dynamic follow data
     self.last_cost = 0.0
     self.df_profile = self.op_params.get('dynamic_follow', 'relaxed').strip().lower()
     self.sng = False
-
-  def set_pm(self, pm):
-    self.pm = pm
 
   def send_mpc_solution(self, pm, qp_iterations, calculation_time):
     qp_iterations = max(0, qp_iterations)
