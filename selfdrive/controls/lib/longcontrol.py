@@ -1,6 +1,8 @@
 from cereal import log
 from common.numpy_fast import clip, interp
 from selfdrive.controls.lib.pid import PIController
+from selfdrive.df import df_wrapper
+import cereal.messaging as messaging
 
 LongCtrlState = log.ControlsState.LongControlState
 
@@ -55,6 +57,19 @@ def long_control_state_trans(active, long_control_state, v_ego, v_target, v_pid,
   return long_control_state
 
 
+def pad_tracks(tracks, max_tracks):
+  to_add = max_tracks - len(tracks)
+  to_add_left = to_add - (to_add // 2)
+  to_add_right = to_add - to_add_left
+  to_pad = [[0, 0, 0]]
+  return tracks + (to_add * to_pad)  # these two have little to no difference
+  # return (to_pad * to_add_left) + tracks + (to_pad * to_add_right)
+
+
+def interp_fast(x, xp, fp=[0, 1], ext=True):  # extrapolates above range when ext is True
+  interped = (((x - xp[0]) * (fp[1] - fp[0])) / (xp[1] - xp[0])) + fp[0]
+  return interped if ext else min(max(min(fp), interped), max(fp))
+
 class LongControl():
   def __init__(self, CP, compute_gb):
     self.long_control_state = LongCtrlState.off  # initialized to off
@@ -65,15 +80,55 @@ class LongControl():
                             convert=compute_gb)
     self.v_pid = 0.0
     self.last_output_gb = 0.0
+    self.df_model = df_wrapper.get_wrapper()
+    self.df_model.init_model()
+    self.scales = {'dRel': [0.8399999737739563, 196.0],
+                   'max_tracks': 16,
+                   'steer_angle': [-568.0, 591.5999755859375],
+                   'vRel': [-0.14999961853027344, 10.0],
+                   'yRel': [-15.0, 15.0],
+                   'y_train': [0.0, 8.940752983093262]}
+
+    self.sm = messaging.SubMaster(['liveTracks'])
+    self.v_ego = 0.
 
   def reset(self, v_pid):
     """Reset PID controller and change setpoint"""
     self.pid.reset()
     self.v_pid = v_pid
 
-  def update(self, active, v_ego, brake_pressed, standstill, cruise_standstill, v_cruise, v_target, v_target_future, a_target, CP):
+  def df_live_tracks(self, steer_angle):
+    self.sm.update(0)
+
+    track_data = []
+    for track in self.sm['liveTracks']:
+      if 10 > self.v_ego + track.vRel > -0.15:
+        track_data.append([track.yRel, track.dRel, track.vRel, track.aRel])
+
+    tracks_normalized = [[interp_fast(track[0], self.scales['yRel']),
+                          interp_fast(track[1], self.scales['dRel']),  # normalize track data
+                          interp_fast(track[2] + self.v_ego, self.scales['vRel'])] for track in track_data]
+
+    padded_tracks = pad_tracks(tracks_normalized, self.scales['max_tracks'])  # pad tracks
+
+    flat_tracks = [i for x in padded_tracks for i in x]  # flatten track data for model
+
+    steer_angle = interp(steer_angle, self.scales['steer_angle'], [0, 1])
+    input_data = [steer_angle] + flat_tracks
+
+    v_target = interp(self.df_model.run_model(input_data), [0, 1], self.scales['y_train'])
+
+    return v_target
+
+  def update(self, active, v_ego, brake_pressed, standstill, cruise_standstill, v_cruise, v_target, v_target_future, a_target, CP, steer_angle):
+    self.v_ego = max(v_ego, 0)
     """Update longitudinal control. This updates the state machine and runs a PID loop"""
     # Actuation limits
+
+    v_target = self.df_live_tracks(steer_angle)
+    v_target_future = max(v_target + (v_target - v_ego), 0.0)
+    a_target = (v_target_future - v_ego) / 2
+
     gas_max = interp(v_ego, CP.gasMaxBP, CP.gasMaxV)
     brake_max = interp(v_ego, CP.brakeMaxBP, CP.brakeMaxV)
 
