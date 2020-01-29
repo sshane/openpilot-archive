@@ -1,13 +1,13 @@
 from cffi import FFI
 import subprocess
 try:
-    subprocess.check_call(["make", "-j4"], cwd="/data/openpilot/selfdrive/smart_torque")
+    subprocess.check_call(["make", "-j4"], cwd="/data/openpilot/selfdrive/df")
 except:
     pass
 
 
 def get_wrapper():  # initialize st model and process long predictions
-    libmpc_fn = "/data/openpilot/selfdrive/smart_torque/smart_torque.so"
+    libmpc_fn = "/data/openpilot/selfdrive/df/dynamic_follow.so"
 
     ffi = FFI()
     ffi.cdef("""    

@@ -1,4 +1,4 @@
-#include "smart_torque.h"
+#include "dynamic_follow.h"
 using namespace std;
 
 std::unique_ptr<zdl::SNPE::SNPE> snpe;

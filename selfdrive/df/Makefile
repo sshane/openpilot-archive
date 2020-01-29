@@ -15,8 +15,8 @@ CXXFLAGS = -std=c++14 -fPIC -O2 $(WARN_FLAGS)
 SNPE_FLAGS = -I$(PHONELIBS)/snpe/include/
 SNPE_LIBS = -lSNPE -lsymphony-cpu -lsymphonypower
 
-OBJS = smart_torque.o
-OUTPUT = smart_torque.so
+OBJS = dynamic_follow.o
+OUTPUT = dynamic_follow.so
 
 .PHONY: all
 all: $(OUTPUT)
