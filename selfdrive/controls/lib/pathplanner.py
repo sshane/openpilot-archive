@@ -10,7 +10,6 @@ import cereal.messaging as messaging
 from cereal import log
 from common.op_params import opParams
 from selfdrive.controls.lane_hugging import LaneHugging
-from common.travis_checker import travis
 
 LaneChangeState = log.PathPlan.LaneChangeState
 LaneChangeDirection = log.PathPlan.LaneChangeDirection
