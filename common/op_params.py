@@ -56,7 +56,10 @@ class opParams:
                            'use_dynamic_lane_speed': {'default': True, 'allowed_types': [bool], 'description': 'Whether you want openpilot to adjust your speed based on surrounding vehicles', 'live': False},
                            'min_dynamic_lane_speed': {'default': 20.0, 'allowed_types': [float, int], 'description': 'The minimum speed to allow dynamic lane speed to operate (in MPH)', 'live': False},
                            'upload_on_hotspot': {'default': False, 'allowed_types': [bool], 'description': 'If False, openpilot will not upload driving data while connected to your phone\'s hotspot', 'live': False},
-                           'reset_integral': {'default': False, 'allowed_types': [bool], 'description': 'This resets integral whenever the longitudinal PID error crosses or is zero.\nShould help it recover from overshoot quicker', 'live': False}}
+                           'reset_integral': {'default': False, 'allowed_types': [bool], 'description': 'This resets integral whenever the longitudinal PID error crosses or is zero.\nShould help it recover from overshoot quicker', 'live': False},
+                           'long_ki': {'default': 0.12, 'allowed_types': [float, int], 'live': True},
+                           'long_kp': {'default': 0.5, 'allowed_types': [float, int], 'live': True},
+                           'long_kf': {'default': 1., 'allowed_types': [float, int], 'live': True}}
 
     self.params = {}
     self.params_file = "/data/op_params.json"
