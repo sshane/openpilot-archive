@@ -1,7 +1,5 @@
 import numpy as np
 from common.numpy_fast import clip, interp
-from common.travis_checker import travis
-from common.op_params import opParams
 
 def apply_deadzone(error, deadzone):
   if error > deadzone:
@@ -17,7 +15,6 @@ class PIController():
     self._k_p = k_p # proportional gain
     self._k_i = k_i # integral gain
     self.k_f = k_f  # feedforward gain
-    self.reset_integral = opParams().get('reset_integral', default=False)
 
     self.pos_limit = pos_limit
     self.neg_limit = neg_limit
@@ -27,7 +24,6 @@ class PIController():
     self.i_rate = 1.0 / rate
     self.sat_limit = sat_limit
     self.convert = convert
-    self.last_error = 0.
 
     self.reset()
 
@@ -58,7 +54,6 @@ class PIController():
     self.sat_count = 0.0
     self.saturated = False
     self.control = 0
-    self.last_error = 0.0
 
   def update(self, setpoint, measurement, speed=0.0, check_saturation=True, override=False, feedforward=0., deadzone=0., freeze_integrator=False):
     self.speed = speed
@@ -71,9 +66,6 @@ class PIController():
       self.i -= self.i_unwind_rate * float(np.sign(self.i))
     else:
       i = self.i + error * self.k_i * self.i_rate
-      if (error == 0 or self.last_error > 0 > error or self.last_error < 0 < error) and not travis and self.reset_integral:
-        i, self.i = 0., 0.
-
       control = self.p + self.f + i
 
       if self.convert is not None:
@@ -93,5 +85,4 @@ class PIController():
     self.saturated = self._check_saturation(control, check_saturation, error)
 
     self.control = clip(control, self.neg_limit, self.pos_limit)
-    self.last_error = error
     return self.control
