@@ -128,16 +128,18 @@ class CarInterface(CarInterfaceBase):
       stop_and_go = False
       ret.safetyParam = 100
       ret.wheelbase = 2.70
-      ret.steerRatio = 18.26 * 0.9
+      ret.steerRatio = 18.75
       tire_stiffness_factor = 0.444  # not optimized yet
       ret.mass = 2860. * CV.LB_TO_KG + STD_CARGO_KG  # mean between normal and hybrid
       # ret.lateralTuning.pid.kpV, ret.lateralTuning.pid.kiV = [[0.2], [0.05]]
       # ret.lateralTuning.pid.kf = 0.00003   # full torque for 20 deg at 80mph means 0.00007818594
       if ret.enableGasInterceptor:
-        ret.longitudinalTuning.kpV = [(1.2 * 0.9) + (3.6 * 0.1), (0.8 * 0.5) + (2.4 * 0.5), (0.5 * 0.24) + (1.5 * 0.76)]
-        ret.longitudinalTuning.kiV = [(0.18 * 0.9) + (0.54 * 0.1), (0.12 * 0.2125) + (0.36 * 0.7875)]
-        ret.longitudinalTuning.kpV = [1.0, 0.66, 0.42]  # braking tune
-        ret.longitudinalTuning.kiV = [0.135, 0.09]
+        # ret.longitudinalTuning.kpV = [(1.2 * 0.9) + (3.6 * 0.1), (0.8 * 0.5) + (2.4 * 0.5), (0.5 * 0.24) + (1.5 * 0.76)]
+        # ret.longitudinalTuning.kiV = [(0.18 * 0.9) + (0.54 * 0.1), (0.12 * 0.2125) + (0.36 * 0.7875)]
+        # ret.longitudinalTuning.kpV = [1.0, 0.66, 0.42]  # braking tune
+        # ret.longitudinalTuning.kiV = [0.135, 0.09]
+        ret.longitudinalTuning.kpV = [1.2, 1.4125, 1.625]
+        ret.longitudinalTuning.kiV = [0.24, 0.38]
 
       ret.lateralTuning.init('lqr')
 
@@ -209,6 +211,16 @@ class CarInterface(CarInterfaceBase):
       tire_stiffness_factor = 0.7933
       ret.lateralTuning.pid.kpV, ret.lateralTuning.pid.kiV = [[0.6], [0.1]]
       ret.mass = 3370. * CV.LB_TO_KG + STD_CARGO_KG
+      ret.lateralTuning.pid.kf = 0.00007818594
+
+    elif candidate == CAR.RAV4H_TSS2:
+      stop_and_go = True
+      ret.safetyParam = 73
+      ret.wheelbase = 2.68986
+      ret.steerRatio = 14.3
+      tire_stiffness_factor = 0.7933
+      ret.lateralTuning.pid.kpV, ret.lateralTuning.pid.kiV = [[0.6], [0.1]]
+      ret.mass = 3800. * CV.LB_TO_KG + STD_CARGO_KG
       ret.lateralTuning.pid.kf = 0.00007818594
 
     elif candidate in [CAR.COROLLA_TSS2, CAR.COROLLAH_TSS2]:

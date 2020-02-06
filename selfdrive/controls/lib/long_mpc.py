@@ -31,16 +31,16 @@ class LongitudinalMpc():
     self.new_lead = False
     self.last_cloudlog_t = 0.0
 
-    self.pm = None
+    if not travis and mpc_id == 1:
+      self.pm = messaging.PubMaster(['smiskolData'])
+    else:
+      self.pm = None
     self.car_data = {'v_ego': 0.0, 'a_ego': 0.0}
     self.lead_data = {'v_lead': None, 'x_lead': None, 'a_lead': None, 'status': False}
     self.df_data = {"v_leads": [], "v_egos": []}  # dynamic follow data
     self.last_cost = 0.0
     self.df_profile = self.op_params.get('dynamic_follow', 'relaxed').strip().lower()
     self.sng = False
-
-  def set_pm(self, pm):
-    self.pm = pm
 
   def send_mpc_solution(self, pm, qp_iterations, calculation_time):
     qp_iterations = max(0, qp_iterations)
@@ -138,10 +138,10 @@ class LongitudinalMpc():
       p_mod_pos = [0.99, 0.815, 0.57]
       p_mod_neg = [1.0, 1.27, 1.675]
     elif self.df_profile == 'traffic':  # for in congested traffic
-      x_vel = [0.0, 1.8627, 3.7253, 5.588, 7.4507, 9.3133, 11.5598, 13.645, 22.407, 28.8833, 34.8055, 40.3905]
-      y_dist = [1.384, 1.391, 1.403, 1.415, 1.437, 1.468, 1.501, 1.506, 1.492, 1.4765, 1.4605, 1.453]
-      p_mod_pos = [1.017, 1.12, 1.34]
-      p_mod_neg = [1.0, 0.80, 0.4]
+      x_vel = [0.0, 1.8627, 3.7253, 5.588, 7.4507, 9.3133, 11.5598, 13.645, 17.8816, 22.407, 28.8833, 34.8691, 40.3906]
+      y_dist = [1.384, 1.391, 1.403, 1.415, 1.437, 1.468, 1.501, 1.506, 1.38, 1.2216, 1.085, 1.0516, 1.016]
+      p_mod_pos = [1.015, 2.175, 3.65]
+      p_mod_neg = [0.98, 0.08, 0.0]
     else:  # default to relaxed/stock
       y_dist = [1.385, 1.394, 1.406, 1.421, 1.444, 1.474, 1.516, 1.534, 1.546, 1.568, 1.579, 1.593, 1.614]
       p_mod_pos = [1.0, 1.0, 1.0]
@@ -181,7 +181,7 @@ class LongitudinalMpc():
     TR_mod = sum([mod * p_mod_neg if mod < 0 else mod * p_mod_pos for mod in TR_mod])  # alter TR modification according to profile
     TR += TR_mod
 
-    if CS.leftBlinker or CS.rightBlinker:
+    if CS.leftBlinker or CS.rightBlinker and self.df_profile != 'traffic':
       x = [8.9408, 22.352, 31.2928]  # 20, 50, 70 mph
       y = [1.0, .75, .65]  # reduce TR when changing lanes
       TR *= interp(self.car_data['v_ego'], x, y)
