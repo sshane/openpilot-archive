@@ -60,7 +60,7 @@ with open('/data/openpilot/selfdrive/traffic/phot_red', 'rb') as f:
     img = pickle.load(f)
 
 print(img.shape)
-img.reshape(582, 437, 3)
+img = img.reshape(582, 437, 3)
 print(img.shape)
 multi_test_a(img)
 # for i in range(100):
