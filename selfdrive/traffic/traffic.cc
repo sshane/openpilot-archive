@@ -20,7 +20,7 @@ zdl::DlSystem::Runtime_t checkRuntime()
 
 void initializeSNPE(zdl::DlSystem::Runtime_t runtime) {
   std::unique_ptr<zdl::DlContainer::IDlContainer> container;
-  container = zdl::DlContainer::IDlContainer::open("/data/openpilot/selfdrive/traffic/traffic_lights.dlc");
+  container = zdl::DlContainer::IDlContainer::open("/data/openpilot/selfdrive/traffic/traffic_lightvs2.dlc");
   //printf("loaded model\n");
   int counter = 0;
   zdl::SNPE::SNPEBuilder snpeBuilder(container.get());
@@ -31,7 +31,7 @@ void initializeSNPE(zdl::DlSystem::Runtime_t runtime) {
                       .build();
 
   std::unique_ptr<zdl::DlSystem::ITensor> input;
-  //const auto &strList_opt = snpe->getInputTensorNames();
+  const auto &strList_opt = snpe->getInputTensorNames();
 
 }
 
