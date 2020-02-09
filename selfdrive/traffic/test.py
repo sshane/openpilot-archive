@@ -3,11 +3,19 @@ from selfdrive.traffic import traffic_wrapper
 import cv2
 import numpy as np
 
-traffic_model = traffic_wrapper.get_wrapper()
+traffic_model, ffi = traffic_wrapper.get_wrapper()
 traffic_model.init_model()
 start = time.time()
-model_output = traffic_model.run_model()
-print(model_output)
+# model_output = traffic_model.run_model()
+# print(model_output)
+
+def multi_test_b(x):
+    dsize = ffi.sizeof("double")
+    ap = ffi.new("double* [%d]" % (x.shape[0]))
+    ptr = ffi.cast("double *", x.ctypes.data)
+    for i in range(x.shape[0]):
+        ap[i] = ptr + i*x.shape[1]
+    traffic_model.multi_test(ap, x.shape[0], x.shape[1])
 
 # W, H = 1164, 874
 #

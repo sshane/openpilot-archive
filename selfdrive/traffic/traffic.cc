@@ -49,7 +49,7 @@ std::unique_ptr<zdl::DlSystem::ITensor> loadInputTensor(std::unique_ptr<zdl::SNP
   return input;
 }
 
-std::unique_ptr<zdl::DlSystem::ITensor> loadInputTensorNew(std::unique_ptr<zdl::SNPE::SNPE> &snpe) {
+std::unique_ptr<zdl::DlSystem::ITensor> loadInputTensorNew(std::unique_ptr<zdl::SNPE::SNPE> &snpe, std::vector<float> inputVec) {
     std::unique_ptr<zdl::DlSystem::ITensor> input;
     const auto &strList_opt = snpe->getInputTensorNames();
 
@@ -57,10 +57,6 @@ std::unique_ptr<zdl::DlSystem::ITensor> loadInputTensorNew(std::unique_ptr<zdl::
     if (!strList_opt) throw std::runtime_error("Error obtaining Input tensor names");
     const auto &strList = *strList_opt;
     assert (strList.size() == 1);
-
-    vector<Mat> myImage = imread("/data/openpilot/selfdrive/traffic/GREEN.png");
-//    std::vector<float> inputVec = loadFloatDataFile("/data/openpilot/selfdrive/traffic/GREEN.png");
-
 
     const auto &inputDims_opt = snpe->getInputDimensions(strList.at(0));
     const auto &inputShape = *inputDims_opt;
@@ -94,10 +90,17 @@ extern "C" {
       initializeSNPE(runt);
   }
 
+  void multi_test(double **x, int n, int m){
+    std::cout << n;
+    std::cout << "\n";
+    std::cout << m;
+  }
+
   float run_model(){
       int size = 49;
-      std::unique_ptr<zdl::DlSystem::ITensor> inputTensor = loadInputTensorNew(snpe);
-      executeNetwork (snpe , inputTensor); // ITensor
+      float[4] = [1,2,3,4];
+//      std::unique_ptr<zdl::DlSystem::ITensor> inputTensor = loadInputTensorNew(snpe, inputVec);
+//      executeNetwork (snpe , inputTensor); // ITensor
 
 //      std::vector<float> inputVec;
 //      for (int i = 0; i < size; i++ ) {
