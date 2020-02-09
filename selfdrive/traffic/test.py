@@ -53,8 +53,9 @@ x = np.array(multi_array, dtype='float64')
 
 W, H = 1164, 874
 
-# img = cv2.imread('/data/openpilot/selfdrive/traffic/GREEN.png')
-# img = cv2.resize(img, dsize=(W // 2, H // 2), interpolation=cv2.INTER_CUBIC)
+img = cv2.imread('/data/openpilot/selfdrive/traffic/GREEN.png')
+img = cv2.resize(img, dsize=(W // 2, H // 2), interpolation=cv2.INTER_CUBIC)
+cv2.imwrite('/data/openpilot/selfdrive/traffic/GREEN.png', img)
 # img = np.asarray(img) / 255
 with open('/data/openpilot/selfdrive/traffic/phot_red', 'rb') as f:
     img = pickle.load(f)
