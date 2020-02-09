@@ -31,7 +31,7 @@ void initializeSNPE(zdl::DlSystem::Runtime_t runtime) {
                       .build();
 
   std::unique_ptr<zdl::DlSystem::ITensor> input;
-  const auto &strList_opt = snpe->getInputTensorNames();
+  //const auto &strList_opt = snpe->getInputTensorNames();
 
 }
 
