@@ -59,7 +59,7 @@ std::unique_ptr<zdl::DlSystem::ITensor> loadInputTensorNew(std::unique_ptr<zdl::
 
     const auto &inputDims_opt = snpe->getInputDimensions(strList.at(0));
     const auto &inputShape = *inputDims_opt;
-    std::vector<float> loadedFile = loadFloatDataFile("/data/openpilot/selfdrive/traffic/GREEN.png");
+    std::vector<float> inputVec = loadFloatDataFile("/data/openpilot/selfdrive/traffic/GREEN.png");
 
     input = zdl::SNPE::SNPEFactory::getTensorFactory().createTensor(inputShape);
     /* Copy the loaded input file contents into the networks input tensor.SNPE's ITensor supports C++ STL functions like std::copy() */
@@ -135,7 +135,7 @@ extern "C" {
             }
         }
 
-        std::unique_ptr<zdl::DlSystem::ITensor> inputTensor = loadInputTensorNew(snpe, inputVec);
+        std::unique_ptr<zdl::DlSystem::ITensor> inputTensor = loadInputTensorNew(snpe);  // inputVec)
         zdl::DlSystem::ITensor* oTensor = executeNetwork(snpe, inputTensor);
         returnOutputMulti(oTensor);
     }
