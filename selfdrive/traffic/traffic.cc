@@ -98,6 +98,7 @@ extern "C" {
 //        std::cout << "\n";
 
         std::vector < std::vector < std::vector<float> > > inputVec;
+        std::vector<float> newInputVec;
 
         for (int i = 0; i < x; ++i) {
             inputVec.push_back(std::vector<std::vector<float> >());
@@ -105,11 +106,13 @@ extern "C" {
                 inputVec[i].push_back(std::vector<float>());
                 for (int k = 0; k < z; ++k){
                     inputVec[i][j].push_back(inputArray[i][j][k]);
+                    newInputVec.push_back(inputArray[i][j][k]);
                     // std::cout << inputArray[i][j][k] << "\n";
                     // std::cout << inputVec[i][j][k] << '\n';
                 }
             }
         }
+
         std::unique_ptr<zdl::DlSystem::ITensor> inputTensor = loadInputTensorNew(snpe, inputVec);
         // executeNetwork (snpe , inputTensor); // ITensor
     }
