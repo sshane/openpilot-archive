@@ -16,7 +16,7 @@ def multi_test_a(x):
     ap = ffi.new("double* [{}][{}]".format(x.shape[0], x.shape[1]))
     for i in range(x.shape[0]):
         for k in range(x.shape[1]):
-            ap[i][k] = ffi.cast("double **", x[i][k].ctypes.data)
+            ap[i][k] = ffi.cast("double* [{}]".format(x.shape[1]), x[i][k].ctypes.data)
     traffic_model.multi_test(ap, x.shape[0], x.shape[1], x.shape[2])
 
 def multi_test_b(x):
