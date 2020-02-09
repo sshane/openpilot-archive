@@ -108,7 +108,7 @@ extern "C" {
         initializeSNPE(runt);
     }
 
-    void multi_test(double inputArray[4][3][2], int x, int y, int z){
+    void multi_test(double inputArray[437][582][3], int x, int y, int z){
 //        std::cout << x;
 //        std::cout << "\n";
 //        std::cout << y;
