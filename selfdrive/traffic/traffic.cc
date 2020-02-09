@@ -96,13 +96,9 @@ extern "C" {
     std::cout << "\n";
     std::cout << z;
     std::cout << "\n";
-    for (int i = 0; i < x; ++i)
-    {
-        for (int j = 0; j < y; ++j)
-        {
-            for (int k = 0; k < z; ++k){
-                std::cout << inputArray[i][j][k] << ' ';
-            }
+    for (int i = 0; i < x; ++i) {
+        for (int j = 0; j < y; ++j) {
+            std::cout << inputArray[i][j] << ' ';
         }
         std::cout << std::endl;
     }

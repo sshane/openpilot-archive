@@ -17,7 +17,7 @@ def multi_test_b(x):
         ap[i] = ptr + i*x.shape[1]
     traffic_model.multi_test(ap, x.shape[0], x.shape[1], x.shape[2])
 
-multi_array = np.random.rand(2, 4, 5)
+multi_array = np.random.rand(2, 4)
 
 x = np.array(multi_array, dtype='float64')
 
