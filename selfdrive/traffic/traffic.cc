@@ -90,9 +90,11 @@ extern "C" {
   }
 
   void multi_test(double **inputArray, int x, int y, int z){
-    std::cout << n;
+    std::cout << x;
     std::cout << "\n";
-    std::cout << m;
+    std::cout << y;
+    std::cout << "\n";
+    std::cout << z;
     std::cout << "\n";
     for (int i = 0; i < x; ++i)
     {
