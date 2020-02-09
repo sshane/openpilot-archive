@@ -90,7 +90,7 @@ float returnOutputMulti(const zdl::DlSystem::ITensor* tensor) {
         std::cout << op << "\n";
         outputs.push_back(op);
     }
-    return 1.0
+    return 1.0;
 //  float gas = outputs.at(0);
 //  float brake = outputs.at(1);
 //  if (gas > brake) {

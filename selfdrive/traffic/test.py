@@ -47,7 +47,7 @@ def multi_test_b(x):
 multi_array = np.random.rand(4, 3, 2)
 
 x = np.array(multi_array, dtype='float64')
-print(x)
+# print(x)
 
 multi_test_a(x)
 
