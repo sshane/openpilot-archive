@@ -1,4 +1,5 @@
 #include "traffic.h"
+#include <opencv2/opencv.hpp>
 using namespace std;
 
 std::unique_ptr<zdl::SNPE::SNPE> snpe;
@@ -57,7 +58,8 @@ std::unique_ptr<zdl::DlSystem::ITensor> loadInputTensorNew(std::unique_ptr<zdl::
     const auto &strList = *strList_opt;
     assert (strList.size() == 1);
 
-    std::vector<float> inputVec = loadFloatDataFile("/data/openpilot/selfdrive/traffic/GREEN.png");
+    vector<Mat> myImage = imread("/data/openpilot/selfdrive/traffic/GREEN.png");
+//    std::vector<float> inputVec = loadFloatDataFile("/data/openpilot/selfdrive/traffic/GREEN.png");
 
 
     const auto &inputDims_opt = snpe->getInputDimensions(strList.at(0));
@@ -94,7 +96,7 @@ extern "C" {
 
   float run_model(){
       int size = 49;
-      std::unique_ptr<zdl::DlSystem::ITensor> inputTensor = testFun(snpe);
+      std::unique_ptr<zdl::DlSystem::ITensor> inputTensor = loadInputTensorNew(snpe);
       executeNetwork (snpe , inputTensor); // ITensor
 
 //      std::vector<float> inputVec;
