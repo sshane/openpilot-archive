@@ -49,10 +49,9 @@ std::unique_ptr<zdl::DlSystem::ITensor> loadInputTensor(std::unique_ptr<zdl::SNP
 }
 
 void testFun(std::unique_ptr<zdl::SNPE::SNPE> &snpe) {
-    std::cout << "here!";
-//  std::unique_ptr<zdl::DlSystem::ITensor> input;
-//  const auto &strList_opt = snpe->getInputTensorNames();
-//  if (!strList_opt) throw std::runtime_error("Error obtaining Input tensor names");
+    std::unique_ptr<zdl::DlSystem::ITensor> input;
+    const auto &strList_opt = snpe->getInputTensorNames();
+    if (!strList_opt) throw std::runtime_error("Error obtaining Input tensor names");
 //  const auto &strList = *strList_opt;
 //  std::cout << strList_opt;
 //
