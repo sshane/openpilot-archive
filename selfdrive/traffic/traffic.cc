@@ -65,9 +65,9 @@ std::unique_ptr<zdl::DlSystem::ITensor> loadInputTensorNew(std::unique_ptr<zdl::
 	    std::cout << inputVec.at(i) << '\n';
     }
 
-    double max = *max_element(vector.begin(), vector.end());
+    double max = *max_element(std::vector.begin(), std::vector.end());
     cout<<"Max value: "<<max<<endl;
-    double min = *min_element(vector.begin(), vector.end());
+    double min = *min_element(std::vector.begin(), std::vector.end());
     cout<<"Min value: "<<min<<endl;
 
     input = zdl::SNPE::SNPEFactory::getTensorFactory().createTensor(inputShape);
