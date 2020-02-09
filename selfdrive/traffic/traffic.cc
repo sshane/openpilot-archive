@@ -95,7 +95,14 @@ extern "C" {
     std::cout << m;
     std::cout << "\n";
     std::cout << x;
-
+    for (int i = 0; i < n; ++i)
+    {
+        for (int j = 0; j < m; ++j)
+        {
+            std::cout << x[i][j] << ' ';
+        }
+        std::cout << std::endl;
+    }
   }
 
   float run_model(){
