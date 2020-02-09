@@ -89,7 +89,7 @@ extern "C" {
       initializeSNPE(runt);
   }
 
-  void multi_test(double ***inputArray, int x, int y, int z){
+  void multi_test(double[][] inputArray, int x, int y, int z){
     std::cout << x;
     std::cout << "\n";
     std::cout << y;
@@ -98,9 +98,7 @@ extern "C" {
     std::cout << "\n";
     for (int i = 0; i < x; ++i) {
         for (int j = 0; j < y; ++j) {
-            for (int k = 0; k < z; ++k) {
-                std::cout << inputArray[i][j][k] << ' ';
-            }
+            std::cout << inputArray[i][j][k] << ' ';
         }
         std::cout << std::endl;
     }
