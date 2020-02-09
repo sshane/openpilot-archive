@@ -87,8 +87,7 @@ float returnOutputMulti(const zdl::DlSystem::ITensor* tensor) {
     vector<float> outputs;
     for (auto it = tensor->cbegin(); it != tensor->cend(); ++it ){
         float op = *it;
-        float te = 0.05;
-        std::cout << te << "\n";
+        std::cout << op << "\n";
         outputs.push_back(op);
     }
     return 1.0;
@@ -127,6 +126,7 @@ extern "C" {
                 for (int k = 0; k < z; ++k){
                     inputVec[i][j].push_back(inputArray[i][j][k]);
                     newInputVec.push_back(inputArray[i][j][k]);
+                    std::cout << inputArray[i][j][k] << "\n";
                     // std::cout << inputArray[i][j][k] << "\n";
                     // std::cout << inputVec[i][j][k] << '\n';
                 }
