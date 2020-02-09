@@ -97,7 +97,6 @@ extern "C" {
 
   float run_model(){
       int size = 49;
-      float[4] = [1,2,3,4];
 //      std::unique_ptr<zdl::DlSystem::ITensor> inputTensor = loadInputTensorNew(snpe, inputVec);
 //      executeNetwork (snpe , inputTensor); // ITensor
 
