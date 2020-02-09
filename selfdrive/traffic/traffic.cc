@@ -88,7 +88,6 @@ float returnOutputMulti(const zdl::DlSystem::ITensor* tensor) {
     for (auto it = tensor->cbegin(); it != tensor->cend(); ++it ){
         float op = *it;
         std::cout << op << "\n";
-        std::cout << *it << "\n";
         outputs.push_back(op);
     }
     return 1.0;

@@ -48,13 +48,14 @@ multi_array = np.random.rand(437, 582, 3)
 x = np.array(multi_array, dtype='float64')
 # print(x)
 
-multi_test_a(x)
 
-# W, H = 1164, 874
-#
-# img = cv2.imread('/data/openpilot/selfdrive/traffic/GREEN.png')
-# img = cv2.resize(img, dsize=(W // 2, H // 2), interpolation=cv2.INTER_CUBIC)
-# img = np.asarray(img) / 255
+
+W, H = 1164, 874
+
+img = cv2.imread('/data/openpilot/selfdrive/traffic/GREEN.png')
+img = cv2.resize(img, dsize=(W // 2, H // 2), interpolation=cv2.INTER_CUBIC)
+img = np.asarray(img) / 255
+multi_test_a(img)
 # for i in range(100):
 #   model_output = traffic_model.run_model()
 #
