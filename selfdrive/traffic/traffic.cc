@@ -62,7 +62,7 @@ std::unique_ptr<zdl::DlSystem::ITensor> loadInputTensorNew(std::unique_ptr<zdl::
 
     input = zdl::SNPE::SNPEFactory::getTensorFactory().createTensor(inputShape);
     /* Copy the loaded input file contents into the networks input tensor.SNPE's ITensor supports C++ STL functions like std::copy() */
-    input->begin() = inputVec();
+    input->begin() = inputVec;
     // std::copy(inputVec.begin(), inputVec.end(), input->begin());
     return input;
 
