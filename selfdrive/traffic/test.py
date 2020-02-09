@@ -11,7 +11,7 @@ start = time.time()
 
 def multi_test_b(x):
     dsize = ffi.sizeof("double")
-    ap = ffi.new("double* [%d]" % (x.shape[0]))
+    ap = ffi.new("double* [%d]" % 3)
     ptr = ffi.cast("double *", x.ctypes.data)
     for i in range(x.shape[0]):
         ap[i] = ptr + i*x.shape[1]
