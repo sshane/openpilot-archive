@@ -13,7 +13,7 @@ img = cv2.imread('/data/openpilot/selfdrive/traffic/green.png')
 img = cv2.resize(img, dsize=(W // 2, H // 2), interpolation=cv2.INTER_CUBIC)
 img = np.asarray(img) / 255
 for i in range(100):
-  model_output = traffic_model.run_model(img)
+  model_output = traffic_model.run_model()
 
 print('Took: {} seconds'.format(time.time() - start))
 print(model_output)

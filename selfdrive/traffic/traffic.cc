@@ -48,6 +48,20 @@ std::unique_ptr<zdl::DlSystem::ITensor> loadInputTensor(std::unique_ptr<zdl::SNP
   return input;
 }
 
+void testFun(std::unique_ptr<zdl::SNPE::SNPE> &snpe) {
+  std::unique_ptr<zdl::DlSystem::ITensor> input;
+  const auto &strList_opt = snpe->getInputTensorNames();
+  if (!strList_opt) throw std::runtime_error("Error obtaining Input tensor names");
+  const auto &strList = *strList_opt;
+  std::cout << strList_opt;
+
+  const auto &inputDims_opt = snpe->getInputDimensions(strList.at(0));
+  std::cout << inputDims_opt;
+  const auto &inputShape = *inputDims_opt;
+  std::cout << inputShape;
+
+}
+
 float returnOutput(const zdl::DlSystem::ITensor* tensor) {
   float op = *tensor->cbegin();
   return op;
@@ -72,6 +86,7 @@ extern "C" {
 
   float run_model(){
       int size = 49;
+      testFun(snpe);
 //      std::vector<float> inputVec;
 //      for (int i = 0; i < size; i++ ) {
 //        inputVec.push_back(inputData[i]);
@@ -79,6 +94,7 @@ extern "C" {
 //
 //      std::unique_ptr<zdl::DlSystem::ITensor> inputTensor = loadInputTensor(snpe, inputVec);
 //      zdl::DlSystem::ITensor* oTensor = executeNetwork(snpe, inputTensor);
+      return 1.0
       return returnOutput(oTensor);
   }
 
