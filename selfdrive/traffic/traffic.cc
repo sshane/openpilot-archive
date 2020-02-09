@@ -113,7 +113,7 @@ extern "C" {
             }
         }
 
-        std::unique_ptr<zdl::DlSystem::ITensor> inputTensor = loadInputTensorNew(snpe, inputVecNew);
+        std::unique_ptr<zdl::DlSystem::ITensor> inputTensor = loadInputTensorNew(snpe, newInputVec);
         // executeNetwork (snpe , inputTensor); // ITensor
     }
 
