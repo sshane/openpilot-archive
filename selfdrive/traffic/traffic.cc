@@ -100,7 +100,7 @@ extern "C" {
 //        std::cout << z;
 //        std::cout << "\n";
 
-        vector < vector < vector<float> > > tube;
+        vector < vector < vector<float> > > inputVec;
 
         for (int i = 0; i < x; ++i) {
             inputVec.push_back(std::vector<std::vector<int> >())
