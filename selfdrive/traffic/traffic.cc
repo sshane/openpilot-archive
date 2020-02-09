@@ -93,6 +93,9 @@ extern "C" {
     std::cout << n;
     std::cout << "\n";
     std::cout << m;
+    std::cout << "\n";
+    std::cout << x;
+
   }
 
   float run_model(){
