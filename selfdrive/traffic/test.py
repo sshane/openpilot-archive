@@ -17,6 +17,16 @@ def multi_test_b(x):
         ap[i] = ptr + i*x.shape[1]
     traffic_model.multi_test(ap, x.shape[0], x.shape[1])
 
+multi_array = [[1.1, 2.2, 1.3, 4.4, 5.5],
+               [5.0, 3.0, 2.0, 1.0, 3],
+               [6.0, 1.0, -3.2, -1, 2],
+               [0.0, 1.0, 1.0, 2.0, 1]]
+x = [np.array(v, dtype='float64') for v in multi_array]
+x = np.array(multi_array, dtype='float64')
+
+
+multi_test_b(x)
+
 # W, H = 1164, 874
 #
 # img = cv2.imread('/data/openpilot/selfdrive/traffic/GREEN.png')
