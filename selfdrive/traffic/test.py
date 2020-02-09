@@ -58,6 +58,9 @@ W, H = 1164, 874
 # img = np.asarray(img) / 255
 with open('/data/openpilot/selfdrive/traffic/phot_red', 'rb') as f:
     img = pickle.load(f)
+
+print(img.shape)
+img.reshape(582, 437, 3)
 print(img.shape)
 multi_test_a(img)
 # for i in range(100):
