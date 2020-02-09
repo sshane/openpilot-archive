@@ -16,5 +16,5 @@
 extern "C"{
   void init_model();
   float run_model();
-  void void multi_test(double **inputArray, int x, int y, int z);
+  void multi_test(double **inputArray, int x, int y, int z);
 }
