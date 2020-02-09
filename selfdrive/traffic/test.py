@@ -5,24 +5,41 @@ import numpy as np
 
 traffic_model, ffi = traffic_wrapper.get_wrapper()
 traffic_model.init_model()
-start = time.time()
+# start = time.time()
 # model_output = traffic_model.run_model()
 # print(model_output)
-
+# from cffi import FFI
+#
+# ffi = FFI()
 
 
 def multi_test_b(x):
-    ap = ffi.new("double* [%d]" % (x.shape[0]))
+    dsize = ffi.sizeof("double")
+    ap = ffi.new("double* [{}][{}]".format(x.shape[0], x.shape[1]))
     ptr = ffi.cast("double *", x.ctypes.data)
     for i in range(x.shape[0]):
-        ap[i] = ptr + i*x.shape[1]
-    print(ap)
-    traffic_model.multi_test(ap, x.shape[0], x.shape[1], 0)
+        for k in range(x.shape[1]):
+            print(ap[i])
+            ap[i][k] = ptr + i*x.shape[1] + i*x.shape[2]
+            print(ap[i])
+    traffic_model.multi_test(ap, x.shape[0], x.shape[1], x.shape[2])
+    # C.multi_test(ap, x.shape[0], x.shape[1])
 
-multi_array = np.random.rand(2, 4)
+
+# def multi_test_b(x):
+#     ap = ffi.new("double** [%d]" % (x.shape[0]))
+#     ptr = ffi.cast("double **", x.ctypes.data)
+#     for i in range(x.shape[0]):
+#         ap[i] = ptr + i*x.shape[1]
+#         for z in range(x.shape[1]):
+#             ap[i][z] = ptr + i*x.shape[1]
+#     print(ap)
+#     # traffic_model.multi_test(ap, x.shape[0], x.shape[1], x.shape[2])
+
+multi_array = np.random.rand(4, 3, 2)
 
 x = np.array(multi_array, dtype='float64')
-
+print(x)
 
 multi_test_b(x)
 
