@@ -29,6 +29,10 @@ void initializeSNPE(zdl::DlSystem::Runtime_t runtime) {
                       .setUseUserSuppliedBuffers(false)
                       .setPerformanceProfile(zdl::DlSystem::PerformanceProfile_t::HIGH_PERFORMANCE)
                       .build();
+
+  std::unique_ptr<zdl::DlSystem::ITensor> input;
+  const auto &strList_opt = snpe->getInputTensorNames();
+
 }
 
 
