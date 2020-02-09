@@ -13,7 +13,7 @@ def get_wrapper():  # initialize st model and process long predictions
     ffi.cdef("""    
     void init_model();
     float run_model();
-    void multi_test(double **x, int n, int m);
+    void multi_test(double **x, int x, int y, int z);
     """)
 
     return ffi.dlopen(libmpc_fn), ffi

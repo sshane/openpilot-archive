@@ -89,17 +89,17 @@ extern "C" {
       initializeSNPE(runt);
   }
 
-  void multi_test(double **x, int n, int m){
+  void multi_test(double **x, int x, int y, int z){
     std::cout << n;
     std::cout << "\n";
     std::cout << m;
     std::cout << "\n";
-    std::cout << x;
-    for (int i = 0; i < n; ++i)
+    for (int i = 0; i < x; ++i)
     {
-        for (int j = 0; j < m; ++j)
+        for (int j = 0; j < y; ++j)
         {
-            std::cout << x[i][j] << ' ';
+            for (int k = 0; k < z; k++)
+                std::cout << x[i][j][k] << ' ';
         }
         std::cout << std::endl;
     }
