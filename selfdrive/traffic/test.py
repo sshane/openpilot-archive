@@ -53,7 +53,7 @@ x = np.array(multi_array, dtype='float64')
 
 W, H = 1164, 874
 
-img = cv2.imread('/data/openpilot/selfdrive/traffic/GREEN.png')
+img = cv2.imread('/data/openpilot/selfdrive/traffic/GREEN_high.png')
 img = cv2.resize(img, dsize=(W // 2, H // 2), interpolation=cv2.INTER_CUBIC)
 cv2.imwrite('/data/openpilot/selfdrive/traffic/GREEN.png', img)
 # img = np.asarray(img) / 255
