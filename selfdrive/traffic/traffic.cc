@@ -77,6 +77,9 @@ zdl::DlSystem::ITensor* executeNetwork(std::unique_ptr<zdl::SNPE::SNPE>& snpe,
   static zdl::DlSystem::TensorMap outputTensorMap;
   snpe->execute(input.get(), outputTensorMap);
   zdl::DlSystem::StringList tensorNames = outputTensorMap.getTensorNames();
+  std::cout << tensorNames.at(0) << "\n";
+  std::cout << tensorNames.at(1) << "\n";
+  std::cout << tensorNames.at(2) << "\n";
 
   const char* name = tensorNames.at(0);  // only should the first
   auto tensorPtr = outputTensorMap.getTensor(name);
