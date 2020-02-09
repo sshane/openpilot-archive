@@ -107,7 +107,7 @@ extern "C" {
             for (int j = 0; j < y; ++j) {
                 inputVec[i].push_back(std::vector<float>());
                 for (int k = 0; k < z; ++k){
-                    tube[i][j].push_back(inputArray[i][j][k]);
+                    inputVec[i][j].push_back(inputArray[i][j][k]);
                     std::cout << inputArray[i][j][k] << "\n";
                     std::cout << inputVec[i][j][k] << '\n';
                 }
