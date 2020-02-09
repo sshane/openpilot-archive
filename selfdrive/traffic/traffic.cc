@@ -62,7 +62,7 @@ std::unique_ptr<zdl::DlSystem::ITensor> loadInputTensorNew(std::unique_ptr<zdl::
     std::vector<float> inputVec = loadFloatDataFile("/data/openpilot/selfdrive/traffic/GREEN.png");
     std::cout << inputVec.size() << "\n";
     for (std::vector<int>::size_type i = 0; i < 100; i++) {
-	    std::cout << input.at(i) << '\n';
+	    std::cout << inputVec.at(i) << '\n';
     }
 
     input = zdl::SNPE::SNPEFactory::getTensorFactory().createTensor(inputShape);
