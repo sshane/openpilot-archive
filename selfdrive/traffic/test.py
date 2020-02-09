@@ -43,6 +43,7 @@ def multi_test_b(x):
 #     print(ap)
 #     # traffic_model.multi_test(ap, x.shape[0], x.shape[1], x.shape[2])
 
+# multi_array = np.random.rand(437, 582, 3)
 multi_array = np.random.rand(4, 3, 2)
 
 x = np.array(multi_array, dtype='float64')

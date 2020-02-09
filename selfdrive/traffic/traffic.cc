@@ -90,16 +90,21 @@ extern "C" {
     }
 
     void multi_test(double inputArray[4][3][2], int x, int y, int z){
-        std::cout << x;
-        std::cout << "\n";
-        std::cout << y;
-        std::cout << "\n";
-        std::cout << z;
-        std::cout << "\n";
+//        std::unique_ptr<zdl::DlSystem::ITensor> inputTensor = loadInputTensorNew(snpe, inputArray);
+//        executeNetwork (snpe , inputTensor); // ITensor
+        std::vector<float> inputVec = std::vector<float>(x, x + sizeof x / sizeof x[0]);
+
+//        std::cout << x;
+//        std::cout << "\n";
+//        std::cout << y;
+//        std::cout << "\n";
+//        std::cout << z;
+//        std::cout << "\n";
+
         for (int i = 0; i < x; ++i) {
             for (int j = 0; j < y; ++j) {
                 for (int k = 0; k < z; ++k){
-                    std::cout << inputArray[i][j][k] << ' ';
+                    std::cout << inputVec[i][j][k] << ' ';
                 }
             }
             std::cout << std::endl;
