@@ -2,6 +2,7 @@ import time
 from selfdrive.traffic import traffic_wrapper
 import cv2
 import numpy as np
+import pickle
 
 traffic_model, ffi = traffic_wrapper.get_wrapper()
 traffic_model.init_model()
@@ -52,9 +53,12 @@ x = np.array(multi_array, dtype='float64')
 
 W, H = 1164, 874
 
-img = cv2.imread('/data/openpilot/selfdrive/traffic/GREEN.png')
-img = cv2.resize(img, dsize=(W // 2, H // 2), interpolation=cv2.INTER_CUBIC)
-img = np.asarray(img) / 255
+# img = cv2.imread('/data/openpilot/selfdrive/traffic/GREEN.png')
+# img = cv2.resize(img, dsize=(W // 2, H // 2), interpolation=cv2.INTER_CUBIC)
+# img = np.asarray(img) / 255
+with open('/data/openpilot/selfdrive/traffic/phot', 'rb') as f:
+    img = pickle.load(f)
+print(img.shape)
 multi_test_a(img)
 # for i in range(100):
 #   model_output = traffic_model.run_model()
