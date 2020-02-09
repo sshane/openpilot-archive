@@ -101,7 +101,7 @@ extern "C" {
         for (int j = 0; j < y; ++j)
         {
             for (int k = 0; k < z; k++)
-                std::cout << x[i][j][k] << ' ';
+                std::cout << inputArray[i][j][k] << ' ';
         }
         std::cout << std::endl;
     }
