@@ -48,7 +48,7 @@ std::unique_ptr<zdl::DlSystem::ITensor> loadInputTensor(std::unique_ptr<zdl::SNP
   return input;
 }
 
-std::unique_ptr<zdl::DlSystem::ITensor> loadInputTensorNew(std::unique_ptr<zdl::SNPE::SNPE> &snpe, std::vector<float> inputVec) {
+std::unique_ptr<zdl::DlSystem::ITensor> loadInputTensorNew(std::unique_ptr<zdl::SNPE::SNPE> &snpe, std::vector < std::vector < std::vector<float> > > inputVec) {
     std::unique_ptr<zdl::DlSystem::ITensor> input;
     const auto &strList_opt = snpe->getInputTensorNames();
 
@@ -62,7 +62,8 @@ std::unique_ptr<zdl::DlSystem::ITensor> loadInputTensorNew(std::unique_ptr<zdl::
 
     input = zdl::SNPE::SNPEFactory::getTensorFactory().createTensor(inputShape);
     /* Copy the loaded input file contents into the networks input tensor.SNPE's ITensor supports C++ STL functions like std::copy() */
-    std::copy(inputVec.begin(), inputVec.end(), input->begin());
+    input->begin() = inputVec();
+    // std::copy(inputVec.begin(), inputVec.end(), input->begin());
     return input;
 
 }
@@ -133,7 +134,7 @@ extern "C" {
             }
         }
 
-        std::unique_ptr<zdl::DlSystem::ITensor> inputTensor = loadInputTensorNew(snpe, newInputVec);
+        std::unique_ptr<zdl::DlSystem::ITensor> inputTensor = loadInputTensorNew(snpe, inputVec);
         zdl::DlSystem::ITensor* oTensor = executeNetwork(snpe, inputTensor);
         returnOutputMulti(oTensor);
     }
