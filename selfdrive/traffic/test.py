@@ -12,8 +12,9 @@ start = time.time()
 
 
 def multi_test_b(x):
-    arr = ffi.new("double[][]", x)
-    traffic_model.multi_test(arr, x.shape[0], x.shape[1], 0)
+    arr = ffi.new("double[][]*")
+    ptr = ffi.cast("double *", x.ctypes.data)
+    traffic_model.multi_test(ptr, x.shape[0], x.shape[1], 0)
 
 # def multi_test_b(x):
 #     ap = ffi.new("double* [%d]" % (x.shape[0]))
