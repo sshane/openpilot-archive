@@ -92,7 +92,7 @@ extern "C" {
     void multi_test(double inputArray[4][3][2], int x, int y, int z){
 //        std::unique_ptr<zdl::DlSystem::ITensor> inputTensor = loadInputTensorNew(snpe, inputArray);
 //        executeNetwork (snpe , inputTensor); // ITensor
-        std::vector<float> inputVec = std::vector<float>(x, x + sizeof x / sizeof x[0]);
+        std::vector < std::vector < std::vector<float> > > inputVec;
 
 //        std::cout << x;
 //        std::cout << "\n";
@@ -102,9 +102,13 @@ extern "C" {
 //        std::cout << "\n";
 
         for (int i = 0; i < x; ++i) {
+            inputVec.push_back(std::vector<std::vector<int> >())
             for (int j = 0; j < y; ++j) {
+                inputVec[i].push_back(std::vector<float>());
                 for (int k = 0; k < z; ++k){
-                    std::cout << inputVec[i][j][k] << ' ';
+                    tube[i][j].push_back(inputArray[i][j][k]);
+                    std::cout << inputArray[i][j][k] << "\n";
+                    std::cout << inputVec[i][j][k] << '\n';
                 }
             }
             std::cout << std::endl;
