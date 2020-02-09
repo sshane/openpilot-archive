@@ -59,10 +59,9 @@ void testFun(std::unique_ptr<zdl::SNPE::SNPE> &snpe) {
 
 
     const auto &inputDims_opt = snpe->getInputDimensions(strList.at(0));
-    std::cout << inputDims_opt;
     const auto &inputShape = *inputDims_opt;
 
-    std::cout << inputDims_opt;
+    std::cout << inputShape;
     std::cout << "\n";
 
 }
