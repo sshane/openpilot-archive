@@ -126,7 +126,7 @@ extern "C" {
                 for (int k = 0; k < z; ++k){
                     inputVec[i][j].push_back(inputArray[i][j][k]);
                     newInputVec.push_back(inputArray[i][j][k]);
-                    std::cout << inputArray[i][j][k] << "\n";
+                    // std::cout << inputArray[i][j][k] << "\n";
                     // std::cout << inputArray[i][j][k] << "\n";
                     // std::cout << inputVec[i][j][k] << '\n';
                 }
