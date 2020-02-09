@@ -15,9 +15,9 @@ def multi_test_b(x):
     ptr = ffi.cast("double *", x.ctypes.data)
     for i in range(x.shape[0]):
         ap[i] = ptr + i*x.shape[1]
-    traffic_model.multi_test(ap, x.shape[0], x.shape[1], 0)
+    traffic_model.multi_test(ap, x.shape[0], x.shape[1], x.shape[2])
 
-multi_array = np.random.rand(2, 4)
+multi_array = np.random.rand(2, 4, 5)
 
 x = np.array(multi_array, dtype='float64')
 

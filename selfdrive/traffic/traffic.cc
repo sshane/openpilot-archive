@@ -98,7 +98,9 @@ extern "C" {
     std::cout << "\n";
     for (int i = 0; i < x; ++i) {
         for (int j = 0; j < y; ++j) {
-            std::cout << inputArray[i][j] << ' ';
+            for (int k = 0; k < y; ++k) {
+                std::cout << inputArray[i][j][k] << ' ';
+            }
         }
         std::cout << std::endl;
     }
