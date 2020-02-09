@@ -17,7 +17,7 @@ def multi_test_b(x):
     for i in range(x.shape[0]):
         ap[i] = ptr + i*x.shape[1]
     print(ap)
-    traffic_model.multi_test(ap, x.shape[0], x.shape[1], x.shape[2])
+    traffic_model.multi_test(ap, x.shape[0], x.shape[1], 0)
 
 multi_array = np.random.rand(2, 4)
 
