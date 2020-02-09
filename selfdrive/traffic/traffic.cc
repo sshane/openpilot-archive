@@ -1,5 +1,4 @@
 #include "traffic.h"
-#include <opencv2/opencv.hpp>
 using namespace std;
 
 std::unique_ptr<zdl::SNPE::SNPE> snpe;
