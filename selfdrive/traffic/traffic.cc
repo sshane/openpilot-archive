@@ -83,6 +83,25 @@ zdl::DlSystem::ITensor* executeNetwork(std::unique_ptr<zdl::SNPE::SNPE>& snpe,
   return tensorPtr;
 }
 
+float returnOutputMulti(const zdl::DlSystem::ITensor* tensor) {
+    vector<float> outputs;
+    for (auto it = tensor->cbegin(); it != tensor->cend(); ++it ){
+        float op = *it;
+        std::cout << op << "\n";
+        outputs.push_back(op);
+    }
+    return 1.0
+//  float gas = outputs.at(0);
+//  float brake = outputs.at(1);
+//  if (gas > brake) {
+//    return gas;
+//  } else if (brake > gas){
+//    return -brake;
+//  } else {
+//    return 0.0;
+//  }
+}
+
 extern "C" {
     void init_model(){
         zdl::DlSystem::Runtime_t runt=checkRuntime();
@@ -114,7 +133,8 @@ extern "C" {
         }
 
         std::unique_ptr<zdl::DlSystem::ITensor> inputTensor = loadInputTensorNew(snpe, newInputVec);
-        // executeNetwork (snpe , inputTensor); // ITensor
+        zdl::DlSystem::ITensor* oTensor = executeNetwork(snpe, inputTensor);
+        returnOutputMulti(oTensor);
     }
 
     float run_model(){
