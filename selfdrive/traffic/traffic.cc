@@ -85,7 +85,7 @@ extern "C" {
 
   float run_model(){
       int size = 49;
-//      testFun(snpe);
+      testFun(snpe);
 //      std::vector<float> inputVec;
 //      for (int i = 0; i < size; i++ ) {
 //        inputVec.push_back(inputData[i]);
