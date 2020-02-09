@@ -94,8 +94,8 @@ extern "C" {
 //
 //      std::unique_ptr<zdl::DlSystem::ITensor> inputTensor = loadInputTensor(snpe, inputVec);
 //      zdl::DlSystem::ITensor* oTensor = executeNetwork(snpe, inputTensor);
-      return 1.0
-      return returnOutput(oTensor);
+      return 1.0;
+//      return returnOutput(oTensor);
   }
 
 int main(){
