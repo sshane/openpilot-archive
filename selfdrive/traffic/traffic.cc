@@ -100,10 +100,10 @@ extern "C" {
 //        std::cout << z;
 //        std::cout << "\n";
 
-        vector < vector < vector<float> > > inputVec;
+        std::vector < std::vector < std::vector<float> > > inputVec;
 
         for (int i = 0; i < x; ++i) {
-            inputVec.push_back(std::vector<std::vector<int> >())
+            inputVec.push_back(std::vector<std::vector<float> >())
             for (int j = 0; j < y; ++j) {
                 inputVec[i].push_back(std::vector<float>());
                 for (int k = 0; k < z; ++k){
