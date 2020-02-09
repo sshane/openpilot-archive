@@ -13,7 +13,7 @@ traffic_model.init_model()
 # ffi = FFI()
 
 def multi_test_a(x):
-    ap = ffi.new("double* [{}][{}]".format(x.shape[0], x.shape[1]))
+    ap = ffi.new("double** [{}][{}]".format(x.shape[0], x.shape[1]))
     for i in range(x.shape[0]):
         for k in range(x.shape[1]):
             ap[i][k] = ffi.cast("double* [{}]".format(x.shape[1]), x[i][k].ctypes.data)
