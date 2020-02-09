@@ -52,8 +52,8 @@ void testFun(std::unique_ptr<zdl::SNPE::SNPE> &snpe) {
     std::unique_ptr<zdl::DlSystem::ITensor> input;
     const auto &strList_opt = snpe->getInputTensorNames();
     if (!strList_opt) throw std::runtime_error("Error obtaining Input tensor names");
-//  const auto &strList = *strList_opt;
-//  std::cout << strList_opt;
+    const auto &strList = *strList_opt;
+    assert (strList.size() == 1);
 //
 //  const auto &inputDims_opt = snpe->getInputDimensions(strList.at(0));
 //  std::cout << inputDims_opt;
