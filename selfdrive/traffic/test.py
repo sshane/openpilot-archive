@@ -6,6 +6,8 @@ import numpy as np
 traffic_model = traffic_wrapper.get_wrapper()
 traffic_model.init_model()
 start = time.time()
+model_output = traffic_model.run_model()
+print(model_output)
 
 # W, H = 1164, 874
 #
