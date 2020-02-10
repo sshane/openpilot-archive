@@ -30,7 +30,7 @@ print(input_details)
 input_shape = input_details[0]['shape']
 print('Model input shape: {}'.format(input_shape))
 # input_data = np.array(np.random.random_sample(input_shape), dtype=np.float32)
-interpreter.set_tensor(input_details[0]['index'], img)
+interpreter.set_tensor(input_details[0]['index'], img.astype('float32'))
 
 interpreter.invoke()
 
