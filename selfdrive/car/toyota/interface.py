@@ -376,6 +376,8 @@ class CarInterface(CarInterfaceBase):
     # events
     events = []
     traffic_light = self.sm['trafficLights'].status
+    with open('/data/debug1', 'a') as f:
+      f.write('{}\n'.format(traffic_light))
 
     if traffic_light == 'RED':
       events.append(create_event('redLight', [ET.WARNING]))
