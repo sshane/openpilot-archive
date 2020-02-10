@@ -120,7 +120,7 @@ ALERTS = [
       "greenLight",
       "TRAFFIC LIGHT: GREEN",
       "Traffic light ahead is green",
-      AlertStatus.userPrompt, AlertSize.mid,
+      AlertStatus.normal, AlertSize.mid,
       Priority.LOW, VisualAlert.none, AudibleAlert.none, .2, .2, 0.5),
 
   Alert(
