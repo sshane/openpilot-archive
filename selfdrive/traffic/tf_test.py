@@ -8,8 +8,8 @@ W, H = 1164, 874
 
 img = cv2.imread('/data/openpilot/selfdrive/traffic/GREEN_high.png')
 img = cv2.resize(img, dsize=(W // 2, H // 2), interpolation=cv2.INTER_CUBIC)
-img = np.asarray(img, dtype=np.float32)
-print(img)
+img = np.asarray(img, dtype=np.float32) / 255.  # normalize
+
 print(img.shape)
 
 interpreter = tflite.Interpreter(model_path='model.tflite')
@@ -22,7 +22,7 @@ output_details = interpreter.get_output_details()
 input_shape = input_details[0]['shape']
 print('Model input shape: {}'.format(input_shape))
 # input_data = np.array(np.random.random_sample(input_shape), dtype=np.float32)
-interpreter.set_tensor(input_details[0]['index'], img)
+interpreter.set_tensor(input_details[0]['index'], np.array([img]))
 
 interpreter.invoke()
 
