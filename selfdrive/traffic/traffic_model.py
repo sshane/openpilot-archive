@@ -39,9 +39,9 @@ class Traffic:
   def get_traffic(self):
     t = time.time()
     self.past_preds = [i for i in self.past_preds if t - i['time'] <= 1]
-    print(self.last_predict_time - time.time())
+    print(time.time() - self.last_predict_time)
     print(1/self.predictions_per_second)
-    if self.last_predict_time - time.time() >= 1 / self.predictions_per_second:
+    if time.time() - self.last_predict_time >= 1 / self.predictions_per_second:
       print('here')
       self.past_preds.append({'pred': self.traffic_model.predict_traffic(self.get_image()), 'time': time.time()})
       self.last_predict_time = time.time()
