@@ -50,6 +50,8 @@ class Traffic:
 
   def send_traffic(self):
     while True:
+      with open('/data/working', 'a') as f:
+        f.write('in loop\n')
       t = time.time()
       traffic_send = messaging.new_message()
       traffic_send.init('trafficLights')
