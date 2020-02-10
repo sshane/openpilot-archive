@@ -65,14 +65,13 @@ with open('/data/openpilot/selfdrive/traffic/phot_red_8513947', 'rb') as f:
     img2 = np.array([pickle.load(f)]).astype('float32')
 
 print(img1.shape)
-img = img1.flatten().tolist()
+img1 = img1.flatten().tolist()
 print(img2.shape)
 img2 = img2.flatten().tolist()
 
 # img = img.reshape(582, 437, 3)
 # multi_test_a(img)
 t = time.time()
-
 for i in [img1, img2]:
     print(traffic_model.multi_test_new(i))
     print()
