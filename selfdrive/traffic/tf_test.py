@@ -12,7 +12,7 @@ W, H = 1164, 874
 # img = cv2.resize(img, dsize=(W // 2, H // 2), interpolation=cv2.INTER_CUBIC)
 # img = np.asarray(img, dtype=np.float32) / 255.  # normalize
 with open('/data/openpilot/selfdrive/traffic/phot_red', 'rb') as f:
-    img = np.array([pickle.load(f)])
+    img = np.array([pickle.load(f)], dtype=np.float32)
 print(img)
 print(img.shape)
 
