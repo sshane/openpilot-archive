@@ -149,7 +149,7 @@ extern "C" {
         returnOutputMulti(oTensor);
     }
 
-    void multi_test_new(float inputArray[763002]){
+    float multi_test_new(float inputArray[763002]){
         int size = 763002;
         std::vector<float> inputVec;
         for (int i = 0; i < size; i++ ) {
@@ -159,6 +159,7 @@ extern "C" {
         std::unique_ptr<zdl::DlSystem::ITensor> inputTensor = loadInputTensorNew(snpe, inputVec);  // inputVec)
         zdl::DlSystem::ITensor* oTensor = executeNetwork(snpe, inputTensor);
         returnOutputMulti(oTensor);
+        return 1.0;
     }
 
     float run_model(){

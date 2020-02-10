@@ -59,15 +59,25 @@ W, H = 1164, 874
 # img = np.asarray(img) / 255
 
 with open('/data/openpilot/selfdrive/traffic/phot_none_9989287', 'rb') as f:
-    img = np.array([pickle.load(f)]).astype('float32')
+    img1 = np.array([pickle.load(f)]).astype('float32')
 
-print(img.shape)
-img = img.flatten().tolist()
-print(len(img))
+with open('/data/openpilot/selfdrive/traffic/phot_red_8513947', 'rb') as f:
+    img2 = np.array([pickle.load(f)]).astype('float32')
+
+print(img1.shape)
+img = img1.flatten().tolist()
+print(img2.shape)
+img2 = img2.flatten().tolist()
 
 # img = img.reshape(582, 437, 3)
 # multi_test_a(img)
-traffic_model.multi_test_new(img)
+a = []
+t = time.time()
+for i in [img1, img2] * 10:
+    a.append(traffic_model.multi_test_new(img))
+print(time.time() - t)
+# print(a)
+
 
 
 # for i in range(100):
