@@ -2,6 +2,7 @@ import tflite_runtime.interpreter as tflite
 import cv2
 import numpy as np
 import os
+import time
 
 os.chdir('/data/openpilot/selfdrive/traffic')
 W, H = 1164, 874
@@ -16,6 +17,7 @@ interpreter = tflite.Interpreter(model_path='model.tflite')
 # print(dir(interpreter))
 interpreter.allocate_tensors()
 
+t = time.time()
 input_details = interpreter.get_input_details()
 output_details = interpreter.get_output_details()
 
@@ -27,4 +29,5 @@ interpreter.set_tensor(input_details[0]['index'], np.array([img]))
 interpreter.invoke()
 
 output_data = interpreter.get_tensor(output_details[0]['index'])
+print(t-time.time())
 print(output_data)
