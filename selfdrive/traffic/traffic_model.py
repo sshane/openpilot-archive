@@ -72,4 +72,4 @@ class Traffic:
 
 
 
-# traffic = Traffic()
+traffic = Traffic()
