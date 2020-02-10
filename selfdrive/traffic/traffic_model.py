@@ -48,9 +48,10 @@ class Traffic:
     print(time.time() - self.last_predict_time)
     print(1/self.predictions_per_second)
     if time.time() - self.last_predict_time >= 1 / self.predictions_per_second:
-      print('here')
       image = self.get_image()
       if image is not None:
+        with open('/data/working', 'a') as f:
+          f.write('working!\n')
         self.past_preds.append({'pred': self.traffic_model.predict_traffic(image), 'time': time.time()})
         self.last_predict_time = time.time()
     if len(self.past_preds) >= self.predictions_per_second / 2:
