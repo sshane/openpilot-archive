@@ -101,7 +101,7 @@ int returnOutputMulti(const zdl::DlSystem::ITensor* tensor) {
         std::cout << op << "\n";
         outputs.push_back(op);
     }
-    int maxElementIndex = std::max_element(v.begin(),v.end()) - v.begin();
+    int maxElementIndex = std::max_element(outputs.begin(), outputs.end()) - outputs.begin();
     return maxElementIndex;
 //  float gas = outputs.at(0);
 //  float brake = outputs.at(1);
