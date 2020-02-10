@@ -15,18 +15,22 @@ class Traffic:
     self.traffic_model, self.ffi = traffic_wrapper.get_wrapper()
     self.traffic_model.init_model()
     self.image_sock = messaging.sub_sock('image')
+    self.pm = messaging.PubMaster(['trafficLights'])
 
     self.classes = ['RED', 'GREEN', 'YELLOW', 'NONE']
     self.predictions_per_second = 10
     self.last_predict_time = 0
     self.past_preds = []
     self.past_image = None
+    self.sleep_time = 1.0
+
+    self.send_traffic()
 
   def get_image(self):
     msg_data = messaging.recv_one_or_none(self.image_sock)
     if msg_data is None and self.past_image is None:
       return None
-    elif msg_data is None:
+    elif msg_data is None and self.past_image is not None:
       msg_data = self.past_image
 
     image_data = msg_data.thumbnail.thumbnail
@@ -42,21 +46,23 @@ class Traffic:
 
     return img
 
-  def get_traffic(self):
-    t = time.time()
-    self.past_preds = [i for i in self.past_preds if t - i['time'] <= 2]
-    print(time.time() - self.last_predict_time)
-    print(1/self.predictions_per_second)
-    if time.time() - self.last_predict_time >= 1 / self.predictions_per_second:
+  def send_traffic(self):
+    while True:
+      t = time.time()
+      traffic_send = messaging.new_message()
+      traffic_send.init('trafficLights')
       image = self.get_image()
       if image is not None:
-        with open('/data/working', 'a') as f:
-          f.write('working!\n')
-        self.past_preds.append({'pred': self.traffic_model.predict_traffic(image), 'time': time.time()})
-        self.last_predict_time = time.time()
-    if len(self.past_preds) >= self.predictions_per_second / 2:
-      return self.classes[self.most_frequent()]
-    return self.classes[-1]
+        pred = self.traffic_model.predict_traffic(image)
+        traffic_send.trafficLights.status = self.classes[pred]
+      else:
+        traffic_send.trafficLights.status = 'NONE'
+
+      self.pm.send('trafficLights', traffic_send)
+      self.rate_keeper(time.time() - t)
+
+  def rate_keeper(self, loop_time):
+    time.sleep(max(self.sleep_time - loop_time, 0))
 
   def most_frequent(self):
     preds = [i['pred'] for i in self.past_preds]

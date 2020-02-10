@@ -8,7 +8,7 @@ from selfdrive.car.toyota.values import ECU, ECU_FINGERPRINT, CAR, NO_STOP_TIMER
 from selfdrive.car import STD_CARGO_KG, scale_rot_inertia, scale_tire_stiffness, is_ecu_disconnected, gen_empty_fingerprint
 from selfdrive.swaglog import cloudlog
 from selfdrive.car.interfaces import CarInterfaceBase
-from selfdrive.traffic.traffic_model import Traffic
+import cereal.messaging as messaging
 
 ButtonType = car.CarState.ButtonEvent.Type
 GearShifter = car.CarState.GearShifter
@@ -17,7 +17,7 @@ class CarInterface(CarInterfaceBase):
   def __init__(self, CP, CarController):
     self.CP = CP
     self.VM = VehicleModel(CP)
-    self.traffic_model = Traffic()
+    self.sm = messaging.SubMaster(['trafficLights'])
     self.traffic_alerts = ['GREEN', 'RED', 'YELLOW']
 
     self.frame = 0
@@ -289,6 +289,7 @@ class CarInterface(CarInterfaceBase):
   # returns a car.CarState
   def update(self, c, can_strings):
     # ******************* do can recv *******************
+    self.sm.update(0)
     self.cp.update_strings(can_strings)
     self.cp_cam.update_strings(can_strings)
 
@@ -374,7 +375,7 @@ class CarInterface(CarInterfaceBase):
 
     # events
     events = []
-    traffic_light = self.traffic_model.get_traffic()
+    traffic_light = self.sm['trafficLights']['status']
 
     if traffic_light == 'RED':
       events.append(create_event('redLight', [ET.WARNING]))
