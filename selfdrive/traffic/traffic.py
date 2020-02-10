@@ -8,6 +8,7 @@ from selfdrive.traffic import traffic_wrapper
 import cv2
 import numpy as np
 
+
 class Traffic:
   def __init__(self):
     self.W, self.H = 1164, 874
@@ -52,4 +53,4 @@ class Traffic:
 
 
 
-traffic = Traffic()
+# traffic = Traffic()
