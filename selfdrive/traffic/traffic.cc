@@ -48,7 +48,7 @@ std::unique_ptr<zdl::DlSystem::ITensor> loadInputTensor(std::unique_ptr<zdl::SNP
   return input;
 }
 
-std::unique_ptr<zdl::DlSystem::ITensor> loadInputTensorNew(std::unique_ptr<zdl::SNPE::SNPE> &snpe) {
+std::unique_ptr<zdl::DlSystem::ITensor> loadInputTensorNew(std::unique_ptr<zdl::SNPE::SNPE> &snpe, std::vector<float> inputVec) {
     std::unique_ptr<zdl::DlSystem::ITensor> input;
     const auto &strList_opt = snpe->getInputTensorNames();
 
@@ -59,16 +59,16 @@ std::unique_ptr<zdl::DlSystem::ITensor> loadInputTensorNew(std::unique_ptr<zdl::
 
     const auto &inputDims_opt = snpe->getInputDimensions(strList.at(0));
     const auto &inputShape = *inputDims_opt;
-    std::vector<float> inputVec = loadFloatDataFile("/data/openpilot/selfdrive/traffic/GREEN.png");
+//    std::vector<float> inputVec = loadFloatDataFile("/data/openpilot/selfdrive/traffic/GREEN.png");
 
-    for (std::vector<int>::size_type i = 0; i < 500; i++) {
-	    std::cout << inputVec.at(i) << '\n';
-    }
+//    for (std::vector<int>::size_type i = 0; i < 500; i++) {
+//	    std::cout << inputVec.at(i) << '\n';
+//    }
 
-    double max = *max_element(inputVec.begin(), inputVec.end());
-    cout<<"Max value: "<<max<<endl;
-    double min = *min_element(inputVec.begin(), inputVec.end());
-    cout<<"Min value: "<<min<<endl;
+//    double max = *max_element(inputVec.begin(), inputVec.end());
+//    cout<<"Max value: "<<max<<endl;
+//    double min = *min_element(inputVec.begin(), inputVec.end());
+//    cout<<"Min value: "<<min<<endl;
 
     input = zdl::SNPE::SNPEFactory::getTensorFactory().createTensor(inputShape);
     /* Copy the loaded input file contents into the networks input tensor.SNPE's ITensor supports C++ STL functions like std::copy() */
@@ -144,7 +144,7 @@ extern "C" {
             }
         }
 
-        std::unique_ptr<zdl::DlSystem::ITensor> inputTensor = loadInputTensorNew(snpe);  // inputVec)
+        std::unique_ptr<zdl::DlSystem::ITensor> inputTensor = loadInputTensorNew(snpe, newInputVec);  // inputVec)
         zdl::DlSystem::ITensor* oTensor = executeNetwork(snpe, inputTensor);
         returnOutputMulti(oTensor);
     }
