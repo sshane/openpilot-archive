@@ -42,7 +42,9 @@ class Traffic:
 
     img = Image.fromarray(rgb_image_array, 'RGB')
     img = img.resize((self.W // 2, self.H // 2))
-    img = np.asarray([img / 255.0]).astype('float32').flatten().tolist()
+    img = np.asarray(img).astype('float32')
+
+    img = np.array([img / 255.]).flatten().tolist()
 
     return img
 
