@@ -375,7 +375,7 @@ class CarInterface(CarInterfaceBase):
 
     # events
     events = []
-    traffic_light = self.sm['trafficLights']['status']
+    traffic_light = self.sm['trafficLights'].status
 
     if traffic_light == 'RED':
       events.append(create_event('redLight', [ET.WARNING]))
