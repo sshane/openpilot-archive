@@ -16,7 +16,7 @@ with open('/data/openpilot/selfdrive/traffic/phot_red', 'rb') as f:
 print(img)
 print(img.shape)
 
-interpreter = tflite.Interpreter(model_path='model.tflite')
+interpreter = tflite.Interpreter(model_path='newest.tflite')
 # print(dir(interpreter))
 interpreter.allocate_tensors()
 
