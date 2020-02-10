@@ -62,8 +62,14 @@ with open('/data/openpilot/selfdrive/traffic/phot_none_9989287', 'rb') as f:
     img = np.array([pickle.load(f)]).astype('float32')
 
 print(img.shape)
+img = img.flatten().tolist()
+print(len(img))
+
 # img = img.reshape(582, 437, 3)
-multi_test_a(img)
+# multi_test_a(img)
+traffic_model.multi_test_new(img)
+
+
 # for i in range(100):
 #   model_output = traffic_model.run_model()
 #
