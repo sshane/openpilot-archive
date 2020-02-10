@@ -149,32 +149,14 @@ extern "C" {
         returnOutputMulti(oTensor);
     }
 
-    void multi_test_new(double inputArray[582][437][3], int x, int y, int z){
-//        std::cout << x;
-//        std::cout << "\n";
-//        std::cout << y;
-//        std::cout << "\n";
-//        std::cout << z;
-//        std::cout << "\n";
-
-        std::vector < std::vector < std::vector<float> > > inputVec;
-        std::vector<float> newInputVec;
-
-        for (int i = 0; i < x; ++i) {
-            inputVec.push_back(std::vector<std::vector<float> >());
-            for (int j = 0; j < y; ++j) {
-                inputVec[i].push_back(std::vector<float>());
-                for (int k = 0; k < z; ++k){
-                    inputVec[i][j].push_back(inputArray[i][j][k]);
-                    newInputVec.push_back(inputArray[i][j][k]);
-                    // std::cout << inputArray[i][j][k] << "\n";
-                    // std::cout << inputArray[i][j][k] << "\n";
-                    // std::cout << inputVec[i][j][k] << '\n';
-                }
-            }
+    void multi_test_new(float inputArray[763002]){
+        int size = 763002;
+        std::vector<float> inputVec;
+        for (int i = 0; i < size; i++ ) {
+            inputVec.push_back(inputData[i]);
         }
 
-        std::unique_ptr<zdl::DlSystem::ITensor> inputTensor = loadInputTensorNew(snpe, newInputVec);  // inputVec)
+        std::unique_ptr<zdl::DlSystem::ITensor> inputTensor = loadInputTensorNew(snpe, inputVec);  // inputVec)
         zdl::DlSystem::ITensor* oTensor = executeNetwork(snpe, inputTensor);
         returnOutputMulti(oTensor);
     }
