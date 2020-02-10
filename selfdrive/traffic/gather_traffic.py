@@ -19,7 +19,7 @@ def main():
     img = Image.fromarray(rgb_image_array, 'RGB')
     filename = time.strftime('%C%y%m%d%H%M%S') + '.png'
     print("Saving: " + filename)
-    img.save('/data/openpilot/traffic/imgs/{}'.format(filename))
+    img.save('/data/openpilot/selfdrive/traffic/imgs/{}'.format(filename))
     time.sleep(0.75)
 
 if __name__ == '__main__':
