@@ -44,7 +44,7 @@ class Traffic:
 
   def get_traffic(self):
     t = time.time()
-    self.past_preds = [i for i in self.past_preds if t - i['time'] <= 1]
+    self.past_preds = [i for i in self.past_preds if t - i['time'] <= 2]
     print(time.time() - self.last_predict_time)
     print(1/self.predictions_per_second)
     if time.time() - self.last_predict_time >= 1 / self.predictions_per_second:
