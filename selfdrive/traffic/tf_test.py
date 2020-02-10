@@ -36,7 +36,7 @@ def predict(input_data):
 
 a = []
 t = time.time()
-for i in [img1, img2]:
+for i in [img1, img2] * 10:
     a.append(predict(i))
-
 print(time.time() - t)
+print(a)
