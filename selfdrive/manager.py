@@ -154,7 +154,7 @@ managed_processes = {
   "updated": "selfdrive.updated",
   "monitoringd": ("selfdrive/modeld", ["./monitoringd"]),
   "modeld": ("selfdrive/modeld", ["./modeld"]),
-  "trafficlightsd": ("selfdrive/traffic", ["./traffic_model.py"]),
+  "trafficlightsd": "selfdrive.traffic.traffic_model",
 }
 
 daemon_processes = {
