@@ -71,10 +71,10 @@ img2 = img2.flatten().tolist()
 
 # img = img.reshape(582, 437, 3)
 # multi_test_a(img)
-a = []
 t = time.time()
 for i in [img1, img2] * 10:
-    a.append(traffic_model.multi_test_new(img))
+    print(traffic_model.multi_test_new(i))
+    print()
 print(time.time() - t)
 # print(a)
 
