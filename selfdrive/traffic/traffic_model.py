@@ -23,6 +23,8 @@ class Traffic:
     self.past_preds = []
     self.past_image = None
     self.sleep_time = 1.0
+    with open('/data/debug', 'a') as f:
+      f.write('traffic init\n')
 
     self.send_traffic()
 
@@ -50,7 +52,7 @@ class Traffic:
 
   def send_traffic(self):
     while True:
-      with open('/data/working', 'a') as f:
+      with open('/data/debug', 'a') as f:
         f.write('in loop\n')
       t = time.time()
       traffic_send = messaging.new_message()
