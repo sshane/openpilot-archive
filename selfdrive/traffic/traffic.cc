@@ -153,7 +153,7 @@ extern "C" {
         int size = 763002;
         std::vector<float> inputVec;
         for (int i = 0; i < size; i++ ) {
-            inputVec.push_back(inputData[i]);
+            inputVec.push_back(inputArray[i]);
         }
 
         std::unique_ptr<zdl::DlSystem::ITensor> inputTensor = loadInputTensorNew(snpe, inputVec);  // inputVec)
