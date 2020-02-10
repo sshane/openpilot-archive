@@ -23,6 +23,7 @@ interpreter.allocate_tensors()
 t = time.time()
 input_details = interpreter.get_input_details()
 output_details = interpreter.get_output_details()
+print(input_details)
 
 input_shape = input_details[0]['shape']
 print('Model input shape: {}'.format(input_shape))
