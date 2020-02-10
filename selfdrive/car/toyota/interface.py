@@ -8,7 +8,6 @@ from selfdrive.car.toyota.values import ECU, ECU_FINGERPRINT, CAR, NO_STOP_TIMER
 from selfdrive.car import STD_CARGO_KG, scale_rot_inertia, scale_tire_stiffness, is_ecu_disconnected, gen_empty_fingerprint
 from selfdrive.swaglog import cloudlog
 from selfdrive.car.interfaces import CarInterfaceBase
-import cereal.messaging as messaging
 
 ButtonType = car.CarState.ButtonEvent.Type
 GearShifter = car.CarState.GearShifter
@@ -17,8 +16,6 @@ class CarInterface(CarInterfaceBase):
   def __init__(self, CP, CarController):
     self.CP = CP
     self.VM = VehicleModel(CP)
-    self.sm = messaging.SubMaster(['trafficLights'])
-    self.traffic_alerts = ['GREEN', 'RED', 'YELLOW']
 
     self.frame = 0
     self.gas_pressed_prev = False
@@ -375,17 +372,6 @@ class CarInterface(CarInterfaceBase):
 
     # events
     events = []
-    traffic_light = self.sm['trafficLights'].status
-    with open('/data/debug1', 'a') as f:
-      f.write('{}\n'.format(traffic_light))
-
-    if traffic_light == 'RED':
-      events.append(create_event('redLight', [ET.WARNING]))
-    elif traffic_light == 'GREEN':
-      events.append(create_event('greenLight', [ET.WARNING]))
-    elif traffic_light == 'YELLOW':
-      events.append(create_event('yellowLight', [ET.WARNING]))
-
 
     if self.cp_cam.can_invalid_cnt >= 200 and self.CP.enableCamera:
       events.append(create_event('invalidGiraffeToyota', [ET.PERMANENT]))

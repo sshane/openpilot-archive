@@ -151,9 +151,10 @@ def data_sample(CI, CC, sm, can_sock, driver_status, state, mismatch_counter, ca
   return CS, events, cal_perc, mismatch_counter, can_error_counter
 
 
-def state_transition(frame, CS, CP, state, events, soft_disable_timer, v_cruise_kph, AM):
+def state_transition(frame, CS, CP, state, events, soft_disable_timer, v_cruise_kph, AM, traffic_sm):
   """Compute conditional state transitions and execute actions on state transitions"""
   enabled = isEnabled(state)
+  traffic_sm.update(0)
 
   v_cruise_kph_last = v_cruise_kph
 
@@ -166,6 +167,16 @@ def state_transition(frame, CS, CP, state, events, soft_disable_timer, v_cruise_
   # decrease the soft disable timer at every step, as it's reset on
   # entrance in SOFT_DISABLING state
   soft_disable_timer = max(0, soft_disable_timer - 1)
+
+  traffic_light = traffic_sm['trafficLights'].status
+  with open('/data/debug1', 'a') as f:
+    f.write('{}\n'.format(traffic_light))
+  if traffic_light == 'RED':
+    AM.add(frame, 'redLight', enabled)
+  elif traffic_light == 'GREEN':
+    AM.add(frame, 'greenLight', enabled)
+  elif traffic_light == 'YELLOW':
+    AM.add(frame, 'yellowLight', enabled)
 
   # DISABLED
   if state == State.disabled:
@@ -485,6 +496,8 @@ def controlsd_thread(sm=None, pm=None, can_sock=None):
     sm = messaging.SubMaster(['thermal', 'health', 'liveCalibration', 'driverMonitoring', 'plan', 'pathPlan', \
                               'model', 'gpsLocation'], ignore_alive=['gpsLocation'])
 
+  traffic_sm = messaging.SubMaster(['trafficLights'])
+
 
   if can_sock is None:
     can_timeout = None if os.environ.get('NO_CAN_TIMEOUT', False) else 100
@@ -598,7 +611,7 @@ def controlsd_thread(sm=None, pm=None, can_sock=None):
     if not read_only:
       # update control state
       state, soft_disable_timer, v_cruise_kph, v_cruise_kph_last = \
-        state_transition(sm.frame, CS, CP, state, events, soft_disable_timer, v_cruise_kph, AM)
+        state_transition(sm.frame, CS, CP, state, events, soft_disable_timer, v_cruise_kph, AM, traffic_sm)
       prof.checkpoint("State transition")
 
     # Compute actuators (runs PID loops and lateral MPC)
