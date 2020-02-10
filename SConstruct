@@ -34,8 +34,9 @@ if arch == "aarch64":
     "#phonelibs/libyuv/lib",
   ]
 
-  cflags = ["-DQCOM", "-mcpu=cortex-a57"]
-  cxxflags = ["-DQCOM", "-mcpu=cortex-a57"]
+
+  cflags = ["-DQCOM", "-DIMGSOCK", "-mcpu=cortex-a57"]
+  cxxflags = ["-DQCOM", "-DIMGSOCK", "-mcpu=cortex-a57"]
 
   rpath = ["/system/vendor/lib64"]
 else:
