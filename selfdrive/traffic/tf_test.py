@@ -13,7 +13,7 @@ img = cv2.resize(img, dsize=(W // 2, H // 2), interpolation=cv2.INTER_CUBIC)
 print(img.shape)
 
 interpreter = tflite.Interpreter(model_path='model.tflite')
-print(dir(interpreter))
+# print(dir(interpreter))
 interpreter.allocate_tensors()
 
 input_details = interpreter.get_input_details()
