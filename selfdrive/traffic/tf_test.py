@@ -14,3 +14,10 @@ print(img.shape)
 
 interpreter = tflite.Interpreter(model_path='model.tflite')
 print(dir(interpreter))
+interpreter.allocate_tensors()
+
+input_details = interpreter.get_input_details()
+output_details = interpreter.get_output_details()
+
+print(input_details)
+print(output_details)
