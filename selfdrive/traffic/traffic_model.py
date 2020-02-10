@@ -20,9 +20,15 @@ class Traffic:
     self.predictions_per_second = 10
     self.last_predict_time = 0
     self.past_preds = []
+    self.past_image = None
 
   def get_image(self):
-    msg_data = messaging.recv_one(self.image_sock)
+    msg_data = messaging.recv_one_or_none(self.image_sock)
+    if msg_data is None and self.past_image is None:
+      return None
+    elif msg_data is None:
+      msg_data = self.past_image
+
     image_data = msg_data.thumbnail.thumbnail
     bgr_image_array = np.frombuffer(image_data[:(3840*874)], dtype=np.uint8).reshape((874,1280,3))
     rgb_image_array = bgr_image_array[...,[2,1,0]]
@@ -43,8 +49,10 @@ class Traffic:
     print(1/self.predictions_per_second)
     if time.time() - self.last_predict_time >= 1 / self.predictions_per_second:
       print('here')
-      self.past_preds.append({'pred': self.traffic_model.predict_traffic(self.get_image()), 'time': time.time()})
-      self.last_predict_time = time.time()
+      image = self.get_image()
+      if image is not None:
+        self.past_preds.append({'pred': self.traffic_model.predict_traffic(image), 'time': time.time()})
+        self.last_predict_time = time.time()
     if len(self.past_preds) >= self.predictions_per_second / 2:
       return self.classes[self.most_frequent()]
     return self.classes[-1]
