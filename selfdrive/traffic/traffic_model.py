@@ -75,5 +75,9 @@ class Traffic:
     return max(set(preds), key=preds.count)
 
 
+def main():
+  Traffic()
 
-traffic = Traffic()
+if __name__ == "__main__":
+  main()
+
