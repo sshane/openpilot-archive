@@ -57,6 +57,7 @@ class Alert():
     return self.alert_priority > alert2.alert_priority
 
 
+
 ALERTS = [
   # Miscellaneous alerts
   Alert(
@@ -100,6 +101,27 @@ ALERTS = [
       "Steering Temporarily Unavailable",
       AlertStatus.userPrompt, AlertSize.mid,
       Priority.LOW, VisualAlert.steerRequired, AudibleAlert.chimeWarning1, .4, 2., 3.),
+
+  Alert(
+      "redLight",
+      "TRAFFIC LIGHT: RED",
+      "Traffic light ahead is red",
+      AlertStatus.userPrompt, AlertSize.mid,
+      Priority.LOW, VisualAlert.steerRequired, AudibleAlert.chimeWarning1, .4, 2., 1.0),
+
+  Alert(
+      "yellowLight",
+      "TRAFFIC LIGHT: YELLOW",
+      "Traffic light ahead is yellow",
+      AlertStatus.userPrompt, AlertSize.mid,
+      Priority.LOW, VisualAlert.steerRequired, AudibleAlert.chimeWarning1, .4, 2., 0.5),
+
+  Alert(
+      "greenLight",
+      "TRAFFIC LIGHT: GREEN",
+      "Traffic light ahead is green",
+      AlertStatus.userPrompt, AlertSize.mid,
+      Priority.LOW, VisualAlert.none, AudibleAlert.none, .2, .2, 0.5),
 
   Alert(
       "steerTempUnavailableMute",
