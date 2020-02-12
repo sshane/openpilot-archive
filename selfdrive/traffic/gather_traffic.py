@@ -20,6 +20,7 @@ def main():
     filename = time.strftime('%C%y%m%d%H%M%S') + '.png'
     print("Saving: " + filename)
     img.save('/data/openpilot/selfdrive/traffic/imgs/{}'.format(filename))
+    time.sleep(0.15)
 
 if __name__ == '__main__':
   main()
