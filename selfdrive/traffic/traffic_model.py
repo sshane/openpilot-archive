@@ -12,6 +12,7 @@ import numpy as np
 class Traffic:
   def __init__(self):
     self.W, self.H = 1164, 874
+    self.y_hood_crop = 665
     self.traffic_model, self.ffi = traffic_wrapper.get_wrapper()
     self.traffic_model.init_model()
     self.image_sock = messaging.sub_sock('image')
@@ -22,7 +23,7 @@ class Traffic:
     self.last_predict_time = 0
     self.past_preds = []
     self.past_image = None
-    self.sleep_time = 1.0
+    self.sleep_time = 0.5
     with open('/data/debug', 'a') as f:
       f.write('traffic init\n')
 
@@ -42,11 +43,12 @@ class Traffic:
     rgb_image_array = rgb_image_array[:, :1164]
     rgb_image_array = rgb_image_array.reshape((874, 1164, 3))
 
-    img = Image.fromarray(rgb_image_array, 'RGB')
-    img = img.resize((self.W // 2, self.H // 2))
-    img = np.asarray(img).astype('float32')
+    bgr_image_array = rgb_image_array[...,[2,1,0]]
 
-    img = np.array([img / 255.]).flatten().tolist()
+    img = bgr_image_array[0:self.y_hood_crop, 0:self.W]  # crop out hood
+    img = img.astype(np.float32)
+
+    img = np.array([img / 255.]).flatten().tolist()  # len: 2322180
 
     return img
 

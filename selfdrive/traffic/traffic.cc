@@ -150,8 +150,8 @@ extern "C" {
         returnOutputMulti(oTensor);
     }
 
-    int predict_traffic(float inputArray[763002]){
-        int size = 763002;
+    int predict_traffic(float inputArray[2322180]){
+        int size = 2322180;
         std::vector<float> inputVec;
         for (int i = 0; i < size; i++ ) {
             inputVec.push_back(inputArray[i]);
