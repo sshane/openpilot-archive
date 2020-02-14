@@ -19,11 +19,11 @@ print(image.shape)
 image = image.flatten().tolist()
 print(len(image))
 print(type(image))
-image = image[:50000]
+image = image[:2322180]
 print(type(image))
 print(len(image))
 
-ap = ffi.new("int[50000]", image)
+ap = ffi.new("int[2322180]", image)
 
 pred = traffic_model.predict_traffic(ap)
 print(pred)
