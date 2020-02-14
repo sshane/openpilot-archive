@@ -150,7 +150,7 @@ extern "C" {
         returnOutputMulti(oTensor);
     }
 
-    int predict_traffic(int inputArray[2322179]){
+    int predict_traffic(int inputArray[6]){
         std::cout << inputArray[0] << "\n";
         std::cout << inputArray[1] << "\n";
         std::cout << inputArray[2] << "\n";

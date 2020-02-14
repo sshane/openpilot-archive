@@ -14,7 +14,7 @@ def get_wrapper():
     void init_model();
     float run_model();
     void multi_test(double inputArray[582][437][3], int x, int y, int z);
-    int predict_traffic(int inputArray[2322179]);
+    int predict_traffic(int inputArray[6]);
     """)
 
     return ffi.dlopen(libmpc_fn), ffi

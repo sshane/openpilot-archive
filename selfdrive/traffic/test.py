@@ -23,12 +23,9 @@ image = image[:2322179]
 print(type(image))
 print(len(image))
 
-# ap = ffi.new("float[6]")
-# arr=np.array([1,2,3,4,5,6])
-# ap = ffi.cast(ap, arr.ctypes.data)
-# ap.cast(arr.ctypes.data)
+ap = ffi.new("int[6]", [1,2,3,4,5,6])
 
-pred = traffic_model.predict_traffic(image)
+pred = traffic_model.predict_traffic(ap)
 print(pred)
 
 
