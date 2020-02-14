@@ -23,7 +23,7 @@ image = image[:2322180]
 print(type(image))
 print(len(image))
 
-ap = ffi.new("int[2322180]", image)
+ap = ffi.new("float[2322180]", image)
 
 pred = traffic_model.predict_traffic(ap)
 print(pred)
