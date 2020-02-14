@@ -160,6 +160,7 @@ extern "C" {
         for (int i = 0; i < size; i++ ) {
             inputVec.push_back(inputArray[i] / normalization_scale);
         }
+        delete[] inputArray;
         std::cout << inputVec[0] << "\n";
         std::cout << inputVec[1] << "\n";
 
