@@ -51,6 +51,7 @@ std::unique_ptr<zdl::DlSystem::ITensor> loadInputTensor(std::unique_ptr<zdl::SNP
 std::unique_ptr<zdl::DlSystem::ITensor> loadInputTensorNew(std::unique_ptr<zdl::SNPE::SNPE> &snpe, std::vector<float> inputVec) {
     std::unique_ptr<zdl::DlSystem::ITensor> input;
     const auto &strList_opt = snpe->getInputTensorNames();
+    std::cout << "here\n";
 
 
     if (!strList_opt) throw std::runtime_error("Error obtaining Input tensor names");
@@ -160,7 +161,7 @@ extern "C" {
         for (int i = 0; i < size; i++ ) {
             inputVec.push_back(inputArray[i] / normalization_scale);
         }
-        delete[] inputArray;
+        //delete[] inputArray;
         std::cout << inputVec[0] << "\n";
         std::cout << inputVec[1] << "\n";
 
