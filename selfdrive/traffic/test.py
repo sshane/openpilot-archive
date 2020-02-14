@@ -17,7 +17,9 @@ image = image / 255.0
 print(image.shape)
 image = image.flatten().tolist()
 print(len(image))
+print(type(image))
 image = image[:2000000]
+print(type(image))
 print(len(image))
 
 pred = traffic_model.predict_traffic(image)
