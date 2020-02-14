@@ -39,12 +39,9 @@ class Traffic:
 
     image_data = msg_data.thumbnail.thumbnail
     bgr_image_array = np.frombuffer(image_data[:(3840*874)], dtype=np.uint8).reshape((874,1280,3))
-    rgb_image_array = bgr_image_array[...,[2,1,0]]
     # discard nulls
-    rgb_image_array = rgb_image_array[:, :1164]
-    rgb_image_array = rgb_image_array.reshape((874, 1164, 3))
-
-    bgr_image_array = rgb_image_array[...,[2,1,0]]
+    bgr_image_array = bgr_image_array[:, :1164]
+    bgr_image_array = bgr_image_array.reshape((874, 1164, 3))
 
     img = bgr_image_array[0:self.y_hood_crop, 0:self.W]  # crop out hood
     img = img.astype(np.float32)
