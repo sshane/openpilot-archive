@@ -5,6 +5,7 @@ import sys
 import time
 
 def main():
+  time.sleep(10)  # give time for everything to start up
   image_sock = messaging.sub_sock('image')
   while True:
     print("Reading image from socket.")

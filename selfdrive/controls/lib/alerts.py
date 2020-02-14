@@ -107,7 +107,7 @@ ALERTS = [
       "TRAFFIC LIGHT: RED",
       "Traffic light ahead is red",
       AlertStatus.userPrompt, AlertSize.mid,
-      Priority.LOW, VisualAlert.steerRequired, AudibleAlert.chimeWarning1, .4, 2., 1.0),
+      Priority.LOW, VisualAlert.steerRequired, AudibleAlert.chimeWarning1, .4, 2., 0.5),
 
   Alert(
       "yellowLight",

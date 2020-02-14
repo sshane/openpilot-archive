@@ -28,13 +28,14 @@ class Traffic:
       f.write('traffic init\n')
 
     self.send_traffic()
+    self.run_loop()
 
   def get_image(self):
-    msg_data = messaging.recv_one_or_none(self.image_sock)
-    if msg_data is None and self.past_image is None:
-      return None
-    elif msg_data is None and self.past_image is not None:
-      msg_data = self.past_image
+    msg_data = messaging.recv_one(self.image_sock)  # wait for new frame
+    # if msg_data is None and self.past_image is None:
+    #   return None
+    # elif msg_data is None and self.past_image is not None:
+    #   msg_data = self.past_image
 
     image_data = msg_data.thumbnail.thumbnail
     bgr_image_array = np.frombuffer(image_data[:(3840*874)], dtype=np.uint8).reshape((874,1280,3))
@@ -52,22 +53,25 @@ class Traffic:
 
     return img
 
-  def send_traffic(self):
+  def run_loop(self):
     while True:
-      with open('/data/debug', 'a') as f:
-        f.write('in loop\n')
       t = time.time()
-      traffic_send = messaging.new_message()
-      traffic_send.init('trafficLights')
       image = self.get_image()
+      pred = 'NONE'
       if image is not None:
-        pred = self.traffic_model.predict_traffic(image)
-        traffic_send.trafficLights.status = self.classes[pred]
-      else:
-        traffic_send.trafficLights.status = 'NONE'
+        pred = self.classes[self.traffic_model.predict_traffic(image)]  # returns index of prediction, so we need to get string
 
-      self.pm.send('trafficLights', traffic_send)
+      self.send_prediction(pred)
+      with open('/data/debug', 'a') as f:
+        f.write('loop took: {}s\n'.format(time.time() - t))
       self.rate_keeper(time.time() - t)
+
+  def send_prediction(self, pred):
+    traffic_send = messaging.new_message()
+    traffic_send.init('trafficLights')
+
+    traffic_send.trafficLights.status = pred
+    self.pm.send('trafficLights', traffic_send)
 
   def rate_keeper(self, loop_time):
     time.sleep(max(self.sleep_time - loop_time, 0))
