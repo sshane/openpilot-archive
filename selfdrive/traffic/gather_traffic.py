@@ -1,12 +1,20 @@
 import cereal.messaging as messaging
 import numpy as np
 from PIL import Image
-import sys
+import os
 from threading import Thread
 import time
 
 thread_count = 0
 last_msg = None
+
+
+data_dir = '/data/openpilot/selfdrive/traffic/imgs'
+
+
+def setup_folder():
+  if not os.path.exists(data_dir):
+    os.mkdir(data_dir)
 
 
 def write_frame(msg_data):
@@ -20,7 +28,7 @@ def write_frame(msg_data):
   rgb_image_array = rgb_image_array.reshape((874,1164,3))
   img = Image.fromarray(rgb_image_array, 'RGB')
   filename = time.strftime('%C%y%m%d%H%M%S') + '.png'
-  img.save('/data/openpilot/selfdrive/traffic/imgs/{}'.format(filename))
+  img.save('{}/{}'.format(data_dir, filename))
   thread_count -= 1
 
 
@@ -39,11 +47,12 @@ def gather_loop():
     if msg_data != last_msg:
       last_msg = msg_data
       while thread_count > 25:  # gives us a buffer of 20 frames
-        time.sleep(0.5)
+        time.sleep(0.05)
       with open('/data/thread_count', 'a') as f:
         f.write('{}\n'.format(thread_count))
       Thread(target=write_frame, args=(msg_data,)).start()
 
 
 if __name__ == '__main__':
+  setup_folder()
   gather_loop()
