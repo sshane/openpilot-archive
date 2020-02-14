@@ -15,7 +15,7 @@ data_dir = '/data/openpilot/selfdrive/traffic/test_images'
 image = cv2.imread('{}/GREEN/{}'.format(data_dir, '20200210202741.0.png')).astype(np.float32)
 image = image / 255.0
 print(image.shape)
-image = image.flatten().tolist()[:5000]
+image = image.flatten().tolist()[:100000]
 print(len(image))
 
 pred = traffic_model.predict_traffic(image)
