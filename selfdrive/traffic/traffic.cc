@@ -49,7 +49,9 @@ std::unique_ptr<zdl::DlSystem::ITensor> loadInputTensor(std::unique_ptr<zdl::SNP
 }
 
 std::unique_ptr<zdl::DlSystem::ITensor> loadInputTensorNew(std::unique_ptr<zdl::SNPE::SNPE> &snpe, std::vector<float> inputVec) {
+    std::cout << "here\n";
     std::unique_ptr<zdl::DlSystem::ITensor> input;
+    std::cout << "here\n";
     const auto &strList_opt = snpe->getInputTensorNames();
     std::cout << "here\n";
 
