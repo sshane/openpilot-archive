@@ -18,5 +18,5 @@ extern "C"{
   void init_model();
   float run_model();
   void multi_test(double inputArray[582][437][3], int x, int y, int z);
-  int predict_traffic(float *inputArray[2322179]);
+  int predict_traffic(float inputArray[6]);
 }
