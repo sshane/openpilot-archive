@@ -14,7 +14,7 @@ data_dir = '/data/openpilot/selfdrive/traffic/test_images'
 
 image = cv2.imread('{}/GREEN/{}'.format(data_dir, '20200210202741.0.png'))
 print(image.dtype)
-image = image / 255.0
+# image = image / 255.0
 print(image.shape)
 image = image.flatten().tolist()
 print(len(image))
@@ -23,12 +23,12 @@ image = image[:2322180]
 print(type(image))
 print(len(image))
 
-ap = ffi.new("float[2322180]", image)
+ap = ffi.new("int[2322180]", image)
 
 t = time.time()
 for _ in range(100):
     pred = traffic_model.predict_traffic(ap)
 print(time.time() - t)
-print(pred)
+# print(pred)
 
 
