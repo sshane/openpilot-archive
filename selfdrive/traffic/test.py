@@ -18,7 +18,7 @@ print(image.shape)
 image = image.flatten().tolist()
 print(len(image))
 
-traffic_model.predict_traffic(image)
+traffic_model.run_model()
 # print(pred)
 
 
