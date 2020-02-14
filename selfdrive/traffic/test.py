@@ -23,7 +23,7 @@ print(type(image))
 ap = ffi.new("int[2322180]", image)
 # pred = traffic_model.predict_traffic(ap)
 t = time.time()
-for _ in range(100):
+for _ in range(20):
     pred = traffic_model.predict_traffic(ap)
 print(time.time() - t)
 # print(pred)

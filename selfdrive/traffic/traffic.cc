@@ -99,7 +99,7 @@ int returnOutputMulti(const zdl::DlSystem::ITensor* tensor) {
     vector<float> outputs;
     for (auto it = tensor->cbegin(); it != tensor->cend(); ++it ){
         float op = *it;
-        std::cout << op << "\n";
+        //std::cout << op << "\n";
         outputs.push_back(op);
     }
     int maxElementIndex = std::max_element(outputs.begin(), outputs.end()) - outputs.begin();
