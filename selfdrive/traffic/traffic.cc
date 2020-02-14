@@ -151,7 +151,7 @@ extern "C" {
     }
 
     int predict_traffic(float inputArray[1500000]){
-        std::cout << "Size: " << (sizeof(inputArray)/sizeof(*inputArray)) << "\n";
+        std::cout << "Size: " << (sizeof(inputArray)/sizeof(inputArray[0])) << "\n";
         return 0;
 //        int size = 2322180;
 //        std::vector<float> inputVec;
