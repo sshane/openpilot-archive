@@ -153,16 +153,17 @@ extern "C" {
     int predict_traffic(int inputArray[2322180]){
         std::cout << inputArray[0] << "\n";
         std::cout << inputArray[1] << "\n";
-        std::cout << inputArray[2] << "\n";
-        std::cout << inputArray[3] << "\n";
-        std::cout << inputArray[4] << "\n";
-        return 0;
-//        int size = 2322180;
-//        std::vector<float> inputVec;
-//        for (int i = 0; i < size; i++ ) {
-//            inputVec.push_back(inputArray[i]);
-//        }
-//
+        float normalization_scale = 255.0;
+
+        int size = 2322180;
+        std::vector<float> inputVec;
+        for (int i = 0; i < size; i++ ) {
+            inputVec.push_back(inputArray[i] / normalization_scale);
+        }
+        std::cout << inputVec[0] << "\n";
+        std::cout << inputVec[1] << "\n";
+        return 1.0
+
 //        std::unique_ptr<zdl::DlSystem::ITensor> inputTensor = loadInputTensorNew(snpe, inputVec);  // inputVec)
 //        zdl::DlSystem::ITensor* oTensor = executeNetwork(snpe, inputTensor);
 //        return returnOutputMulti(oTensor);
