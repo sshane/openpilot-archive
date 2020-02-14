@@ -31,11 +31,17 @@ def gather_loop():
   image_sock = messaging.sub_sock('image')
   while True:
     msg_data = messaging.recv_one(image_sock)
+    try:
+      with open('/data/frameId', 'a') as f:
+        f.write('{}\n'.format(msg_data.frameId))
+    except:
+      pass
     if msg_data != last_msg:
       last_msg = msg_data
-      while thread_count > 20:  # gives us a buffer of 20 frames
+      while thread_count > 25  # gives us a buffer of 20 frames
         time.sleep(0.5)
-
+      with open('/data/thread_count', 'a') as f:
+        f.write('{}\n'.format(thread_count))
       Thread(target=write_frame, args=(msg_data,)).start()
 
 
