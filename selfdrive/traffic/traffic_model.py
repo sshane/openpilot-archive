@@ -23,7 +23,7 @@ class Traffic:
     self.last_predict_time = 0
     self.past_preds = []
     self.past_image = None
-    self.sleep_time = 0.5
+    self.sleep_time = 0.25
     with open('/data/debug', 'a') as f:
       f.write('traffic init\n')
 
