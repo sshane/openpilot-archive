@@ -151,6 +151,7 @@ extern "C" {
     }
 
     int predict_traffic(float inputArray[2322180]){
+        std::cout << "HERE!";
         int size = 2322180;
         std::vector<float> inputVec;
         for (int i = 0; i < size; i++ ) {
