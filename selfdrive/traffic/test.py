@@ -19,16 +19,13 @@ print(image.shape)
 image = image.flatten().tolist()
 print(len(image))
 print(type(image))
-image = image
-print(type(image))
-print(len(image))
 
 ap = ffi.new("int[2322180]", image)
-
-t = time.time()
-for _ in range(100):
-    pred = traffic_model.predict_traffic(ap)
-print(time.time() - t)
-# print(pred)
+pred = traffic_model.predict_traffic(ap)
+# t = time.time()
+# for _ in range(100):
+#     pred = traffic_model.predict_traffic(ap)
+# print(time.time() - t)
+print(pred)
 
 
