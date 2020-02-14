@@ -6,7 +6,7 @@ except:
     pass
 
 
-def get_wrapper():  # initialize st model and process long predictions
+def get_wrapper():
     libmpc_fn = "/data/openpilot/selfdrive/traffic/traffic.so"
 
     ffi = FFI()
