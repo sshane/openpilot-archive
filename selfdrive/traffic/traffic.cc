@@ -152,8 +152,6 @@ extern "C" {
     }
 
     int predict_traffic(float inputArray[2322180]){
-        float normalization_scale = 255.0;
-
         int size = 2322180;
         std::vector<float> inputVec;
         for (int i = 0; i < size; i++ ) {
