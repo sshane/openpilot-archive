@@ -151,13 +151,13 @@ extern "C" {
         returnOutputMulti(oTensor);
     }
 
-    int predict_traffic(int inputArray[2322180]){
+    int predict_traffic(float inputArray[2322180]){
         float normalization_scale = 255.0;
 
         int size = 2322180;
         std::vector<float> inputVec;
         for (int i = 0; i < size; i++ ) {
-            inputVec.push_back(inputArray[i] / normalization_scale);
+            inputVec.push_back(inputArray[i]);
         }
         //delete[] inputArray;
 
