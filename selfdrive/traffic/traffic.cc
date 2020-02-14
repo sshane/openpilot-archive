@@ -11,7 +11,7 @@ zdl::DlSystem::Runtime_t checkRuntime()
     static zdl::DlSystem::Runtime_t Runtime;
     std::cout << "SNPE Version: " << Version.asString().c_str() << std::endl; //Print Version number
     if (zdl::SNPE::SNPEFactory::isRuntimeAvailable(zdl::DlSystem::Runtime_t::GPU)) {
-        Runtime = zdl::DlSystem::Runtime_t::GPU;
+        Runtime = zdl::DlSystem::Runtime_t::CPU;  // todo: using CPU
     } else {
         Runtime = zdl::DlSystem::Runtime_t::CPU;
     }
@@ -50,23 +50,16 @@ std::unique_ptr<zdl::DlSystem::ITensor> loadInputTensor(std::unique_ptr<zdl::SNP
 }
 
 std::unique_ptr<zdl::DlSystem::ITensor> loadInputTensorNew(std::unique_ptr<zdl::SNPE::SNPE> &snpe, std::vector<float> inputVec) {
-    std::cout << "here\n";
     std::unique_ptr<zdl::DlSystem::ITensor> input;
-    std::cout << "here\n";
     const auto &strList_opt = snpe->getInputTensorNames();
-    std::cout << "here\n";
 
 
     if (!strList_opt) throw std::runtime_error("Error obtaining Input tensor names");
     const auto &strList = *strList_opt;
-    std::cout << "here\n";
     assert (strList.size() == 1);
-    std::cout << "here\n";
 
     const auto &inputDims_opt = snpe->getInputDimensions(strList.at(0));
-    std::cout << "here\n";
     const auto &inputShape = *inputDims_opt;
-    std::cout << "here\n";
 //    std::vector<float> inputVec = loadFloatDataFile("/data/openpilot/selfdrive/traffic/GREEN.png");
 
 //    for (std::vector<int>::size_type i = 0; i < 500; i++) {
@@ -79,11 +72,9 @@ std::unique_ptr<zdl::DlSystem::ITensor> loadInputTensorNew(std::unique_ptr<zdl::
 //    cout<<"Min value: "<<min<<endl;
 
     input = zdl::SNPE::SNPEFactory::getTensorFactory().createTensor(inputShape);
-    std::cout << "here1\n";
     /* Copy the loaded input file contents into the networks input tensor.SNPE's ITensor supports C++ STL functions like std::copy() */
 
     std::copy(inputVec.begin(), inputVec.end(), input->begin());
-    std::cout << "here\n";
     return input;
 
 }
@@ -161,8 +152,6 @@ extern "C" {
     }
 
     int predict_traffic(int inputArray[2322180]){
-        std::cout << inputArray[0] << "\n";
-        std::cout << inputArray[1] << "\n";
         float normalization_scale = 255.0;
 
         int size = 2322180;
@@ -171,8 +160,6 @@ extern "C" {
             inputVec.push_back(inputArray[i] / normalization_scale);
         }
         //delete[] inputArray;
-        std::cout << inputVec[0] << "\n";
-        std::cout << inputVec[1] << "\n";
 
         std::unique_ptr<zdl::DlSystem::ITensor> inputTensor = loadInputTensorNew(snpe, inputVec);  // inputVec)
         zdl::DlSystem::ITensor* oTensor = executeNetwork(snpe, inputTensor);
