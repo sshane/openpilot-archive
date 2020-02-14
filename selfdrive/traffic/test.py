@@ -12,8 +12,9 @@ traffic_model, ffi = traffic_wrapper.get_wrapper()
 traffic_model.init_model()
 data_dir = '/data/openpilot/selfdrive/traffic/test_images'
 
-image = cv2.imread('{}/GREEN/{}'.format(data_dir, '20200210202741.0.png')).astype(np.float16)
-image = image / 255.0
+image = cv2.imread('{}/GREEN/{}'.format(data_dir, '20200210202741.0.png'))
+print(image.dtype)
+# image = image / 255.0
 print(image.shape)
 image = image.flatten().tolist()
 print(len(image))
@@ -22,12 +23,12 @@ image = image[:2322179]
 print(type(image))
 print(len(image))
 
-ap = ffi.new("float[6]")
-arr=np.array([1,2,3,4,5,6])
-ap.cast(arr.ctypes.data)
-ap = ffi.cast(arr.ctypes.data)
+# ap = ffi.new("float[6]")
+# arr=np.array([1,2,3,4,5,6])
+# ap = ffi.cast(ap, arr.ctypes.data)
+# ap.cast(arr.ctypes.data)
 
-pred = traffic_model.predict_traffic(ap)
+pred = traffic_model.predict_traffic(image)
 print(pred)
 
 
