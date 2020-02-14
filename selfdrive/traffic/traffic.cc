@@ -20,7 +20,7 @@ zdl::DlSystem::Runtime_t checkRuntime()
 
 void initializeSNPE(zdl::DlSystem::Runtime_t runtime) {
   std::unique_ptr<zdl::DlContainer::IDlContainer> container;
-  container = zdl::DlContainer::IDlContainer::open("/data/openpilot/selfdrive/traffic/models/trafficv4.dlc");
+  container = zdl::DlContainer::IDlContainer::open("/data/openpilot/selfdrive/traffic/models/nottrained.dlc");
   //printf("loaded model\n");
   int counter = 0;
   zdl::SNPE::SNPEBuilder snpeBuilder(container.get());
@@ -81,7 +81,7 @@ std::unique_ptr<zdl::DlSystem::ITensor> loadInputTensorNew(std::unique_ptr<zdl::
     std::cout << "here1\n";
     /* Copy the loaded input file contents into the networks input tensor.SNPE's ITensor supports C++ STL functions like std::copy() */
 
-    std::copy(inputVec.begin(), inputVec.end() + 763004, input->begin());
+    std::copy(inputVec.begin(), inputVec.end(), input->begin());
     std::cout << "here\n";
     return input;
 
