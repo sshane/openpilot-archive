@@ -27,8 +27,20 @@ class Traffic:
     with open('/data/debug', 'a') as f:
       f.write('traffic init\n')
 
-    self.send_traffic()
     self.run_loop()
+
+  def run_loop(self):
+    while True:
+      t = time.time()
+      image = self.get_image()
+      pred = 'NONE'
+      if image is not None:
+        pred = self.classes[self.traffic_model.predict_traffic(image)]  # returns index of prediction, so we need to get string
+
+      self.send_prediction(pred)
+      with open('/data/debug', 'a') as f:
+        f.write('loop took: {}s\n'.format(time.time() - t))
+      self.rate_keeper(time.time() - t)
 
   def get_image(self):
     msg_data = messaging.recv_one(self.image_sock)  # wait for new frame
@@ -47,21 +59,9 @@ class Traffic:
     img = img.astype(np.float32)
 
     img = np.array([img / 255.]).flatten().tolist()  # len: 2322180
+    self.ffi.new("float[2322180]", img)
 
     return img
-
-  def run_loop(self):
-    while True:
-      t = time.time()
-      image = self.get_image()
-      pred = 'NONE'
-      if image is not None:
-        pred = self.classes[self.traffic_model.predict_traffic(image)]  # returns index of prediction, so we need to get string
-
-      self.send_prediction(pred)
-      with open('/data/debug', 'a') as f:
-        f.write('loop took: {}s\n'.format(time.time() - t))
-      self.rate_keeper(time.time() - t)
 
   def send_prediction(self, pred):
     traffic_send = messaging.new_message()
