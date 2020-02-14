@@ -18,7 +18,7 @@ print(image.shape)
 image = image.flatten().tolist()
 print(len(image))
 print(type(image))
-image = image[:2000000]
+image = image[:2322179]
 print(type(image))
 print(len(image))
 
