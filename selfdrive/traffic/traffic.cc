@@ -11,7 +11,7 @@ zdl::DlSystem::Runtime_t checkRuntime()
     static zdl::DlSystem::Runtime_t Runtime;
     std::cout << "SNPE Version: " << Version.asString().c_str() << std::endl; //Print Version number
     if (zdl::SNPE::SNPEFactory::isRuntimeAvailable(zdl::DlSystem::Runtime_t::GPU)) {
-        Runtime = zdl::DlSystem::Runtime_t::CPU;  // todo: using CPU
+        Runtime = zdl::DlSystem::Runtime_t::GPU;  // todo: using CPU
     } else {
         Runtime = zdl::DlSystem::Runtime_t::CPU;
     }
