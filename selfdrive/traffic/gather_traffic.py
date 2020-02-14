@@ -38,7 +38,7 @@ def gather_loop():
       pass
     if msg_data != last_msg:
       last_msg = msg_data
-      while thread_count > 25  # gives us a buffer of 20 frames
+      while thread_count > 25:  # gives us a buffer of 20 frames
         time.sleep(0.5)
       with open('/data/thread_count', 'a') as f:
         f.write('{}\n'.format(thread_count))
