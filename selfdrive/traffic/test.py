@@ -16,6 +16,7 @@ image = cv2.imread('{}/GREEN/{}'.format(data_dir, '20200210202741.0.png')).astyp
 image = image / 255.0
 print(image.shape)
 image = image.flatten().tolist()
+print(len(image))
 
 pred = traffic_model.predict_traffic(image)
 print(pred)
