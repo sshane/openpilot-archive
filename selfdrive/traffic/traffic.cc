@@ -151,16 +151,16 @@ extern "C" {
     }
 
     int predict_traffic(float inputArray[2322180]){
-        std::cout << "HERE!";
-        int size = 2322180;
-        std::vector<float> inputVec;
-        for (int i = 0; i < size; i++ ) {
-            inputVec.push_back(inputArray[i]);
-        }
-
-        std::unique_ptr<zdl::DlSystem::ITensor> inputTensor = loadInputTensorNew(snpe, inputVec);  // inputVec)
-        zdl::DlSystem::ITensor* oTensor = executeNetwork(snpe, inputTensor);
-        return returnOutputMulti(oTensor);
+        return 0;
+//        int size = 2322180;
+//        std::vector<float> inputVec;
+//        for (int i = 0; i < size; i++ ) {
+//            inputVec.push_back(inputArray[i]);
+//        }
+//
+//        std::unique_ptr<zdl::DlSystem::ITensor> inputTensor = loadInputTensorNew(snpe, inputVec);  // inputVec)
+//        zdl::DlSystem::ITensor* oTensor = executeNetwork(snpe, inputTensor);
+//        return returnOutputMulti(oTensor);
     }
 
     float run_model(){
