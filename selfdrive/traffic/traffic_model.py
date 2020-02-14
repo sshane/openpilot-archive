@@ -59,7 +59,7 @@ class Traffic:
     img = img.astype(np.float32)
 
     img = np.array([img / 255.]).flatten().tolist()  # len: 2322180
-    self.ffi.new("float[2322180]", img)
+    img = self.ffi.new("float[2322180]", img)
 
     return img
 
