@@ -53,6 +53,10 @@ def gather_loop():
       Thread(target=write_frame, args=(msg_data,)).start()
 
 
-if __name__ == '__main__':
+def main():
   setup_folder()
   gather_loop()
+
+
+if __name__ == '__main__':
+  main()
