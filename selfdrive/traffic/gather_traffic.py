@@ -54,8 +54,8 @@ def gather_loop():
 
 
 def main():
-  setup_folder()
-  gather_loop()
+  # setup_folder()
+  # gather_loop()
 
 
 if __name__ == '__main__':
