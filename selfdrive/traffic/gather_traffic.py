@@ -3,6 +3,7 @@ import numpy as np
 from PIL import Image
 import os
 from threading import Thread
+import random
 import time
 
 thread_count = 0
@@ -27,7 +28,7 @@ def write_frame(msg_data):
   rgb_image_array = rgb_image_array[:,:1164]
   rgb_image_array = rgb_image_array.reshape((874,1164,3))
   img = Image.fromarray(rgb_image_array, 'RGB')
-  filename = time.strftime('%C%y%m%d%H%M%S.{}'.format(msg_data.frameId)) + '.png'
+  filename = time.strftime('%C%y%m%d%H%M%S.{}'.format(random.randint(0, 500))) + '.png'
   img.save('{}/{}'.format(data_dir, filename))
   thread_count -= 1
 
@@ -39,6 +40,11 @@ def gather_loop():
   image_sock = messaging.sub_sock('image')
   while True:
     msg_data = messaging.recv_one(image_sock)
+    try:
+      with open('/data/frameId', 'a') as f:
+        f.write('{}\n'.format(msg_data.frameId))
+    except:
+      pass
     if msg_data != last_msg:
       last_msg = msg_data
       while thread_count > 5:  # gives us a buffer of 5 frames
