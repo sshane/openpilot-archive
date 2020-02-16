@@ -31,8 +31,8 @@ spp = (time.time() - t) / r
 print('{} seconds/prediction'.format(round(spp, 6)))
 print('Potential model rate: {}'.format(round(1 / spp, 6)))
 print(pred)
-receiver = ffi.new('int[4]', traffic_model.predict_traffic(ap))
-print(receiver)
+# receiver = ffi.new('int[4]', traffic_model.predict_traffic(ap))
+# print(receiver)
 print(pred[0])
 
 
