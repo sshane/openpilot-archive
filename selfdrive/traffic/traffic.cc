@@ -96,15 +96,15 @@ zdl::DlSystem::ITensor* executeNetwork(std::unique_ptr<zdl::SNPE::SNPE>& snpe,
 }
 
 int* returnOutputMulti(const zdl::DlSystem::ITensor* tensor) {
-    vector<float> outputs;
-    int outputArray[4];
+    // vector<float> outputs;
+    static int outputArray[4];
     int counter = 0;
     for (auto it = tensor->cbegin(); it != tensor->cend(); ++it ){
         float op = *it;
-        //std::cout << op << "\n";
-        outputs.push_back(op);
+        std::cout << op << "\n";
+        // outputs.push_back(op);
         outputArray[counter] = op;
-        counter = counter + 1;
+        counter += 1;
     }
     return outputArray;
     //int maxElementIndex = std::max_element(outputs.begin(), outputs.end()) - outputs.begin();
@@ -166,11 +166,12 @@ extern "C" {
 
         std::unique_ptr<zdl::DlSystem::ITensor> inputTensor = loadInputTensorNew(snpe, inputVec);  // inputVec)
         zdl::DlSystem::ITensor* oTensor = executeNetwork(snpe, inputTensor);
-        int* test = returnOutputMulti(oTensor);
-        outputArray[0] = 0.0;
-        outputArray[1] = 1.0;
-        std::cout << test[0] << "-here\n";
-        //return test;
+
+        int* model_out = returnOutputMulti(oTensor);
+        int classes = 4;
+        for (int i = 0; i < classes; ++i){
+            outputArray[i] = model_out[i];
+        }
     }
 
     float run_model(){
