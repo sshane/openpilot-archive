@@ -155,7 +155,7 @@ extern "C" {
         int size = 1257630;
         std::vector<float> inputVec;
         for (int i = 0; i < size; i++ ) {
-            inputVec.push_back(inputArray[i]);
+            inputVec.push_back(inputArray[i] / 255.0);
         }
         //delete[] inputArray;
 

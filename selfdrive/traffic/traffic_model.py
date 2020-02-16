@@ -13,6 +13,7 @@ class Traffic:
   def __init__(self):
     self.W, self.H = 1164, 874
     self.y_hood_crop = 665
+    self.model_input_shape = (515, 814, 3)  # to model
     self.traffic_model, self.ffi = traffic_wrapper.get_wrapper()
     self.traffic_model.init_model()
     self.image_sock = messaging.sub_sock('image')
@@ -55,11 +56,10 @@ class Traffic:
     bgr_image_array = bgr_image_array[:, :1164]
     bgr_image_array = bgr_image_array.reshape((874, 1164, 3))
 
-    img = bgr_image_array[150:self.y_hood_crop, 175:-175]  # crop out hood
-    img = img.astype(np.float32)
+    img = self.crop_image(bgr_image_array.astype(np.float32))  # crop out hood
 
     img = np.array([img / 255.]).flatten().tolist()  # len: 1257630
-    img = self.ffi.new("float[1257630]", img)
+    img = self.ffi.new("float[1257630]", img)  # from np.product(self.model_input_shape)
 
     return img
 
@@ -69,6 +69,11 @@ class Traffic:
 
     traffic_send.trafficLights.status = pred
     self.pm.send('trafficLights', traffic_send)
+
+  def crop_image(self, img_array):
+    h_crop = 175  # horizontal, 150 is good, need to test higher vals
+    t_crop = 150  # top, 100 is good. test higher vals
+    return img_array[t_crop:self.y_hood_crop, h_crop:-h_crop]  # removes 150 pixels from each side, removes hood, and removes 100 pixels from top
 
   def rate_keeper(self, loop_time):
     time.sleep(max(self.sleep_time - loop_time, 0))

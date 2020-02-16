@@ -14,7 +14,7 @@ data_dir = '/data/openpilot/selfdrive/traffic/test_images'
 
 image = cv2.imread('{}/GREEN/{}'.format(data_dir, '20200212170223.0.png'))
 print(image.dtype)
-image = image / 255.0
+image = image#  / 255.0
 print(image.shape)
 image = image.flatten().tolist()
 print(len(image))
