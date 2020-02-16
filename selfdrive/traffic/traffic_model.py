@@ -55,7 +55,7 @@ class Traffic:
     bgr_image_array = bgr_image_array[:, :1164]
     bgr_image_array = bgr_image_array.reshape((874, 1164, 3))
 
-    img = bgr_image_array[0:self.y_hood_crop, 0:self.W]  # crop out hood
+    img = bgr_image_array[150:self.y_hood_crop, 175:-175]  # crop out hood
     img = img.astype(np.float32)
 
     img = np.array([img / 255.]).flatten().tolist()  # len: 1257630
