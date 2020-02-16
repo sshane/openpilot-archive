@@ -103,6 +103,7 @@ void returnOutputMulti(const zdl::DlSystem::ITensor* tensor, float* outputArray)
         std::cout << op << "\n";
         // outputs.push_back(op);
         outputArray[counter] = op;
+        std::cout << outputArray[counter] << "-test\n";
         counter += 1;
     }
 //    return outputArray;
@@ -166,7 +167,7 @@ extern "C" {
         std::unique_ptr<zdl::DlSystem::ITensor> inputTensor = loadInputTensorNew(snpe, inputVec);  // inputVec)
         zdl::DlSystem::ITensor* oTensor = executeNetwork(snpe, inputTensor);
 
-        int* model_out = returnOutputMulti(oTensor, outputArray);
+        returnOutputMulti(oTensor, outputArray);
 //        int classes = 4;
 //        for (int i = 0; i < classes; ++i){
 //            outputArray[i] = model_out[i];
