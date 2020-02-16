@@ -95,9 +95,8 @@ zdl::DlSystem::ITensor* executeNetwork(std::unique_ptr<zdl::SNPE::SNPE>& snpe,
   return tensorPtr;
 }
 
-int* returnOutputMulti(const zdl::DlSystem::ITensor* tensor) {
+void returnOutputMulti(const zdl::DlSystem::ITensor* tensor, float* outputArray) {
     // vector<float> outputs;
-    static int outputArray[4];
     int counter = 0;
     for (auto it = tensor->cbegin(); it != tensor->cend(); ++it ){
         float op = *it;
@@ -106,7 +105,7 @@ int* returnOutputMulti(const zdl::DlSystem::ITensor* tensor) {
         outputArray[counter] = op;
         counter += 1;
     }
-    return outputArray;
+//    return outputArray;
     //int maxElementIndex = std::max_element(outputs.begin(), outputs.end()) - outputs.begin();
     //return maxElementIndex;
 //  float gas = outputs.at(0);
@@ -167,12 +166,12 @@ extern "C" {
         std::unique_ptr<zdl::DlSystem::ITensor> inputTensor = loadInputTensorNew(snpe, inputVec);  // inputVec)
         zdl::DlSystem::ITensor* oTensor = executeNetwork(snpe, inputTensor);
 
-        int* model_out = returnOutputMulti(oTensor);
-        int classes = 4;
-        for (int i = 0; i < classes; ++i){
-            outputArray[i] = model_out[i];
-            std::cout << model_out[i] << "-test\n";
-        }
+        int* model_out = returnOutputMulti(oTensor, outputArray);
+//        int classes = 4;
+//        for (int i = 0; i < classes; ++i){
+//            outputArray[i] = model_out[i];
+//            std::cout << model_out[i] << "-test\n";
+//        }
     }
 
     float run_model(){
