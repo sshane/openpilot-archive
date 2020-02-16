@@ -95,15 +95,19 @@ zdl::DlSystem::ITensor* executeNetwork(std::unique_ptr<zdl::SNPE::SNPE>& snpe,
   return tensorPtr;
 }
 
-int returnOutputMulti(const zdl::DlSystem::ITensor* tensor) {
+int* returnOutputMulti(const zdl::DlSystem::ITensor* tensor) {
     vector<float> outputs;
+    int outputArray[4];
+    int counter = 0;
     for (auto it = tensor->cbegin(); it != tensor->cend(); ++it ){
         float op = *it;
         //std::cout << op << "\n";
+        outputArray[0] = op;
         outputs.push_back(op);
     }
-    int maxElementIndex = std::max_element(outputs.begin(), outputs.end()) - outputs.begin();
-    return maxElementIndex;
+    return outputArray;
+    //int maxElementIndex = std::max_element(outputs.begin(), outputs.end()) - outputs.begin();
+    //return maxElementIndex;
 //  float gas = outputs.at(0);
 //  float brake = outputs.at(1);
 //  if (gas > brake) {
@@ -151,7 +155,7 @@ extern "C" {
         returnOutputMulti(oTensor);
     }
 
-    int predict_traffic(int inputArray[1257630]){
+    int* predict_traffic(int inputArray[1257630]){
         int size = 1257630;
         std::vector<float> inputVec;
         for (int i = 0; i < size; i++ ) {

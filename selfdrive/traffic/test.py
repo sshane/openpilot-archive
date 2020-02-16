@@ -22,7 +22,7 @@ print(type(image))
 
 ap = ffi.new("int[1257630]", image)
 # pred = traffic_model.predict_traffic(ap)
-r = 500
+r = 2
 t = time.time()
 for _ in range(r):
     pred = traffic_model.predict_traffic(ap)
@@ -30,6 +30,6 @@ print(time.time() - t)
 spp = (time.time() - t) / r
 print('{} seconds/prediction'.format(round(spp, 6)))
 print('Potential model rate: {}'.format(round(1 / spp, 6)))
-# print(pred)
+print(pred)
 
 
