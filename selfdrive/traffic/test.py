@@ -35,7 +35,9 @@ op = ffi.new("float[4]")
 
 traffic_model.predictTraffic(ap, op)
 a=[]
-# for i in range(100):
-#   a.append(np.frombuffer(ffi.buffer(op, 4*4), dtype=np.float32))
-#   a.append(op)
-print(list(op))
+t=time.time()
+for i in range(1000):
+  a.append(np.frombuffer(ffi.buffer(op, 4*4), dtype=np.float32))
+  # a.append(list(op))
+print(time.time() - t)
+
