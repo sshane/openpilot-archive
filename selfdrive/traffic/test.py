@@ -22,21 +22,16 @@ print(len(image))
 print(type(image))
 
 ap = ffi.new("int[1257630]", image)
-op = ffi.new("float[2]")
-# pred = traffic_model.predict_traffic(ap)
-# r = 2
-# t = time.time()
-# for _ in range(r):
-#     pred = traffic_model.predict_traffic(ap)
-# print(time.time() - t)
-# spp = (time.time() - t) / r
-# print('{} seconds/prediction'.format(round(spp, 6)))
-# print('Potential model rate: {}'.format(round(1 / spp, 6)))
-# print(pred)
-print(op)
-traffic_model.predict_traffic(ap, op)
-print(np.frombuffer(ffi.buffer(op, 4*4), dtype=np.float32))
+op = ffi.new("float[4]")
+pred = traffic_model.predict_traffic(ap)
+r = 300
+t = time.time()
+for _ in range(r):
+    traffic_model.predict_traffic(ap)
+print(time.time() - t)
+spp = (time.time() - t) / r
+print('{} seconds/prediction'.format(round(spp, 6)))
+print('Potential model rate: {}'.format(round(1 / spp, 6)))
 
-
-
-
+# traffic_model.predict_traffic(ap, op)
+# print(np.frombuffer(ffi.buffer(op, 4*4), dtype=np.float32))
