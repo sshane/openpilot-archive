@@ -4,6 +4,7 @@ import sys
 import time
 from selfdrive.traffic import traffic_wrapper
 import cv2
+import ctypes
 
 
 W, H = 1164, 874
@@ -31,8 +32,8 @@ spp = (time.time() - t) / r
 print('{} seconds/prediction'.format(round(spp, 6)))
 print('Potential model rate: {}'.format(round(1 / spp, 6)))
 print(pred)
-receiver = ffi.new('int*[]', traffic_model.predict_traffic(ap))
-print(receiver)
-print(pred[0])
+ptr = ctypes.pointer(pred[0])
+print(np.ctypeslib.as_array(ptr, shape=(8,)))
+# print(receiver)
 
 
