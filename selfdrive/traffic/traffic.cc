@@ -171,6 +171,7 @@ extern "C" {
         int classes = 4;
         for (int i = 0; i < classes; ++i){
             outputArray[i] = model_out[i];
+            std::cout << model_out[i] << "-test\n";
         }
     }
 
