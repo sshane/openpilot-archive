@@ -104,24 +104,24 @@ ALERTS = [
 
   Alert(
       "redLight",
-      "TRAFFIC LIGHT: RED",
+      "RED TRAFFIC LIGHT",
       "Traffic light ahead is red",
       AlertStatus.userPrompt, AlertSize.mid,
-      Priority.LOW, VisualAlert.steerRequired, AudibleAlert.chimeWarning1, .4, 2., 0.5),
+      Priority.LOW, VisualAlert.steerRequired, AudibleAlert.chimeWarning1, .25, 2., 0.5),
 
   Alert(
       "yellowLight",
-      "TRAFFIC LIGHT: YELLOW",
+      "YELLOW TRAFFIC LIGHT",
       "Traffic light ahead is yellow",
       AlertStatus.userPrompt, AlertSize.mid,
-      Priority.LOW, VisualAlert.steerRequired, AudibleAlert.chimeWarning1, .4, 2., 0.5),
+      Priority.LOW, VisualAlert.steerRequired, AudibleAlert.chimeWarning1, .25, 2., 0.5),
 
   Alert(
       "greenLight",
-      "TRAFFIC LIGHT: GREEN",
+      "GREEN TRAFFIC LIGHT",
       "Traffic light ahead is green",
       AlertStatus.normal, AlertSize.mid,
-      Priority.LOW, VisualAlert.none, AudibleAlert.none, .2, .2, 0.5),
+      Priority.LOW, VisualAlert.none, AudibleAlert.none, .25, .2, 0.5),
 
   Alert(
       "steerTempUnavailableMute",
