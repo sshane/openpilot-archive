@@ -40,7 +40,8 @@ class Traffic:
   def predict(self, image):
     output = self.ffi.new("float[4]")
     self.traffic_model.predictTraffic(image, output)
-    print(np.frombuffer(self.ffi.buffer(op, 4*4), dtype=np.float32))
+    # np.frombuffer(ffi.buffer(op, 4*4), dtype=np.float32)
+    return list(output)  # faster than np.frombuffer
 
   def get_image(self):
     msg_data = messaging.recv_one(self.image_sock)  # wait for new frame
