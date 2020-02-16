@@ -28,7 +28,7 @@ for _ in range(r):
     pred = traffic_model.predict_traffic(ap)
 print(time.time() - t)
 spp = (time.time() - t) / r
-print('{} seconds/prediction'.format(round(spp, 6))
+print('{} seconds/prediction'.format(round(spp, 6)))
 # print(pred)
 
 
