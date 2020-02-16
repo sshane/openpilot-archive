@@ -26,7 +26,7 @@ op = ffi.new("float[4]")
 r = 300
 t = time.time()
 for _ in range(r):
-    traffic_model.predictTraffic(ap)
+    traffic_model.predictTraffic(ap, op)
 print(time.time() - t)
 spp = (time.time() - t) / r
 print('{} seconds/prediction'.format(round(spp, 6)))
