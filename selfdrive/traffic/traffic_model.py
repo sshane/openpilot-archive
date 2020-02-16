@@ -104,6 +104,6 @@ def main():
   traffic = Traffic(use_probability=True)
   traffic.start()
 
+
 if __name__ == "__main__":
   main()
-
