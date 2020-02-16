@@ -35,7 +35,7 @@ op = ffi.new("float[2]")
 # print(pred)
 print(op)
 traffic_model.predict_traffic(ap, op)
-print(op)
+print(np.frombuffer(ffi.buffer(op, 16*2), dtype=np.float32))
 
 
 
