@@ -38,4 +38,4 @@ a=[]
 # for i in range(100):
 #   a.append(np.frombuffer(ffi.buffer(op, 4*4), dtype=np.float32))
 #   a.append(op)
-print(np.array(op))
+print(list(op))
