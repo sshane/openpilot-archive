@@ -22,7 +22,7 @@ print(type(image))
 
 ap = ffi.new("float[1257630]", image)
 # pred = traffic_model.predict_traffic(ap)
-r = 500
+r = 200
 t = time.time()
 for _ in range(r):
     pred = traffic_model.predict_traffic(ap)
