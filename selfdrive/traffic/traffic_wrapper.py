@@ -11,8 +11,8 @@ def get_wrapper():
 
     ffi = FFI()
     ffi.cdef("""    
-    void init_model();
-    void predict_traffic(int inputArray[1257630], float* outputArray);
+    void initModel();
+    void predictTraffic(int inputArray[1257630], float* outputArray);
     """)
 
     return ffi.dlopen(libmpc_fn), ffi

@@ -70,7 +70,7 @@ void setModelOutput(const zdl::DlSystem::ITensor* tensor, float* outputArray) {
 }
 
 extern "C" {
-    void init_model(){
+    void initModel(){
         zdl::DlSystem::Runtime_t runt=checkRuntime();
         initializeSNPE(runt);
     }

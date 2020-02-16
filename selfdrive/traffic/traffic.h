@@ -15,6 +15,6 @@
 #include <array>
 
 extern "C"{
-  void init_model();
-  void predict_traffic(int inputArray[1257630], float* outputArray);
+  void initModel();
+  void predictTraffic(int inputArray[1257630], float* outputArray);
 }
