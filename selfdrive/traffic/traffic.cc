@@ -156,7 +156,7 @@ extern "C" {
         returnOutputMulti(oTensor);
     }
 
-    int* predict_traffic(int inputArray[1257630]){
+    void predict_traffic(int inputArray[1257630], float* outputArray){
         int size = 1257630;
         std::vector<float> inputVec;
         for (int i = 0; i < size; i++ ) {
@@ -167,8 +167,10 @@ extern "C" {
         std::unique_ptr<zdl::DlSystem::ITensor> inputTensor = loadInputTensorNew(snpe, inputVec);  // inputVec)
         zdl::DlSystem::ITensor* oTensor = executeNetwork(snpe, inputTensor);
         int* test = returnOutputMulti(oTensor);
+        outputArray[0] = 0.0;
+        outputArray[1] = 1.0;
         std::cout << test[0] << "-here\n";
-        return test;
+        //return test;
     }
 
     float run_model(){
