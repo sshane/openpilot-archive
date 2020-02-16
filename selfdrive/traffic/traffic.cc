@@ -153,7 +153,7 @@ extern "C" {
 
         std::unique_ptr<zdl::DlSystem::ITensor> inputTensor = loadInputTensorNew(snpe, newInputVec);  // inputVec)
         zdl::DlSystem::ITensor* oTensor = executeNetwork(snpe, inputTensor);
-        returnOutputMulti(oTensor);
+        //returnOutputMulti(oTensor);
     }
 
     void predict_traffic(int inputArray[1257630], float* outputArray){
