@@ -58,8 +58,8 @@ class Traffic:
     img = bgr_image_array[0:self.y_hood_crop, 0:self.W]  # crop out hood
     img = img.astype(np.float32)
 
-    img = np.array([img / 255.]).flatten().tolist()  # len: 2322180
-    img = self.ffi.new("float[2322180]", img)
+    img = np.array([img / 255.]).flatten().tolist()  # len: 1257630
+    img = self.ffi.new("float[1257630]", img)
 
     return img
 

@@ -20,7 +20,7 @@ image = image.flatten().tolist()
 print(len(image))
 print(type(image))
 
-ap = ffi.new("float[2322180]", image)
+ap = ffi.new("float[1257630]", image)
 # pred = traffic_model.predict_traffic(ap)
 t = time.time()
 for _ in range(100):
