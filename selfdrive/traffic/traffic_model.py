@@ -76,7 +76,7 @@ class Traffic:
     img = self.crop_image(bgr_image_array)  # crop out hood
 
     img = img.flatten().tolist()  # len: 1257630
-    img = self.ffi.new("float[{}]".format(self.input_length), img)
+    img = self.ffi.new("int[{}]".format(self.input_length), img)
 
     return img
 
