@@ -1,13 +1,12 @@
 import cereal.messaging as messaging
 import numpy as np
-import sys
 import time
 from selfdrive.traffic import traffic_wrapper
 
 
 class Traffic:
-  def __init__(self):
-    self.W, self.H = 1164, 874
+  def __init__(self, use_probability=False):
+    self.use_probability = use_probability
     self.y_hood_crop = 665
     self.input_length = np.product((515, 814, 3))
 
@@ -16,32 +15,50 @@ class Traffic:
     self.image_sock = messaging.sub_sock('image')
     self.pm = messaging.PubMaster(['trafficLights'])
 
-    self.classes = ['RED', 'GREEN', 'YELLOW', 'NONE']
+    self.labels = ['RED', 'GREEN', 'YELLOW', 'NONE']
 
     self.past_preds = []
     self.model_rate = 1 / 10.
 
-    self.run_loop()
+  def start(self):
+    self.traffic_loop()
 
-  def run_loop(self):
+  def traffic_loop(self):
     while True:
       t = time.time()
       image = self.get_image()
-      pred = 'NONE'
       if image is not None:
-        self.predict(image)
-        pred = self.classes[self.traffic_model.predictTraffic(image)]  # returns index of prediction, so we need to get string
+        pred_array = self.model_predict(image)
+        self.past_preds.append(pred_array)
+      pred = self.get_prediction()  # uses most common prediction from past second (1 / model_rate), NONE until car is started for 1 second
 
       self.send_prediction(pred)
+
       with open('/data/debug', 'a') as f:
         f.write('loop took: {}s\n'.format(time.time() - t))
       self.rate_keeper(time.time() - t)
 
-  def predict(self, image):
+
+  def get_prediction(self):
+    des_pred_len = int(1 / self.model_rate)
+    while len(self.past_preds) > des_pred_len:
+      del self.past_preds[0]
+    if len(self.past_preds) != des_pred_len:
+      return 'NONE'
+    if not self.use_probability:
+      preds = [np.argmax(pred) for pred in self.past_preds]
+    else:
+      p = [np.array(p) / sum(p) for p in self.past_preds]
+      preds = [pred.index(np.random.choice(pred, p=p[idx])) for idx, pred in enumerate(self.past_preds)]
+
+    most_common = np.argmax(np.bincount(preds))
+    return self.labels[most_common]
+
+  def model_predict(self, image):
     output = self.ffi.new("float[4]")
     self.traffic_model.predictTraffic(image, output)
     # np.frombuffer(ffi.buffer(op, 4*4), dtype=np.float32)
-    return list(output)  # faster than np.frombuffer
+    return list(output)  # faster than np.frombuffer, in order self.classes
 
   def get_image(self):
     msg_data = messaging.recv_one(self.image_sock)  # wait for new frame
@@ -71,8 +88,8 @@ class Traffic:
     self.pm.send('trafficLights', traffic_send)
 
   def crop_image(self, img_array):
-    h_crop = 175  # horizontal, 150 is good, need to test higher vals
-    t_crop = 150  # top, 100 is good. test higher vals
+    h_crop = 175
+    t_crop = 150
     return img_array[t_crop:self.y_hood_crop, h_crop:-h_crop]  # removes 150 pixels from each side, removes hood, and removes 100 pixels from top
 
   def rate_keeper(self, loop_time):
@@ -84,7 +101,8 @@ class Traffic:
 
 
 def main():
-  Traffic()
+  traffic = Traffic(use_probability=True)
+  traffic.start()
 
 if __name__ == "__main__":
   main()
