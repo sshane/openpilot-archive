@@ -2,7 +2,7 @@
 
 `cd /data/openpilot;git fetch;git pull;git checkout stock_additions;git reset --hard origin/stock_additions;git checkout stock_additions;git clean -xfd;git pull`
 
-Then run `git branch` to make sure you are on `stock_additions`. The command above is just a one time process for users that have cloned the branch in the past and resolves conflicts.
+The command above is just a one time process for users that have cloned the branch in the past and resolves conflicts.
 
 Shane's Stock Additions 0.7.1 (version 0.2)
 =====
@@ -18,6 +18,7 @@ Highlight Features
 * [**Customize this branch (opEdit Parameter class)**](#Customize-this-branch-opEdit-Parameter-class)
 * [**Custom wheel offset to reduce lane hugging**](#Custom-wheel-offset-to-reduce-lane-hugging)
 * [**Live tuning support**](#Live-tuning-support)
+* [**Automatic updates**](#Automatic-updates)
 
 -----
 
@@ -97,8 +98,15 @@ If you have a Toyota Corolla with a comma pedal, you'll love this addition. Two 
 
 Live tuning support
 -----
-Currently only the `camera_offset`, `lane_hug_angle_offset`, `dynamic_follow` parameters are supported.
+Currently only the `camera_offset`, `lane_hug_angle_offset`, `dynamic_follow`, and `steer_ratio` parameters are supported.
 - Just start opEdit with the instructions above and pick a parameter. It will let you know if it supports live tuning, if so, updates will take affect within 5 seconds!
 - Alternatively, you can use the new opTune module to live tune quicker and easier! It stays in the parameter edit view so you can more easily experiment with values. opTune shown below:
 
 <img src=".media/gifs/op_tune.gif?raw=true" width="600">
+
+Automatic updates
+-----
+When a new update is available on GitHub for the current branch you're on, your EON will pull and reset your local branch to the remote. It then queues a reboot to occur when the following is true:
+- your EON has been inactive for more than 5 minutes.
+
+Therefore, if the EON sees an update while you're driving it will reboot 5 minutes after you stop your drive, it resets the timer if you start driving again before the 5 minutes is up.
