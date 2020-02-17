@@ -27,10 +27,13 @@ class Traffic:
     while True:
       t = time.time()
       image = self.get_image()
+      pred = "NONE"
       if image is not None:
         pred_array = self.model_predict(image)
         self.past_preds.append(pred_array)
-      pred = self.get_prediction()  # uses most common prediction from past second (1 / model_rate), NONE until car is started for 1 second
+        pred = np.argmax(pred_array)
+        pred = self.labels[pred]
+      # pred = self.get_prediction()  # uses most common prediction from past second (1 / model_rate), NONE until car is started for 1 second
 
       self.send_prediction(pred)
 
