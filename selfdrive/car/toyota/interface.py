@@ -140,6 +140,8 @@ class CarInterface(CarInterfaceBase):
         # ret.longitudinalTuning.kiV = [0.135, 0.09]
         ret.longitudinalTuning.kpV = [1.2, 1.4125, 1.625]
         ret.longitudinalTuning.kiV = [0.24, 0.38]
+        # ret.longitudinalTuning.kpV = [1.0, 0.66, 0.42]  # TODO: TEST THIS (braking tune)
+        # ret.longitudinalTuning.kiV = [0.135, 0.09]
 
       ret.lateralTuning.init('lqr')
 

@@ -125,7 +125,7 @@ class LongitudinalMpc():
         #   a_lead = a_calculated
 
         # long version of below: if (a_calculated < 0 and a_lead >= 0 and a_lead < -a_calculated * 0.5) or (a_calculated > 0 and a_lead <= 0 and -a_lead > a_calculated * 0.5) or (a_lead * a_calculated > 0 and abs(a_calculated) > abs(a_lead)):
-        if (a_calculated < 0 <= a_lead < -a_calculated * 0.55) or (a_calculated > 0 >= a_lead and -a_lead < a_calculated * 0.45) or (a_lead * a_calculated > 0 and abs(a_calculated) > abs(a_lead)):
+        if (a_calculated < 0 <= a_lead < -a_calculated * 0.55) or (a_calculated > 0 >= a_lead and -a_lead < a_calculated * 0.45) or (a_lead * a_calculated > 0 and abs(a_calculated) > abs(a_lead)):  # this is a mess, fix
           a_lead = a_calculated
     return a_lead  # if above doesn't execute, we'll return a_lead from radar
 
@@ -142,6 +142,9 @@ class LongitudinalMpc():
       y_dist = [1.384, 1.391, 1.403, 1.415, 1.437, 1.468, 1.501, 1.506, 1.38, 1.2216, 1.085, 1.0516, 1.016]
       p_mod_pos = [1.015, 2.175, 3.65]
       p_mod_neg = [0.98, 0.08, 0.0]
+      # y_dist = [1.384, 1.391, 1.403, 1.415, 1.437, 1.3506, 1.3959, 1.4156, 1.38, 1.1899, 1.026, 0.9859, 0.9432]  # from 071-2 (need to fix FCW)
+      # p_mod_pos = [1.015, 2.2, 3.95]
+      # p_mod_neg = [0.98, 0.1, 0.0]
     else:  # default to relaxed/stock
       y_dist = [1.385, 1.394, 1.406, 1.421, 1.444, 1.474, 1.516, 1.534, 1.546, 1.568, 1.579, 1.593, 1.614]
       p_mod_pos = [1.0, 1.0, 1.0]
