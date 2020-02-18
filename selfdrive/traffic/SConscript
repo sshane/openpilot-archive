@@ -17,10 +17,6 @@ else:
     lenv['CXXFLAGS'].append("-DUSE_TF_MODEL")
 
 
-lenv.Program('_monitoringd', [
-    "monitoringd.cc",
-    "models/monitoring.cc",
-  ]+common, LIBS=libs)
 
 lenv.Program('_trafficd', [
     "traffic.cc"
