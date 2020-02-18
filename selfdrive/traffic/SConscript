@@ -16,4 +16,4 @@ else:
     lenv['CFLAGS'].append("-DUSE_TF_MODEL")
     lenv['CXXFLAGS'].append("-DUSE_TF_MODEL")
 
-lenv.Program(target='/data/openpilot/selfdrive/traffic/traffic', source=["traffic.cc"], LIBS=libs)
+lenv.SharedLibrary(target='/data/openpilot/selfdrive/traffic/traffic.so', source=["traffic.cc"], LIBS=libs)
