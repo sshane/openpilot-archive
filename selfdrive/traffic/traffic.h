@@ -16,4 +16,5 @@
 extern "C"{
   void initModel();
   void predictTraffic(int inputArray[1257630], float* outputArray);
+  void visionTest();
 }
