@@ -7,6 +7,7 @@ import cv2
 import ctypes
 
 traffic_model, ffi = traffic_wrapper.get_wrapper()
+traffic_model.initModel()
 # traffic_model.visionTest()
 
 # W, H = 1164, 874
