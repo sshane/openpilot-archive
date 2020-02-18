@@ -35,7 +35,7 @@ $(OUTPUT): $(OBJS)
 	$(CXX) $(CXXFLAGS) -MMD \
            -Iinclude -I.. -I../.. \
            $(SNPE_FLAGS) \
-           -I$(PHONELIBS)/opencl/include/
+           -I$(PHONELIBS)/opencl/include \
            -c -o '$@' '$<'
 
 .PHONY: clean
