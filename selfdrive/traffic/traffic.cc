@@ -103,7 +103,9 @@ extern "C" {
         VisionStream stream;
         int err = visionstream_init(&stream, VISION_STREAM_YUV, true, &buf_info);
         if (err) {
-          printf("visionstream connect fail\n");
+            printf("visionstream connect fail\n");
+        } else {
+            printf("Success!\n");
         }
 //        std::cout << "connected with buffer size: " << buf_info.buf_len << std::endl);
 //
