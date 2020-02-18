@@ -107,10 +107,10 @@ extern "C" {
         } else {
             printf("Success!\n");
         }
-//        std::cout << "connected with buffer size: " << buf_info.buf_len << std::endl);
-//
-//        cl_mem yuv_cl;
-//        VisionBuf yuv_ion = visionbuf_allocate_cl(buf_info.buf_len, device_id, context, &yuv_cl);
+        std::cout << "connected with buffer size: " << buf_info.buf_len << std::endl);
+
+        cl_mem yuv_cl;
+        VisionBuf yuv_ion = visionbuf_allocate_cl(buf_info.buf_len, device_id, context, &yuv_cl);
     }
 
     int main(){
