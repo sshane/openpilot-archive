@@ -122,13 +122,18 @@ extern "C" {
         if (buf == NULL) {
             printf("visionstream get failed\n");
         }
-        uint8_t *y = (uint8_t*)buf->addr;
-        uint8_t *u = y + (buf_info.width*buf_info.height);
-        uint8_t *v = u + (buf_info.width/2)*(buf_info.height/2);
+//        uint8_t *y = (uint8_t*)buf->addr;
+//        uint8_t *u = y + (buf_info.width*buf_info.height);
+//        uint8_t *v = u + (buf_info.width/2)*(buf_info.height/2);
+//
+//        for (int i=0; i < sizeof(y); i++){
+//            std::cout << y[i] << std::endl;
+//        }
+        FILE *f = fopen("/data/openpilot/selfdrive/traffic/test_data", "wb");
+        uint8_t *buf_ptr = (uint8_t*)buf->addr;
 
-        for (int i=0; i < sizeof(y); i++){
-            std::cout << y[i] << std::endl;
-        }
+        fwrite(buf_ptr, 1, buf_info.buf_len, f);
+        fclose(f);
 
 //        FILE *f = fopen("/data/openpilot/selfdrive/traffic/testy", "wb");
 //        uint8_t *buf_ptr = (uint8_t*)buf->addr;
