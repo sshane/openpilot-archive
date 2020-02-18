@@ -1,9 +1,9 @@
 from cffi import FFI
 import subprocess
-try:
-    subprocess.check_call(["make", "-j4"], cwd="/data/openpilot/selfdrive/traffic")
-except:
-    pass
+# try:
+#     subprocess.check_call(["make", "-j4"], cwd="/data/openpilot/selfdrive/traffic")
+# except:
+#     pass
 
 
 def get_wrapper():
