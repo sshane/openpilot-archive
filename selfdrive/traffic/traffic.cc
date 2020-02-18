@@ -7,8 +7,6 @@
 #include "common/visionipc.h"
 #include "common/swaglog.h"
 
-#include "models/driving.h"
-
 using namespace std;
 
 std::unique_ptr<zdl::SNPE::SNPE> snpe;
