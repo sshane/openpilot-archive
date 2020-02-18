@@ -1,5 +1,8 @@
 #include "traffic.h"
 
+#include <stdio.h>
+#include <stdlib.h>
+
 #include "common/visionbuf.h"
 #include "common/visionipc.h"
 #include "common/swaglog.h"
