@@ -18,5 +18,5 @@ else:
 
 
 
-lenv.Program(target='/data/openpilot/selfdrive/traffic/traffic.o', source=["traffic.cc"], LIBS=libs)
+lenv.Program(target='/data/openpilot/selfdrive/traffic/traffic', source=["traffic.cc"], LIBS=libs)
 
