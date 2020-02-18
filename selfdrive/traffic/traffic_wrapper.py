@@ -7,7 +7,7 @@ import subprocess
 
 
 def get_wrapper():
-    libmpc_fn = "/data/openpilot/selfdrive/traffic/traffic"
+    libmpc_fn = "/data/openpilot/selfdrive/traffic/traffic.o"
 
     ffi = FFI()
     ffi.cdef("""    
