@@ -122,6 +122,9 @@ extern "C" {
         if (buf == NULL) {
             printf("visionstream get failed\n");
         }
+        std::cout << yuv_ion.addr << std::endl;
+        std::cout << buf->addr << std::endl;
+        memcpy(yuv_ion.addr, buf->addr, buf_info.buf_len);
     }
 
     int main(){
