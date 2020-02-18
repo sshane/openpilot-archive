@@ -22,5 +22,15 @@ else:
     lenv['CFLAGS'].append("-DUSE_TF_MODEL")
     lenv['CXXFLAGS'].append("-DUSE_TF_MODEL")
 
-common = lenv.Object(common_src)
+
+
+lenv.Program('_monitoringd', [
+    "monitoringd.cc",
+    "models/monitoring.cc",
+  ], LIBS=libs)
+
+lenv.Program('_modeld', [
+    "modeld.cc",
+    "models/driving.cc",
+  ], LIBS=libs)
 
