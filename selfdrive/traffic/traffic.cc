@@ -118,6 +118,10 @@ extern "C" {
         VIPCBuf *buf;
         VIPCBufExtra extra;
         buf = visionstream_get(&stream, &extra);
+
+        if (buf == NULL) {
+            printf("visionstream get failed\n");
+        }
     }
 
     int main(){
