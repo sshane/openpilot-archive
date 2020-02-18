@@ -18,5 +18,5 @@ else:
 
 
 
-lenv.Program('traffic.cc', LIBS=libs)
+lenv.Program('traffi.cc', LIBS=libs)
 
