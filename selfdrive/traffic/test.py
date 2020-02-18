@@ -7,7 +7,7 @@ import cv2
 import ctypes
 
 traffic_model, ffi = traffic_wrapper.get_wrapper()
-traffic_model.visionTest()
+# traffic_model.visionTest()
 
 # W, H = 1164, 874
 # y_hood_crop = 665
