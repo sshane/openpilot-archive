@@ -114,6 +114,10 @@ extern "C" {
 
         cl_mem yuv_cl;
         VisionBuf yuv_ion = visionbuf_allocate_cl(buf_info.buf_len, device_id, context, &yuv_cl);
+
+        VIPCBuf *buf;
+        VIPCBufExtra extra;
+        buf = visionstream_get(&stream, &extra);
     }
 
     int main(){
