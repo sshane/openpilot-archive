@@ -101,7 +101,7 @@ extern "C" {
         std::cout << "here" << std::endl;
         VisionStreamBufs buf_info;
         VisionStream stream;
-        int err = visionstream_init(&stream, VISION_STREAM_YUV, true, &buf_info);
+        //int err = visionstream_init(&stream, VISION_STREAM_YUV, true, &buf_info);
 //        std::cout << "Err: " << err << std::endl;
 //        std::cout << "connected with buffer size: " << buf_info.buf_len << std::endl);
 //
