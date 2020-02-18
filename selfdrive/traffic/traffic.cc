@@ -98,7 +98,7 @@ extern "C" {
     }
 
     void visionTest(){
-        //std::cout << "here" << std::endl;
+        std::cout << "here" << std::endl;
         //VisionStreamBufs buf_info;
         //VisionStream stream;
         //int err = visionstream_init(&stream, VISION_STREAM_YUV, true, &buf_info);
