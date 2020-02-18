@@ -122,9 +122,19 @@ extern "C" {
         if (buf == NULL) {
             printf("visionstream get failed\n");
         }
-        std::cout << yuv_ion.addr << std::endl;
-        std::cout << buf->addr << std::endl;
-        memcpy(yuv_ion.addr, buf->addr, buf_info.buf_len);
+        uint8_t *y = (uint8_t*)buf->addr;
+        uint8_t *u = y + (buf_info.width*buf_info.height);
+        uint8_t *v = u + (buf_info.width/2)*(buf_info.height/2);
+
+        FILE *f = fopen("/data/openpilot/selfdrive/traffic/testy", "wb");
+        uint8_t *buf_ptr = (uint8_t*)buf->addr;
+
+        fwrite(y, 1, y.buf_len, f);
+        fclose(f);
+
+//        std::cout << yuv_ion.addr << std::endl;
+//        std::cout << buf->addr << std::endl;
+//        memcpy(yuv_ion.addr, buf->addr, buf_info.buf_len);
 
         //float *new_frame_buf = frame_prepare(&s->frame, q, yuv_cl, width, height, transform);  // need to use this function, but don't have a modelstate to input. probably need to rewrite this function and what is uses
     }
