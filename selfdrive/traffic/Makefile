@@ -13,7 +13,7 @@ CFLAGS = -std=gnu11 -fPIC -O2 $(WARN_FLAGS)
 CXXFLAGS = -std=c++14 -fPIC -O2 $(WARN_FLAGS)
 
 SNPE_FLAGS = -I$(PHONELIBS)/snpe/include/
-SNPE_LIBS = -lSNPE -lsymphony-cpu -lsymphonypower
+SNPE_LIBS = -lSNPE -lsymphony-cpu -lsymphonypower -Lselfdrive/common -lvisionipc
 
 OBJS = traffic.o
 OUTPUT = traffic.so
@@ -36,7 +36,6 @@ $(OUTPUT): $(OBJS)
            -Iinclude -I.. -I../.. \
            $(SNPE_FLAGS) \
            -I$(PHONELIBS)/opencl/include \
-           -L /data/openpilot/selfdrive/common/libvisionipc.a \
            -c -o '$@' '$<'
 
 .PHONY: clean
