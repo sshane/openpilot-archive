@@ -4,6 +4,10 @@ import subprocess
 #     subprocess.check_call(["make", "-j4"], cwd="/data/openpilot/selfdrive/traffic")
 # except:
 #     pass
+try:
+    subprocess.check_call(["scons", "-u"], cwd="/data/openpilot/selfdrive/traffic")
+except:
+    pass
 
 
 def get_wrapper():
