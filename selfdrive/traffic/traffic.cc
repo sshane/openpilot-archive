@@ -100,12 +100,12 @@ extern "C" {
     void visionTest(){
         std::cout << "here" << std::endl;
         VisionStreamBufs buf_info;
-        err = visionstream_init(&stream, VISION_STREAM_YUV, true, &buf_info);
-        std::cout << "Err: " << err << std::endl;
-        std::cout << "connected with buffer size: " << buf_info.buf_len << std::endl);
-
-        cl_mem yuv_cl;
-        VisionBuf yuv_ion = visionbuf_allocate_cl(buf_info.buf_len, device_id, context, &yuv_cl);
+        int err = visionstream_init(&stream, VISION_STREAM_YUV, true, &buf_info);
+//        std::cout << "Err: " << err << std::endl;
+//        std::cout << "connected with buffer size: " << buf_info.buf_len << std::endl);
+//
+//        cl_mem yuv_cl;
+//        VisionBuf yuv_ion = visionbuf_allocate_cl(buf_info.buf_len, device_id, context, &yuv_cl);
     }
 
     int main(){
