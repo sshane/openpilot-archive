@@ -118,7 +118,6 @@ env = Environment(
     "#selfdrive/camerad/include",
     "#selfdrive/loggerd/include",
     "#selfdrive/modeld",
-    "#selfdrive/traffic/traffic",
     "#cereal/messaging",
     "#cereal",
     "#opendbc/can",
