@@ -125,6 +125,9 @@ extern "C" {
         std::cout << yuv_ion.addr << std::endl;
         std::cout << buf->addr << std::endl;
         memcpy(yuv_ion.addr, buf->addr, buf_info.buf_len);
+        std::cout << yuv_cl;
+
+        //float *new_frame_buf = frame_prepare(&s->frame, q, yuv_cl, width, height, transform);  // need to use this function, but don't have a modelstate to input. probably need to rewrite this function and what is uses
     }
 
     int main(){
