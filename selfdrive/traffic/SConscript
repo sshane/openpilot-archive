@@ -18,5 +18,5 @@ else:
 
 
 
-lenv.CFile(target='traffic.o', source='traffic.cc', LIBS=libs)
+lenv.Program('traffic', ["traffic.cc"] LIBS=libs)
 
