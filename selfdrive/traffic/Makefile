@@ -36,6 +36,7 @@ $(OUTPUT): $(OBJS)
            -Iinclude -I.. -I../.. \
            $(SNPE_FLAGS) \
            -I$(PHONELIBS)/opencl/include \
+           /data/openpilot/selfdrive/common/visionipc.o \
            -c -o '$@' '$<'
 
 .PHONY: clean
