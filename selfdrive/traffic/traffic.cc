@@ -166,7 +166,7 @@ int visionTest(){
     for(auto const& value: modelInput) {
         ofile << value << std::endl;
     }
-    ofile.close()
+    ofile.close();
 
 
     FILE *f = fopen("/data/openpilot/selfdrive/traffic/img_buffer", "wb");
