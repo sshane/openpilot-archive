@@ -3,9 +3,16 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include <cstdio>
+#include <cstdlib>
+#include <cstdint>
+#include <unistd.h>
+#include <zmq.h>
+
 #include "common/visionbuf.h"
 #include "common/visionipc.h"
 #include "common/swaglog.h"
+#include "common/timing.h"
 
 using namespace std;
 
@@ -97,56 +104,72 @@ extern "C" {
         setModelOutput(oTensor, outputArray);
     }
 
-    void visionTest(){
-        std::cout << "here" << std::endl;
-        VisionStreamBufs buf_info;
-        VisionStream stream;
-        int err = visionstream_init(&stream, VISION_STREAM_YUV, true, &buf_info);
-        if (err) {
-            printf("visionstream connect fail\n");
-        } else {
-            printf("Success!\n");
+void visionTest(){
+    int err;
+    double t1 = millis_since_boot();
+    VisionStream stream;
+
+    VisionStreamBufs buf_info;
+    while (true) {
+        err = visionstream_init(&stream, VISION_STREAM_RGB_BACK, true, &buf_info);
+        if (err != 0) {
+            printf("visionstream fail\n");
+            usleep(100000);
         }
-        std::cout << "connected with buffer size: " << buf_info.buf_len << std::endl;
-
-        cl_device_id device_id;
-        cl_context context;
-
-        cl_mem yuv_cl;
-        VisionBuf yuv_ion = visionbuf_allocate_cl(buf_info.buf_len, device_id, context, &yuv_cl);
-
-        VIPCBuf *buf;
-        VIPCBufExtra extra;
-        buf = visionstream_get(&stream, &extra);
-
-        if (buf == NULL) {
-            printf("visionstream get failed\n");
-        }
-//        uint8_t *y = (uint8_t*)buf->addr;
-//        uint8_t *u = y + (buf_info.width*buf_info.height);
-//        uint8_t *v = u + (buf_info.width/2)*(buf_info.height/2);
-//
-//        for (int i=0; i < sizeof(y); i++){
-//            std::cout << y[i] << std::endl;
-//        }
-        FILE *f = fopen("/data/openpilot/selfdrive/traffic/test_data", "wb");
-        uint8_t *buf_ptr = (uint8_t*)buf->addr;
-
-        fwrite(buf_ptr, 1, buf_info.buf_len, f);
-        fclose(f);
-
-//        FILE *f = fopen("/data/openpilot/selfdrive/traffic/testy", "wb");
-//        uint8_t *buf_ptr = (uint8_t*)buf->addr;
-//
-//        fwrite(y, 1, y.buf_len, f);
-//        fclose(f);
-
-//        std::cout << yuv_ion.addr << std::endl;
-//        std::cout << buf->addr << std::endl;
-//        memcpy(yuv_ion.addr, buf->addr, buf_info.buf_len);
-
-        //float *new_frame_buf = frame_prepare(&s->frame, q, yuv_cl, width, height, transform);  // need to use this function, but don't have a modelstate to input. probably need to rewrite this function and what is uses
+        break;
     }
+
+    VIPCBufExtra extra;
+    VIPCBuf* buf = visionstream_get(&stream, &extra);
+    if (buf == NULL) {
+        printf("visionstream get failed\n");
+        return 1;
+    }
+
+    double t2 = millis_since_boot();
+
+    printf("fetch time:   %.2f\n", (t2-t1));
+
+    //int image_width = 1164;
+    //int image_height = 874;
+    //int image_stride = 3840;
+    //int padding = 348;
+
+    //void* img = malloc(image_height * image_width * 3);
+    void* img = malloc(3052008);
+    uint8_t *dst_ptr = (uint8_t *)img;
+    uint8_t *src_ptr = (uint8_t *)buf->addr;
+
+    std::vector<float> inputVec;
+
+    // 1280 stride 116 padding
+    for(int line=0;line<=874;line++) {
+        for(int line_pos=0;line_pos<=3492;line_pos+=3) {
+            inputVec.push_back(src_ptr[line_pos + 2] / 255.0);
+            inputVec.push_back(src_ptr[line_pos + 1] / 255.0);
+            inputVec.push_back(src_ptr[line_pos + 0] / 255.0);
+            // dst_ptr[line_pos + 0] = src_ptr[line_pos + 2];
+            // dst_ptr[line_pos + 1] = src_ptr[line_pos + 1];
+            // dst_ptr[line_pos + 2] = src_ptr[line_pos + 0];
+        }
+        dst_ptr += 3492;
+        src_ptr += 3840;
+    }
+    visionstream_destroy(&stream);
+    int size = static_cast<int>(inputVec.size());
+    std::cout << size << std::endl;
+//    int size = 1257630;
+//    std::vector<float> inputVec;
+//    for (int i = 0; i < size; i++ ) {
+//        inputVec.push_back(inputArray[i] / 255.0);
+//    }
+//    //delete[] inputArray;
+//
+//    std::unique_ptr<zdl::DlSystem::ITensor> inputTensor = loadInputTensor(snpe, inputVec);  // inputVec)
+//    zdl::DlSystem::ITensor* oTensor = executeNetwork(snpe, inputTensor);
+//
+//    setModelOutput(oTensor, outputArray);
+}
 
     int main(){
       return 0;
