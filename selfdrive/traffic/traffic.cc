@@ -140,9 +140,15 @@ int visionTest(){
     uint8_t *dst_ptr = (uint8_t *)img;
     uint8_t *src_ptr = (uint8_t *)buf->addr;
 
+    std::vector<uint8_t> modelInput;
+
     // 1280 stride 116 padding
     for(int line=0;line<=874;line++) {
         for(int line_pos=0;line_pos<=3492;line_pos+=3) {
+            modelInput.push_back(src_ptr[line_pos + 2]);
+            modelInput.push_back(src_ptr[line_pos + 1]);
+            modelInput.push_back(src_ptr[line_pos + 0]);
+
             dst_ptr[line_pos + 0] = src_ptr[line_pos + 2];
             dst_ptr[line_pos + 1] = src_ptr[line_pos + 1];
             dst_ptr[line_pos + 2] = src_ptr[line_pos + 0];
@@ -155,7 +161,15 @@ int visionTest(){
 
     printf("process time: %.2f\n", (t3-t2));
 
-    FILE *f = fopen("./test", "wb");
+    std::ofstream ofile;
+    ofile.open("/data/openpilot/selfdrive/traffic/img_flat", std::ios::app);
+    for(auto const& value: modelInput) {
+        ofile << value << std::endl;
+    }
+    ofile.close()
+
+
+    FILE *f = fopen("/data/openpilot/selfdrive/traffic/img_buffer", "wb");
     fwrite((uint8_t *)img, 1, 3052008, f);
     free(img);
     fclose(f);
