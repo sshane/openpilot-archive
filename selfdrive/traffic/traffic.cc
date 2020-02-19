@@ -139,14 +139,14 @@ void visionTest(){
     uint8_t *dst_ptr = (uint8_t *)img;
     uint8_t *src_ptr = (uint8_t *)buf->addr;
 
-    std::vector<float> inputVec;
+    std::vector<int> inputVec;
 
     // 1280 stride 116 padding
     for(int line=0;line<=874;line++) {
         for(int line_pos=0;line_pos<=3492;line_pos+=3) {
-            inputVec.push_back(src_ptr[line_pos + 2] / 255.0);
-            inputVec.push_back(src_ptr[line_pos + 1] / 255.0);
-            inputVec.push_back(src_ptr[line_pos + 0] / 255.0);
+            inputVec.push_back(src_ptr[line_pos + 2]);
+            inputVec.push_back(src_ptr[line_pos + 1]);
+            inputVec.push_back(src_ptr[line_pos + 0]);
             // dst_ptr[line_pos + 0] = src_ptr[line_pos + 2];
             // dst_ptr[line_pos + 1] = src_ptr[line_pos + 1];
             // dst_ptr[line_pos + 2] = src_ptr[line_pos + 0];
