@@ -123,7 +123,6 @@ void visionTest(){
     VIPCBuf* buf = visionstream_get(&stream, &extra);
     if (buf == NULL) {
         printf("visionstream get failed\n");
-        return 1;
     }
 
     double t2 = millis_since_boot();
