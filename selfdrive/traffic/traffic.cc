@@ -140,7 +140,7 @@ int visionTest(){
     uint8_t *dst_ptr = (uint8_t *)img;
     uint8_t *src_ptr = (uint8_t *)buf->addr;
 
-    std::vector<uint8_t> modelInput;
+    std::vector<int> modelInput;
 
     // 1280 stride 116 padding
     for(int line=0;line<=874;line++) {
@@ -163,8 +163,13 @@ int visionTest(){
 
     std::ofstream ofile;
     ofile.open("/data/openpilot/selfdrive/traffic/img_flat", std::ios::app);
-    for(auto const& value: modelInput) {
+    int counter123=0;
+    for(int const& value: modelInput) {
+        if (counter123 < 50){
+            std::cout << value << std::endl;
+        }
         ofile << value << std::endl;
+        counter123++;
     }
     ofile.close();
 
