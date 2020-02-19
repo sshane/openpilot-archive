@@ -157,6 +157,13 @@ void visionTest(){
     visionstream_destroy(&stream);
     int size = static_cast<int>(inputVec.size());
     std::cout << size << std::endl;
+
+    int size2 = 0;
+    for(int i : vi) {
+        size2 += 1;
+    }
+    std::cout << size2 << std::endl;
+
 //    int size = 1257630;
 //    std::vector<float> inputVec;
 //    for (int i = 0; i < size; i++ ) {
