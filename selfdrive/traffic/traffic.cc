@@ -137,12 +137,16 @@ std::vector<float> processStreamBuffer(VIPCBuf* buf){
 }
 
 float* doPrediction(std::vector<float> inputVector){
+    std::cout << "1" << std::endl;
     std::unique_ptr<zdl::DlSystem::ITensor> inputTensor = loadInputTensor(snpe, inputVector);  // inputVec)
+    std::cout << "2" << std::endl;
     zdl::DlSystem::ITensor* oTensor = executeNetwork(snpe, inputTensor);
+    std::cout << "3" << std::endl;
 
     float* modelOutput;
-
+    std::cout << "4" << std::endl;
     setModelOutput(oTensor, modelOutput);
+    std::cout << "5" << std::endl;
     return modelOutput;
 }
 
@@ -169,13 +173,13 @@ extern "C" {
         }
 //        t1 = millis_since_boot();
 //        printf("visionstream_get: %.2f\n", (t1-loopStart));
-        std::cout << "here123" << std::endl;
+
         std::vector<float> inputVector = processStreamBuffer(buf);  // writes float vector to inputVector
-        std::cout << "Vector size: " << inputVector.size() << std::endl;
-        std::cout << "here4" << std::endl;
+        std::cout << "Vector elements: " << inputVector.size() << std::endl;
+
         doPrediction(inputVector);
         std::cout << "here5" << std::endl;
-        std::cout << "Vector elements: " << inputVector.size() << std::endl;
+
 //        t2 = millis_since_boot();
 //        printf("predict time: %.2f\n", (t2-t1));
 //
