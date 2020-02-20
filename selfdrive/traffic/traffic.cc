@@ -20,6 +20,7 @@ std::unique_ptr<zdl::SNPE::SNPE> snpe;
 VIPCBuf* buf;
 VisionStream stream;
 VIPCBufExtra extra;
+VisionStreamBufs buf_info;
 
 const std::vector<std::string> modelLabels = {"RED", "GREEN", "YELLOW", "NONE"};
 const int image_stride = 3840;  // global constants
