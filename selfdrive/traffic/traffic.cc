@@ -179,17 +179,12 @@ int visionTest(){
             dst_ptr += 2442; // x = 814 * 3 pixels = 2442 bytes per horizontal line
             src_ptr += image_stride; // stride
         }
-        double t3 = millis_since_boot();
+        //double t3 = millis_since_boot();
 
-        printf("process time: %.2f\n", (t3-proc_start));
+        //printf("process time: %.2f\n", (t3-proc_start));
 
         //std::cout << "Loop iterations: " << idx << std::endl;
     //    printf("%i\n", ((uint8_t (*)[515][814]) img)[0][0][0]);
-
-
-        double t4 = millis_since_boot();
-
-
 
         std::unique_ptr<zdl::DlSystem::ITensor> inputTensor = loadInputTensor(snpe, modelInput);  // inputVec)
         zdl::DlSystem::ITensor* oTensor = executeNetwork(snpe, inputTensor);
@@ -199,7 +194,7 @@ int visionTest(){
     //    std::cout << "Vector elements: " << modelInput.size() << std::endl;
     }
     double loopEnd = millis_since_boot();
-    printf("prediction time: %.2f\n", (loopEnd-loopStart));
+    printf("20 loop time: %.2f\n", (loopEnd-loopStart));
 
     visionstream_destroy(&stream);
 
