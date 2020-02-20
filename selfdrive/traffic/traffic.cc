@@ -172,6 +172,7 @@ int visionTest(){
         }
         dst_ptr += 2442; // x = 814 * 3 pixels = 2442 bytes per horizontal line
         src_ptr += 3840; // stride
+    }
 
     printf("vector build time:   %.2f\n", (millis_since_boot()-t2));
 
