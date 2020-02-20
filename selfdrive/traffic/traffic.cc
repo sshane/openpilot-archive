@@ -169,10 +169,7 @@ int visionTest(){
     int idx = 0;
     double proc_start = millis_since_boot();
     for (int line = 0; line < cropped_shape[0]; line++) {
-        for(int line_pos = 0; line_pos < (cropped_shape[1] * cropped_shape[2]); line_pos += cropped_shape[2]) {
-//            for(int val=0; val < 3; val++){
-//                modelInput.push_back(src_ptr[line_pos + offset + val] / pixel_norm);
-//            }
+        for(int line_pos = 0; line_pos < 2442; line_pos += 3) {
             modelInput.push_back(src_ptr[line_pos + offset + 0] / pixel_norm);
             modelInput.push_back(src_ptr[line_pos + offset + 1] / pixel_norm);
             modelInput.push_back(src_ptr[line_pos + offset + 2] / pixel_norm);
