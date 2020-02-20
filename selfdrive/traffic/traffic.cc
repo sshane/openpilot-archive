@@ -172,11 +172,11 @@ extern "C" {
         std::cout << "here" << std::endl;
 //        t1 = millis_since_boot();
 //        printf("visionstream_get: %.2f\n", (t1-loopStart));
-        std::cout << "here" << std::endl;
+        std::cout << "here123" << std::endl;
         std::vector<float> inputVector = processStreamBuffer(buf);  // writes float vector to inputVector
-
+        std::cout << "here4" << std::endl;
         doPrediction(inputVector);
-
+        std::cout << "here5" << std::endl;
         std::cout << "Vector elements: " << inputVector.size() << std::endl;
 //        t2 = millis_since_boot();
 //        printf("predict time: %.2f\n", (t2-t1));
