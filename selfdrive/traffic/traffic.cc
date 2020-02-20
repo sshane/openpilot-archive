@@ -166,7 +166,7 @@ int visionTest(){
     for(int line=0;line<515;line++) {
         for(int line_pos = 0; line_pos < (814 * 3); line_pos += 3) {
             for(int value; value < 3; value++) {
-                modelInput.push_back(src_ptr[line_pos + offset + value] / 255.0)
+                modelInput.push_back(src_ptr[line_pos + offset + value] / 255.0);
                 idx++;
             }
         }
