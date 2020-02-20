@@ -164,8 +164,7 @@ int visionTest(){
         dst_ptr += 2442; // x = 814 * 3 pixels = 2442 bytes per horizontal line
         src_ptr += 3840; // stride
     }
-
-    std::cout << ((uint8_t (*)[814][515]) img)[0][0][0] << std::endl;
+    printf("%i\n", ((uint8_t (*)[814][515]) img)[0][0][0]);
 
 //    for (int x = 0; x <= 814; x++;){
 //        for (int y = 0; y <= 515; y++;){
