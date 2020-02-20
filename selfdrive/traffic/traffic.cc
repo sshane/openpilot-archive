@@ -136,7 +136,7 @@ int visionTest(){
     //int padding = 348;
 
 
-    std::vector<float> modelInput;
+    std::vector<int> modelInput;
 
     int y_hood_crop = 665;
     int horizontal_crop = 175;
@@ -156,9 +156,6 @@ int visionTest(){
 //                printf("%i\n", src_ptr[line_pos + offset + 0]);
             }
 //            idx++;
-            modelInput.push_back(float(src_ptr[line_pos + offset + 0]) / 255.);
-            modelInput.push_back(float(src_ptr[line_pos + offset + 1]) / 255.);
-            modelInput.push_back(float(src_ptr[line_pos + offset + 2]) / 255.);
 
             dst_ptr[line_pos + 0] = src_ptr[line_pos + offset + 2];
             dst_ptr[line_pos + 1] = src_ptr[line_pos + offset + 1];
@@ -166,6 +163,20 @@ int visionTest(){
         }
         dst_ptr += 2442; // x = 814 * 3 pixels = 2442 bytes per horizontal line
         src_ptr += 3840; // stride
+    }
+
+    for (int x = 0; x <= 814; x++;){
+        for (int y = 0; y <= 515; y++;){
+            if (idx < 100){
+                std::cout << img[x][y][0] << " " << img[x][y][1] << " " << img[x][y][2] << std::endl;
+                printf("%i\n", img[x][y][0]);
+                std::cout << "\n";
+            }
+            modelInput.push_back(img[x][y][0]);
+            modelInput.push_back(img[x][y][1]);
+            modelInput.push_back(img[x][y][2]);
+            idx++;
+        }
     }
 
     std::cout << "Vector elements: " << modelInput.size() << std::endl;
