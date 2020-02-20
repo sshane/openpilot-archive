@@ -166,14 +166,12 @@ int visionTest(){
     t2 = millis_since_boot();
     printf("create pointers: %.2f\n", (t2-t1));
 
-    int idx = 0;
     double proc_start = millis_since_boot();
     for (int line = 0; line < cropped_shape[0]; line++) {
-        for(int line_pos = 0; line_pos < 2442; line_pos += 3) {
+        for(int line_pos = 0; line_pos < (cropped_shape[1] * cropped_shape[2]); line_pos += cropped_shape[2]) {
             modelInput.push_back(src_ptr[line_pos + offset + 0] / pixel_norm);
             modelInput.push_back(src_ptr[line_pos + offset + 1] / pixel_norm);
             modelInput.push_back(src_ptr[line_pos + offset + 2] / pixel_norm);
-            //idx+=3;
         }
         dst_ptr += 2442; // x = 814 * 3 pixels = 2442 bytes per horizontal line
         src_ptr += image_stride; // stride
@@ -181,19 +179,13 @@ int visionTest(){
     t1 = millis_since_boot();
     printf("image loop: %.2f\n", (t1-t2));
 
-    //double t3 = millis_since_boot();
-
-    //printf("process time: %.2f\n", (t3-proc_start));
-
-    //std::cout << "Loop iterations: " << idx << std::endl;
-//    printf("%i\n", ((uint8_t (*)[515][814]) img)[0][0][0]);
 
     std::unique_ptr<zdl::DlSystem::ITensor> inputTensor = loadInputTensor(snpe, modelInput);  // inputVec)
     zdl::DlSystem::ITensor* oTensor = executeNetwork(snpe, inputTensor);
 
     getModelOutput(oTensor);
 
-//    std::cout << "Vector elements: " << modelInput.size() << std::endl;
+    std::cout << "Vector elements: " << modelInput.size() << std::endl;
     t2 = millis_since_boot();
     printf("predict time: %.2f\n", (t2-t1));
 
