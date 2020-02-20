@@ -136,7 +136,7 @@ int visionTest(){
     //int padding = 348;
 
 
-    std::vector<int> modelInput;
+    std::vector<float> modelInput;
 
     int y_hood_crop = 665;
     int horizontal_crop = 175;
