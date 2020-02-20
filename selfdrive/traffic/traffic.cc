@@ -17,9 +17,6 @@ using namespace std;
 
 std::unique_ptr<zdl::SNPE::SNPE> snpe;  // global constants
 
-VisionStream stream;
-VisionStreamBufs buf_info;
-
 const int image_stride = 3840;
 const int cropped_size = 515 * 814 * 3;
 const int cropped_shape[3] = {515, 814, 3};
@@ -109,7 +106,9 @@ void initModel(){
     initializeSNPE(runt);
 }
 
-void initVisionStream(){
+VisionStream initVisionStream(){
+    VisionStream stream;
+    VisionStreamBufs buf_info;
     int err;
     while (true) {
         err = visionstream_init(&stream, VISION_STREAM_RGB_BACK, true, &buf_info);
@@ -119,9 +118,10 @@ void initVisionStream(){
         }
         break;
     }
+    return stream;
 }
 
-VIPCBuf* getStreamBuffer(){
+VIPCBuf* getStreamBuffer(VisionStream stream){
     VIPCBufExtra extra;
     VIPCBuf* buf = visionstream_get(&stream, &extra);
     return buf;
@@ -154,11 +154,10 @@ std::vector<float> doPrediction(std::vector<float> inputVector){
 extern "C" {
     int runModelLoop(){
         initModel(); // init stuff
-        initVisionStream();
-
+        VisionStream stream = initVisionStream();
 
         //below should be every loop
-        VIPCBuf* buf = getStreamBuffer();
+        VIPCBuf* buf = getStreamBuffer(stream);
         if (buf == NULL) {
             printf("visionstream get failed\n");
             return 1;
