@@ -189,6 +189,7 @@ extern "C" {
             std::cout << "Here4\n";
             loopEnd = millis_since_boot();
 //            std::cout << "Loop time: " << (loopEnd - loopStart) * msToSec << " sec\n";
+            usleep(1000000);
         }
         visionstream_destroy(&stream);
         return 0;
