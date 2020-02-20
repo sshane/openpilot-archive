@@ -17,7 +17,7 @@ using namespace std;
 
 std::unique_ptr<zdl::SNPE::SNPE> snpe;
 
-const std::vector<std::string> modelLabels = {"RED", "GREEN", "YELLOW", "NONE"}
+const std::vector<std::string> modelLabels = {"RED", "GREEN", "YELLOW", "NONE"};
 const int image_stride = 3840;  // global constants
 const int cropped_size = 515 * 814 * 3;
 const int cropped_shape[3] = {515, 814, 3};
