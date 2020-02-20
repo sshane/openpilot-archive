@@ -170,7 +170,7 @@ extern "C" {
             loopStart = millis_since_boot();
             std::cout << "before get stream\n";
 
-            getStreamBuffer(stream, extra, buf); // (VisionStream stream, VIPCBufExtra extra, VIPCBuf* buf){
+            getStreamBuffer(stream, extra, &buf); // (VisionStream stream, VIPCBufExtra extra, VIPCBuf* buf){
             if (buf == NULL) {
                 printf("visionstream get failed\n");
                 return 1;
