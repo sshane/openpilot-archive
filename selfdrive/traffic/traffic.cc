@@ -147,14 +147,14 @@ int visionTest(){
 
     src_ptr += (150 * 3840); // starting offset of 150 lines of stride in
     for(int line=0;line<=515;line++) {
-        for(int line_pos=(175*3);line_pos<=((175*3)+(814*3));line_pos+=3) {
-            modelInput.push_back(src_ptr[line_pos + 0]);
-            modelInput.push_back(src_ptr[line_pos + 1]);
-            modelInput.push_back(src_ptr[line_pos + 2]);
+        for(int line_pos=0;line_pos<=((175*3)+(814*3));line_pos+=3) {
+            modelInput.push_back(src_ptr[line_pos + (175*3) + 0]);
+            modelInput.push_back(src_ptr[line_pos + (175*3) + 1]);
+            modelInput.push_back(src_ptr[line_pos + (175*3) + 2]);
 
-            dst_ptr[line_pos + 0] = src_ptr[line_pos + 2];
-            dst_ptr[line_pos + 1] = src_ptr[line_pos + 1];
-            dst_ptr[line_pos + 2] = src_ptr[line_pos + 0];
+            dst_ptr[line_pos + 0] = src_ptr[line_pos + (175*3) + 2];
+            dst_ptr[line_pos + 1] = src_ptr[line_pos + (175*3) + 1];
+            dst_ptr[line_pos + 2] = src_ptr[line_pos + (175*3) + 0];
         }
         dst_ptr += 2442; // x = 814 * 3 pixels = 2442 bytes per horizontal line
         src_ptr += 3840; // stride
