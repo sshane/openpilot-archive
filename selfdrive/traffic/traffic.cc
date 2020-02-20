@@ -174,7 +174,7 @@ void rateKeeper(double loopTime){
         std::cout << "Sleeping for " << toSleep << std::endl;
         sleepFor(toSleep);
     } else {
-        std::cout << "Loop time over rate by " << -toSleep << " seconds." << std::endl;
+        std::cout << "Loop lagging by " << -toSleep << " seconds." << std::endl;
     }
 }
 
