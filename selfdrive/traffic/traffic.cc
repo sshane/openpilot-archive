@@ -180,6 +180,8 @@ int visionTest(){
     std::unique_ptr<zdl::DlSystem::ITensor> inputTensor = loadInputTensor(snpe, modelInput);  // inputVec)
     zdl::DlSystem::ITensor* oTensor = executeNetwork(snpe, inputTensor);
 
+    float* outputArray;
+
     setModelOutput(oTensor, outputArray);
 
 
