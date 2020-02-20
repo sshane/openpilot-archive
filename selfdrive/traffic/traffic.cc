@@ -156,9 +156,9 @@ int visionTest(){
 //                printf("%i\n", src_ptr[line_pos + offset + 0]);
             }
 //            idx++;
-            modelInput.push_back(src_ptr[line_pos + offset + 0]);
-            modelInput.push_back(src_ptr[line_pos + offset + 1]);
-            modelInput.push_back(src_ptr[line_pos + offset + 2]);
+            modelInput.push_back(src_ptr[line_pos + offset + 0] / 255.);
+            modelInput.push_back(src_ptr[line_pos + offset + 1] / 255.);
+            modelInput.push_back(src_ptr[line_pos + offset + 2] / 255.);
 
             dst_ptr[line_pos + 0] = src_ptr[line_pos + offset + 2];
             dst_ptr[line_pos + 1] = src_ptr[line_pos + offset + 1];
@@ -177,11 +177,11 @@ int visionTest(){
     std::ofstream ofile;
     ofile.open("/data/openpilot/selfdrive/traffic/img_flat", std::ios::app);
     int counter123=0;
-    for(int const& value: modelInput) {
+    for(int i=0; i<modelInput.size(); i++) {
         if (counter123 < 50){
-            std::cout << value << std::endl;
+            std::cout << modelInput[i] << std::endl;
         }
-        ofile << value << std::endl;
+        ofile << modelInput[i] << std::endl;
         counter123++;
     }
     ofile.close();
