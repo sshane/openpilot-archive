@@ -171,7 +171,7 @@ extern "C" {
 
         std::vector<float> modelOutput = runModel(inputVector);
 
-        int prediction = max_element(modelOutput.begin(), modelOutput.end);
+        int prediction = std::max_element(modelOutput.begin(), modelOutput.end()) - modelOutput.begin();
         std::cout << "Prediction: " << prediction << std::endl;
         std::cout << modelLabels[prediction] << std::endl;
 
