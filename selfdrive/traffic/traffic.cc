@@ -168,6 +168,14 @@ int visionTest(){
         src_ptr += 3840; // stride
     }
 
+    int zeroCount = 0;
+    for (int i=0;i<modelInput.size();i++){
+        if (modelInput[i] == 0){
+            zeroCount++;
+        }
+    }
+
+    std::cout << "Zeros: " << zeroCount << std::endl;
     std::cout << "Vector elements: " << modelInput.size() << std::endl;
 
     double t3 = millis_since_boot();
