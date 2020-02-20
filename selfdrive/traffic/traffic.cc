@@ -153,7 +153,7 @@ int visionTest(){
                 //std::cout << src_ptr[line_pos + offset + 0] << " " << src_ptr[line_pos + offset + 1] << " " << src_ptr[line_pos + offset + 2] << std::endl;
 //                printf("%i\n", src_ptr[line_pos + offset + 0]);
             }
-//            idx++;
+            idx+=3;
 
             dst_ptr[line_pos + 0] = src_ptr[line_pos + offset + 2];
             dst_ptr[line_pos + 1] = src_ptr[line_pos + offset + 1];
@@ -162,6 +162,7 @@ int visionTest(){
         dst_ptr += 2442; // x = 814 * 3 pixels = 2442 bytes per horizontal line
         src_ptr += 3840; // stride
     }
+    std::cout << "Loop iterations: " << idx << std::endl;
     printf("%i\n", ((uint8_t (*)[515][814]) img)[0][0][0]);
 
     std::vector<int> modelInput;
