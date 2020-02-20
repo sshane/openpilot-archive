@@ -153,9 +153,9 @@ int visionTest(){
             int offset = 175 * 3;
             if (idx < 1000){
                 //std::cout << src_ptr[line_pos + offset + 0] << " " << src_ptr[line_pos + offset + 1] << " " << src_ptr[line_pos + offset + 2] << std::endl;
-                printf("%i\n", src_ptr[line_pos + offset + 0]);
+//                printf("%i\n", src_ptr[line_pos + offset + 0]);
             }
-            idx++;
+//            idx++;
             modelInput.push_back(src_ptr[line_pos + offset + 0]);
             modelInput.push_back(src_ptr[line_pos + offset + 1]);
             modelInput.push_back(src_ptr[line_pos + offset + 2]);
@@ -168,31 +168,23 @@ int visionTest(){
         src_ptr += 3840; // stride
     }
 
-    int zeroCount = 0;
-    for (int i=0;i<modelInput.size();i++){
-        if (modelInput[i] == 0){
-            zeroCount++;
-        }
-    }
-
-    std::cout << "Zeros: " << zeroCount << std::endl;
     std::cout << "Vector elements: " << modelInput.size() << std::endl;
 
     double t3 = millis_since_boot();
 
     printf("process time: %.2f\n", (t3-t2));
 
-//    std::ofstream ofile;
-//    ofile.open("/data/openpilot/selfdrive/traffic/img_flat", std::ios::app);
-//    int counter123=0;
-//    for(int const& value: modelInput) {
-//        if (counter123 < 50){
-//            std::cout << value << std::endl;
-//        }
-//        ofile << value << std::endl;
-//        counter123++;
-//    }
-//    ofile.close();
+    std::ofstream ofile;
+    ofile.open("/data/openpilot/selfdrive/traffic/img_flat", std::ios::app);
+    int counter123=0;
+    for(int const& value: modelInput) {
+        if (counter123 < 50){
+            std::cout << value << std::endl;
+        }
+        ofile << value << std::endl;
+        counter123++;
+    }
+    ofile.close();
 
 
     FILE *f = fopen("/data/openpilot/selfdrive/traffic/img_buffer", "wb");
