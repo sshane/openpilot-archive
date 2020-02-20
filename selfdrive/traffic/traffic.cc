@@ -152,8 +152,8 @@ int visionTest(){
         for(int line_pos = 0; line_pos <= (814 * 3); line_pos += 3) {
             int offset = 175 * 3;
             if (idx < 100){
-                std::cout << src_ptr[line_pos + offset + 0] << " " << src_ptr[line_pos + offset + 1] << " " << src_ptr[line_pos + offset + 2] << std::endl;
-                printf("%i\n", variable_here);
+                //std::cout << src_ptr[line_pos + offset + 0] << " " << src_ptr[line_pos + offset + 1] << " " << src_ptr[line_pos + offset + 2] << std::endl;
+                printf("%i\n", src_ptr[line_pos + offset + 0]);
             }
             idx++;
             modelInput.push_back(src_ptr[line_pos + offset + 0]);
