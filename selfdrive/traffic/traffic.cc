@@ -119,6 +119,7 @@ extern "C" {
     }
 
 int visionTest(){
+    initModel();
     int err;
     double t1 = millis_since_boot();
     VisionStream stream;
@@ -185,15 +186,18 @@ int visionTest(){
     }
     double t4 = millis_since_boot();
 
-    printf("vector build time: %.2f\n", (t4-t3));
-    std::cout << "Vector elements: " << modelInput.size() << std::endl;
 
-    initModel();
+
     std::unique_ptr<zdl::DlSystem::ITensor> inputTensor = loadInputTensor(snpe, modelInput);  // inputVec)
     zdl::DlSystem::ITensor* oTensor = executeNetwork(snpe, inputTensor);
 
     getModelOutput(oTensor);
+    double t99 = millis_since_boot();
 
+    printf("vector build time: %.2f\n", (t4-t3));
+    std::cout << "Vector elements: " << modelInput.size() << std::endl;
+
+    printf("prediction time: %.2f\n", (t99-t4));
 
 
 
@@ -211,10 +215,10 @@ int visionTest(){
 //    ofile.close();
 
 
-    FILE *f = fopen("/data/openpilot/selfdrive/traffic/img_buffer", "wb");
-    fwrite((uint8_t *)img, 1, 1257630, f);
-    free(img);
-    fclose(f);
+//    FILE *f = fopen("/data/openpilot/selfdrive/traffic/img_buffer", "wb");
+//    fwrite((uint8_t *)img, 1, 1257630, f);
+//    free(img);
+//    fclose(f);
 
     double t5 = millis_since_boot();
 
