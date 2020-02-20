@@ -162,6 +162,7 @@ int visionTest(){
 
     int idx = 0;
     for(int line=0;line<=515;line++) {
+        std::cout << line << std::endl;
         for(int line_pos = 0; line_pos <= (814 * 3); line_pos += 3) {
             int offset = 175 * 3;
             idx+=3;
