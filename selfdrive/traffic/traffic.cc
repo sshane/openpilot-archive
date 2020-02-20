@@ -156,7 +156,7 @@ int visionTest(){
     printf("visionstream_get: %.2f\n", (t1-loopStart));
 
     void* img = malloc(cropped_size);
-    uint8_t *dst_ptr = (uint8_t *)img;
+    //uint8_t *dst_ptr = (uint8_t *)img;
     uint8_t *src_ptr = (uint8_t *)buf->addr;
 
     src_ptr += (top_crop * image_stride); // starting offset of 150 lines of stride in
@@ -173,7 +173,7 @@ int visionTest(){
             modelInput.push_back(src_ptr[line_pos + offset + 1] / pixel_norm);
             modelInput.push_back(src_ptr[line_pos + offset + 2] / pixel_norm);
         }
-        dst_ptr += 2442; // x = 814 * 3 pixels = 2442 bytes per horizontal line
+        //dst_ptr += 2442; // x = 814 * 3 pixels = 2442 bytes per horizontal line
         src_ptr += image_stride; // stride
     }
     t1 = millis_since_boot();
