@@ -14,7 +14,6 @@
 #include <array>
 
 extern "C"{
-  void initModel();
   void predictTraffic(int inputArray[1257630], float* outputArray);
-  int visionTest();
+  int runModelLoop();
 }

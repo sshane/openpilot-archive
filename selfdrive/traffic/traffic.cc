@@ -174,13 +174,14 @@ extern "C" {
 
         doPrediction(inputVector);
 
-        std::cout << "Vector elements: " << modelInput.size() << std::endl;
+        std::cout << "Vector elements: " << inputVector.size() << std::endl;
 //        t2 = millis_since_boot();
 //        printf("predict time: %.2f\n", (t2-t1));
 //
 //        printf("total time: %.2f\n", (t2-loopStart));
 
         visionstream_destroy(&stream);
+        return 0;
     }
 
     void predictTraffic(int inputArray[1257630], float* outputArray){
