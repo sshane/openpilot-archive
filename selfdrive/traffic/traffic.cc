@@ -149,10 +149,6 @@ int visionTest(){
     for(int line=0;line<=515;line++) {
         for(int line_pos = 0; line_pos <= (814 * 3); line_pos += 3) {
             int offset = 175 * 3;
-            if (idx < 1000){
-                //std::cout << src_ptr[line_pos + offset + 0] << " " << src_ptr[line_pos + offset + 1] << " " << src_ptr[line_pos + offset + 2] << std::endl;
-//                printf("%i\n", src_ptr[line_pos + offset + 0]);
-            }
             idx+=3;
 
             dst_ptr[line_pos + 0] = src_ptr[line_pos + offset + 2];
@@ -162,19 +158,23 @@ int visionTest(){
         dst_ptr += 2442; // x = 814 * 3 pixels = 2442 bytes per horizontal line
         src_ptr += 3840; // stride
     }
+    double t3 = millis_since_boot();
+
+    printf("process time: %.2f\n", (t3-t2));
+
     std::cout << "Loop iterations: " << idx << std::endl;
-    printf("%i\n", ((uint8_t (*)[515][814]) img)[0][0][0]);
+//    printf("%i\n", ((uint8_t (*)[515][814]) img)[0][0][0]);
 
     std::vector<int> modelInput;
     for (int pixel=0; pixel < 1257630; pixel++) {
         modelInput.push_back(((uint8_t (*)) img)[pixel]);
     }
+    double t4 = millis_since_boot();
 
+    printf("vector build time: %.2f\n", (t4-t3));
     std::cout << "Vector elements: " << modelInput.size() << std::endl;
 
-    double t3 = millis_since_boot();
 
-    printf("process time: %.2f\n", (t3-t2));
 
 //    std::ofstream ofile;
 //    ofile.open("/data/openpilot/selfdrive/traffic/img_flat", std::ios::app);
