@@ -121,7 +121,6 @@ extern "C" {
 int visionTest(){
     initModel();
     int err;
-    double t1 = millis_since_boot();
     VisionStream stream;
 
     VisionStreamBufs buf_info;
