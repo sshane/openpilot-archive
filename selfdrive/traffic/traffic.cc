@@ -159,7 +159,8 @@ std::vector<float> runModel(std::vector<float> inputVector){
 }
 
 bool shouldStop() {
-    return std::filesystem::exists("/data/openpilot/selfdrive/traffic/stop");
+    std::ifstream infile("/data/openpilot/selfdrive/traffic/stop");
+    return infile.good();
 }
 
 extern "C" {
