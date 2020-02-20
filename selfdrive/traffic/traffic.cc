@@ -172,9 +172,9 @@ int visionTest(){
                 printf("%i\n", img[x][y][0]);
                 std::cout << "\n";
             }
-            modelInput.push_back(img[x][y][0]);
-            modelInput.push_back(img[x][y][1]);
-            modelInput.push_back(img[x][y][2]);
+            modelInput.push_back((uint8_t *)img[x][y][0]);
+            modelInput.push_back((uint8_t *)img[x][y][1]);
+            modelInput.push_back((uint8_t *)img[x][y][2]);
             idx++;
         }
     }
