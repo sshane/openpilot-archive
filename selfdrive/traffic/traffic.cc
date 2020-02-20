@@ -147,34 +147,38 @@ int visionTest(){
 
     printf("fetch time:   %.2f\n", (t2-t1));
 
-    int image_width = 1164;
-    int image_height = 874;
+
     //int image_stride = 3840;
     //int padding = 348;
 
+    const int cropped_size = 515 * 814 * 3;
+    const int cropped_shape[3] = {515, 814, 3};
+    const float pixel_norm = 255.0;
 
-    int y_hood_crop = 665;
-    int horizontal_crop = 175;
 
-    void* img = malloc(1257630);
+    const int horizontal_crop = 175;
+    const int top_crop = 150;
+
+    void* img = malloc(cropped_size);
     uint8_t *dst_ptr = (uint8_t *)img;
     uint8_t *src_ptr = (uint8_t *)buf->addr;
 
-    src_ptr += (150 * 3840); // starting offset of 150 lines of stride in
+    src_ptr += (top_crop * 3840); // starting offset of 150 lines of stride in
 
     std::vector<float> modelInput;
+
     int idx = 0;
-    const int offset = 175 * 3;
+    const int offset = horizontal_crop * cropped_shape[2];
     double proc_start = millis_since_boot();
-    for(int line=0;line<515;line++) {
-        for(int line_pos = 0; line_pos < (814 * 3); line_pos += 3) {
+    for (int line = 0; line < cropped_shape[0]; line++) {
+        for(int line_pos = 0; line_pos < (cropped_shape[1] * cropped_shape[2]); line_pos += cropped_shape[2]) {
 //            for(int val=0; val < 3; val++){
 //                modelInput.push_back(src_ptr[line_pos + offset + val] / 255.0);
 //            }
-            modelInput.push_back(src_ptr[line_pos + offset + 0] / 255.0);
-            modelInput.push_back(src_ptr[line_pos + offset + 1] / 255.0);
-            modelInput.push_back(src_ptr[line_pos + offset + 2] / 255.0);
-            idx+=3;
+            modelInput.push_back(src_ptr[line_pos + offset + 0] / pixel_norm);
+            modelInput.push_back(src_ptr[line_pos + offset + 1] / pixel_norm);
+            modelInput.push_back(src_ptr[line_pos + offset + 2] / pixel_norm);
+            //idx+=3;
         }
         dst_ptr += 2442; // x = 814 * 3 pixels = 2442 bytes per horizontal line
         src_ptr += 3840; // stride
@@ -183,7 +187,7 @@ int visionTest(){
 
     printf("process time: %.2f\n", (t3-proc_start));
 
-    std::cout << "Loop iterations: " << idx << std::endl;
+    //std::cout << "Loop iterations: " << idx << std::endl;
 //    printf("%i\n", ((uint8_t (*)[515][814]) img)[0][0][0]);
 
 
@@ -203,29 +207,6 @@ int visionTest(){
     printf("prediction time: %.2f\n", (t99-loopStart));
 
 
-
-
-//    std::ofstream ofile;
-//    ofile.open("/data/openpilot/selfdrive/traffic/img_flat", std::ios::app);
-//    int counter123=0;
-//    for(int i=0; i<modelInput.size(); i++) {
-//        if (counter123 < 50){
-//            std::cout << modelInput[i] << std::endl;
-//        }
-//        ofile << modelInput[i] << std::endl;
-//        counter123++;
-//    }
-//    ofile.close();
-
-
-//    FILE *f = fopen("/data/openpilot/selfdrive/traffic/img_buffer", "wb");
-//    fwrite((uint8_t *)img, 1, 1257630, f);
-//    free(img);
-//    fclose(f);
-
-    double t5 = millis_since_boot();
-
-    printf("write time:   %.2f\n", (t5-t4));
 
     visionstream_destroy(&stream);
 
