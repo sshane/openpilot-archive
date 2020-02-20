@@ -165,7 +165,7 @@ int visionTest(){
         src_ptr += 3840; // stride
     }
 
-    std::cout << ((uint8_t *)img)[0][0][0] << std::endl;
+    std::cout << ((uint8_t (*)[814][515]) img)[0][0][0] << std::endl;
 
 //    for (int x = 0; x <= 814; x++;){
 //        for (int y = 0; y <= 515; y++;){
