@@ -15,9 +15,10 @@
 
 using namespace std;
 
-std::unique_ptr<zdl::SNPE::SNPE> snpe;  // global constants
+std::unique_ptr<zdl::SNPE::SNPE> snpe;
 
-const int image_stride = 3840;
+const std::vector<std::string> modelLabels = {"RED", "GREEN", "YELLOW", "NONE"}
+const int image_stride = 3840;  // global constants
 const int cropped_size = 515 * 814 * 3;
 const int cropped_shape[3] = {515, 814, 3};
 
@@ -145,7 +146,7 @@ std::vector<float> processStreamBuffer(VIPCBuf* buf){
     return outputVector;
 }
 
-std::vector<float> doPrediction(std::vector<float> inputVector){
+std::vector<float> runModel(std::vector<float> inputVector){
     std::unique_ptr<zdl::DlSystem::ITensor> inputTensor = loadInputTensor(snpe, inputVector);  // inputVec)
     zdl::DlSystem::ITensor* oTensor = executeNetwork(snpe, inputTensor);
     return getModelOutput(oTensor);
@@ -168,10 +169,11 @@ extern "C" {
         std::vector<float> inputVector = processStreamBuffer(buf);  // writes float vector to inputVector
         std::cout << "Vector elements: " << inputVector.size() << std::endl;
 
-        std::vector<float> modelOutput = doPrediction(inputVector);
-        for (int i = 0; i < modelOutput.size(); i++){
-            std::cout << modelOutput[i] << std::endl;
-        }
+        std::vector<float> modelOutput = runModel(inputVector);
+
+        int prediction = max_element(modelOutput.begin(), modelOutput.end);
+        std::cout << "Prediction: " << prediction << std::endl;
+        std::cout << modelLabels[prediction] << std::endl;
 
         std::cout << "finished!" << std::endl;
 
