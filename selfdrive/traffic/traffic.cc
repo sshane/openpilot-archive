@@ -104,11 +104,11 @@ std::vector<float> getModelOutput(const zdl::DlSystem::ITensor* tensor) {
 }
 
 void initModel(){
-    printf("Test1");
+    printf("Test1\n");
     zdl::DlSystem::Runtime_t runt=checkRuntime();
-    printf("Test2");
+    printf("Test2\n");
     initializeSNPE(runt);
-    printf("Test3");
+    printf("Test3\n");
 }
 
 VisionStream initVisionStream(){
@@ -160,14 +160,16 @@ extern "C" {
     int runModelLoop(){
         std::cout << "1\n";
         initModel(); // init stuff
-        std::cout << "3\n";
+        std::cout << "2\n";
         VisionStream stream = initVisionStream();
         std::cout << "3\n";
         float modelRate = 1 / 5.;  // 5 Hz
 
         double loopStart;
         double loopEnd;
+        std::cout << "4\n";
         while (true){
+            std::cout << "5\n";
             loopStart = millis_since_boot();
             std::cout << "before get stream";
 
