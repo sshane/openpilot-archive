@@ -171,9 +171,9 @@ int visionTest(){
             modelInput.push_back(src_ptr[line_pos + offset + 2] / 255.0);
             idx+=3;
 
-            dst_ptr[line_pos + 0] = src_ptr[line_pos + offset + 2];
-            dst_ptr[line_pos + 1] = src_ptr[line_pos + offset + 1];
-            dst_ptr[line_pos + 2] = src_ptr[line_pos + offset + 0];
+//            dst_ptr[line_pos + 0] = src_ptr[line_pos + offset + 2];
+//            dst_ptr[line_pos + 1] = src_ptr[line_pos + offset + 1];
+//            dst_ptr[line_pos + 2] = src_ptr[line_pos + offset + 0];
         }
         dst_ptr += 2442; // x = 814 * 3 pixels = 2442 bytes per horizontal line
         src_ptr += 3840; // stride
