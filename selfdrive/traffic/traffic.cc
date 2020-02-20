@@ -126,8 +126,9 @@ VisionStream initVisionStream(){
     return stream;
 }
 
-void getStreamBuffer(VisionStream stream, VIPCBufExtra extra, VIPCBuf* buf){
-    buf = visionstream_get(&stream, &extra);
+VIPCBuf* getStreamBuffer(VisionStream stream, VIPCBufExtra extra){
+    VIPCBuf* buf = visionstream_get(&stream, &extra);
+    return buf
 }
 
 std::vector<float> processStreamBuffer(VIPCBuf* buf){
@@ -158,7 +159,6 @@ extern "C" {
     int runModelLoop(){
         initModel(); // init stuff
         VisionStream stream = initVisionStream();
-        VIPCBuf* buf;
         VIPCBufExtra extra;
         float modelRate = 1 / 5.;  // 5 Hz
 
@@ -170,7 +170,7 @@ extern "C" {
             loopStart = millis_since_boot();
             std::cout << "before get stream\n";
 
-            getStreamBuffer(stream, extra, buf); // (VisionStream stream, VIPCBufExtra extra, VIPCBuf* buf){
+            VIPCBuf* buf = getStreamBuffer(stream, extra); // (VisionStream stream, VIPCBufExtra extra, VIPCBuf* buf){
             if (buf == NULL) {
                 printf("visionstream get failed\n");
                 return 1;
