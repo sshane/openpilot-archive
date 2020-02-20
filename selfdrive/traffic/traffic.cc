@@ -173,6 +173,9 @@ extern "C" {
         std::cout << "Vector elements: " << inputVector.size() << std::endl;
 
         std::vector<float> modelOutput = doPrediction(inputVector);
+        for (int i = 0; i < modelOutput.size(); i++){
+            std::cout << modelOutput[i] << std::endl;
+        }
 
         std::cout << "finished!" << std::endl;
 
