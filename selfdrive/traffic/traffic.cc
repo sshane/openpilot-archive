@@ -170,13 +170,12 @@ int visionTest(){
         for (int y = 0; y <= 814; y++){
             if (idx < 100){
                 std::cout << (int)((uint8_t (*)[515][814]) img)[x][y][0] << " " << (int)((uint8_t (*)[515][814]) img)[x][y][1] << " " << (int)((uint8_t (*)[515][814]) img)[x][y][2] << std::endl;
-                printf("%i\n", ((uint8_t (*)[515][814]) img)[x][y][0]);
+                printf("%i\n", ((uint8_t (*)[515][814]) img)[x][y][3]);
                 std::cout << "\n";
             }
             modelInput.push_back(((uint8_t (*)[515][814]) img)[x][y][0]);
             modelInput.push_back(((uint8_t (*)[515][814]) img)[x][y][1]);
             modelInput.push_back(((uint8_t (*)[515][814]) img)[x][y][2]);
-            idx++;
         }
     }
 
