@@ -136,7 +136,7 @@ std::vector<float> processStreamBuffer(VIPCBuf* buf){
     return outputVector;
 }
 
-float* doPrediction(std::vector<float> *inputVector){
+float* doPrediction(std::vector<float> inputVector){
     std::unique_ptr<zdl::DlSystem::ITensor> inputTensor = loadInputTensor(snpe, inputVector);  // inputVec)
     zdl::DlSystem::ITensor* oTensor = executeNetwork(snpe, inputTensor);
 
