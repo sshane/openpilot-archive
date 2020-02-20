@@ -156,27 +156,26 @@ extern "C" {
     int runModelLoop(){
         initModel(); // init stuff
         VisionStream stream = initVisionStream();
+        float modelRate = 1 / 10.;
+        std::cout << modelRate << std::endl;
 
-        //below should be every loop
-        VIPCBuf* buf = getStreamBuffer(stream);
-        if (buf == NULL) {
-            printf("visionstream get failed\n");
-            return 1;
+        while (true){
+            VIPCBuf* buf = getStreamBuffer(stream);
+            if (buf == NULL) {
+                printf("visionstream get failed\n");
+                return 1;
+            }
+    //        t1 = millis_since_boot();
+    //        printf("visionstream_get: %.2f\n", (t1-loopStart));
+
+            std::vector<float> inputVector = processStreamBuffer(buf);  // writes float vector to inputVector
+            std::cout << "Vector elements: " << inputVector.size() << std::endl;
+
+            std::vector<float> modelOutput = runModel(inputVector);
+
+            int pred_idx = std::max_element(modelOutput.begin(), modelOutput.end()) - modelOutput.begin();
+            std::cout << "Prediction: " << modelLabels[pred_idx] << " (" << modelOutput[pred_idx] * 100 << "%)" << std::endl;
         }
-//        t1 = millis_since_boot();
-//        printf("visionstream_get: %.2f\n", (t1-loopStart));
-
-        std::vector<float> inputVector = processStreamBuffer(buf);  // writes float vector to inputVector
-        std::cout << "Vector elements: " << inputVector.size() << std::endl;
-
-        std::vector<float> modelOutput = runModel(inputVector);
-
-        int prediction = std::max_element(modelOutput.begin(), modelOutput.end()) - modelOutput.begin();
-        std::cout << "Prediction: " << modelLabels[prediction] << "(" << modelOutput[prediction] * 100 << "%)" << std::endl;
-
-        std::cout << "finished!" << std::endl;
-
-
         visionstream_destroy(&stream);
         return 0;
     }
