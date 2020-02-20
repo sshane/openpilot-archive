@@ -180,7 +180,7 @@ int visionTest(){
 
 
     FILE *f = fopen("/data/openpilot/selfdrive/traffic/img_buffer", "wb");
-    fwrite((uint8_t *)img, 1, 3052008, f);
+    fwrite((uint8_t *)img, 1, 1257630, f);
     free(img);
     fclose(f);
 
