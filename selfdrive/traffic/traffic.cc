@@ -32,6 +32,7 @@ const int horizontal_crop = 175;
 const int top_crop = 150;
 const int offset = horizontal_crop * cropped_shape[2];
 const double msToSec = 1 / 1000.;  // multiply
+const double secToUs = 1e+6;
 
 zdl::DlSystem::Runtime_t checkRuntime() {
     static zdl::DlSystem::Version_t Version = zdl::SNPE::SNPEFactory::getLibraryVersion();
@@ -157,6 +158,10 @@ std::vector<float> runModel(std::vector<float> inputVector){
     return getModelOutput(oTensor);
 }
 
+bool shouldStop() {
+    return std::filesystem::exists("/data/openpilot/selfdrive/traffic/stop");
+}
+
 extern "C" {
     int runModelLoop(){
         initModel(); // init stuff
@@ -187,7 +192,11 @@ extern "C" {
 
             loopEnd = millis_since_boot();
 //            std::cout << "Loop time: " << (loopEnd - loopStart) * msToSec << " sec\n";
-            usleep(1000000);
+            usleep(1 * secToUs);
+
+            if (shouldStop()){
+                break;
+            }
         }
         visionstream_destroy(&stream);
         return 0;
