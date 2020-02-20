@@ -148,12 +148,9 @@ float* doPrediction(std::vector<float> inputVector){
 
 extern "C" {
     int runModelLoop(){
-        std::cout << "here" << std::endl;
         initModel(); // init stuff
-        std::cout << "here" << std::endl;
         VisionStream stream;
         VisionStreamBufs buf_info;
-        std::cout << "here" << std::endl;
         int err;
         while (true) {
             err = visionstream_init(&stream, VISION_STREAM_RGB_BACK, true, &buf_info);
@@ -163,13 +160,11 @@ extern "C" {
             }
             break;
         }
-        std::cout << "here" << std::endl;
         VIPCBuf* buf = getStreamBuffer(stream);
         if (buf == NULL) {
             printf("visionstream get failed\n");
             return 1;
         }
-        std::cout << "here" << std::endl;
 //        t1 = millis_since_boot();
 //        printf("visionstream_get: %.2f\n", (t1-loopStart));
         std::cout << "here123" << std::endl;
