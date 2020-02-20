@@ -142,7 +142,7 @@ std::vector<float> doPrediction(std::vector<float> inputVector){
 //    std::cout << "3" << std::endl;
 
 //    std::cout << "4" << std::endl;
-    return getModelOutput(oTensor, modelOutput);
+    return getModelOutput(oTensor);
 }
 
 extern "C" {
