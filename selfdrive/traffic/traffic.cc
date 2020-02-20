@@ -160,6 +160,8 @@ extern "C" {
             }
             break;
         }
+
+        //below should be every loop
         VIPCBuf* buf = getStreamBuffer(stream);
         if (buf == NULL) {
             printf("visionstream get failed\n");
@@ -169,6 +171,7 @@ extern "C" {
 //        printf("visionstream_get: %.2f\n", (t1-loopStart));
         std::cout << "here123" << std::endl;
         std::vector<float> inputVector = processStreamBuffer(buf);  // writes float vector to inputVector
+        std::cout << "Vector size: " << inputVector.size() << std::endl;
         std::cout << "here4" << std::endl;
         doPrediction(inputVector);
         std::cout << "here5" << std::endl;
