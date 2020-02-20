@@ -156,9 +156,9 @@ int visionTest(){
 //                printf("%i\n", src_ptr[line_pos + offset + 0]);
             }
 //            idx++;
-            modelInput.push_back(src_ptr[line_pos + offset + 0] / 255.);
-            modelInput.push_back(src_ptr[line_pos + offset + 1] / 255.);
-            modelInput.push_back(src_ptr[line_pos + offset + 2] / 255.);
+            modelInput.push_back(float(src_ptr[line_pos + offset + 0]) / 255.);
+            modelInput.push_back(float(src_ptr[line_pos + offset + 1]) / 255.);
+            modelInput.push_back(float(src_ptr[line_pos + offset + 2]) / 255.);
 
             dst_ptr[line_pos + 0] = src_ptr[line_pos + offset + 2];
             dst_ptr[line_pos + 1] = src_ptr[line_pos + offset + 1];
