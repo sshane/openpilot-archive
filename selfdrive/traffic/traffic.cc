@@ -86,6 +86,18 @@ void setModelOutput(const zdl::DlSystem::ITensor* tensor, float* outputArray) {
     }
 }
 
+void getModelOutput(const zdl::DlSystem::ITensor* tensor) {
+    // vector<float> outputs;
+    int counter = 0;
+    std::cout << "Prediction: " << std::endl;
+    for (auto it = tensor->cbegin(); it != tensor->cend(); ++it ){
+        float op = *it;
+        // outputs.push_back(op);
+        std::cout << op << std::endl;
+        counter += 1;
+    }
+}
+
 extern "C" {
     void initModel(){
         zdl::DlSystem::Runtime_t runt=checkRuntime();
@@ -180,9 +192,7 @@ int visionTest(){
     std::unique_ptr<zdl::DlSystem::ITensor> inputTensor = loadInputTensor(snpe, modelInput);  // inputVec)
     zdl::DlSystem::ITensor* oTensor = executeNetwork(snpe, inputTensor);
 
-    float* outputArray;
-
-    setModelOutput(oTensor, outputArray);
+    getModelOutput(oTensor);
 
 
 
