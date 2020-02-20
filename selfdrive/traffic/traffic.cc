@@ -155,8 +155,11 @@ std::vector<float> runModel(std::vector<float> inputVector){
 
 extern "C" {
     int runModelLoop(){
+        std::cout << "before get stream";
         initModel(); // init stuff
+        std::cout << "before get stream";
         VisionStream stream = initVisionStream();
+        std::cout << "before get stream";
         float modelRate = 1 / 5.;  // 5 Hz
 
         double loopStart;
