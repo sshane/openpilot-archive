@@ -194,15 +194,15 @@ int visionTest(){
     free(img);
     fclose(f);
 
-    double t4 = millis_since_boot();
+    double t5 = millis_since_boot();
 
-    printf("write time:   %.2f\n", (t4-t3));
+    printf("write time:   %.2f\n", (t5-t4));
 
     visionstream_destroy(&stream);
 
-    double t5 = millis_since_boot();
+    double t6 = millis_since_boot();
 
-    printf("total time:   %.2f\n", (t5-t1));
+    printf("total time:   %.2f\n", (t6-t1));
 
     return 0;
 }
