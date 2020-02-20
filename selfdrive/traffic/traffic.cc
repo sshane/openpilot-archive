@@ -169,7 +169,7 @@ int visionTest(){
     for (int x = 0; x <= 814; x++){
         for (int y = 0; y <= 515; y++){
             if (idx < 100){
-                std::cout << ((uint8_t (*)[814][515]) img)[x][y][0] << " " << ((uint8_t (*)[814][515]) img)[x][y][1] << " " << ((uint8_t (*)[814][515]) img)[x][y][2] << std::endl;
+                std::cout << (int)((uint8_t (*)[814][515]) img)[x][y][0] << " " << (int)((uint8_t (*)[814][515]) img)[x][y][1] << " " << (int)((uint8_t (*)[814][515]) img)[x][y][2] << std::endl;
                 printf("%i\n", ((uint8_t (*)[814][515]) img)[x][y][0]);
                 std::cout << "\n";
             }
