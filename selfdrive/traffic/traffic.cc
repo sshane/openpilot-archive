@@ -167,7 +167,7 @@ int visionTest(){
     std::cout << "Loop iterations: " << idx << std::endl;
 //    printf("%i\n", ((uint8_t (*)[515][814]) img)[0][0][0]);
 
-    std::vector<int> modelInput;
+    std::vector<float> modelInput;
     for (int pixel=0; pixel < 1257630; pixel++) {
         modelInput.push_back(((uint8_t (*)) img)[pixel]);
     }
