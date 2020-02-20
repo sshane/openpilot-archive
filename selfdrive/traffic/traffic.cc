@@ -171,6 +171,7 @@ void rateKeeper(double loopTime){
     double modelRate = 1 / 5.;  // 5 Hz
     double toSleep = modelRate - (loopTime * msToSec);
     if (toSleep > 0){  // don't sleep for negative time, in case loop takes too long one iteration
+        std::cout << "Sleeping for " << toSleep << std::endl;
         sleepFor(toSleep);
     } else {
         std::cout << "Loop time over rate by " << -toSleep << " seconds." << std::endl;
@@ -205,7 +206,7 @@ extern "C" {
             int pred_idx = std::max_element(modelOutput.begin(), modelOutput.end()) - modelOutput.begin();
             std::cout << "Prediction: " << modelLabels[pred_idx] << " (" << modelOutput[pred_idx] * 100 << "%)" << std::endl;
 
-            sleepFor(0.5);  // in seconds
+            // sleepFor(0.5);  // in seconds
             loopEnd = millis_since_boot();
 //            std::cout << "Loop time: " << (loopEnd - loopStart) * msToSec << " sec\n";
 
