@@ -91,16 +91,14 @@ void setModelOutput(const zdl::DlSystem::ITensor* tensor, float* outputArray) {
     }
 }
 
-void getModelOutput(const zdl::DlSystem::ITensor* tensor) {
-    // vector<float> outputs;
+std::vector<float> getModelOutput(const zdl::DlSystem::ITensor* tensor) {
+    vector<float> outputs;
     int counter = 0;
-    //std::cout << "Prediction: " << std::endl;
     for (auto it = tensor->cbegin(); it != tensor->cend(); ++it ){
         float op = *it;
-        // outputs.push_back(op);
-        //std::cout << op << std::endl;
-        counter += 1;
+        outputs.push_back(op);
     }
+    return outputs;
 }
 
 void initModel(){
@@ -136,18 +134,15 @@ std::vector<float> processStreamBuffer(VIPCBuf* buf){
     return outputVector;
 }
 
-float* doPrediction(std::vector<float> inputVector){
-    std::cout << "1" << std::endl;
+std::vector<float> doPrediction(std::vector<float> inputVector){
+//    std::cout << "1" << std::endl;
     std::unique_ptr<zdl::DlSystem::ITensor> inputTensor = loadInputTensor(snpe, inputVector);  // inputVec)
-    std::cout << "2" << std::endl;
+//    std::cout << "2" << std::endl;
     zdl::DlSystem::ITensor* oTensor = executeNetwork(snpe, inputTensor);
-    std::cout << "3" << std::endl;
+//    std::cout << "3" << std::endl;
 
-    float* modelOutput;
-    std::cout << "4" << std::endl;
-    setModelOutput(oTensor, modelOutput);
-    std::cout << "5" << std::endl;
-    return modelOutput;
+//    std::cout << "4" << std::endl;
+    return getModelOutput(oTensor, modelOutput);
 }
 
 extern "C" {
@@ -177,8 +172,9 @@ extern "C" {
         std::vector<float> inputVector = processStreamBuffer(buf);  // writes float vector to inputVector
         std::cout << "Vector elements: " << inputVector.size() << std::endl;
 
-        doPrediction(inputVector);
-        std::cout << "here5" << std::endl;
+        std::vector<float> modelOutput = doPrediction(inputVector);
+
+        std::cout << "finished!" << std::endl;
 
 //        t2 = millis_since_boot();
 //        printf("predict time: %.2f\n", (t2-t1));
