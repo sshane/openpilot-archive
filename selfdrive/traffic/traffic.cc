@@ -165,9 +165,9 @@ int visionTest(){
         src_ptr += 3840; // stride
     }
 
-    for (int x = 0; x <= 814; x++;){
-        for (int y = 0; y <= 515; y++;){
-            ((uint8_t *)img);
+//    for (int x = 0; x <= 814; x++;){
+//        for (int y = 0; y <= 515; y++;){
+//
 //            if (idx < 100){
 //                std::cout << img[x][y][0] << " " << img[x][y][1] << " " << img[x][y][2] << std::endl;
 //                printf("%i\n", img[x][y][0]);
@@ -176,9 +176,9 @@ int visionTest(){
 //            modelInput.push_back(img[x][y][0]);
 //            modelInput.push_back(img[x][y][1]);
 //            modelInput.push_back(img[x][y][2]);
-            idx++;
-        }
-    }
+//            idx++;
+//        }
+//    }
 
     std::cout << "Vector elements: " << modelInput.size() << std::endl;
 
