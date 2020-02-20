@@ -165,6 +165,8 @@ int visionTest(){
         src_ptr += 3840; // stride
     }
 
+    ((uint8_t *)img);
+
 //    for (int x = 0; x <= 814; x++;){
 //        for (int y = 0; y <= 515; y++;){
 //
