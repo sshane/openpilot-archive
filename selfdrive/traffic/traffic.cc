@@ -167,11 +167,21 @@ void sleepFor(double sec){
     usleep(sec * secToUs);
 }
 
+void rateKeeper(double loopTime){
+    double modelRate = 1 / 5.;  // 5 Hz
+    double toSleep = modelRate - (loopTime * msToSec);
+    if (toSleep > 0){  // don't sleep for negative time, in case loop takes too long one iteration
+        sleepFor(toSleep);
+    } else {
+        std::cout << "Loop time over rate by " << -toSleep << " seconds." << std::endl;
+    }
+}
+
 extern "C" {
     int runModelLoop(){
         initModel(); // init stuff
         initVisionStream();
-        float modelRate = 1 / 5.;  // 5 Hz
+
 
         double loopStart;
         double loopEnd;
@@ -197,7 +207,8 @@ extern "C" {
 
             loopEnd = millis_since_boot();
 //            std::cout << "Loop time: " << (loopEnd - loopStart) * msToSec << " sec\n";
-            sleepFor(0.5);  // in seconds
+
+            rateKeeper(loopEnd - loopStart);
 
             if (shouldStop()){
                 break;
