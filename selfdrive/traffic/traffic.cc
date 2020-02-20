@@ -198,12 +198,12 @@ extern "C" {
     //        printf("visionstream_get: %.2f\n", (t1-loopStart));
 
             std::vector<float> inputVector = processStreamBuffer(buf);  // writes float vector to inputVector
-            std::cout << "Vector elements: " << inputVector.size() << std::endl;
+//            std::cout << "Vector elements: " << inputVector.size() << std::endl;
 
             std::vector<float> modelOutput = runModel(inputVector);
 
             int pred_idx = std::max_element(modelOutput.begin(), modelOutput.end()) - modelOutput.begin();
-            // std::cout << "Prediction: " << modelLabels[pred_idx] << " (" << modelOutput[pred_idx] * 100 << "%)" << std::endl;
+             std::cout << "Prediction: " << modelLabels[pred_idx] << " (" << modelOutput[pred_idx] * 100 << "%)" << std::endl;
 
             loopEnd = millis_since_boot();
 //            std::cout << "Loop time: " << (loopEnd - loopStart) * msToSec << " sec\n";
