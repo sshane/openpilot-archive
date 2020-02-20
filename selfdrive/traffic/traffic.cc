@@ -171,7 +171,6 @@ void rateKeeper(double loopTime){
     double modelRate = 1 / 5.;  // 5 Hz
     double toSleep = modelRate - (loopTime * msToSec);
     if (toSleep > 0){  // don't sleep for negative time, in case loop takes too long one iteration
-        std::cout << "Sleeping for " << toSleep << std::endl;
         sleepFor(toSleep);
     } else {
         std::cout << "Loop lagging by " << -toSleep << " seconds." << std::endl;
