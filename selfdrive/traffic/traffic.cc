@@ -181,7 +181,7 @@ int visionTest(){
 
     std::vector<float> modelInput;
     for (int pixel=0; pixel < 1257630; pixel++) {
-        modelInput.push_back(((uint8_t (*)) img)[pixel]);
+        modelInput.push_back(((uint8_t (*)) img)[pixel] / 255.0);
     }
     double t4 = millis_since_boot();
 
