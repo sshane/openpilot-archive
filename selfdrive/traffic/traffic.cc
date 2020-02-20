@@ -163,6 +163,10 @@ bool shouldStop() {
     return infile.good();
 }
 
+void sleepFor(double sec){
+    usleep(sec * secToUs);
+}
+
 extern "C" {
     int runModelLoop(){
         initModel(); // init stuff
@@ -193,7 +197,7 @@ extern "C" {
 
             loopEnd = millis_since_boot();
 //            std::cout << "Loop time: " << (loopEnd - loopStart) * msToSec << " sec\n";
-            usleep(0.5 * secToUs);
+            sleepFor(0.5);  // in seconds
 
             if (shouldStop()){
                 break;
