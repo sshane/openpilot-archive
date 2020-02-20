@@ -109,32 +109,22 @@ void initModel(){
 }
 
 void initVisionStream(){
-    VisionStream stream;
-    VisionStreamBufs buf_info;
-
-    int err;
-    while (true) {
-        err = visionstream_init(&stream, VISION_STREAM_RGB_BACK, true, &buf_info);
-        if (err != 0) {
-            printf("visionstream fail\n");
-            usleep(100000);
-        }
-        break;
-    }
+    // fix
 }
 
-VIPCBuf* getStreamBuffer(){
+VIPCBuf* getStreamBuffer(VisionStream stream){
     VIPCBufExtra extra;
     VIPCBuf* buf = visionstream_get(&stream, &extra);
     return buf;
 }
 
-void processStreamBuffer(VIPCBuf* buf, std::vector<float> *outputVector){
+std::vector<float> processStreamBuffer(VIPCBuf* buf){
     void* img = malloc(cropped_size);
 
     uint8_t *src_ptr = (uint8_t *)buf->addr;
     src_ptr += (top_crop * image_stride); // starting offset of 150 lines of stride in
 
+    std::vector<float> outputVector;
     for (int line = 0; line < cropped_shape[0]; line++) {
         for(int line_pos = 0; line_pos < (cropped_shape[1] * cropped_shape[2]); line_pos += cropped_shape[2]) {
             outputVector.push_back(src_ptr[line_pos + offset + 0] / pixel_norm);
@@ -143,6 +133,7 @@ void processStreamBuffer(VIPCBuf* buf, std::vector<float> *outputVector){
         }
         src_ptr += image_stride;
     }
+    return outputVector;
 }
 
 float* doPrediction(std::vector<float> *inputVector){
@@ -159,9 +150,20 @@ extern "C" {
     int runModelLoop(){
         initModel(); // init stuff
 
-        initVisionStream();
+        VisionStream stream;
+        VisionStreamBufs buf_info;
 
-        VIPCBuf* buf = getStreamBuffer();
+        int err;
+        while (true) {
+            err = visionstream_init(&stream, VISION_STREAM_RGB_BACK, true, &buf_info);
+            if (err != 0) {
+                printf("visionstream fail\n");
+                usleep(100000);
+            }
+            break;
+        }
+
+        VIPCBuf* buf = getStreamBuffer(stream);
         if (buf == NULL) {
             printf("visionstream get failed\n");
             return 1;
@@ -170,8 +172,7 @@ extern "C" {
 //        t1 = millis_since_boot();
 //        printf("visionstream_get: %.2f\n", (t1-loopStart));
 
-        std::vector<float> *inputVector;
-        processStreamBuffer(buf, *inputVector);  // writes float vector to inputVector
+        std::vector<float> inputVector = processStreamBuffer(buf);  // writes float vector to inputVector
 
         doPrediction(inputVector);
 
