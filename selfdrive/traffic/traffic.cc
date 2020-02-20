@@ -109,6 +109,9 @@ void initModel(){
 }
 
 void initVisionStream(){
+    VisionStream stream;
+    VisionStreamBufs buf_info;
+
     int err;
     while (true) {
         err = visionstream_init(&stream, VISION_STREAM_RGB_BACK, true, &buf_info);
@@ -156,8 +159,6 @@ extern "C" {
     int runModelLoop(){
         initModel(); // init stuff
 
-        VisionStream stream;
-        VisionStreamBufs buf_info;
         initVisionStream();
 
         VIPCBuf* buf = getStreamBuffer();
