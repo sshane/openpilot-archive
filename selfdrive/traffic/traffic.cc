@@ -17,6 +17,10 @@ using namespace std;
 
 std::unique_ptr<zdl::SNPE::SNPE> snpe;
 
+VIPCBuf* buf;
+VisionStream stream = initVisionStream();
+VIPCBufExtra extra;
+
 const std::vector<std::string> modelLabels = {"RED", "GREEN", "YELLOW", "NONE"};
 const int image_stride = 3840;  // global constants
 const int cropped_size = 515 * 814 * 3;
@@ -126,9 +130,8 @@ VisionStream initVisionStream(){
     return stream;
 }
 
-VIPCBuf* getStreamBuffer(VisionStream stream, VIPCBufExtra extra){
-    VIPCBuf* buf = visionstream_get(&stream, &extra);
-    return buf;
+void getStreamBuffer(){
+    buf = visionstream_get(&stream, &extra);
 }
 
 std::vector<float> processStreamBuffer(VIPCBuf* buf){
@@ -158,8 +161,6 @@ std::vector<float> runModel(std::vector<float> inputVector){
 extern "C" {
     int runModelLoop(){
         initModel(); // init stuff
-        VisionStream stream = initVisionStream();
-        VIPCBufExtra extra;
         float modelRate = 1 / 5.;  // 5 Hz
 
         double loopStart;
@@ -170,7 +171,7 @@ extern "C" {
             loopStart = millis_since_boot();
             std::cout << "before get stream\n";
 
-            VIPCBuf* buf = getStreamBuffer(stream, extra); // (VisionStream stream, VIPCBufExtra extra, VIPCBuf* buf){
+            getStreamBuffer(); // (VisionStream stream, VIPCBufExtra extra, VIPCBuf* buf){
             if (buf == NULL) {
                 printf("visionstream get failed\n");
                 return 1;
