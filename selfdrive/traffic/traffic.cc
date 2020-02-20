@@ -17,6 +17,9 @@ using namespace std;
 
 std::unique_ptr<zdl::SNPE::SNPE> snpe;  // global constants
 
+VisionStream stream;
+VisionStreamBufs buf_info;
+
 const int image_stride = 3840;
 const int cropped_size = 515 * 814 * 3;
 const int cropped_shape[3] = {515, 814, 3};
@@ -107,10 +110,18 @@ void initModel(){
 }
 
 void initVisionStream(){
-    // fix
+    int err;
+    while (true) {
+        err = visionstream_init(&stream, VISION_STREAM_RGB_BACK, true, &buf_info);
+        if (err != 0) {
+            printf("visionstream fail\n");
+            usleep(100000);
+        }
+        break;
+    }
 }
 
-VIPCBuf* getStreamBuffer(VisionStream stream){
+VIPCBuf* getStreamBuffer(){
     VIPCBufExtra extra;
     VIPCBuf* buf = visionstream_get(&stream, &extra);
     return buf;
@@ -135,33 +146,19 @@ std::vector<float> processStreamBuffer(VIPCBuf* buf){
 }
 
 std::vector<float> doPrediction(std::vector<float> inputVector){
-//    std::cout << "1" << std::endl;
     std::unique_ptr<zdl::DlSystem::ITensor> inputTensor = loadInputTensor(snpe, inputVector);  // inputVec)
-//    std::cout << "2" << std::endl;
     zdl::DlSystem::ITensor* oTensor = executeNetwork(snpe, inputTensor);
-//    std::cout << "3" << std::endl;
-
-//    std::cout << "4" << std::endl;
     return getModelOutput(oTensor);
 }
 
 extern "C" {
     int runModelLoop(){
         initModel(); // init stuff
-        VisionStream stream;
-        VisionStreamBufs buf_info;
-        int err;
-        while (true) {
-            err = visionstream_init(&stream, VISION_STREAM_RGB_BACK, true, &buf_info);
-            if (err != 0) {
-                printf("visionstream fail\n");
-                usleep(100000);
-            }
-            break;
-        }
+        initVisionStream();
+
 
         //below should be every loop
-        VIPCBuf* buf = getStreamBuffer(stream);
+        VIPCBuf* buf = getStreamBuffer();
         if (buf == NULL) {
             printf("visionstream get failed\n");
             return 1;
@@ -179,10 +176,6 @@ extern "C" {
 
         std::cout << "finished!" << std::endl;
 
-//        t2 = millis_since_boot();
-//        printf("predict time: %.2f\n", (t2-t1));
-//
-//        printf("total time: %.2f\n", (t2-loopStart));
 
         visionstream_destroy(&stream);
         return 0;
