@@ -136,8 +136,6 @@ int visionTest(){
     //int padding = 348;
 
 
-    std::vector<int> modelInput;
-
     int y_hood_crop = 665;
     int horizontal_crop = 175;
 
@@ -166,17 +164,9 @@ int visionTest(){
     }
     printf("%i\n", ((uint8_t (*)[515][814]) img)[0][0][0]);
 
-    for (int x = 0; x <= 515; x++){
-        for (int y = 0; y <= 814; y++){
-            if (idx < 100){
-                std::cout << (int)((uint8_t (*)[515][814]) img)[x][y][0] << " " << (int)((uint8_t (*)[515][814]) img)[x][y][1] << " " << (int)((uint8_t (*)[515][814]) img)[x][y][2] << std::endl;
-                printf("%i\n", ((uint8_t (*)[515][814]) img)[x][y][3]);
-                std::cout << "\n";
-            }
-            modelInput.push_back(((uint8_t (*)[515][814]) img)[x][y][0]);
-            modelInput.push_back(((uint8_t (*)[515][814]) img)[x][y][1]);
-            modelInput.push_back(((uint8_t (*)[515][814]) img)[x][y][2]);
-        }
+    std::vector<int> modelInput;
+    for (int pixel=0; pixel < 1257630; pixel++) {
+        modelInput.push_back(((uint8_t (*)) img)[pixel]);
     }
 
     std::cout << "Vector elements: " << modelInput.size() << std::endl;
@@ -185,17 +175,17 @@ int visionTest(){
 
     printf("process time: %.2f\n", (t3-t2));
 
-    std::ofstream ofile;
-    ofile.open("/data/openpilot/selfdrive/traffic/img_flat", std::ios::app);
-    int counter123=0;
-    for(int i=0; i<modelInput.size(); i++) {
-        if (counter123 < 50){
-            std::cout << modelInput[i] << std::endl;
-        }
-        ofile << modelInput[i] << std::endl;
-        counter123++;
-    }
-    ofile.close();
+//    std::ofstream ofile;
+//    ofile.open("/data/openpilot/selfdrive/traffic/img_flat", std::ios::app);
+//    int counter123=0;
+//    for(int i=0; i<modelInput.size(); i++) {
+//        if (counter123 < 50){
+//            std::cout << modelInput[i] << std::endl;
+//        }
+//        ofile << modelInput[i] << std::endl;
+//        counter123++;
+//    }
+//    ofile.close();
 
 
     FILE *f = fopen("/data/openpilot/selfdrive/traffic/img_buffer", "wb");
