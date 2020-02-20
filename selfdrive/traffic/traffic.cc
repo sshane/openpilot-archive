@@ -18,7 +18,7 @@ using namespace std;
 std::unique_ptr<zdl::SNPE::SNPE> snpe;
 
 VIPCBuf* buf;
-VisionStream stream = initVisionStream();
+VisionStream stream;
 VIPCBufExtra extra;
 
 const std::vector<std::string> modelLabels = {"RED", "GREEN", "YELLOW", "NONE"};
@@ -116,8 +116,6 @@ void initModel(){
 }
 
 VisionStream initVisionStream(){
-    VisionStream stream;
-    VisionStreamBufs buf_info;
     int err;
     while (true) {
         err = visionstream_init(&stream, VISION_STREAM_RGB_BACK, true, &buf_info);
@@ -161,6 +159,7 @@ std::vector<float> runModel(std::vector<float> inputVector){
 extern "C" {
     int runModelLoop(){
         initModel(); // init stuff
+        initVisionStream();
         float modelRate = 1 / 5.;  // 5 Hz
 
         double loopStart;
