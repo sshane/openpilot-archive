@@ -161,9 +161,9 @@ int visionTest(){
     src_ptr += (150 * 3840); // starting offset of 150 lines of stride in
 
     std::vector<float> modelInput;
-
     int idx = 0;
     const int offset = 175 * 3;
+    double proc_start = millis_since_boot();
     for(int line=0;line<515;line++) {
         for(int line_pos = 0; line_pos < (814 * 3); line_pos += 3) {
             modelInput.push_back(src_ptr[line_pos + offset + 0] / 255.0);
@@ -180,7 +180,7 @@ int visionTest(){
     }
     double t3 = millis_since_boot();
 
-    printf("process time: %.2f\n", (t3-t2));
+    printf("process time: %.2f\n", (t3-proc_start));
 
     std::cout << "Loop iterations: " << idx << std::endl;
 //    printf("%i\n", ((uint8_t (*)[515][814]) img)[0][0][0]);
