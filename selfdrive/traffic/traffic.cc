@@ -134,85 +134,74 @@ int visionTest(){
         break;
     }
 
-    double loopStart = millis_since_boot();
-
-    VIPCBufExtra extra;
-    VIPCBuf* buf = visionstream_get(&stream, &extra);
-    if (buf == NULL) {
-        printf("visionstream get failed\n");
-        return 1;
-    }
-
-    double t2 = millis_since_boot();
-
-    printf("fetch time:   %.2f\n", (t2-t1));
-
-
-    //int image_stride = 3840;
-    //int padding = 348;
-
+    const int image_stride = 3840;
     const int cropped_size = 515 * 814 * 3;
     const int cropped_shape[3] = {515, 814, 3};
+
     const float pixel_norm = 255.0;
-
-
     const int horizontal_crop = 175;
     const int top_crop = 150;
 
-    void* img = malloc(cropped_size);
-    uint8_t *dst_ptr = (uint8_t *)img;
-    uint8_t *src_ptr = (uint8_t *)buf->addr;
-
-    src_ptr += (top_crop * 3840); // starting offset of 150 lines of stride in
-
-    std::vector<float> modelInput;
-
-    int idx = 0;
-    const int offset = horizontal_crop * cropped_shape[2];
-    double proc_start = millis_since_boot();
-    for (int line = 0; line < cropped_shape[0]; line++) {
-        for(int line_pos = 0; line_pos < (cropped_shape[1] * cropped_shape[2]); line_pos += cropped_shape[2]) {
-//            for(int val=0; val < 3; val++){
-//                modelInput.push_back(src_ptr[line_pos + offset + val] / 255.0);
-//            }
-            modelInput.push_back(src_ptr[line_pos + offset + 0] / pixel_norm);
-            modelInput.push_back(src_ptr[line_pos + offset + 1] / pixel_norm);
-            modelInput.push_back(src_ptr[line_pos + offset + 2] / pixel_norm);
-            //idx+=3;
+    double loopStart = millis_since_boot();
+    for (int loopCount = 0; loopCount < 20; loopCount++){
+        VIPCBufExtra extra;
+        VIPCBuf* buf = visionstream_get(&stream, &extra);
+        if (buf == NULL) {
+            printf("visionstream get failed\n");
+            return 1;
         }
-        dst_ptr += 2442; // x = 814 * 3 pixels = 2442 bytes per horizontal line
-        src_ptr += 3840; // stride
+
+        double t2 = millis_since_boot();
+
+        printf("fetch time:   %.2f\n", (t2-t1));
+
+        void* img = malloc(cropped_size);
+        uint8_t *dst_ptr = (uint8_t *)img;
+        uint8_t *src_ptr = (uint8_t *)buf->addr;
+
+        src_ptr += (top_crop * image_stride); // starting offset of 150 lines of stride in
+
+        std::vector<float> modelInput;
+
+        int idx = 0;
+        const int offset = horizontal_crop * cropped_shape[2];
+        double proc_start = millis_since_boot();
+        for (int line = 0; line < cropped_shape[0]; line++) {
+            for(int line_pos = 0; line_pos < (cropped_shape[1] * cropped_shape[2]); line_pos += cropped_shape[2]) {
+    //            for(int val=0; val < 3; val++){
+    //                modelInput.push_back(src_ptr[line_pos + offset + val] / 255.0);
+    //            }
+                modelInput.push_back(src_ptr[line_pos + offset + 0] / pixel_norm);
+                modelInput.push_back(src_ptr[line_pos + offset + 1] / pixel_norm);
+                modelInput.push_back(src_ptr[line_pos + offset + 2] / pixel_norm);
+                //idx+=3;
+            }
+            dst_ptr += 2442; // x = 814 * 3 pixels = 2442 bytes per horizontal line
+            src_ptr += image_stride; // stride
+        }
+        double t3 = millis_since_boot();
+
+        printf("process time: %.2f\n", (t3-proc_start));
+
+        //std::cout << "Loop iterations: " << idx << std::endl;
+    //    printf("%i\n", ((uint8_t (*)[515][814]) img)[0][0][0]);
+
+
+        double t4 = millis_since_boot();
+
+
+
+        std::unique_ptr<zdl::DlSystem::ITensor> inputTensor = loadInputTensor(snpe, modelInput);  // inputVec)
+        zdl::DlSystem::ITensor* oTensor = executeNetwork(snpe, inputTensor);
+
+        getModelOutput(oTensor);
+
+    //    std::cout << "Vector elements: " << modelInput.size() << std::endl;
     }
-    double t3 = millis_since_boot();
-
-    printf("process time: %.2f\n", (t3-proc_start));
-
-    //std::cout << "Loop iterations: " << idx << std::endl;
-//    printf("%i\n", ((uint8_t (*)[515][814]) img)[0][0][0]);
-
-
-    double t4 = millis_since_boot();
-
-
-
-    std::unique_ptr<zdl::DlSystem::ITensor> inputTensor = loadInputTensor(snpe, modelInput);  // inputVec)
-    zdl::DlSystem::ITensor* oTensor = executeNetwork(snpe, inputTensor);
-
-    getModelOutput(oTensor);
-    double t99 = millis_since_boot();
-
-    printf("vector build time: %.2f\n", (t4-t3));
-    std::cout << "Vector elements: " << modelInput.size() << std::endl;
-
-    printf("prediction time: %.2f\n", (t99-loopStart));
-
-
+    double loopEnd = millis_since_boot();
+    printf("prediction time: %.2f\n", (loopEnd-loopStart));
 
     visionstream_destroy(&stream);
-
-    double t6 = millis_since_boot();
-
-    printf("total time:   %.2f\n", (t6-t1));
 
     return 0;
 }
