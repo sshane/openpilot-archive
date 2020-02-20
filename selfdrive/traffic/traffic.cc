@@ -141,6 +141,9 @@ int visionTest(){
         return 1;
     }
 
+    double t2 = millis_since_boot();
+
+    printf("fetch time:   %.2f\n", (t2-t1));
 
     int image_width = 1164;
     int image_height = 874;
@@ -157,30 +160,36 @@ int visionTest(){
 
     src_ptr += (150 * 3840); // starting offset of 150 lines of stride in
 
-    double t2 = millis_since_boot();
-
-
     std::vector<float> modelInput;
+
     int idx = 0;
     const int offset = 175 * 3;
     for(int line=0;line<515;line++) {
         for(int line_pos = 0; line_pos < (814 * 3); line_pos += 3) {
-            for(int value; value < 3; value++) {
-            std::cout << "hello" << std::endl;
-                modelInput.push_back(src_ptr[line_pos + offset + value] / 255.0);
-                idx++;
-            }
+            modelInput.push_back(src_ptr[line_pos + offset + 0] / 255.0);
+            modelInput.push_back(src_ptr[line_pos + offset + 1] / 255.0);
+            modelInput.push_back(src_ptr[line_pos + offset + 2] / 255.0);
+            idx+=3;
+
+            dst_ptr[line_pos + 0] = src_ptr[line_pos + offset + 2];
+            dst_ptr[line_pos + 1] = src_ptr[line_pos + offset + 1];
+            dst_ptr[line_pos + 2] = src_ptr[line_pos + offset + 0];
         }
         dst_ptr += 2442; // x = 814 * 3 pixels = 2442 bytes per horizontal line
         src_ptr += 3840; // stride
     }
+    double t3 = millis_since_boot();
 
-    printf("vector build time:   %.2f\n", (millis_since_boot()-t2));
+    printf("process time: %.2f\n", (t3-t2));
 
     std::cout << "Loop iterations: " << idx << std::endl;
 //    printf("%i\n", ((uint8_t (*)[515][814]) img)[0][0][0]);
 
-
+    std::vector<float> modelInput;
+    for (int pixel=0; pixel < 1257630; pixel++) {
+        modelInput.push_back(((uint8_t (*)) img)[pixel] / 255.0);
+    }
+    double t4 = millis_since_boot();
 
 
 
@@ -188,12 +197,12 @@ int visionTest(){
     zdl::DlSystem::ITensor* oTensor = executeNetwork(snpe, inputTensor);
 
     getModelOutput(oTensor);
+    double t99 = millis_since_boot();
 
-
-
+    printf("vector build time: %.2f\n", (t4-t3));
     std::cout << "Vector elements: " << modelInput.size() << std::endl;
 
-
+    printf("prediction time: %.2f\n", (t99-t4));
 
 
 
@@ -216,15 +225,15 @@ int visionTest(){
 //    free(img);
 //    fclose(f);
 
+    double t5 = millis_since_boot();
 
-
-
+    printf("write time:   %.2f\n", (t5-t4));
 
     visionstream_destroy(&stream);
 
-    double t99 = millis_since_boot();
+    double t6 = millis_since_boot();
 
-    printf("total time:   %.2f\n", (t99-t1));
+    printf("total time:   %.2f\n", (t6-t1));
 
     return 0;
 }
