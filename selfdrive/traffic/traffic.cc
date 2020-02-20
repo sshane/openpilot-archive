@@ -26,6 +26,7 @@ const float pixel_norm = 255.0;
 const int horizontal_crop = 175;
 const int top_crop = 150;
 const int offset = horizontal_crop * cropped_shape[2];
+const double msToSec = 1 / 1000.;  // multiply
 
 zdl::DlSystem::Runtime_t checkRuntime() {
     static zdl::DlSystem::Version_t Version = zdl::SNPE::SNPEFactory::getLibraryVersion();
@@ -156,10 +157,13 @@ extern "C" {
     int runModelLoop(){
         initModel(); // init stuff
         VisionStream stream = initVisionStream();
-        float modelRate = 1 / 10.;
-        std::cout << modelRate << std::endl;
+        float modelRate = 1 / 5.;  // 5 Hz
 
+        double loopStart;
+        double loopEnd;
         while (true){
+            loopStart = millis_since_boot();
+
             VIPCBuf* buf = getStreamBuffer(stream);
             if (buf == NULL) {
                 printf("visionstream get failed\n");
@@ -174,7 +178,10 @@ extern "C" {
             std::vector<float> modelOutput = runModel(inputVector);
 
             int pred_idx = std::max_element(modelOutput.begin(), modelOutput.end()) - modelOutput.begin();
-            std::cout << "Prediction: " << modelLabels[pred_idx] << " (" << modelOutput[pred_idx] * 100 << "%)" << std::endl;
+            // std::cout << "Prediction: " << modelLabels[pred_idx] << " (" << modelOutput[pred_idx] * 100 << "%)" << std::endl;
+
+            loopEnd = millis_since_boot();
+            std::cout << "Loop time: " << (loopEnd - loopStart) * msToSec << " ms\n";
         }
         visionstream_destroy(&stream);
         return 0;
