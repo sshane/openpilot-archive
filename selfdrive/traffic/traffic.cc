@@ -161,9 +161,8 @@ int visionTest(){
     src_ptr += (150 * 3840); // starting offset of 150 lines of stride in
 
     int idx = 0;
-    for(int line=0;line<=515;line++) {
-        std::cout << line << std::endl;
-        for(int line_pos = 0; line_pos <= (814 * 3); line_pos += 3) {
+    for(int line=0;line<515;line++) {
+        for(int line_pos = 0; line_pos < (814 * 3); line_pos += 3) {
             int offset = 175 * 3;
             idx+=3;
 
