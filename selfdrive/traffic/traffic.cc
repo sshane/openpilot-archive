@@ -163,17 +163,19 @@ extern "C" {
         double loopEnd;
         while (true){
             loopStart = millis_since_boot();
+            std::cout << "before get stream";
 
             VIPCBuf* buf = getStreamBuffer(stream);
             if (buf == NULL) {
                 printf("visionstream get failed\n");
                 return 1;
             }
+            std::cout << "after get stream";
     //        t1 = millis_since_boot();
     //        printf("visionstream_get: %.2f\n", (t1-loopStart));
 
             std::vector<float> inputVector = processStreamBuffer(buf);  // writes float vector to inputVector
-            std::cout << "Vector elements: " << inputVector.size() << std::endl;
+//            std::cout << "Vector elements: " << inputVector.size() << std::endl;
 
             std::vector<float> modelOutput = runModel(inputVector);
 
@@ -181,7 +183,7 @@ extern "C" {
             // std::cout << "Prediction: " << modelLabels[pred_idx] << " (" << modelOutput[pred_idx] * 100 << "%)" << std::endl;
 
             loopEnd = millis_since_boot();
-            std::cout << "Loop time: " << (loopEnd - loopStart) * msToSec << " ms\n";
+//            std::cout << "Loop time: " << (loopEnd - loopStart) * msToSec << " sec\n";
         }
         visionstream_destroy(&stream);
         return 0;
