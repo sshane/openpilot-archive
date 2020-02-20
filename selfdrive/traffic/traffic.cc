@@ -128,7 +128,7 @@ VisionStream initVisionStream(){
 
 VIPCBuf* getStreamBuffer(VisionStream stream, VIPCBufExtra extra){
     VIPCBuf* buf = visionstream_get(&stream, &extra);
-    return buf
+    return buf;
 }
 
 std::vector<float> processStreamBuffer(VIPCBuf* buf){
