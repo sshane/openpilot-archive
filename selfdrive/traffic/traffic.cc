@@ -165,32 +165,29 @@ extern "C" {
 
         double loopStart;
         double loopEnd;
-        std::cout << "4\n";
         while (true){
-            std::cout << "5\n";
             loopStart = millis_since_boot();
-            std::cout << "before get stream\n";
 
             getStreamBuffer(); // (VisionStream stream, VIPCBufExtra extra, VIPCBuf* buf){
             if (buf == NULL) {
                 printf("visionstream get failed\n");
                 return 1;
             }
-            std::cout << "after get stream\n";
+
     //        t1 = millis_since_boot();
     //        printf("visionstream_get: %.2f\n", (t1-loopStart));
-            std::cout << "Here1\n";
+
             std::vector<float> inputVector = processStreamBuffer(buf);  // writes float vector to inputVector
-//            std::cout << "Vector elements: " << inputVector.size() << std::endl;
-            std::cout << "Here2\n";
+            std::cout << "Vector elements: " << inputVector.size() << std::endl;
+
             std::vector<float> modelOutput = runModel(inputVector);
-            std::cout << "Here3\n";
+
             int pred_idx = std::max_element(modelOutput.begin(), modelOutput.end()) - modelOutput.begin();
             // std::cout << "Prediction: " << modelLabels[pred_idx] << " (" << modelOutput[pred_idx] * 100 << "%)" << std::endl;
-            std::cout << "Here4\n";
+
             loopEnd = millis_since_boot();
 //            std::cout << "Loop time: " << (loopEnd - loopStart) * msToSec << " sec\n";
-            usleep(2000000);
+            usleep(1000000);
         }
         visionstream_destroy(&stream);
         return 0;
