@@ -193,7 +193,7 @@ extern "C" {
 
             loopEnd = millis_since_boot();
 //            std::cout << "Loop time: " << (loopEnd - loopStart) * msToSec << " sec\n";
-            usleep(1 * secToUs);
+            usleep(5 * secToUs);
 
             if (shouldStop()){
                 break;
