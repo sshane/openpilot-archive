@@ -185,7 +185,7 @@ double rateKeeper(double loopTime, double lastLoop){
 
 extern "C" {
     int runModelLoop(){
-        sleepFor(15.0);
+        sleepFor(10.0);
         initModel(); // init stuff
         initVisionStream();
         Context * c = Context::create();
