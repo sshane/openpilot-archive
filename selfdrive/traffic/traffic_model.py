@@ -30,7 +30,7 @@ class Traffic:
       while not self.is_new_msg(self.sm.logMonoTime['trafficModelRaw']):
         self.sm.update(0)
       print(self.sm['trafficModelRaw'].prediction)
-      # print(1 / (time.time() - t))
+      print(1 / (time.time() - t))
       # time.sleep(0.15)
 
 
