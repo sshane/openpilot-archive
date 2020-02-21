@@ -270,6 +270,7 @@ extern "C" {
     }
 
     int main(){
-      return 0;
+        runModelLoop();
+        return 0;
     }
 }
