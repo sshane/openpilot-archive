@@ -194,7 +194,7 @@ void sendPrediction(std::vector<float> modelOutput){
 
 float* runModel(std::vector<float> inputVector){
     std::unique_ptr<zdl::DlSystem::ITensor> inputTensor = loadInputTensor(snpe, inputVector);  // inputVec)
-    zdl::DlSystem::ITensor* oTensor = executeNetwork(snpe, inputTensor);
+    zdl::DlSystem::ITensor* tensor = executeNetwork(snpe, inputTensor);
 
     float outputArray[4];
     int counter = 0;
