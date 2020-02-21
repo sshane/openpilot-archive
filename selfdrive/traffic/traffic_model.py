@@ -16,7 +16,7 @@ class Traffic:
     self.labels = ['RED', 'GREEN', 'YELLOW', 'NONE']
 
     self.past_preds = []
-    self.model_rate = 1 / 10.
+    self.model_rate = 1 / 5.
     self.last_log_time = 0
     self.new_loop()
 
@@ -29,16 +29,15 @@ class Traffic:
       # self.sm.update_msgs(sec_since_boot(), )
       while not self.is_new_msg(self.sm.logMonoTime['trafficModelRaw']):  # uses rate keeper from traffic.cc, waits for new message
         self.sm.update(0)
+      print(len(self.past_preds))
       self.past_preds.append(list(self.sm['trafficModelRaw'].prediction))
       pred = self.get_prediction()
       print(pred)
-
 
   def is_new_msg(self, log_time):
     is_new = log_time != self.last_log_time
     self.last_log_time = log_time
     return is_new
-
 
   def traffic_loop(self):
     while True:
@@ -72,8 +71,8 @@ class Traffic:
       p = [np.array(p) / sum(p) for p in self.past_preds]
       preds = [pred.index(np.random.choice(pred, p=p[idx])) for idx, pred in enumerate(self.past_preds)]
 
-    most_common = np.argmax(np.bincount(preds))
-    return self.labels[most_common]
+    most_ocurring = np.argmax(np.bincount(preds))
+    return self.labels[most_ocurring]
 
   def model_predict(self, image):
     output = self.ffi.new("float[4]")
@@ -122,7 +121,7 @@ class Traffic:
 
 
 def main():
-  traffic = Traffic(use_probability=True)
+  traffic = Traffic(use_probability=False)
   #traffic.start()
 
 
