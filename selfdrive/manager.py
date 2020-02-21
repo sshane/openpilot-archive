@@ -154,7 +154,8 @@ managed_processes = {
   "updated": "selfdrive.updated",
   "monitoringd": ("selfdrive/modeld", ["./monitoringd"]),
   "modeld": ("selfdrive/modeld", ["./modeld"]),
-  "trafficd": "selfdrive.trafficd.traffic_model",
+  "traffic_managerd": "selfdrive.trafficd.traffic_model",
+  "trafficd": ("selfdrive/trafficd", ["./trafficd"]),
   "trafficgatherd": "selfdrive.trafficd.gather_traffic"
 }
 
@@ -202,6 +203,7 @@ car_started_processes = [
   'modeld',
   'proclogd',
   'ubloxd',
+  'traffic_managerd'
   'trafficd',
   'trafficgatherd',
 ]
