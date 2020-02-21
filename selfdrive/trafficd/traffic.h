@@ -21,8 +21,10 @@
 #include <cstdint>
 #include <unistd.h>
 
+
 #include "common/visionbuf.h"
 #include "common/visionipc.h"
+#include "common/timing.h"
 #include "messaging.hpp"
 
 #include <capnp/message.h>
