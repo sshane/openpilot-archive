@@ -38,6 +38,7 @@ class Traffic:
 
 
   def is_new_msg(self, log_time):
+    print(log_time)
     is_new = log_time == self.last_log_time
     self.last_log_time = log_time
     return is_new
