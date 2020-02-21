@@ -20,7 +20,6 @@
 #include <cstdlib>
 #include <cstdint>
 #include <unistd.h>
-#include <zmq.h>
 
 #include "common/visionbuf.h"
 #include "common/visionipc.h"
