@@ -29,9 +29,9 @@ class Traffic:
       # self.sm.update_msgs(sec_since_boot(), )
       while not self.is_new_msg(self.sm.logMonoTime['trafficModelRaw']):  # uses rate keeper from traffic.cc, waits for new message
         self.sm.update(0)
-      print(self.sm['trafficModelRaw'].prediction)
-      print(1 / (time.time() - t))
-      # time.sleep(0.15)
+      self.past_preds.append(self.sm['trafficModelRaw'].prediction)
+      pred = self.get_prediction()
+      print(pred)
 
 
   def is_new_msg(self, log_time):
@@ -50,7 +50,7 @@ class Traffic:
         self.past_preds.append(pred_array)
         pred = np.argmax(pred_array)
         pred = self.labels[pred]
-      # pred = self.get_prediction()  # uses most common prediction from past second (1 / model_rate), NONE until car is started for 1 second
+      pred = self.get_prediction()  # uses most common prediction from past second (1 / model_rate), NONE until car is started for 1 second
 
       self.send_prediction(pred)
 
@@ -64,6 +64,7 @@ class Traffic:
     while len(self.past_preds) > des_pred_len:
       del self.past_preds[0]
     if len(self.past_preds) != des_pred_len:
+      print('Not enough predictions yet!')
       return 'NONE'
     if not self.use_probability:
       preds = [np.argmax(pred) for pred in self.past_preds]

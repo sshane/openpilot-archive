@@ -251,9 +251,8 @@ extern "C" {
 
 
             // std::cout << "Prediction: " << modelLabels[pred_idx] << " (" << modelOutput[pred_idx] * 100 << "%)" << std::endl;
-            double s1 = millis_since_boot();
+
             sendPrediction(modelOutput);
-            std::cout << "Send time: " << (millis_since_boot() - s1) << std::endl;
 
             // sleepFor(0.5);  // in seconds
             loopEnd = millis_since_boot();
