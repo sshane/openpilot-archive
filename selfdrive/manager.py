@@ -156,7 +156,6 @@ managed_processes = {
   "modeld": ("selfdrive/modeld", ["./modeld"]),
   "traffic_managerd": "selfdrive.trafficd.traffic_model",
   "trafficd": ("selfdrive/trafficd", ["./trafficd"]),
-  "trafficgatherd": "selfdrive.trafficd.gather_traffic"
 }
 
 daemon_processes = {
@@ -205,7 +204,6 @@ car_started_processes = [
   'ubloxd',
   'traffic_managerd'
   'trafficd',
-  'trafficgatherd',
 ]
 if ANDROID:
   car_started_processes += [
@@ -407,8 +405,6 @@ def manager_thread():
     msg = messaging.recv_sock(thermal_sock, wait=True)
 
     # heavyweight batch processes are gated on favorable thermal conditions
-    print(msg.thermal.thermalStatus)
-    print(ThermalStatus.yellow)
     if msg.thermal.thermalStatus >= ThermalStatus.yellow:
       for p in green_temp_processes:
         if p in persistent_processes:
