@@ -244,8 +244,8 @@ extern "C" {
 
             std::vector<float> modelOutput = runModel(inputVector);
 
-            //std::cout << "Prediction: " << modelLabels[pred_idx] << " (" << modelOutput[pred_idx] * 100 << "%)" << std::endl;
-            sendPrediction(modelOutput);
+            std::cout << "Prediction: " << modelLabels[pred_idx] << " (" << modelOutput[pred_idx] * 100 << "%)" << std::endl;
+            // sendPrediction(modelOutput);
 
             // sleepFor(0.5);  // in seconds
             loopEnd = millis_since_boot();
