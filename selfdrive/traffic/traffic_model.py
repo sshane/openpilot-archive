@@ -28,7 +28,7 @@ class Traffic:
       t = time.time()
       # self.sm.update_msgs(sec_since_boot(), )
       while not self.sm.updated['trafficModelRaw']:
-        self.sm.update(0)
+        self.sm.update(0, wait_for=["trafficModelRaw"])
       print(self.sm['trafficModelRaw'].prediction)
       print(1 / (time.time() - t))
       print(self.sm.updated['trafficModelRaw'])
