@@ -186,7 +186,7 @@ void sendPrediction(std::vector<float> modelOutput){
 //    traffic_lights_sock->send((char*)bytes.begin(), bytes.size());
 }
 
-void runModel(std::vector<float> inputVector, float[] outputArray){
+void runModel(std::vector<float> inputVector, float outputArray[]){
     std::unique_ptr<zdl::DlSystem::ITensor> inputTensor = loadInputTensor(snpe, inputVector);  // inputVec)
     zdl::DlSystem::ITensor* tensor = executeNetwork(snpe, inputTensor);
 
