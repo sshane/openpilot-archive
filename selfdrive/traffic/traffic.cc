@@ -265,10 +265,10 @@ extern "C" {
 //            for (int i = 0; i < modelOutput.size(); i++) {
 //                std::cout << modelOutput[i] << std::endl;
 //            }
-            for (int i = 0; i < 4; i++){
-                std::cout << modelOutput[i] << std::endl;
-            }
-            std::cout << std::endl;
+//            for (int i = 0; i < 4; i++){
+//                std::cout << modelOutput[i] << std::endl;
+//            }
+//            std::cout << std::endl;
 
 
             // std::cout << "Prediction: " << modelLabels[pred_idx] << " (" << modelOutput[pred_idx] * 100 << "%)" << std::endl;
