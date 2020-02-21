@@ -186,11 +186,20 @@ void sendPrediction(std::vector<float> modelOutput){
 //    traffic_lights_sock->send((char*)bytes.begin(), bytes.size());
 }
 
-void runModel(std::vector<float> inputVector, float* outputArray){
+float* runModel(std::vector<float> inputVector){
     std::unique_ptr<zdl::DlSystem::ITensor> inputTensor = loadInputTensor(snpe, inputVector);  // inputVec)
     zdl::DlSystem::ITensor* oTensor = executeNetwork(snpe, inputTensor);
 
-    setModelOutput(oTensor, outputArray);
+    float outputArray[4];
+
+    int counter = 0;
+    for (auto it = tensor->cbegin(); it != tensor->cend(); ++it ){
+        float op = *it;
+        outputArray[counter] = op;
+        counter += 1;
+    }
+    return outputArray;
+    // setModelOutput(oTensor, outputArray);
 }
 
 bool shouldStop() {
@@ -244,16 +253,16 @@ extern "C" {
             std::vector<float> inputVector = processStreamBuffer(buf);  // writes float vector to inputVector
             // std::cout << "Vector elements: " << inputVector.size() << std::endl;
 
-            float *modelOutput[4];
-            runModel(inputVector, modelOutput);  //float modelOutput = runModel(inputVector);
+            float *modelOutput;
+            modelOutput = runModel(inputVector);  //float modelOutput = runModel(inputVector);
 
 //            for (int i = 0; i < modelOutput.size(); i++) {
 //                std::cout << modelOutput[i] << std::endl;
 //            }
-            for (int i = 0; i < 4; i++){
-                std::cout << modelOutput[i] << std::endl;
-            }
-            std::cout << std::endl;
+//            for (int i = 0; i < 4; i++){
+//                std::cout << modelOutput[i] << std::endl;
+//            }
+//            std::cout << std::endl;
 
 
             // std::cout << "Prediction: " << modelLabels[pred_idx] << " (" << modelOutput[pred_idx] * 100 << "%)" << std::endl;
