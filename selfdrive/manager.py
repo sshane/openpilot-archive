@@ -407,6 +407,8 @@ def manager_thread():
     msg = messaging.recv_sock(thermal_sock, wait=True)
 
     # heavyweight batch processes are gated on favorable thermal conditions
+    print(msg.thermal.thermalStatus)
+    print(ThermalStatus.yellow)
     if msg.thermal.thermalStatus >= ThermalStatus.yellow:
       for p in green_temp_processes:
         if p in persistent_processes:
@@ -419,8 +421,9 @@ def manager_thread():
     if msg.thermal.freeSpace < 0.05:
       logger_dead = True
 
-    if msg.thermal.started:
+    if True:
       for p in car_started_processes:
+        print(p)
         if p == "loggerd" and logger_dead:
           kill_managed_process(p)
         else:
