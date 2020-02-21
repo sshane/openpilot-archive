@@ -106,17 +106,15 @@ void setModelOutput(const zdl::DlSystem::ITensor* tensor, float* outputArray) {
     }
 }
 
-float* getModelOutput(const zdl::DlSystem::ITensor* tensor) {
-    // vector<float> outputs;
-    float outputArray[4];
+std::vector<float> getModelOutput(const zdl::DlSystem::ITensor* tensor) {
+    std::vector<float> outputs;
     int counter = 0;
     for (auto it = tensor->cbegin(); it != tensor->cend(); ++it ){
         float op = *it;
-        outputArray[counter] = op;
-        // outputs.push_back(op);
-        counter += 1;
+        outputs.push_back(op);
+        // counter += 1;
     }
-    return *outputArray;
+    return outputArray;
 }
 
 void initModel(){
