@@ -18,6 +18,7 @@ class Traffic:
 
     self.past_preds = []
     self.model_rate = 1 / 10.
+    self.last_log_time = 0
     self.new_loop()
 
   def start(self):
@@ -27,13 +28,17 @@ class Traffic:
     for i in range(200):
       t = time.time()
       # self.sm.update_msgs(sec_since_boot(), )
-      self.sm.update(0)
+      while not self.is_new_msg(self.sm.logMonoTime['trafficModelRaw']):
+        self.sm.update(0)
       print(self.sm.logMonoTime['trafficModelRaw'])
       # print(self.sm['trafficModelRaw'].prediction)
       # print(1 / (time.time() - t))
       print(self.sm.updated['trafficModelRaw'])
       time.sleep(0.15)
 
+
+  def is_new_msg(self, log_time):
+    return log_time == self.last_log_time
 
 
   def traffic_loop(self):
