@@ -7,13 +7,9 @@ import time
 class Traffic:
   def __init__(self, use_probability=False):
     self.use_probability = use_probability
-    self.y_hood_crop = 665
-    self.input_length = np.product((515, 814, 3))
 
-    self.image_sock = messaging.sub_sock('image')
     self.pm = messaging.PubMaster(['trafficModelEvent'])
     self.sm = messaging.SubMaster(['trafficModelRaw'])
-
 
     self.labels = ['RED', 'GREEN', 'YELLOW', 'NONE']
 
