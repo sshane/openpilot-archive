@@ -165,7 +165,7 @@ void sleepFor(double sec){
 }
 
 void rateKeeper(double loopTime){
-    double modelRate = 1 / 5.;  // 5 Hz
+    double modelRate = 1 / 10.;  // 5 Hz
     double toSleep = modelRate - (loopTime * msToSec);
     if (toSleep > 0){  // don't sleep for negative time, in case loop takes too long one iteration
         sleepFor(toSleep);
