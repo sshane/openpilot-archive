@@ -32,7 +32,6 @@ class Traffic:
       print(self.sm['trafficModelRaw'].prediction)
       print(1 / (time.time() - t))
       print(self.sm.updated['trafficModelRaw'])
-      break
 
 
 
