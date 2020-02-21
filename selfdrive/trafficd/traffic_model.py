@@ -29,6 +29,8 @@ class Traffic:
 
   def traffic_loop(self):
     while True:
+      with open('/data/traffictimes', 'a') as f:
+        f.write('{}/n'.format(time.time()))
       # while not self.is_new_msg(self.sm.logMonoTime['trafficModelRaw']):  # uses rate keeper from traffic.cc, waits for new message
       self.sm.update(0)
 
