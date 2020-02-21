@@ -202,6 +202,7 @@ extern "C" {
     int runModelLoop(){
         initModel(); // init stuff
         initVisionStream();
+        Context * c = Context::create();
         live_parameters_sock = PubSocket::create(c, "trafficLights");
 
 
