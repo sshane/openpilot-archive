@@ -26,7 +26,7 @@ class Traffic:
   def new_loop(self):
     while True:
       t = time.time()
-      self.sm.update_msgs(sec_since_boot(), )
+      # self.sm.update_msgs(sec_since_boot(), )
       while not self.sm.updated['trafficModelRaw']:
         self.sm.update(0)
       print(self.sm['trafficModelRaw'].prediction)
