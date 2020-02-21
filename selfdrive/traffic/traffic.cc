@@ -110,11 +110,8 @@ std::vector<float> getModelOutput(const zdl::DlSystem::ITensor* tensor) {
 }
 
 void initModel(){
-    printf("Test1\n");
     zdl::DlSystem::Runtime_t runt=checkRuntime();
-    printf("Test2\n");
     initializeSNPE(runt);
-    printf("Test3\n");
 }
 
 VisionStream initVisionStream(){
