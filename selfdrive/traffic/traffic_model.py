@@ -29,7 +29,7 @@ class Traffic:
       # self.sm.update_msgs(sec_since_boot(), )
       while not self.sm.updated['trafficModelRaw']:
         self.sm.update(0)
-      print(self.sm['trafficModelRaw'].valid)
+      print(self.sm.logMonoTime['trafficModelRaw'])
       # print(self.sm['trafficModelRaw'].prediction)
       # print(1 / (time.time() - t))
       print(self.sm.updated['trafficModelRaw'])
