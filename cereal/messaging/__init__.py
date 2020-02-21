@@ -162,7 +162,7 @@ class SubMaster():
   def __getitem__(self, s):
     return self.data[s]
 
-  def update(self, wait_for=None, timeout=1000):
+  def update(self, timeout=1000, wait_for=None):
     msgs = []
     for sock in self.poller.poll(timeout):
       if wait_for is None:
