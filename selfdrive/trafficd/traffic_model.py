@@ -59,7 +59,8 @@ class Traffic:
 
     prediction = np.argmax(time_weighted_preds)  # get most confident prediction
     confidence = clip(time_weighted_preds[prediction], 0, 1)
-    return self.labels[prediction], confidence
+    return 'RED', confidence
+    # return self.labels[prediction], confidence
 
   def send_prediction(self, pred, confidence):
     traffic_send = messaging.new_message()
