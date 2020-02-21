@@ -29,6 +29,7 @@ class Traffic:
       print(count)
       count += 1
       print(self.sm['trafficModelRaw'].prediction)
+      time.sleep(1/10)
 
 
   def traffic_loop(self):
