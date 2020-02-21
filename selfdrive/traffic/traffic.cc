@@ -120,7 +120,7 @@ float* getModelOutput(const zdl::DlSystem::ITensor* tensor) {
         // outputs.push_back(op);
         counter += 1;
     }
-    return outputArray;
+    return *outputArray;
 }
 
 void initModel(){
