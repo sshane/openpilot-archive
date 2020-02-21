@@ -165,8 +165,12 @@ class SubMaster():
   def update(self, wait_for=None, timeout=1000):
     msgs = []
     for sock in self.poller.poll(timeout):
-      print(sock)
-      msgs.append(recv_one_or_none(sock))
+      if wait_for is None:
+        if sock in wait_for:
+          print('Waiting...')
+          msgs.append(recv_one(sock))
+      else:
+        msgs.append(recv_one_or_none(sock))
     self.update_msgs(sec_since_boot(), msgs)
 
   def update_msgs(self, cur_time, msgs):
