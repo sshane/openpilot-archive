@@ -23,7 +23,7 @@ VIPCBufExtra extra;
 VisionStreamBufs buf_info;
 
 const std::vector<std::string> modelLabels = {"RED", "GREEN", "YELLOW", "NONE"};
-const double modelRate = 1 / 5.;  // 5 Hz
+const double modelRate = 1 / 7.;  // 5 Hz
 
 const int image_stride = 3840;  // global constants
 const int cropped_size = 515 * 814 * 3;
