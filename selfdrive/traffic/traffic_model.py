@@ -27,7 +27,7 @@ class Traffic:
     for i in range(200):
       t = time.time()
       # self.sm.update_msgs(sec_since_boot(), )
-      while not self.is_new_msg(self.sm.logMonoTime['trafficModelRaw']):
+      while not self.is_new_msg(self.sm.logMonoTime['trafficModelRaw']):  # uses rate keeper from traffic.cc, waits for new message
         self.sm.update(0)
       print(self.sm['trafficModelRaw'].prediction)
       print(1 / (time.time() - t))
