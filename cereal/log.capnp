@@ -1827,12 +1827,11 @@ struct KalmanOdometry {
 
 struct TrafficModelRaw {
   prediction @0 :List(Float32);
-  valid @1 :Bool;
 }
 
 struct TrafficModelEvent {
   status @0 :Text;
-  valid @1 :Bool;
+  confidence @1 :Float32;
 }
 
 struct Event {
