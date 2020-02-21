@@ -88,7 +88,7 @@ class Traffic:
     traffic_send.init('trafficModelEvent')
     print(confidence)
     traffic_send.trafficModelEvent.status = pred
-    traffic_send.trafficModelEvent.confidence = confidence
+    traffic_send.trafficModelEvent.confidence = float(confidence)
     self.pm.send('trafficModelEvent', traffic_send)
 
   def rate_keeper(self, loop_time):
