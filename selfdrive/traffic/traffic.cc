@@ -219,7 +219,7 @@ extern "C" {
 //            std::cout << "Loop time: " << (loopEnd - loopStart) * msToSec << " sec\n";
 
             lastLoop = rateKeeper(loopEnd - loopStart, lastLoop);
-            std::cout << "Current frequency: " << 1 / (millis_since_boot() - loopStart) << " Hz" << std::endl;
+            std::cout << "Current frequency: " << 1 / ((millis_since_boot() - loopStart) * msToSec) << " Hz" << std::endl;
 
             if (shouldStop()){
                 break;
