@@ -131,6 +131,7 @@ std::vector<float> processStreamBuffer(VIPCBuf* buf){
 }
 
 void sendPrediction(float modelOutput[]){
+    std::cout << "Prediction: " << modelOutput[0] << std::endl;
     kj::ArrayPtr<const float> modelOutput_vs(&modelOutput[0], 4);
 
     capnp::MallocMessageBuilder msg;
@@ -185,7 +186,7 @@ double rateKeeper(double loopTime, double lastLoop){
 
 extern "C" {
     int runModelLoop(){
-        sleepFor(10.0);
+        sleepFor(5.0);
         initModel(); // init stuff
 //        initVisionStream();
         Context * c = Context::create();
@@ -219,7 +220,7 @@ extern "C" {
             // std::cout << "Prediction: " << modelLabels[pred_idx] << " (" << modelOutput[pred_idx] * 100 << "%)" << std::endl;
 
 
-
+            sleepFor(0.5);
             sendPrediction(modelOutput);
 
             loopEnd = millis_since_boot();
