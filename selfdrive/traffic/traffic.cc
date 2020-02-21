@@ -211,7 +211,7 @@ extern "C" {
             std::vector<float> modelOutput = runModel(inputVector);
 
             int pred_idx = std::max_element(modelOutput.begin(), modelOutput.end()) - modelOutput.begin();
-            std::cout << "Prediction: " << modelLabels[pred_idx] << " (" << modelOutput[pred_idx] * 100 << "%)" << std::endl;
+            //std::cout << "Prediction: " << modelLabels[pred_idx] << " (" << modelOutput[pred_idx] * 100 << "%)" << std::endl;
 
             // sleepFor(0.5);  // in seconds
             loopEnd = millis_since_boot();
