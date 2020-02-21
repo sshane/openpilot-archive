@@ -86,7 +86,7 @@ class Traffic:
   def send_prediction(self, pred, confidence):
     traffic_send = messaging.new_message()
     traffic_send.init('trafficModelEvent')
-    print(confidence)
+
     traffic_send.trafficModelEvent.status = pred
     traffic_send.trafficModelEvent.confidence = float(confidence)
     self.pm.send('trafficModelEvent', traffic_send)

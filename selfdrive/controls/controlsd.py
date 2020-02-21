@@ -168,15 +168,14 @@ def state_transition(frame, CS, CP, state, events, soft_disable_timer, v_cruise_
   # entrance in SOFT_DISABLING state
   soft_disable_timer = max(0, soft_disable_timer - 1)
 
-  traffic_light = traffic_sm['trafficLights'].status
-  with open('/data/debug1', 'a') as f:
-    f.write('{}\n'.format(traffic_light))
-  if traffic_light == 'RED':
-    AM.add(frame, 'redLight', enabled)
-  elif traffic_light == 'GREEN':
-    AM.add(frame, 'greenLight', enabled)
-  elif traffic_light == 'YELLOW':
-    AM.add(frame, 'yellowLight', enabled)
+  traffic_light_status = traffic_sm['trafficModelEvent'].status
+  traffic_light_confidence = round(traffic_sm['trafficModelEvent'].confidence * 100, 2)
+  if traffic_light_status == 'RED':
+    AM.add(frame, 'redLight', enabled, extra_text_2=' ({})'.format(traffic_light_confidence))
+  elif traffic_light_status == 'GREEN':
+    AM.add(frame, 'greenLight', enabled, extra_text_2=' ({})'.format(traffic_light_confidence))
+  elif traffic_light_status == 'YELLOW':
+    AM.add(frame, 'yellowLight', enabled, extra_text_2=' ({})'.format(traffic_light_confidence))
 
   # DISABLED
   if state == State.disabled:
@@ -496,7 +495,7 @@ def controlsd_thread(sm=None, pm=None, can_sock=None):
     sm = messaging.SubMaster(['thermal', 'health', 'liveCalibration', 'driverMonitoring', 'plan', 'pathPlan', \
                               'model', 'gpsLocation'], ignore_alive=['gpsLocation'])
 
-  traffic_sm = messaging.SubMaster(['trafficLights'])
+  traffic_sm = messaging.SubMaster(['trafficModelEvent'])
 
 
   if can_sock is None:
