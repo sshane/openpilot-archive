@@ -243,8 +243,13 @@ extern "C" {
             // std::cout << "Vector elements: " << inputVector.size() << std::endl;
 
             std::vector<float> modelOutput = runModel(inputVector);
+            for (int i = 0; i < modelOutput.size(); i++) {
+                std::cout << modelOutput[i] << std::endl;
+            }
+            std::cout << std::endl;
 
-            std::cout << "Prediction: " << modelLabels[pred_idx] << " (" << modelOutput[pred_idx] * 100 << "%)" << std::endl;
+
+            // std::cout << "Prediction: " << modelLabels[pred_idx] << " (" << modelOutput[pred_idx] * 100 << "%)" << std::endl;
             // sendPrediction(modelOutput);
 
             // sleepFor(0.5);  // in seconds
