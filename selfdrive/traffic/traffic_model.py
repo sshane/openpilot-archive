@@ -72,7 +72,7 @@ class Traffic:
       del self.past_preds[0]
     if len(self.past_preds) != self.des_pred_len:
       print('Not enough predictions yet!')
-      return 'NONE'
+      return 'NONE', 1
 
     # below is a weighted average, the further back in time we go, the less we care (and vice versa)
     time_weighted_preds = [[label * self.weights[idx] for label in pred] for idx, pred in enumerate(self.past_preds)]
