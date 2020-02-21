@@ -12,6 +12,7 @@
 #include "common/visionipc.h"
 #include "common/swaglog.h"
 #include "common/timing.h"
+#include "common/messaging.h"
 
 #include <capnp/message.h>
 #include <capnp/serialize-packed.h>
