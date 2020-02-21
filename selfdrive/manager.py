@@ -419,7 +419,7 @@ def manager_thread():
 
     if True:
       for p in car_started_processes:
-        print(p)
+        print('phere: {}'.format(p))
         if p == "loggerd" and logger_dead:
           kill_managed_process(p)
         else:
