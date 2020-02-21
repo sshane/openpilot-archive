@@ -186,11 +186,9 @@ void sendPrediction(std::vector<float> modelOutput){
 //    traffic_lights_sock->send((char*)bytes.begin(), bytes.size());
 }
 
-float* runModel(std::vector<float> inputVector){
+void runModel(std::vector<float> inputVector, float[] outputArray){
     std::unique_ptr<zdl::DlSystem::ITensor> inputTensor = loadInputTensor(snpe, inputVector);  // inputVec)
     zdl::DlSystem::ITensor* tensor = executeNetwork(snpe, inputTensor);
-
-    float outputArray[4];
 
     int counter = 0;
     for (auto it = tensor->cbegin(); it != tensor->cend(); ++it ){
@@ -198,7 +196,6 @@ float* runModel(std::vector<float> inputVector){
         outputArray[counter] = op;
         counter += 1;
     }
-    return outputArray;
     // setModelOutput(oTensor, outputArray);
 }
 
@@ -253,8 +250,8 @@ extern "C" {
             std::vector<float> inputVector = processStreamBuffer(buf);  // writes float vector to inputVector
             // std::cout << "Vector elements: " << inputVector.size() << std::endl;
 
-            float *modelOutput;
-            modelOutput = runModel(inputVector);  //float modelOutput = runModel(inputVector);
+            float modelOutput[4];
+            runModel(inputVector, modelOutput);  //float modelOutput = runModel(inputVector);
 
 //            for (int i = 0; i < modelOutput.size(); i++) {
 //                std::cout << modelOutput[i] << std::endl;
