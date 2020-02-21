@@ -169,8 +169,8 @@ void sendPrediction(float modelOutput[]){
     capnp::MallocMessageBuilder msg;
     cereal::Event::Builder event = msg.initRoot<cereal::Event>();
     event.setLogMonoTime(nanos_since_boot());
-    auto traffic_lights = event.initTrafficLights();
-    traffic_lights.setRawPrediction(modelOutput_vs);
+    auto traffic_lights = event.initTrafficModelRaw();
+    traffic_lights.setPrediction(modelOutput_vs);
 
     auto words = capnp::messageToFlatArray(msg);
     auto bytes = words.asBytes();
@@ -222,7 +222,7 @@ extern "C" {
         initModel(); // init stuff
         initVisionStream();
         Context * c = Context::create();
-        traffic_lights_sock = PubSocket::create(c, "trafficLights");
+        traffic_lights_sock = PubSocket::create(c, "trafficModelRaw");
         assert(traffic_lights_sock != NULL);
 
 

@@ -1825,9 +1825,14 @@ struct KalmanOdometry {
   rotStd @3 :List(Float32); # std rad/s in device frame
 }
 
-struct Traffic {
-  rawPrediction @0 :List(Float32);
-  status @1 :Text;
+struct TrafficModelRaw {
+  prediction @0 :List(Float32);
+  valid @1 :Bool;
+}
+
+struct TrafficModelEvent {
+  status @0 :Text;
+  valid @1 :Bool;
 }
 
 struct Event {
@@ -1905,6 +1910,7 @@ struct Event {
     carEvents @68: List(Car.CarEvent);
     carParams @69: Car.CarParams;
     frontFrame @70: FrameData;
-    trafficLights @71: Traffic;
+    trafficModelRaw @71: TrafficModelRaw;
+    trafficModelEvent @72: TrafficModelEvent;
   }
 }
