@@ -13,10 +13,18 @@ class Traffic:
     self.pm = messaging.PubMaster(['trafficModelEvent'])
     self.sm = messaging.SubMaster(['trafficModelRaw'])
 
+
     self.labels = ['RED', 'GREEN', 'YELLOW', 'NONE']
 
     self.past_preds = []
-    self.model_rate = 1 / 10.
+    self.model_rate = 1 / 5.
+    self.recurrent_length = 1.0  # in seconds, how far back to factor into current prediction
+    self.des_pred_len = int(self.recurrent_length / self.model_rate)
+    self.last_pred_weight = 2.0  # places 2x weight on most recent prediction
+
+
+    self.weights = np.linspace(1, self.last_pred_weight, self.des_pred_len)
+    self.weight_sum = sum(self.weights)
     self.last_log_time = 0
     self.new_loop()
 
@@ -31,7 +39,7 @@ class Traffic:
         self.sm.update(0)
       print(len(self.past_preds))
       self.past_preds.append(list(self.sm['trafficModelRaw'].prediction))
-      pred = self.get_prediction()
+      pred = self.get_prediction()  # uses most common prediction from weighted past second list (1 / model_rate), NONE until car is started for min time
       print(pred)
 
   def is_new_msg(self, log_time):
@@ -49,7 +57,7 @@ class Traffic:
         self.past_preds.append(pred_array)
         pred = np.argmax(pred_array)
         pred = self.labels[pred]
-      pred = self.get_prediction()  # uses most common prediction from past second (1 / model_rate), NONE until car is started for 1 second
+      pred = self.get_prediction()
 
       self.send_prediction(pred)
 
@@ -59,20 +67,18 @@ class Traffic:
 
 
   def get_prediction(self):
-    des_pred_len = int(1 / self.model_rate)
-    while len(self.past_preds) > des_pred_len:
+    while len(self.past_preds) > self.des_pred_len:
       del self.past_preds[0]
-    if len(self.past_preds) != des_pred_len:
+    if len(self.past_preds) != self.des_pred_len:
       print('Not enough predictions yet!')
       return 'NONE'
-    if not self.use_probability:
-      preds = [np.argmax(pred) for pred in self.past_preds]
-    else:
-      p = [np.array(p) / sum(p) for p in self.past_preds]
-      preds = [pred.index(np.random.choice(pred, p=p[idx])) for idx, pred in enumerate(self.past_preds)]
 
-    most_ocurring = np.argmax(np.bincount(preds))
-    return self.labels[most_ocurring]
+    # below is a weighted average, the further back in time we go, the less we care (and vice versa)
+    time_weighted_preds = [[label * self.weights[idx] for label in pred] for idx, pred in enumerate(self.past_preds)]
+    time_weighted_preds = [sum(label) / self.weight_sum for label in np.array(time_weighted_preds).T]
+
+    prediction = np.argmax(time_weighted_preds)  # get most confident prediction
+    return self.labels[prediction]
 
   def model_predict(self, image):
     output = self.ffi.new("float[4]")
