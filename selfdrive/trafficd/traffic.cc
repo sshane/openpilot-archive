@@ -1,6 +1,5 @@
 #include "traffic.h"
 
-
 using namespace std;
 
 std::unique_ptr<zdl::SNPE::SNPE> snpe;

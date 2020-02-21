@@ -26,6 +26,7 @@
 #include "common/visionipc.h"
 #include "common/timing.h"
 #include "messaging.hpp"
+#include "cereal/gen/cpp/log.capnp.h"
 
 #include <capnp/message.h>
 #include <capnp/serialize-packed.h>
