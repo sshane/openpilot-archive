@@ -23,7 +23,7 @@ VIPCBufExtra extra;
 VisionStreamBufs buf_info;
 
 const std::vector<std::string> modelLabels = {"RED", "GREEN", "YELLOW", "NONE"};
-const double modelRate = 1 / 8.;  // 5 Hz
+const double modelRate = 1 / 5.;  // 5 Hz
 
 const int image_stride = 3840;  // global constants
 const int cropped_size = 515 * 814 * 3;
@@ -169,16 +169,16 @@ void sleepFor(double sec){
 double rateKeeper(double loopTime, double lastLoop){
     double toSleep;
     if (lastLoop < 0){  // don't sleep if last loop lagged
-        lastLoop = std::max(lastLoop, -modelRate);  // this should ensure we don't keep adding negative time to lastLoop if a frame lags
+        lastLoop = std::max(lastLoop, -modelRate);  // this should ensure we don't keep adding negative time to lastLoop if a frame lags pretty badly
                                                     // negative time being time to subtract from sleep time
-        std::cout << "Last frame lagged by " << -lastLoop << " seconds. Sleeping for " << modelRate - (loopTime * msToSec) + lastLoop << " seconds" << std::endl;
+        // std::cout << "Last frame lagged by " << -lastLoop << " seconds. Sleeping for " << modelRate - (loopTime * msToSec) + lastLoop << " seconds" << std::endl;
         toSleep = modelRate - (loopTime * msToSec) + lastLoop;  // keep time as close as possible to our rate, this reduces the time slept this iter
     } else {
         toSleep = modelRate - (loopTime * msToSec);
     }
     if (toSleep > 0){  // don't sleep for negative time, in case loop takes too long one iteration
         sleepFor(toSleep);
-        std::cout << "No lag. Sleeping for " << toSleep << std::endl;
+        // std::cout << "No lag. Sleeping for " << toSleep << std::endl;
     } else {
         std::cout << "Loop lagging by " << -toSleep << " seconds." << std::endl;
     }
@@ -219,6 +219,7 @@ extern "C" {
 //            std::cout << "Loop time: " << (loopEnd - loopStart) * msToSec << " sec\n";
 
             lastLoop = rateKeeper(loopEnd - loopStart, lastLoop);
+            std::cout << "Current frequency: " << 1 / (millis_since_boot() - loopStart) << " Hz" << std::endl;
 
             if (shouldStop()){
                 break;
