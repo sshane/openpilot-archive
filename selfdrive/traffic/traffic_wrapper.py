@@ -14,8 +14,7 @@ def get_wrapper():
     libmpc_fn = "/data/openpilot/selfdrive/traffic/libtraffic.so"
 
     ffi = FFI()
-    ffi.cdef("""    
-    void predictTraffic(int inputArray[1257630], float* outputArray);
+    ffi.cdef("""
     int runModelLoop();
     """)
 

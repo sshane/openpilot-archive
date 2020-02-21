@@ -27,15 +27,12 @@ class Traffic:
     self.weights = np.linspace(1, self.last_pred_weight, self.des_pred_len)
     self.weight_sum = sum(self.weights)
     self.last_log_time = 0
-    self.new_loop()
 
   def start(self):
     self.traffic_loop()
 
-  def new_loop(self):
-    for i in range(200):
-      t = time.time()
-      # self.sm.update_msgs(sec_since_boot(), )
+  def traffic_loop(self):
+    while True:
       while not self.is_new_msg(self.sm.logMonoTime['trafficModelRaw']):  # uses rate keeper from traffic.cc, waits for new message
         self.sm.update(0)
 
@@ -48,24 +45,6 @@ class Traffic:
     is_new = log_time != self.last_log_time
     self.last_log_time = log_time
     return is_new
-
-  def traffic_loop(self):
-    while True:
-      t = time.time()
-      image = self.get_image()
-      pred = "NONE"
-      if image is not None:
-        pred_array = self.model_predict(image)
-        self.past_preds.append(pred_array)
-        pred = np.argmax(pred_array)
-        pred = self.labels[pred]
-      pred = self.get_prediction()
-
-
-
-      with open('/data/debug', 'a') as f:
-        f.write('loop took: {}s\n'.format(time.time() - t))
-      self.rate_keeper(time.time() - t)
 
 
   def get_prediction(self):
@@ -97,7 +76,7 @@ class Traffic:
 
 def main():
   traffic = Traffic(use_probability=False)
-  #traffic.start()
+  traffic.start()
 
 
 if __name__ == "__main__":

@@ -269,20 +269,6 @@ extern "C" {
         return 0;
     }
 
-    void predictTraffic(int inputArray[1257630], float* outputArray){
-        int size = 1257630;
-        std::vector<float> inputVec;
-        for (int i = 0; i < size; i++ ) {
-            inputVec.push_back(inputArray[i] / 255.0);
-        }
-        //delete[] inputArray;
-
-        std::unique_ptr<zdl::DlSystem::ITensor> inputTensor = loadInputTensor(snpe, inputVec);  // inputVec)
-        zdl::DlSystem::ITensor* oTensor = executeNetwork(snpe, inputTensor);
-
-        setModelOutput(oTensor, outputArray);
-    }
-
     int main(){
       return 0;
     }

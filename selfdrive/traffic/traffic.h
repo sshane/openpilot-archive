@@ -14,6 +14,5 @@
 #include <array>
 
 extern "C"{
-  void predictTraffic(int inputArray[1257630], float* outputArray);
   int runModelLoop();
 }
