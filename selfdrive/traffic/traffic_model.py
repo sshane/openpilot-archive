@@ -1,7 +1,6 @@
 import cereal.messaging as messaging
 import numpy as np
 import time
-from selfdrive.traffic import traffic_wrapper
 
 
 class Traffic:
@@ -10,8 +9,6 @@ class Traffic:
     self.y_hood_crop = 665
     self.input_length = np.product((515, 814, 3))
 
-    self.traffic_model, self.ffi = traffic_wrapper.get_wrapper()
-    self.traffic_model.initModel()
     self.image_sock = messaging.sub_sock('image')
     self.pm = messaging.PubMaster(['trafficModelEvent'])
     self.sm = messaging.SubMaster(['trafficModelRaw'])
