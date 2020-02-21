@@ -110,14 +110,17 @@ void setModelOutput(const zdl::DlSystem::ITensor* tensor, float* outputArray) {
     }
 }
 
-std::vector<float> getModelOutput(const zdl::DlSystem::ITensor* tensor) {
-    vector<float> outputs;
+float* getModelOutput(const zdl::DlSystem::ITensor* tensor) {
+    // vector<float> outputs;
+    float[4] = outputArray;
     int counter = 0;
     for (auto it = tensor->cbegin(); it != tensor->cend(); ++it ){
         float op = *it;
-        outputs.push_back(op);
+        outputArray[counter] = op;
+        // outputs.push_back(op);
+        counter += 1;
     }
-    return outputs;
+    return outputArray;
 }
 
 void initModel(){
@@ -138,8 +141,13 @@ VisionStream initVisionStream(){
     return stream;
 }
 
-void getStreamBuffer(){
+int getStreamBuffer(){
     buf = visionstream_get(&stream, &extra);
+    if (buf == NULL) {
+        printf("visionstream get failed\n");
+        return 1;
+    }
+    return 0;
 }
 
 std::vector<float> processStreamBuffer(VIPCBuf* buf){
@@ -184,7 +192,7 @@ void sendPrediction(std::vector<float> modelOutput){
 //    traffic_lights_sock->send((char*)bytes.begin(), bytes.size());
 }
 
-std::vector<float> runModel(std::vector<float> inputVector){
+float* runModel(std::vector<float> inputVector){
     std::unique_ptr<zdl::DlSystem::ITensor> inputTensor = loadInputTensor(snpe, inputVector);  // inputVec)
     zdl::DlSystem::ITensor* oTensor = executeNetwork(snpe, inputTensor);
     return getModelOutput(oTensor);
@@ -233,17 +241,20 @@ extern "C" {
         while (true){
             loopStart = millis_since_boot();
 
-            getStreamBuffer(); // (VisionStream stream, VIPCBufExtra extra, VIPCBuf* buf){
-            if (buf == NULL) {
-                printf("visionstream get failed\n");
+            int err = getStreamBuffer(); // (VisionStream stream, VIPCBufExtra extra, VIPCBuf* buf){
+            if (err == 1) {
                 return 1;
             }
 
             std::vector<float> inputVector = processStreamBuffer(buf);  // writes float vector to inputVector
             // std::cout << "Vector elements: " << inputVector.size() << std::endl;
 
-            std::vector<float> modelOutput = runModel(inputVector);
-            for (int i = 0; i < modelOutput.size(); i++) {
+            float[4] modelOutput = runModel(inputVector);
+
+//            for (int i = 0; i < modelOutput.size(); i++) {
+//                std::cout << modelOutput[i] << std::endl;
+//            }
+            for (int i = 0; i < 4; i++){
                 std::cout << modelOutput[i] << std::endl;
             }
             std::cout << std::endl;
