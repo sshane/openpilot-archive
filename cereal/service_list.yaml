@@ -77,7 +77,7 @@ carParams: [8071, true, 0.02, 1]
 frontFrame: [8072, true, 10.]
 image: [8073, false, 20.]
 trafficModelEvent: [8074, false, 5.]
-TrafficModelRaw: [8075, false, 5.]
+trafficModelRaw: [8075, false, 5.]
 
 testModel: [8040, false, 0.]
 testLiveLocation: [8045, false, 0.]
