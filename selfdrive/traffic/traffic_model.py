@@ -47,7 +47,7 @@ class Traffic:
       pred = "NONE"
       if image is not None:
         pred_array = self.model_predict(image)
-        self.past_preds.append(pred_array)
+        self.past_preds.append(list(pred_array))
         pred = np.argmax(pred_array)
         pred = self.labels[pred]
       pred = self.get_prediction()  # uses most common prediction from past second (1 / model_rate), NONE until car is started for 1 second
