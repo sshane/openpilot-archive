@@ -28,7 +28,6 @@
 #include "common/swaglog.h"
 #include "common/timing.h"
 #include "messaging.hpp"
-#include "common/messaging.h"
 
 #include <capnp/message.h>
 #include <capnp/serialize-packed.h>
