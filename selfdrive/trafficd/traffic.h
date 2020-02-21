@@ -13,6 +13,26 @@
 #include <fstream>
 #include <array>
 
+#include <stdio.h>
+#include <stdlib.h>
+
+#include <cstdio>
+#include <cstdlib>
+#include <cstdint>
+#include <unistd.h>
+#include <zmq.h>
+
+
+#include "common/visionbuf.h"
+#include "common/visionipc.h"
+#include "common/swaglog.h"
+#include "common/timing.h"
+#include "messaging.hpp"
+#include "common/messaging.h"
+
+#include <capnp/message.h>
+#include <capnp/serialize-packed.h>
+
 extern "C"{
   int runModelLoop();
 }
