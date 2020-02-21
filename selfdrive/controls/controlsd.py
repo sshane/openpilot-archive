@@ -168,6 +168,8 @@ def state_transition(frame, CS, CP, state, events, soft_disable_timer, v_cruise_
   # entrance in SOFT_DISABLING state
   soft_disable_timer = max(0, soft_disable_timer - 1)
 
+  with open('/data/traffic_events', 'a') as f:
+    f.write('{}\n'.format(traffic_sm['trafficModelEvent'].status))
   traffic_light_status = traffic_sm['trafficModelEvent'].status
   traffic_light_confidence = round(traffic_sm['trafficModelEvent'].confidence * 100, 2)
   if traffic_light_status == 'RED':
