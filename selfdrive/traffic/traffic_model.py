@@ -27,7 +27,7 @@ class Traffic:
       t = time.time()
       while not self.sm.updated['trafficModelRaw']:
         self.sm.update(0)
-      # print(self.sm['trafficModelRaw'].prediction)
+      print(self.sm['trafficModelRaw'].prediction)
       print(1 / (time.time() - t))
       print(self.sm.updated['trafficModelRaw'])
 
