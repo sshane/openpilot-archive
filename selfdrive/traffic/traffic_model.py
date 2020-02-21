@@ -25,9 +25,10 @@ class Traffic:
   def new_loop(self):
     while True:
       self.sm.update(0)
-      print(self.sm['trafficModelRaw'].prediction)
+      # print(self.sm['trafficModelRaw'].prediction)
+
       print(self.sm.updated['trafficModelRaw'])
-      time.sleep(1/7)
+      time.sleep(1/5)
 
 
   def traffic_loop(self):
