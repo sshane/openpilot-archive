@@ -16,7 +16,7 @@ class Traffic:
     self.labels = ['RED', 'GREEN', 'YELLOW', 'NONE']
 
     self.past_preds = []
-    self.model_rate = 1 / 5.
+    self.model_rate = 1 / 10.
     self.last_log_time = 0
     self.new_loop()
 
