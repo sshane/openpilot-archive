@@ -30,7 +30,7 @@ class Traffic:
       # print(self.sm['trafficModelRaw'].prediction)
 
       print(self.sm.updated['trafficModelRaw'])
-      time.sleep(1/9)
+
 
 
   def traffic_loop(self):
