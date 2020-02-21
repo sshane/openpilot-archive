@@ -13,6 +13,12 @@
 #include "common/swaglog.h"
 #include "common/timing.h"
 
+#include <capnp/message.h>
+#include <capnp/serialize-packed.h>
+
+#include "json11.hpp"
+#include "cereal/gen/cpp/log.capnp.h"
+
 using namespace std;
 
 std::unique_ptr<zdl::SNPE::SNPE> snpe;
@@ -21,9 +27,10 @@ VIPCBuf* buf;
 VisionStream stream;
 VIPCBufExtra extra;
 VisionStreamBufs buf_info;
+PubSocket* live_parameters_sock;
 
 const std::vector<std::string> modelLabels = {"RED", "GREEN", "YELLOW", "NONE"};
-const double modelRate = 1 / 15.;  // 5 Hz
+const double modelRate = 1 / 5.;  // 5 Hz
 
 const int image_stride = 3840;  // global constants
 const int cropped_size = 515 * 814 * 3;
@@ -151,6 +158,10 @@ std::vector<float> processStreamBuffer(VIPCBuf* buf){
     return outputVector;
 }
 
+void sendPrediction(std::vector<float> modelOutput){
+    int pred_idx = std::max_element(modelOutput.begin(), modelOutput.end()) - modelOutput.begin();
+}
+
 std::vector<float> runModel(std::vector<float> inputVector){
     std::unique_ptr<zdl::DlSystem::ITensor> inputTensor = loadInputTensor(snpe, inputVector);  // inputVec)
     zdl::DlSystem::ITensor* oTensor = executeNetwork(snpe, inputTensor);
@@ -171,7 +182,7 @@ double rateKeeper(double loopTime, double lastLoop){
     if (lastLoop < 0){  // don't sleep if last loop lagged
         lastLoop = std::max(lastLoop, -modelRate);  // this should ensure we don't keep adding negative time to lastLoop if a frame lags pretty badly
                                                     // negative time being time to subtract from sleep time
-        std::cout << "Last frame lagged by " << -lastLoop << " seconds. Sleeping for " << modelRate - (loopTime * msToSec) + lastLoop << " seconds" << std::endl;
+        // std::cout << "Last frame lagged by " << -lastLoop << " seconds. Sleeping for " << modelRate - (loopTime * msToSec) + lastLoop << " seconds" << std::endl;
         toSleep = modelRate - (loopTime * msToSec) + lastLoop;  // keep time as close as possible to our rate, this reduces the time slept this iter
     } else {
         toSleep = modelRate - (loopTime * msToSec);
@@ -180,7 +191,7 @@ double rateKeeper(double loopTime, double lastLoop){
         sleepFor(toSleep);
         // std::cout << "No lag. Sleeping for " << toSleep << std::endl;
     } else {
-        // std::cout << "Loop lagging by " << -toSleep << " seconds." << std::endl;
+        std::cout << "Loop lagging by " << -toSleep << " seconds." << std::endl;
     }
     return toSleep;
 }
@@ -189,6 +200,7 @@ extern "C" {
     int runModelLoop(){
         initModel(); // init stuff
         initVisionStream();
+        live_parameters_sock = PubSocket::create(c, "trafficLights");
 
 
         double loopStart;
@@ -203,23 +215,20 @@ extern "C" {
                 return 1;
             }
 
-    //        t1 = millis_since_boot();
-    //        printf("visionstream_get: %.2f\n", (t1-loopStart));
-
             std::vector<float> inputVector = processStreamBuffer(buf);  // writes float vector to inputVector
-//            std::cout << "Vector elements: " << inputVector.size() << std::endl;
+            // std::cout << "Vector elements: " << inputVector.size() << std::endl;
 
             std::vector<float> modelOutput = runModel(inputVector);
 
-            int pred_idx = std::max_element(modelOutput.begin(), modelOutput.end()) - modelOutput.begin();
             //std::cout << "Prediction: " << modelLabels[pred_idx] << " (" << modelOutput[pred_idx] * 100 << "%)" << std::endl;
+            sendPrediction(modelOutput);
 
             // sleepFor(0.5);  // in seconds
             loopEnd = millis_since_boot();
 //            std::cout << "Loop time: " << (loopEnd - loopStart) * msToSec << " sec\n";
 
             lastLoop = rateKeeper(loopEnd - loopStart, lastLoop);
-            std::cout << "Current frequency: " << 1 / ((millis_since_boot() - loopStart) * msToSec) << " Hz" << std::endl;
+            // std::cout << "Current frequency: " << 1 / ((millis_since_boot() - loopStart) * msToSec) << " Hz" << std::endl;
 
             if (shouldStop()){
                 break;
