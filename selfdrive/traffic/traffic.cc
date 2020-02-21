@@ -195,7 +195,7 @@ void sendPrediction(std::vector<float> modelOutput){
 float* runModel(std::vector<float> inputVector){
     std::unique_ptr<zdl::DlSystem::ITensor> inputTensor = loadInputTensor(snpe, inputVector);  // inputVec)
     zdl::DlSystem::ITensor* oTensor = executeNetwork(snpe, inputTensor);
-    return getModelOutput(oTensor);
+    return *getModelOutput(oTensor);
 }
 
 bool shouldStop() {
@@ -249,7 +249,7 @@ extern "C" {
             std::vector<float> inputVector = processStreamBuffer(buf);  // writes float vector to inputVector
             // std::cout << "Vector elements: " << inputVector.size() << std::endl;
 
-            float modelOutput[4] = runModel(inputVector);
+            float *modelOutput[4] = runModel(inputVector);
 
 //            for (int i = 0; i < modelOutput.size(); i++) {
 //                std::cout << modelOutput[i] << std::endl;
