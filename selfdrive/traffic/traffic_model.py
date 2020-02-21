@@ -1,7 +1,6 @@
 import cereal.messaging as messaging
 import numpy as np
 import time
-from common.realtime import sec_since_boot
 
 
 class Traffic:
@@ -28,8 +27,8 @@ class Traffic:
     for i in range(200):
       t = time.time()
       # self.sm.update_msgs(sec_since_boot(), )
-      while not self.is_new_msg(self.sm.logMonoTime['trafficModelRaw']):
-        self.sm.update(0)
+      # while not self.is_new_msg(self.sm.logMonoTime['trafficModelRaw']):
+      self.sm.update(0)
       # print(self.sm['trafficModelRaw'].prediction)
       # print(1 / (time.time() - t))
       print(self.sm.updated['trafficModelRaw'])
