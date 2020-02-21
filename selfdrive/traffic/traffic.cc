@@ -260,7 +260,7 @@ extern "C" {
             std::vector<float> inputVector = processStreamBuffer(buf);  // writes float vector to inputVector
             // std::cout << "Vector elements: " << inputVector.size() << std::endl;
 
-            runModel(inputVector);
+            runModel(inputVector);  //float modelOutput = runModel(inputVector);
 
 //            for (int i = 0; i < modelOutput.size(); i++) {
 //                std::cout << modelOutput[i] << std::endl;
