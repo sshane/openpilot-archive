@@ -166,6 +166,7 @@ class SubMaster():
     msgs = []
     for sock in self.poller.poll(timeout):
       if wait_for is None:
+        print([self.sock[s] for s in wait_for])
         if sock in [self.sock[s] for s in wait_for]:
           print('Waiting...')
           msgs.append(recv_one(sock))
