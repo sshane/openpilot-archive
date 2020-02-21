@@ -180,7 +180,7 @@ double rateKeeper(double loopTime, double lastLoop){
         sleepFor(toSleep);
         // std::cout << "No lag. Sleeping for " << toSleep << std::endl;
     } else {
-        std::cout << "Loop lagging by " << -toSleep << " seconds." << std::endl;
+        // std::cout << "Loop lagging by " << -toSleep << " seconds." << std::endl;
     }
     return toSleep;
 }
