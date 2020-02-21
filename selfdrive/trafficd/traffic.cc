@@ -220,7 +220,7 @@ extern "C" {
             // std::cout << "Prediction: " << modelLabels[pred_idx] << " (" << modelOutput[pred_idx] * 100 << "%)" << std::endl;
 
 
-            sleepFor(0.5);
+            sleepFor(0.1);
             sendPrediction(modelOutput);
 
             loopEnd = millis_since_boot();
