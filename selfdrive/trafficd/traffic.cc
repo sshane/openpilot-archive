@@ -199,28 +199,29 @@ extern "C" {
         double lastLoop = 0;
         while (true){
             loopStart = millis_since_boot();
-//
-//            int err = getStreamBuffer(); // (VisionStream stream, VIPCBufExtra extra, VIPCBuf* buf){
-//            if (err == 1) {
-//                return 1;
-//            }
-//
-//            std::vector<float> inputVector = processStreamBuffer(buf);  // writes float vector to inputVector
+
+            int err = getStreamBuffer(); // (VisionStream stream, VIPCBufExtra extra, VIPCBuf* buf){
+            if (err == 1) {
+                return 1;
+            }
+
+            std::vector<float> inputVector = processStreamBuffer(buf);  // writes float vector to inputVector
             // std::cout << "Vector elements: " << inputVector.size() << std::endl;
 
-            float modelOutput[4] = {1.0, 0.0, 0.0, 0.0};
-//            runModel(inputVector, modelOutput);
-//
-//            for (int i = 0; i < 4; i++){
-//                std::cout << modelOutput[i] << std::endl;
-//            }
-//            std::cout << std::endl;
+            // float modelOutput[4] = {1.0, 0.0, 0.0, 0.0};
+            float modelOutput[4];
+            runModel(inputVector, modelOutput);
+
+            for (int i = 0; i < 4; i++){
+                std::cout << modelOutput[i] << std::endl;
+            }
+            std::cout << std::endl;
 
 
             // std::cout << "Prediction: " << modelLabels[pred_idx] << " (" << modelOutput[pred_idx] * 100 << "%)" << std::endl;
 
 
-            sleepFor(0.1);
+            // sleepFor(0.1);
             sendPrediction(modelOutput);
 
             loopEnd = millis_since_boot();
