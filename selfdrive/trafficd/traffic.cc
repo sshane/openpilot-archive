@@ -85,17 +85,6 @@ void setModelOutput(const zdl::DlSystem::ITensor* tensor, float* outputArray) {
     }
 }
 
-//std::vector<float> getModelOutput(const zdl::DlSystem::ITensor* tensor) {
-//    std::vector<float> outputs;
-//    int counter = 0;
-//    for (auto it = tensor->cbegin(); it != tensor->cend(); ++it ){
-//        float op = *it;
-//        outputs.push_back(op);
-//        // counter += 1;
-//    }
-//    return outputs;
-//}
-
 void initModel(){
     zdl::DlSystem::Runtime_t runt=checkRuntime();
     initializeSNPE(runt);
@@ -142,7 +131,6 @@ std::vector<float> processStreamBuffer(VIPCBuf* buf){
 }
 
 void sendPrediction(float modelOutput[]){
-    // int pred_idx = std::max_element(modelOutput.begin(), modelOutput.end()) - modelOutput.begin();
     kj::ArrayPtr<const float> modelOutput_vs(&modelOutput[0], 4);
 
     capnp::MallocMessageBuilder msg;
@@ -189,7 +177,6 @@ double rateKeeper(double loopTime, double lastLoop){
     }
     if (toSleep > 0){  // don't sleep for negative time, in case loop takes too long one iteration
         sleepFor(toSleep);
-        // std::cout << "No lag. Sleeping for " << toSleep << std::endl;
     } else {
         std::cout << "Loop lagging by " << -toSleep << " seconds." << std::endl;
     }
@@ -220,8 +207,7 @@ extern "C" {
             // std::cout << "Vector elements: " << inputVector.size() << std::endl;
 
             float modelOutput[4];
-            runModel(inputVector, modelOutput);  //float modelOutput = runModel(inputVector);
-
+            runModel(inputVector, modelOutput);
 
             for (int i = 0; i < 4; i++){
                 std::cout << modelOutput[i] << std::endl;
@@ -233,16 +219,15 @@ extern "C" {
 
             sendPrediction(modelOutput);
 
-            // sleepFor(0.5);  // in seconds
             loopEnd = millis_since_boot();
-//            std::cout << "Loop time: " << (loopEnd - loopStart) * msToSec << " sec\n";
+            // std::cout << "Loop time: " << (loopEnd - loopStart) * msToSec << " sec\n";
 
             lastLoop = rateKeeper(loopEnd - loopStart, lastLoop);
             // std::cout << "Current frequency: " << 1 / ((millis_since_boot() - loopStart) * msToSec) << " Hz" << std::endl;
 
-            if (shouldStop()){
-                break;
-            }
+            // if (shouldStop()){
+            //     break;
+            // }
         }
         visionstream_destroy(&stream);
         return 0;
