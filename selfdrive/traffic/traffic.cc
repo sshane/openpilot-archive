@@ -169,7 +169,7 @@ void sleepFor(double sec){
 double rateKeeper(double loopTime, double lastLoop){
     double toSleep;
     if (lastLoop < 0){  // don't sleep if last loop lagged
-        std::cout << "Last frame lagged by " << -lastLoop << " seconds. Sleeping for " << modelRate - (loopTime * msToSec) + lastLoop;
+        std::cout << "Last frame lagged by " << -lastLoop << " seconds. Sleeping for " << modelRate - (loopTime * msToSec) + lastLoop << std::endl;
         //lastLoop = std::max(lastLoop, -modelRate);  // this should ensure we don't keep adding negative time to lastLoop if a frame lags
                                                     // negative time being time to subtract from sleep time
         toSleep = modelRate - (loopTime * msToSec) + lastLoop;  // keep time as close as possible to our rate, this reduces the time slept this iter
