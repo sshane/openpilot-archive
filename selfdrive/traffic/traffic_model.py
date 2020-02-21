@@ -1,3 +1,4 @@
+from common.numpy_fast import clip
 import cereal.messaging as messaging
 import numpy as np
 import time
@@ -39,8 +40,8 @@ class Traffic:
         self.sm.update(0)
       print(len(self.past_preds))
       self.past_preds.append(list(self.sm['trafficModelRaw'].prediction))
-      pred = self.get_prediction()  # uses most common prediction from weighted past second list (1 / model_rate), NONE until car is started for min time
-      print(pred)
+      pred, confidence = self.get_prediction()  # uses most common prediction from weighted past second list (1 / model_rate), NONE until car is started for min time
+      print('{}, confidence: {}'.format(pred, confidence))
 
   def is_new_msg(self, log_time):
     is_new = log_time != self.last_log_time
@@ -78,7 +79,8 @@ class Traffic:
     time_weighted_preds = [sum(label) / self.weight_sum for label in np.array(time_weighted_preds).T]
 
     prediction = np.argmax(time_weighted_preds)  # get most confident prediction
-    return self.labels[prediction]
+    confidence = clip(time_weighted_preds[prediction], 0, 1)
+    return self.labels[prediction], confidence
 
   def model_predict(self, image):
     output = self.ffi.new("float[4]")
