@@ -2,7 +2,7 @@ import cereal
 import numpy as np
 import sys
 import time
-from selfdrive.traffic import traffic_wrapper
+from selfdrive.trafficd import traffic_wrapper
 import cv2
 import ctypes
 
