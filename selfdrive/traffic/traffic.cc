@@ -196,7 +196,7 @@ float* runModel(std::vector<float> inputVector){
     std::unique_ptr<zdl::DlSystem::ITensor> inputTensor = loadInputTensor(snpe, inputVector);  // inputVec)
     zdl::DlSystem::ITensor* tensor = executeNetwork(snpe, inputTensor);
 
-    float *outputArray;
+    float outputArray[4];
     int counter = 0;
     for (auto it = tensor->cbegin(); it != tensor->cend(); ++it ){
         float op = *it;
