@@ -161,27 +161,27 @@ std::vector<float> processStreamBuffer(VIPCBuf* buf){
 }
 
 void sendPrediction(std::vector<float> modelOutput){
-    int pred_idx = std::max_element(modelOutput.begin(), modelOutput.end()) - modelOutput.begin();
-    kj::ArrayPtr<const float> trans_std_vs(&trans_std_arr[0], 3);
-
-    capnp::MallocMessageBuilder msg;
-    cereal::Event::Builder event = msg.initRoot<cereal::Event>();
-    event.setLogMonoTime(nanos_since_boot());
-    auto traffic_lights = event.initTrafficLights();
-    traffic_lights.setValid(valid);
-    traffic_lights.setYawRate(localizer.x[0]);
-    traffic_lights.setGyroBias(localizer.x[2]);
-    traffic_lights.setSensorValid(sensor_data_age < 5.0);
-    traffic_lights.setAngleOffset(angle_offset_degrees);
-    traffic_lights.setAngleOffsetAverage(angle_offset_average_degrees);
-    traffic_lights.setStiffnessFactor(learner.x);
-    traffic_lights.setSteerRatio(learner.sR);
-    traffic_lights.setPosenetSpeed(localizer.posenet_speed);
-    traffic_lights.setPosenetValid((posenet_invalid_count < 4) && (camera_odometry_age < 5.0));
-
-    auto words = capnp::messageToFlatArray(msg);
-    auto bytes = words.asBytes();
-    traffic_lights_sock->send((char*)bytes.begin(), bytes.size());
+//    int pred_idx = std::max_element(modelOutput.begin(), modelOutput.end()) - modelOutput.begin();
+//    kj::ArrayPtr<const float> trans_std_vs(&trans_std_arr[0], 3);
+//
+//    capnp::MallocMessageBuilder msg;
+//    cereal::Event::Builder event = msg.initRoot<cereal::Event>();
+//    event.setLogMonoTime(nanos_since_boot());
+//    auto traffic_lights = event.initTrafficLights();
+//    traffic_lights.setValid(valid);
+//    traffic_lights.setYawRate(localizer.x[0]);
+//    traffic_lights.setGyroBias(localizer.x[2]);
+//    traffic_lights.setSensorValid(sensor_data_age < 5.0);
+//    traffic_lights.setAngleOffset(angle_offset_degrees);
+//    traffic_lights.setAngleOffsetAverage(angle_offset_average_degrees);
+//    traffic_lights.setStiffnessFactor(learner.x);
+//    traffic_lights.setSteerRatio(learner.sR);
+//    traffic_lights.setPosenetSpeed(localizer.posenet_speed);
+//    traffic_lights.setPosenetValid((posenet_invalid_count < 4) && (camera_odometry_age < 5.0));
+//
+//    auto words = capnp::messageToFlatArray(msg);
+//    auto bytes = words.asBytes();
+//    traffic_lights_sock->send((char*)bytes.begin(), bytes.size());
 }
 
 std::vector<float> runModel(std::vector<float> inputVector){
