@@ -20,7 +20,7 @@ class Traffic:
     self.model_rate = 1 / 5.
     self.recurrent_length = 1.0  # in seconds, how far back to factor into current prediction
     self.des_pred_len = int(self.recurrent_length / self.model_rate)
-    self.last_pred_weight = 2.0  # places 2x weight on most recent prediction
+    self.last_pred_weight = 10.0  # places 2x weight on most recent prediction
 
 
     self.weights = np.linspace(1, self.last_pred_weight, self.des_pred_len)
