@@ -187,7 +187,7 @@ extern "C" {
     int runModelLoop(){
         sleepFor(10.0);
         initModel(); // init stuff
-        initVisionStream();
+//        initVisionStream();
         Context * c = Context::create();
         traffic_lights_sock = PubSocket::create(c, "trafficModelRaw");
         assert(traffic_lights_sock != NULL);
@@ -197,26 +197,28 @@ extern "C" {
         double loopEnd;
         double lastLoop = 0;
         while (true){
-            loopStart = millis_since_boot();
-
-            int err = getStreamBuffer(); // (VisionStream stream, VIPCBufExtra extra, VIPCBuf* buf){
-            if (err == 1) {
-                return 1;
-            }
-
-            std::vector<float> inputVector = processStreamBuffer(buf);  // writes float vector to inputVector
+//            loopStart = millis_since_boot();
+//
+//            int err = getStreamBuffer(); // (VisionStream stream, VIPCBufExtra extra, VIPCBuf* buf){
+//            if (err == 1) {
+//                return 1;
+//            }
+//
+//            std::vector<float> inputVector = processStreamBuffer(buf);  // writes float vector to inputVector
             // std::cout << "Vector elements: " << inputVector.size() << std::endl;
 
-            float modelOutput[4];
-            runModel(inputVector, modelOutput);
-
-            for (int i = 0; i < 4; i++){
-                std::cout << modelOutput[i] << std::endl;
-            }
-            std::cout << std::endl;
+            float modelOutput[4] = {1.0, 0.0, 0.0, 0.0};
+//            runModel(inputVector, modelOutput);
+//
+//            for (int i = 0; i < 4; i++){
+//                std::cout << modelOutput[i] << std::endl;
+//            }
+//            std::cout << std::endl;
 
 
             // std::cout << "Prediction: " << modelLabels[pred_idx] << " (" << modelOutput[pred_idx] * 100 << "%)" << std::endl;
+
+
 
             sendPrediction(modelOutput);
 
@@ -230,7 +232,7 @@ extern "C" {
             //     break;
             // }
         }
-        visionstream_destroy(&stream);
+//        visionstream_destroy(&stream);
         return 0;
     }
 
