@@ -202,7 +202,7 @@ car_started_processes = [
   'modeld',
   'proclogd',
   'ubloxd',
-  'traffic_managerd'
+  'traffic_managerd',
   'trafficd',
 ]
 if ANDROID:
