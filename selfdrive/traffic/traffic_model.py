@@ -31,12 +31,10 @@ class Traffic:
         self.sm.update(0)
       # print(self.sm['trafficModelRaw'].prediction)
       # print(1 / (time.time() - t))
-      print(self.sm.updated['trafficModelRaw'])
-      time.sleep(0.15)
+      # time.sleep(0.15)
 
 
   def is_new_msg(self, log_time):
-    print(log_time)
     is_new = log_time != self.last_log_time
     self.last_log_time = log_time
     return is_new
