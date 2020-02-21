@@ -13,23 +13,15 @@ class Traffic:
     self.traffic_model, self.ffi = traffic_wrapper.get_wrapper()
     self.traffic_model.initModel()
     self.image_sock = messaging.sub_sock('image')
-    self.pm = messaging.PubMaster(['trafficModelEvent'])
-    self.sm = messaging.SubMaster(['trafficModelRaw'])
+    self.pm = messaging.PubMaster(['trafficLights'])
 
     self.labels = ['RED', 'GREEN', 'YELLOW', 'NONE']
 
     self.past_preds = []
     self.model_rate = 1 / 10.
-    self.new_loop()
 
   def start(self):
     self.traffic_loop()
-
-  def new_loop(self):
-    while True:
-      self.sm.update(0)
-      print(self.sm['trafficModelRaw'].prediction)
-
 
   def traffic_loop(self):
     while True:
