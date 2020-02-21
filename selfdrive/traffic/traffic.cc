@@ -162,41 +162,31 @@ std::vector<float> processStreamBuffer(VIPCBuf* buf){
     return outputVector;
 }
 
-void sendPrediction(std::vector<float> modelOutput){
-//    int pred_idx = std::max_element(modelOutput.begin(), modelOutput.end()) - modelOutput.begin();
-//    kj::ArrayPtr<const float> trans_std_vs(&trans_std_arr[0], 3);
-//
-//    capnp::MallocMessageBuilder msg;
-//    cereal::Event::Builder event = msg.initRoot<cereal::Event>();
-//    event.setLogMonoTime(nanos_since_boot());
-//    auto traffic_lights = event.initTrafficLights();
-//    traffic_lights.setValid(valid);
-//    traffic_lights.setYawRate(localizer.x[0]);
-//    traffic_lights.setGyroBias(localizer.x[2]);
-//    traffic_lights.setSensorValid(sensor_data_age < 5.0);
-//    traffic_lights.setAngleOffset(angle_offset_degrees);
-//    traffic_lights.setAngleOffsetAverage(angle_offset_average_degrees);
-//    traffic_lights.setStiffnessFactor(learner.x);
-//    traffic_lights.setSteerRatio(learner.sR);
-//    traffic_lights.setPosenetSpeed(localizer.posenet_speed);
-//    traffic_lights.setPosenetValid((posenet_invalid_count < 4) && (camera_odometry_age < 5.0));
-//
-//    auto words = capnp::messageToFlatArray(msg);
-//    auto bytes = words.asBytes();
-//    traffic_lights_sock->send((char*)bytes.begin(), bytes.size());
+void sendPrediction(float modelOutput[]){
+    // int pred_idx = std::max_element(modelOutput.begin(), modelOutput.end()) - modelOutput.begin();
+    kj::ArrayPtr<const float> modelOutput_vs(&modelOutput[0], 4);
+
+    capnp::MallocMessageBuilder msg;
+    cereal::Event::Builder event = msg.initRoot<cereal::Event>();
+    event.setLogMonoTime(nanos_since_boot());
+    auto traffic_lights = event.initTrafficLights();
+    traffic_lights.setRawPrediction(modelOutput_vs);
+
+    auto words = capnp::messageToFlatArray(msg);
+    auto bytes = words.asBytes();
+    traffic_lights_sock->send((char*)bytes.begin(), bytes.size());
 }
 
 void runModel(std::vector<float> inputVector, float outputArray[]){
     std::unique_ptr<zdl::DlSystem::ITensor> inputTensor = loadInputTensor(snpe, inputVector);  // inputVec)
     zdl::DlSystem::ITensor* tensor = executeNetwork(snpe, inputTensor);
 
-    int counter = 0;
+    int idx = 0;
     for (auto it = tensor->cbegin(); it != tensor->cend(); ++it ){
         float op = *it;
-        outputArray[counter] = op;
-        counter += 1;
+        outputArray[idx] = op;
+        idx += 1;
     }
-    // setModelOutput(oTensor, outputArray);
 }
 
 bool shouldStop() {
@@ -253,9 +243,7 @@ extern "C" {
             float modelOutput[4];
             runModel(inputVector, modelOutput);  //float modelOutput = runModel(inputVector);
 
-//            for (int i = 0; i < modelOutput.size(); i++) {
-//                std::cout << modelOutput[i] << std::endl;
-//            }
+
             for (int i = 0; i < 4; i++){
                 std::cout << modelOutput[i] << std::endl;
             }
@@ -263,7 +251,7 @@ extern "C" {
 
 
             // std::cout << "Prediction: " << modelLabels[pred_idx] << " (" << modelOutput[pred_idx] * 100 << "%)" << std::endl;
-            // sendPrediction(modelOutput);
+            sendPrediction(modelOutput);
 
             // sleepFor(0.5);  // in seconds
             loopEnd = millis_since_boot();
