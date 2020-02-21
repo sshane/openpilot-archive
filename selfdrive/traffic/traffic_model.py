@@ -27,8 +27,8 @@ class Traffic:
     for i in range(200):
       t = time.time()
       # self.sm.update_msgs(sec_since_boot(), )
-      # while not self.is_new_msg(self.sm.logMonoTime['trafficModelRaw']):
-      self.sm.update(0)
+      while not self.is_new_msg(self.sm.logMonoTime['trafficModelRaw']):
+        self.sm.update(0)
       # print(self.sm['trafficModelRaw'].prediction)
       # print(1 / (time.time() - t))
       print(self.sm.updated['trafficModelRaw'])
@@ -37,10 +37,7 @@ class Traffic:
 
   def is_new_msg(self, log_time):
     print(log_time)
-    if log_time == 0:
-      is_new = True
-    else:
-      is_new = log_time == self.last_log_time
+    is_new = log_time != self.last_log_time
     self.last_log_time = log_time
     return is_new
 
