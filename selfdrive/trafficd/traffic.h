@@ -22,11 +22,8 @@
 #include <unistd.h>
 #include <zmq.h>
 
-
 #include "common/visionbuf.h"
 #include "common/visionipc.h"
-#include "common/swaglog.h"
-#include "common/timing.h"
 #include "messaging.hpp"
 
 #include <capnp/message.h>
