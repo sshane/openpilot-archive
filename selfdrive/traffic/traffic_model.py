@@ -23,11 +23,8 @@ class Traffic:
     self.traffic_loop()
 
   def new_loop(self):
-    count = 0
     while True:
       self.sm.update(0)
-      print(count)
-      count += 1
       print(self.sm['trafficModelRaw'].prediction)
       print(self.sm.updated['trafficModelRaw'])
       time.sleep(1/10)
