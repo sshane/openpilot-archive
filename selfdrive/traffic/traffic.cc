@@ -23,6 +23,8 @@ VIPCBufExtra extra;
 VisionStreamBufs buf_info;
 
 const std::vector<std::string> modelLabels = {"RED", "GREEN", "YELLOW", "NONE"};
+const double modelRate = 1 / 5.;  // 5 Hz
+
 const int image_stride = 3840;  // global constants
 const int cropped_size = 515 * 814 * 3;
 const int cropped_shape[3] = {515, 814, 3};
@@ -164,14 +166,22 @@ void sleepFor(double sec){
     usleep(sec * secToUs);
 }
 
-void rateKeeper(double loopTime){
-    double modelRate = 1 / 5.;  // 5 Hz
-    double toSleep = modelRate - (loopTime * msToSec);
+double rateKeeper(double loopTime, double lastLoop){
+    double toSleep;
+    if (lastLoop < 0){  // don't sleep if last loop lagged
+        std::cout << "Last frame lagged by " << -lastLoop << " seconds. Sleeping for " << modelRate - (loopTime * msToSec) + lastLoop;
+        //lastLoop = std::max(lastLoop, -modelRate);  // this should ensure we don't keep adding negative time to lastLoop if a frame lags
+                                                    // negative time being time to subtract from sleep time
+        toSleep = modelRate - (loopTime * msToSec) + lastLoop;  // keep time as close as possible to our rate, this reduces the time slept this iter
+    } else {
+        toSleep = modelRate - (loopTime * msToSec);
+    }
     if (toSleep > 0){  // don't sleep for negative time, in case loop takes too long one iteration
         sleepFor(toSleep);
     } else {
         std::cout << "Loop lagging by " << -toSleep << " seconds." << std::endl;
     }
+    return toSleep;
 }
 
 extern "C" {
@@ -182,6 +192,7 @@ extern "C" {
 
         double loopStart;
         double loopEnd;
+        double lastLoop = 0;
         while (true){
             loopStart = millis_since_boot();
 
@@ -206,7 +217,7 @@ extern "C" {
             loopEnd = millis_since_boot();
 //            std::cout << "Loop time: " << (loopEnd - loopStart) * msToSec << " sec\n";
 
-            rateKeeper(loopEnd - loopStart);
+            lastLoop = rateKeeper(loopEnd - loopStart, lastLoop);
 
             if (shouldStop()){
                 break;
