@@ -1,7 +1,5 @@
 #include "traffic.h"
 
-#include "json11.hpp"
-#include "cereal/gen/cpp/log.capnp.h"
 
 using namespace std;
 
