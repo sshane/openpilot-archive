@@ -155,7 +155,6 @@ managed_processes = {
   "monitoringd": ("selfdrive/modeld", ["./monitoringd"]),
   "modeld": ("selfdrive/modeld", ["./modeld"]),
   "traffic_managerd": "selfdrive.trafficd.traffic_model",
-  "trafficd": ("selfdrive/trafficd", ["./trafficd"]),
 }
 
 daemon_processes = {
@@ -202,8 +201,7 @@ car_started_processes = [
   'modeld',
   'proclogd',
   'ubloxd',
-  'traffic_managerd',
-  'trafficd',
+  'traffic_managerd'
 ]
 if ANDROID:
   car_started_processes += [
@@ -417,7 +415,7 @@ def manager_thread():
     if msg.thermal.freeSpace < 0.05:
       logger_dead = True
 
-    if True:
+    if True:  # todo: msg.thermal.started
       for p in car_started_processes:
         print('phere: {}'.format(p))
         if p == "loggerd" and logger_dead:
