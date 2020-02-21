@@ -1826,7 +1826,7 @@ struct KalmanOdometry {
 }
 
 struct Traffic {
-  raw_prediction @0 :List(Float32);
+  rawPrediction @0 :List(Float32);
   status @1 :Text;
 }
 
