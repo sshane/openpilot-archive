@@ -198,7 +198,7 @@ extern "C" {
         double loopEnd;
         double lastLoop = 0;
         while (true){
-//            loopStart = millis_since_boot();
+            loopStart = millis_since_boot();
 //
 //            int err = getStreamBuffer(); // (VisionStream stream, VIPCBufExtra extra, VIPCBuf* buf){
 //            if (err == 1) {
