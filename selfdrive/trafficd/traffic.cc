@@ -207,11 +207,13 @@ extern "C" {
             VIPCBuf* buf;
             VIPCBufExtra extra;
 
+            double visionStart = millis_since_boot();
             buf = visionstream_get(&stream, &extra);
             if (buf == NULL) {
                 printf("visionstream get failed\n");
                 return 1;
             }
+            std::cout << "Vision get time: " << millis_since_boot() - visionStart << " sec\n";
 
             std::vector<float> inputVector = processStreamBuffer(buf);  // writes float vector to inputVector
             // std::cout << "Vector elements: " << inputVector.size() << std::endl;
@@ -236,7 +238,7 @@ extern "C" {
             // visionbuf_free(buf);  // will this prevent memory leak?
 
             loopEnd = millis_since_boot();
-             std::cout << "Loop time: " << (loopEnd - loopStart) * msToSec << " sec\n";
+            //std::cout << "Loop time: " << (loopEnd - loopStart) * msToSec << " sec\n";
 
             lastLoop = rateKeeper(loopEnd - loopStart, lastLoop);
             // std::cout << "Current frequency: " << 1 / ((millis_since_boot() - loopStart) * msToSec) << " Hz" << std::endl;
