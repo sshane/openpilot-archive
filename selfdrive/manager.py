@@ -154,8 +154,8 @@ managed_processes = {
   "updated": "selfdrive.updated",
   "monitoringd": ("selfdrive/modeld", ["./monitoringd"]),
   "modeld": ("selfdrive/modeld", ["./modeld"]),
-  "traffic_managerd": "selfdrive.trafficd.traffic_model",
-  #"trafficd": ("selfdrive/trafficd", ["./trafficd"]),
+  "traffic_manager": "selfdrive.trafficd.traffic_manager",
+  "trafficd": ("selfdrive/trafficd", ["./trafficd"]),
 }
 
 daemon_processes = {
@@ -202,8 +202,8 @@ car_started_processes = [
   'modeld',
   'proclogd',
   'ubloxd',
-  'traffic_managerd',
-  #'trafficd',
+  'traffic_manager',
+  'trafficd',
 ]
 if ANDROID:
   car_started_processes += [

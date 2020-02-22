@@ -131,7 +131,7 @@ std::vector<float> processStreamBuffer(VIPCBuf* buf){
 }
 
 void sendPrediction(float modelOutput[]){
-    std::cout << "Prediction: " << modelOutput[0] << std::endl;
+    // std::cout << "Prediction: " << modelOutput[0] << std::endl;
     kj::ArrayPtr<const float> modelOutput_vs(&modelOutput[0], 4);
 
     capnp::MallocMessageBuilder msg;
