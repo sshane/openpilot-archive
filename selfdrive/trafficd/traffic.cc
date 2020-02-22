@@ -236,7 +236,7 @@ extern "C" {
             // visionbuf_free(buf);  // will this prevent memory leak?
 
             loopEnd = millis_since_boot();
-            // std::cout << "Loop time: " << (loopEnd - loopStart) * msToSec << " sec\n";
+             std::cout << "Loop time: " << (loopEnd - loopStart) * msToSec << " sec\n";
 
             lastLoop = rateKeeper(loopEnd - loopStart, lastLoop);
             // std::cout << "Current frequency: " << 1 / ((millis_since_boot() - loopStart) * msToSec) << " Hz" << std::endl;
