@@ -29,10 +29,10 @@ class Traffic:
 
   def traffic_loop(self):
     while True:
-      # while not self.is_new_msg(self.sm.logMonoTime['trafficModelRaw']):  # uses rate keeper from traffic.cc, waits for new message
-      self.sm.update(0)
-      if self.is_new_msg():  # don't add blank list if not updated yet
-        self.past_preds.append(list(self.sm['trafficModelRaw'].prediction))
+      while not self.is_new_msg():  # uses rate keeper from traffic.cc, waits for new message
+        self.sm.update(0)
+
+      self.past_preds.append(list(self.sm['trafficModelRaw'].prediction))
       pred, confidence = self.get_prediction()  # uses most common prediction from weighted past second list (1 / model_rate), NONE until car is started for min time
       print('{}, confidence: {}'.format(pred, confidence))
       self.send_prediction(pred, confidence)
