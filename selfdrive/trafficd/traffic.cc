@@ -5,7 +5,7 @@ using namespace std;
 std::unique_ptr<zdl::SNPE::SNPE> snpe;
 
 const std::vector<std::string> modelLabels = {"RED", "GREEN", "YELLOW", "NONE"};
-const double modelRate = 1 / 10.;  // 5 Hz
+const double modelRate = 1 / 5.;  // 5 Hz
 
 const int image_stride = 3840;  // global constants
 const int cropped_size = 515 * 814 * 3;
@@ -230,14 +230,14 @@ extern "C" {
             // std::cout << "Prediction: " << modelLabels[pred_idx] << " (" << modelOutput[pred_idx] * 100 << "%)" << std::endl;
 
 
-            // sendPrediction(modelOutput, traffic_lights_sock);
+            sendPrediction(modelOutput, traffic_lights_sock);
 
             // visionbuf_free(buf);  // will this prevent memory leak?
 
             loopEnd = millis_since_boot();
-            std::cout << "Loop time: " << loopEnd - loopStart << " ms\n";
+            std::cout << "Loop rate: " << 1 / ((loopEnd - loopStart) * msToSec) << " Hz\n";
 
-            lastLoop = rateKeeper(loopEnd - loopStart, lastLoop);
+            // lastLoop = rateKeeper(loopEnd - loopStart, lastLoop);
             // std::cout << "Current frequency: " << 1 / ((millis_since_boot() - loopStart) * msToSec) << " Hz" << std::endl;
 
             // if (shouldStop()){
