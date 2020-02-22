@@ -201,11 +201,11 @@ extern "C" {
         double loopStart;
         double loopEnd;
         double lastLoop = 0;
-        double loopStartTrue = millis_since_boot();
-        VIPCBuf* buf;
-        VIPCBufExtra extra;
-        for (int loopIdx = 0; loopIdx < 500; loopIdx++){
+        while (true){
             loopStart = millis_since_boot();
+
+            VIPCBuf* buf;
+            VIPCBufExtra extra;
 
             buf = visionstream_get(&stream, &extra);
             if (buf == NULL) {
@@ -237,15 +237,14 @@ extern "C" {
             loopEnd = millis_since_boot();
             // std::cout << "Loop time: " << loopEnd - loopStart << " ms\n";
 
-            // lastLoop = rateKeeper(loopEnd - loopStart, lastLoop);
-            //std::cout << "Current frequency: " << 1 / ((millis_since_boot() - loopStart) * msToSec) << " Hz" << std::endl;
-            std::cout << loopIdx << std::endl;
+            lastLoop = rateKeeper(loopEnd - loopStart, lastLoop);
+            // std::cout << "Current frequency: " << 1 / ((millis_since_boot() - loopStart) * msToSec) << " Hz" << std::endl;
 
             // if (shouldStop()){
             //     break;
             // }
+            break;
         }
-        std::cout << millis_since_boot() - loopStartTrue << std::endl;
         visionstream_destroy(&stream);
         return 0;
     }
