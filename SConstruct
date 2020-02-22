@@ -121,7 +121,6 @@ env = Environment(
     "#selfdrive/trafficd",
     "#cereal/messaging",
     "#cereal",
-    "#opendbc/can",
   ],
 
   CC='clang',
@@ -190,8 +189,6 @@ else:
   gpucommon = [_gpucommon] + _gpu_libs
 
 Export('common', 'visionipc', 'gpucommon')
-
-SConscript(['opendbc/can/SConscript'])
 
 SConscript(['common/SConscript'])
 SConscript(['common/kalman/SConscript'])
