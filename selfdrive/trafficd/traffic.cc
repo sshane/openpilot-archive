@@ -214,9 +214,8 @@ extern "C" {
             }
 
             std::vector<float> inputVector = processStreamBuffer(buf);  // writes float vector to inputVector
-            // std::cout << "Vector elements: " << inputVector.size() << std::endl;
+            std::cout << "Vector elements: " << inputVector.size() << std::endl;
 
-            // float modelOutput[4] = {1.0, 0.0, 0.0, 0.0};
             std::vector<float> outputVector = runModel(inputVector);
 
             float modelOutput[4];
@@ -226,19 +225,15 @@ extern "C" {
             }
             // std::cout << std::endl;
 
-
             // std::cout << "Prediction: " << modelLabels[pred_idx] << " (" << modelOutput[pred_idx] * 100 << "%)" << std::endl;
 
-
             sendPrediction(modelOutput, traffic_lights_sock);
-
-            // visionbuf_free(buf);  // will this prevent memory leak?
 
             loopEnd = millis_since_boot();
             // std::cout << "Loop time: " << loopEnd - loopStart << " ms\n";
 
             lastLoop = rateKeeper(loopEnd - loopStart, lastLoop);
-            // std::cout << "Current frequency: " << 1 / ((millis_since_boot() - loopStart) * msToSec) << " Hz" << std::endl;
+            std::cout << "Current frequency: " << 1 / ((millis_since_boot() - loopStart) * msToSec) << " Hz" << std::endl;
 
             // if (shouldStop()){
             //     break;
