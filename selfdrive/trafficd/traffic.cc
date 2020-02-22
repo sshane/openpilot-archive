@@ -106,7 +106,7 @@ void initModel(){
 //}
 
 std::vector<float> processStreamBuffer(VIPCBuf* buf){
-    // void* img = malloc(cropped_size);
+    void* img = malloc(cropped_size);
 
     uint8_t *src_ptr = (uint8_t *)buf->addr;
     src_ptr += (top_crop * image_stride); // starting offset of 150 lines of stride in
@@ -201,7 +201,8 @@ extern "C" {
         double loopStart;
         double loopEnd;
         double lastLoop = 0;
-        while (true){
+        double proc_time = 0;
+        for (int loopIdx=0; loopIdx < 500; loopIdx++){
             loopStart = millis_since_boot();
 
             VIPCBuf* buf;
@@ -214,7 +215,7 @@ extern "C" {
             }
             double test = millis_since_boot();
             std::vector<float> inputVector = processStreamBuffer(buf);  // writes float vector to inputVector
-            std::cout << millis_since_boot() - test << " ms\n";
+            proc_time += millis_since_boot() - test;
             // std::cout << "Vector elements: " << inputVector.size() << std::endl;
 
             std::vector<float> outputVector = runModel(inputVector);
@@ -240,6 +241,7 @@ extern "C" {
             //     break;
             // }
         }
+        std::cout << proc_time << std::endl
         visionstream_destroy(&stream);
         return 0;
     }
