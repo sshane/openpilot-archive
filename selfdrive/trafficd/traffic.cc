@@ -212,9 +212,10 @@ extern "C" {
                 printf("visionstream get failed\n");
                 return 1;
             }
-
+            double test = millis_since_boot();
             std::vector<float> inputVector = processStreamBuffer(buf);  // writes float vector to inputVector
-            std::cout << "Vector elements: " << inputVector.size() << std::endl;
+            std::cout << millis_since_boot() - test << " ms\n";
+            // std::cout << "Vector elements: " << inputVector.size() << std::endl;
 
             std::vector<float> outputVector = runModel(inputVector);
 
