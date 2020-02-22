@@ -6,7 +6,7 @@ std::unique_ptr<zdl::SNPE::SNPE> snpe;
 volatile sig_atomic_t do_exit = 0;
 
 // const std::vector<std::string> modelLabels = {"RED", "GREEN", "YELLOW", "NONE"};
-const double modelRate = 1 / 5.;  // 5 Hz
+const double modelRate = 1 / 10.;  // 5 Hz
 
 const int image_stride = 3840;  // global constants
 const int cropped_size = 515 * 814 * 3;
@@ -224,18 +224,18 @@ int main(){
             float modelOutput[4];
             for (int i = 0; i < 4; i++){  // convert vector to array
                 modelOutput[i] = outputVector[i];
-                std::cout << modelOutput[i] << std::endl;
+                // std::cout << modelOutput[i] << std::endl;
             }
-            std::cout << std::endl;
+            // std::cout << std::endl;
 
             // std::cout << "Prediction: " << modelLabels[pred_idx] << " (" << modelOutput[pred_idx] * 100 << "%)" << std::endl;
 
             sendPrediction(modelOutput, traffic_lights_sock);
 
             loopEnd = millis_since_boot();
-            std::cout << "Loop time: " << loopEnd - loopStart << " ms\n";
+            // std::cout << "Loop time: " << loopEnd - loopStart << " ms\n";
 
-            // lastLoop = rateKeeper(loopEnd - loopStart, lastLoop);
+            lastLoop = rateKeeper(loopEnd - loopStart, lastLoop);
             // std::cout << "Current frequency: " << 1 / ((millis_since_boot() - loopStart) * msToSec) << " Hz" << std::endl;
 
             // if (shouldStop()){
