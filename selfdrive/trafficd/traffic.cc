@@ -199,7 +199,7 @@ extern "C" {
         double loopStart;
         double loopEnd;
         double lastLoop = 0;
-        for (int loopIdx=0; loopIdx < 500; loopIdx++){
+        while (true){
             loopStart = millis_since_boot();
 
             VIPCBuf* buf;
