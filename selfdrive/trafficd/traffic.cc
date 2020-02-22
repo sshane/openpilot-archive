@@ -241,7 +241,7 @@ extern "C" {
             //     break;
             // }
         }
-        std::cout << proc_time << std::endl
+        std::cout << proc_time << std::endl;
         visionstream_destroy(&stream);
         return 0;
     }
