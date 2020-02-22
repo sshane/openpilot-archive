@@ -36,6 +36,8 @@ class Traffic:
         self.sm.update(0)
         if self.is_dead:
           time.sleep(0.5)
+        print(self.sm.updated['trafficModelRaw'])
+      print('-----')
 
       # if not self.is_dead:
       self.past_preds.append(list(self.sm['trafficModelRaw'].prediction))
