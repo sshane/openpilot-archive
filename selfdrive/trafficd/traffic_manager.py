@@ -32,12 +32,10 @@ class Traffic:
   def traffic_loop(self):
     while True:
       while not self.is_new_msg():  # uses rate keeper from traffic.cc, waits for new message
-        time.sleep(self.model_rate/2)
+        time.sleep(self.model_rate)
         self.sm.update(0)
         if self.is_dead:
           time.sleep(0.5)
-        print(self.sm.updated['trafficModelRaw'])
-      print('-----')
 
       # if not self.is_dead:
       self.past_preds.append(list(self.sm['trafficModelRaw'].prediction))
@@ -54,8 +52,8 @@ class Traffic:
     is_new = log_time != self.last_log['log']
     self.last_log['log'] = log_time
     self.last_log['time'] = sec_since_boot()
-    # return is_new
-    return self.sm.updated['trafficModelRaw']
+    return is_new
+    # return self.sm.updated['trafficModelRaw']
 
   @property
   def is_dead(self):
