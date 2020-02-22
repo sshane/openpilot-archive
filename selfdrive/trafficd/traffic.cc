@@ -84,26 +84,26 @@ void initModel(){
     initializeSNPE(runt);
 }
 
-void initVisionStream(){
-    int err;
-    while (true) {
-        err = visionstream_init(&stream, VISION_STREAM_RGB_BACK, true, &buf_info);
-        if (err != 0) {
-            printf("visionstream fail\n");
-            usleep(100000);
-        }
-        break;
-    }
-}
+//void initVisionStream(){
+//    int err;
+//    while (true) {
+//        err = visionstream_init(&stream, VISION_STREAM_RGB_BACK, true, &buf_info);
+//        if (err != 0) {
+//            printf("visionstream fail\n");
+//            usleep(100000);
+//        }
+//        break;
+//    }
+//}
 
-int getStreamBuffer(){
-    buf = visionstream_get(&stream, &extra);
-    if (buf == NULL) {
-        printf("visionstream get failed\n");
-        return 1;
-    }
-    return 0;
-}
+//int getStreamBuffer(){
+//    buf = visionstream_get(&stream, &extra);
+//    if (buf == NULL) {
+//        printf("visionstream get failed\n");
+//        return 1;
+//    }
+//    return 0;
+//}
 
 std::vector<float> processStreamBuffer(VIPCBuf* buf){
     void* img = malloc(cropped_size);
