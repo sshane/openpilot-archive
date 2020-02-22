@@ -170,7 +170,7 @@ double rateKeeper(double loopTime, double lastLoop){
     if (toSleep > 0){  // don't sleep for negative time, in case loop takes too long one iteration
         sleepFor(toSleep);
     } else {
-        std::cout << "Loop lagging by " << -(toSleep / msToSec_ << " ms." << std::endl;
+        std::cout << "Loop lagging by " << -(toSleep / msToSec) << " ms." << std::endl;
     }
     return toSleep;
 }
