@@ -215,7 +215,7 @@ extern "C" {
             }
             double test = millis_since_boot();
             std::vector<float> inputVector = processStreamBuffer(buf);  // writes float vector to inputVector
-            proc_time += millis_since_boot() - test;
+            proc_time += (millis_since_boot() - test);
             // std::cout << "Vector elements: " << inputVector.size() << std::endl;
 
             std::vector<float> outputVector = runModel(inputVector);
