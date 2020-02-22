@@ -118,7 +118,6 @@ env = Environment(
     "#selfdrive/camerad/include",
     "#selfdrive/loggerd/include",
     "#selfdrive/modeld",
-    "#selfdrive/trafficd",
     "#cereal/messaging",
     "#cereal",
     "#opendbc/can",
@@ -198,7 +197,6 @@ SConscript(['common/kalman/SConscript'])
 SConscript(['phonelibs/SConscript'])
 
 SConscript(['selfdrive/modeld/SConscript'])
-SConscript(['selfdrive/trafficd/SConscript'])
 SConscript(['selfdrive/camerad/SConscript'])
 SConscript(['selfdrive/controls/lib/cluster/SConscript'])
 SConscript(['selfdrive/controls/lib/lateral_mpc/SConscript'])
