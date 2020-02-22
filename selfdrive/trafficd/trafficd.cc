@@ -123,7 +123,6 @@ std::vector<float> processStreamBuffer(VIPCBuf* buf){
 }
 
 void sendPrediction(float modelOutput[], PubSocket* traffic_lights_sock){
-    // std::cout << "Prediction: " << modelOutput[0] << std::endl;
     kj::ArrayPtr<const float> modelOutput_vs(&modelOutput[0], 4);
 
     capnp::MallocMessageBuilder msg;
@@ -177,7 +176,8 @@ double rateKeeper(double loopTime, double lastLoop){
 }
 
 void set_do_exit(int sig) {
-  do_exit = 1;
+    std::cout << "received signal: " << sig << std::endl;
+    do_exit = 1;
 }
 
 int main(){
