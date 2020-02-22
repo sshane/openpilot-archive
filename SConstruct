@@ -191,6 +191,8 @@ else:
 
 Export('common', 'visionipc', 'gpucommon')
 
+SConscript(['opendbc/can/SConscript'])
+
 SConscript(['common/SConscript'])
 SConscript(['common/kalman/SConscript'])
 SConscript(['phonelibs/SConscript'])
