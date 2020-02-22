@@ -3,6 +3,7 @@
 using namespace std;
 
 std::unique_ptr<zdl::SNPE::SNPE> snpe;
+volatile sig_atomic_t do_exit = 0;
 
 // const std::vector<std::string> modelLabels = {"RED", "GREEN", "YELLOW", "NONE"};
 const double modelRate = 1 / 5.;  // 5 Hz
@@ -170,71 +171,77 @@ double rateKeeper(double loopTime, double lastLoop){
     if (toSleep > 0){  // don't sleep for negative time, in case loop takes too long one iteration
         sleepFor(toSleep);
     } else {
-        std::cout << "Loop lagging by " << -(toSleep / msToSec) << " ms." << std::endl;
+        std::cout << "trafficd lagging by " << -(toSleep / msToSec) << " ms." << std::endl;
     }
     return toSleep;
 }
 
+void set_do_exit(int sig) {
+  do_exit = 1;
+}
+
 int main(){
+    signal(SIGINT, (sighandler_t)set_do_exit);
+    signal(SIGTERM, (sighandler_t)set_do_exit);
+
     initModel(); // init stuff
 
     VisionStream stream;
-    VisionStreamBufs buf_info;
 
     Context* c = Context::create();
     PubSocket* traffic_lights_sock = PubSocket::create(c, "trafficModelRaw");
     assert(traffic_lights_sock != NULL);
 
-    int err;
-    while (true) {
-        err = visionstream_init(&stream, VISION_STREAM_RGB_BACK, true, &buf_info);
+    while (!do_exit){  // keep traffic running in case we can't get a frame (mimicking modeld)
+        VisionStreamBufs buf_info;
+        int err = visionstream_init(&stream, VISION_STREAM_RGB_BACK, true, &buf_info);
         if (err != 0) {
-            printf("visionstream fail\n");
+            printf("trafficd: visionstream fail\n");
             usleep(100000);
         }
-        break;
-    }
 
-    double loopStart;
-    double loopEnd;
-    double lastLoop = 0;
-    while (true){
-        loopStart = millis_since_boot();
+        double loopStart;
+        double loopEnd;
+        double lastLoop = 0;
+        while (!do_exit){
+            loopStart = millis_since_boot();
 
-        VIPCBuf* buf;
-        VIPCBufExtra extra;
+            VIPCBuf* buf;
+            VIPCBufExtra extra;
 
-        buf = visionstream_get(&stream, &extra);
-        if (buf == NULL) {
-            printf("visionstream get failed\n");
-            return 1;
+            buf = visionstream_get(&stream, &extra);
+            if (buf == NULL) {
+                printf("trafficd: visionstream get failed\n");
+                break;
+            }
+
+            std::vector<float> inputVector = processStreamBuffer(buf);  // writes float vector to inputVector
+            // std::cout << "Vector elements: " << inputVector.size() << std::endl;
+
+            // std::vector<float> outputVector = runModel(processStreamBuffer(buf)); todo: <- test
+            std::vector<float> outputVector = runModel(inputVector);
+
+            float modelOutput[4];
+            for (int i = 0; i < 4; i++){  // convert vector to array
+                modelOutput[i] = outputVector[i];
+                std::cout << modelOutput[i] << std::endl;
+            }
+            std::cout << std::endl;
+
+            // std::cout << "Prediction: " << modelLabels[pred_idx] << " (" << modelOutput[pred_idx] * 100 << "%)" << std::endl;
+
+            sendPrediction(modelOutput, traffic_lights_sock);
+
+            loopEnd = millis_since_boot();
+            // std::cout << "Loop time: " << loopEnd - loopStart << " ms\n";
+
+            lastLoop = rateKeeper(loopEnd - loopStart, lastLoop);
+            // std::cout << "Current frequency: " << 1 / ((millis_since_boot() - loopStart) * msToSec) << " Hz" << std::endl;
+
+            // if (shouldStop()){
+            //     break;
+            // }
         }
-
-        std::vector<float> inputVector = processStreamBuffer(buf);  // writes float vector to inputVector
-        // std::cout << "Vector elements: " << inputVector.size() << std::endl;
-
-        std::vector<float> outputVector = runModel(inputVector);
-
-        float modelOutput[4];
-        for (int i = 0; i < 4; i++){  // convert vector to array
-            modelOutput[i] = outputVector[i];
-            std::cout << modelOutput[i] << std::endl;
-        }
-        std::cout << std::endl;
-
-        // std::cout << "Prediction: " << modelLabels[pred_idx] << " (" << modelOutput[pred_idx] * 100 << "%)" << std::endl;
-
-        sendPrediction(modelOutput, traffic_lights_sock);
-
-        loopEnd = millis_since_boot();
-        // std::cout << "Loop time: " << loopEnd - loopStart << " ms\n";
-
-        lastLoop = rateKeeper(loopEnd - loopStart, lastLoop);
-        // std::cout << "Current frequency: " << 1 / ((millis_since_boot() - loopStart) * msToSec) << " Hz" << std::endl;
-
-        // if (shouldStop()){
-        //     break;
-        // }
     }
     visionstream_destroy(&stream);
     return 0;

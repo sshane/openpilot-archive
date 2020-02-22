@@ -32,4 +32,4 @@
 #include <capnp/serialize-packed.h>
 
 
-int runModelLoop();
+int main();
