@@ -121,6 +121,7 @@ env = Environment(
     "#selfdrive/trafficd",
     "#cereal/messaging",
     "#cereal",
+    "#opendbc/can",
   ],
 
   CC='clang',
