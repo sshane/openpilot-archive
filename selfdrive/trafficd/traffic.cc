@@ -188,7 +188,7 @@ extern "C" {
     int runModelLoop(){
         sleepFor(5.0);
         initModel(); // init stuff
-//        initVisionStream();
+        initVisionStream();
         Context * c = Context::create();
         traffic_lights_sock = PubSocket::create(c, "trafficModelRaw");
         assert(traffic_lights_sock != NULL);
