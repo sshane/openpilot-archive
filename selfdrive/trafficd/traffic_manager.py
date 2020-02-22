@@ -37,15 +37,15 @@ class Traffic:
         if self.is_dead:
           time.sleep(0.5)
 
-      if not self.is_dead:
-        self.past_preds.append(list(self.sm['trafficModelRaw'].prediction))
-        pred, confidence = self.get_prediction()  # uses most common prediction from weighted past second list (1 / model_rate), NONE until car is started for min time
-        print('{}, confidence: {}'.format(pred, confidence))
-        self.send_prediction(pred, confidence)
-      else:
-        print("No response from trafficd in {} seconds. Is it dead?".format(round(sec_since_boot() - self.last_log['time'], 2)))
-        # todo: send trafficd dead warning
-        pass
+      # if not self.is_dead:
+      self.past_preds.append(list(self.sm['trafficModelRaw'].prediction))
+      pred, confidence = self.get_prediction()  # uses most common prediction from weighted past second list (1 / model_rate), NONE until car is started for min time
+      print('{}, confidence: {}'.format(pred, confidence))
+      self.send_prediction(pred, confidence)
+      # else:
+      #   print("No response from trafficd in {} seconds. Is it dead?".format(round(sec_since_boot() - self.last_log['time'], 2)))
+      #   # todo: send trafficd dead warning
+      #   pass
 
   def is_new_msg(self):
     # log_time = self.sm.logMonoTime['trafficModelRaw']
@@ -59,7 +59,6 @@ class Traffic:
     return sec_since_boot() - self.last_log['time'] > self.trafficd_timeout
 
   def get_prediction(self):
-    print(self.past_preds)
     with open('/data/tdebug', 'a') as f:
       f.write('past_preds: {}\ndes_pred_len: {}\n\n'.format(self.past_preds, self.des_pred_len))
 
