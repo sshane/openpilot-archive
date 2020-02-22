@@ -54,8 +54,8 @@ class Traffic:
     is_new = log_time != self.last_log['log']
     self.last_log['log'] = log_time
     self.last_log['time'] = sec_since_boot()
-    return is_new
-    # return self.sm.updated['trafficModelRaw']
+    # return is_new
+    return self.sm.updated['trafficModelRaw']
 
   @property
   def is_dead(self):
