@@ -4,12 +4,6 @@ using namespace std;
 
 std::unique_ptr<zdl::SNPE::SNPE> snpe;
 
-VIPCBuf* buf;
-VisionStream stream;
-VIPCBufExtra extra;
-VisionStreamBufs buf_info;
-PubSocket* traffic_lights_sock;
-
 const std::vector<std::string> modelLabels = {"RED", "GREEN", "YELLOW", "NONE"};
 const double modelRate = 1 / 5.;  // 5 Hz
 
@@ -144,16 +138,16 @@ void sendPrediction(float modelOutput[]){
     traffic_lights_sock->send((char*)bytes.begin(), bytes.size());
 }
 
-void runModel(std::vector<float> inputVector, float outputArray[]){
+std::vector<float> runModel(std::vector<float> inputVector){
     std::unique_ptr<zdl::DlSystem::ITensor> inputTensor = loadInputTensor(snpe, inputVector);  // inputVec)
     zdl::DlSystem::ITensor* tensor = executeNetwork(snpe, inputTensor);
 
-    int idx = 0;
+    std::vector<float> outputVector;
     for (auto it = tensor->cbegin(); it != tensor->cend(); ++it ){
         float op = *it;
-        outputArray[idx] = op;
-        idx += 1;
+        outputVector.push_back(op);
     }
+    return outputVector;
 }
 
 bool shouldStop() {
@@ -186,11 +180,23 @@ double rateKeeper(double loopTime, double lastLoop){
 extern "C" {
     int runModelLoop(){
         initModel(); // init stuff
-        initVisionStream();
-        Context * c = Context::create();
-        traffic_lights_sock = PubSocket::create(c, "trafficModelRaw");
+
+        VisionStream stream;
+        VisionStreamBufs buf_info;
+
+        Context* c = Context::create();
+        PubSocket* traffic_lights_sock = PubSocket::create(c, "trafficModelRaw");
         assert(traffic_lights_sock != NULL);
 
+        int err;
+        while (true) {
+            err = visionstream_init(&stream, VISION_STREAM_RGB_BACK, true, &buf_info);
+            if (err != 0) {
+                printf("visionstream fail\n");
+                usleep(100000);
+            }
+            break;
+        }
 
         double loopStart;
         double loopEnd;
@@ -198,22 +204,28 @@ extern "C" {
         while (true){
             loopStart = millis_since_boot();
 
-            int err = getStreamBuffer(); // (VisionStream stream, VIPCBufExtra extra, VIPCBuf* buf){
-            if (err == 1) {
+            VIPCBuf* buf;
+            VIPCBufExtra extra;
+
+            buf = visionstream_get(&stream, &extra);
+            if (buf == NULL) {
+                printf("visionstream get failed\n");
                 return 1;
             }
+            return 0;
 
             std::vector<float> inputVector = processStreamBuffer(buf);  // writes float vector to inputVector
             // std::cout << "Vector elements: " << inputVector.size() << std::endl;
 
             // float modelOutput[4] = {1.0, 0.0, 0.0, 0.0};
-            float modelOutput[4];
-            runModel(inputVector, modelOutput);
+            std::vector<float> outputVector = runModel(inputVector);
 
-            for (int i = 0; i < 4; i++){
-                std::cout << modelOutput[i] << std::endl;
+            float modelOutput[4];
+            for (int i = 0; i < 4; i++){  // convert vector to array
+                modelOutput[i] = outputVector[i];
+                // std::cout << modelOutput[i] << std::endl;
             }
-            std::cout << std::endl;
+            // std::cout << std::endl;
 
 
             // std::cout << "Prediction: " << modelLabels[pred_idx] << " (" << modelOutput[pred_idx] * 100 << "%)" << std::endl;
@@ -221,6 +233,8 @@ extern "C" {
 
             // sleepFor(0.1);
             sendPrediction(modelOutput);
+
+            visionbuf_free(&buf);  // will this prevent memory leak?
 
             loopEnd = millis_since_boot();
             // std::cout << "Loop time: " << (loopEnd - loopStart) * msToSec << " sec\n";
