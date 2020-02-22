@@ -48,11 +48,12 @@ class Traffic:
       #   pass
 
   def is_new_msg(self):
-    # log_time = self.sm.logMonoTime['trafficModelRaw']
-    # is_new = log_time != self.last_log['time']
-    # self.last_log['log'] = log_time
-    # self.last_log['time'] = sec_since_boot()
-    return self.sm.updated['trafficModelRaw']
+    log_time = self.sm.logMonoTime['trafficModelRaw']
+    is_new = log_time != self.last_log['time']
+    self.last_log['log'] = log_time
+    self.last_log['time'] = sec_since_boot()
+    return is_new
+    # return self.sm.updated['trafficModelRaw']
 
   @property
   def is_dead(self):
