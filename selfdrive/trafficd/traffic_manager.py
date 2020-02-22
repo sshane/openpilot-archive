@@ -2,6 +2,7 @@ from common.numpy_fast import clip
 import cereal.messaging as messaging
 import numpy as np
 import time
+from common.realtime import sec_since_boot
 
 
 class Traffic:
@@ -18,32 +19,46 @@ class Traffic:
     self.recurrent_length = 1.6  # in seconds, how far back to factor into current prediction
     self.des_pred_len = int(self.recurrent_length / self.model_rate)
     self.last_pred_weight = 10.  # places 2x weight on most recent prediction
+    self.trafficd_timeout = 2.0  # in seconds, how long to wait before realizing trafficd is dead
 
 
     self.weights = np.linspace(1, self.last_pred_weight, self.des_pred_len)
     self.weight_sum = sum(self.weights)
-    self.last_log_time = 0
+    self.last_log = {'log': 0, 'time': sec_since_boot()}
 
   def start(self):
     self.traffic_loop()
 
   def traffic_loop(self):
     while True:
-      while not self.is_new_msg():  # uses rate keeper from traffic.cc, waits for new message
-        time.sleep(self.model_rate)
+      if self.is_dead:  # try to poll to see if trafficd recovered
+        time.sleep(self.trafficd_timeout)
         self.sm.update(0)
+      else:
+        while not self.is_new_msg():  # uses rate keeper from traffic.cc, waits for new message
+          time.sleep(self.model_rate)
+          self.sm.update(0)
 
-      self.past_preds.append(list(self.sm['trafficModelRaw'].prediction))
-      pred, confidence = self.get_prediction()  # uses most common prediction from weighted past second list (1 / model_rate), NONE until car is started for min time
-      print('{}, confidence: {}'.format(pred, confidence))
-      self.send_prediction(pred, confidence)
+      if not self.is_dead:
+        self.past_preds.append(list(self.sm['trafficModelRaw'].prediction))
+        pred, confidence = self.get_prediction()  # uses most common prediction from weighted past second list (1 / model_rate), NONE until car is started for min time
+        print('{}, confidence: {}'.format(pred, confidence))
+        self.send_prediction(pred, confidence)
+      else:
+        print("No response from trafficd in {} seconds. Is it dead?".format(round(sec_since_boot() - self.last_log['time'], 2)))
+        # todo: send trafficd dead warning
+        pass
 
   def is_new_msg(self):
     log_time = self.sm.logMonoTime['trafficModelRaw']
-    is_new = log_time != self.last_log_time
-    self.last_log_time = log_time
+    is_new = log_time != self.last_log['time']
+    self.last_log['log'] = log_time
+    self.last_log['time'] = sec_since_boot()
     return is_new
 
+  @property
+  def is_dead(self):
+    return sec_since_boot() - self.last_log['time'] > self.trafficd_timeout
 
   def get_prediction(self):
     with open('/data/tdebug', 'a') as f:

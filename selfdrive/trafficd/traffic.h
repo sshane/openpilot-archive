@@ -31,6 +31,5 @@
 #include <capnp/message.h>
 #include <capnp/serialize-packed.h>
 
-extern "C"{
-  int runModelLoop();
-}
+
+int runModelLoop();

@@ -175,74 +175,67 @@ double rateKeeper(double loopTime, double lastLoop){
     return toSleep;
 }
 
-extern "C" {
-    int runModelLoop(){
-        initModel(); // init stuff
+int main(){
+    initModel(); // init stuff
 
-        VisionStream stream;
-        VisionStreamBufs buf_info;
+    VisionStream stream;
+    VisionStreamBufs buf_info;
 
-        Context* c = Context::create();
-        PubSocket* traffic_lights_sock = PubSocket::create(c, "trafficModelRaw");
-        assert(traffic_lights_sock != NULL);
+    Context* c = Context::create();
+    PubSocket* traffic_lights_sock = PubSocket::create(c, "trafficModelRaw");
+    assert(traffic_lights_sock != NULL);
 
-        int err;
-        while (true) {
-            err = visionstream_init(&stream, VISION_STREAM_RGB_BACK, true, &buf_info);
-            if (err != 0) {
-                printf("visionstream fail\n");
-                usleep(100000);
-            }
-            break;
+    int err;
+    while (true) {
+        err = visionstream_init(&stream, VISION_STREAM_RGB_BACK, true, &buf_info);
+        if (err != 0) {
+            printf("visionstream fail\n");
+            usleep(100000);
         }
-
-        double loopStart;
-        double loopEnd;
-        double lastLoop = 0;
-        while (true){
-            loopStart = millis_since_boot();
-
-            VIPCBuf* buf;
-            VIPCBufExtra extra;
-
-            buf = visionstream_get(&stream, &extra);
-            if (buf == NULL) {
-                printf("visionstream get failed\n");
-                return 1;
-            }
-
-            std::vector<float> inputVector = processStreamBuffer(buf);  // writes float vector to inputVector
-            // std::cout << "Vector elements: " << inputVector.size() << std::endl;
-
-            std::vector<float> outputVector = runModel(inputVector);
-
-            float modelOutput[4];
-            for (int i = 0; i < 4; i++){  // convert vector to array
-                modelOutput[i] = outputVector[i];
-                std::cout << modelOutput[i] << std::endl;
-            }
-            std::cout << std::endl;
-
-            // std::cout << "Prediction: " << modelLabels[pred_idx] << " (" << modelOutput[pred_idx] * 100 << "%)" << std::endl;
-
-            sendPrediction(modelOutput, traffic_lights_sock);
-
-            loopEnd = millis_since_boot();
-            // std::cout << "Loop time: " << loopEnd - loopStart << " ms\n";
-
-            lastLoop = rateKeeper(loopEnd - loopStart, lastLoop);
-            // std::cout << "Current frequency: " << 1 / ((millis_since_boot() - loopStart) * msToSec) << " Hz" << std::endl;
-
-            // if (shouldStop()){
-            //     break;
-            // }
-        }
-        visionstream_destroy(&stream);
-        return 0;
+        break;
     }
 
-    int main(){
-        runModelLoop();
-        return 0;
+    double loopStart;
+    double loopEnd;
+    double lastLoop = 0;
+    while (true){
+        loopStart = millis_since_boot();
+
+        VIPCBuf* buf;
+        VIPCBufExtra extra;
+
+        buf = visionstream_get(&stream, &extra);
+        if (buf == NULL) {
+            printf("visionstream get failed\n");
+            return 1;
+        }
+
+        std::vector<float> inputVector = processStreamBuffer(buf);  // writes float vector to inputVector
+        // std::cout << "Vector elements: " << inputVector.size() << std::endl;
+
+        std::vector<float> outputVector = runModel(inputVector);
+
+        float modelOutput[4];
+        for (int i = 0; i < 4; i++){  // convert vector to array
+            modelOutput[i] = outputVector[i];
+            std::cout << modelOutput[i] << std::endl;
+        }
+        std::cout << std::endl;
+
+        // std::cout << "Prediction: " << modelLabels[pred_idx] << " (" << modelOutput[pred_idx] * 100 << "%)" << std::endl;
+
+        sendPrediction(modelOutput, traffic_lights_sock);
+
+        loopEnd = millis_since_boot();
+        // std::cout << "Loop time: " << loopEnd - loopStart << " ms\n";
+
+        lastLoop = rateKeeper(loopEnd - loopStart, lastLoop);
+        // std::cout << "Current frequency: " << 1 / ((millis_since_boot() - loopStart) * msToSec) << " Hz" << std::endl;
+
+        // if (shouldStop()){
+        //     break;
+        // }
     }
+    visionstream_destroy(&stream);
+    return 0;
 }
