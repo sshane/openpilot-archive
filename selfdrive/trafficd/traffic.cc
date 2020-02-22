@@ -234,7 +234,7 @@ extern "C" {
             // sleepFor(0.1);
             sendPrediction(modelOutput);
 
-            visionbuf_free(&buf);  // will this prevent memory leak?
+            visionbuf_free(buf);  // will this prevent memory leak?
 
             loopEnd = millis_since_boot();
             // std::cout << "Loop time: " << (loopEnd - loopStart) * msToSec << " sec\n";
