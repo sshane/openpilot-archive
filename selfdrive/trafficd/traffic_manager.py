@@ -29,8 +29,6 @@ class Traffic:
 
   def traffic_loop(self):
     while True:
-      with open('/data/traffictimes', 'a') as f:
-        f.write('{}/n'.format(time.time()))
       # while not self.is_new_msg(self.sm.logMonoTime['trafficModelRaw']):  # uses rate keeper from traffic.cc, waits for new message
       self.sm.update(0)
 
@@ -47,6 +45,9 @@ class Traffic:
 
 
   def get_prediction(self):
+    with open('/data/tdebug', 'a') as f:
+      f.write('past_preds: {}\ndes_pred_len: {}\n\n'.format(self.past_preds, self.des_pred_len))
+
     while len(self.past_preds) > self.des_pred_len:
       del self.past_preds[0]
     if len(self.past_preds) != self.des_pred_len:
