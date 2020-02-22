@@ -61,6 +61,7 @@ class Traffic:
     return sec_since_boot() - self.last_log['time'] > self.trafficd_timeout
 
   def get_prediction(self):
+    print(self.past_preds)
     with open('/data/tdebug', 'a') as f:
       f.write('past_preds: {}\ndes_pred_len: {}\n\n'.format(self.past_preds, self.des_pred_len))
 
