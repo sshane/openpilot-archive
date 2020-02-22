@@ -233,9 +233,9 @@ int main(){
             sendPrediction(modelOutput, traffic_lights_sock);
 
             loopEnd = millis_since_boot();
-            // std::cout << "Loop time: " << loopEnd - loopStart << " ms\n";
+            std::cout << "Loop time: " << loopEnd - loopStart << " ms\n";
 
-            lastLoop = rateKeeper(loopEnd - loopStart, lastLoop);
+            // lastLoop = rateKeeper(loopEnd - loopStart, lastLoop);
             // std::cout << "Current frequency: " << 1 / ((millis_since_boot() - loopStart) * msToSec) << " Hz" << std::endl;
 
             // if (shouldStop()){
