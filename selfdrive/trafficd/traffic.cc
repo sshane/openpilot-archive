@@ -219,9 +219,9 @@ extern "C" {
             float modelOutput[4];
             for (int i = 0; i < 4; i++){  // convert vector to array
                 modelOutput[i] = outputVector[i];
-                // std::cout << modelOutput[i] << std::endl;
+                std::cout << modelOutput[i] << std::endl;
             }
-            // std::cout << std::endl;
+            std::cout << std::endl;
 
             // std::cout << "Prediction: " << modelLabels[pred_idx] << " (" << modelOutput[pred_idx] * 100 << "%)" << std::endl;
 
