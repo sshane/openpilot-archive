@@ -5,7 +5,7 @@ using namespace std;
 std::unique_ptr<zdl::SNPE::SNPE> snpe;
 
 const std::vector<std::string> modelLabels = {"RED", "GREEN", "YELLOW", "NONE"};
-const double modelRate = 1 / 15.;  // 5 Hz
+const double modelRate = 1 / 10.;  // 5 Hz
 
 const int image_stride = 3840;  // global constants
 const int cropped_size = 515 * 814 * 3;
