@@ -31,14 +31,15 @@ class Traffic:
     while True:
       # while not self.is_new_msg(self.sm.logMonoTime['trafficModelRaw']):  # uses rate keeper from traffic.cc, waits for new message
       self.sm.update(0)
-
-      self.past_preds.append(list(self.sm['trafficModelRaw'].prediction))
+      if self.is_new_msg():  # don't add blank list if not updated yet
+        self.past_preds.append(list(self.sm['trafficModelRaw'].prediction))
       pred, confidence = self.get_prediction()  # uses most common prediction from weighted past second list (1 / model_rate), NONE until car is started for min time
       print('{}, confidence: {}'.format(pred, confidence))
       self.send_prediction(pred, confidence)
       time.sleep(1/5.0)
 
-  def is_new_msg(self, log_time):
+  def is_new_msg(self):
+    log_time = self.sm.logMonoTime['trafficModelRaw']
     is_new = log_time != self.last_log_time
     self.last_log_time = log_time
     return is_new
