@@ -106,7 +106,7 @@ void initModel(){
 //}
 
 std::vector<float> processStreamBuffer(VIPCBuf* buf){
-    //void* img = malloc(cropped_size);
+    void* img = malloc(cropped_size);
 
     uint8_t *src_ptr = (uint8_t *)buf->addr;
     src_ptr += (top_crop * image_stride); // starting offset of 150 lines of stride in
