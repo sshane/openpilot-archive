@@ -137,7 +137,7 @@ managed_processes = {
   "plannerd": "selfdrive.controls.plannerd",
   "radard": "selfdrive.controls.radard",
   "ubloxd": ("selfdrive/locationd", ["./ubloxd"]),
-  # "loggerd": ("selfdrive/loggerd", ["./loggerd"]),
+  "loggerd": ("selfdrive/loggerd", ["./loggerd"]),
   "logmessaged": "selfdrive.logmessaged",
   "tombstoned": "selfdrive.tombstoned",
   "logcatd": ("selfdrive/logcatd", ["./logcatd"]),
@@ -194,7 +194,7 @@ if ANDROID:
 car_started_processes = [
   'controlsd',
   'plannerd',
-  # 'loggerd',
+  'loggerd',
   'radard',
   'calibrationd',
   'paramsd',
@@ -379,7 +379,7 @@ def manager_thread():
   cloudlog.info({"environ": os.environ})
 
   # save boot log
-  # subprocess.call(["./loggerd", "--bootlog"], cwd=os.path.join(BASEDIR, "selfdrive/loggerd"))
+  subprocess.call(["./loggerd", "--bootlog"], cwd=os.path.join(BASEDIR, "selfdrive/loggerd"))
 
   params = Params()
 
