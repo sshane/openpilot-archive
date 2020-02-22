@@ -201,11 +201,12 @@ extern "C" {
         double loopStart;
         double loopEnd;
         double lastLoop = 0;
+        VIPCBuf* buf;
+        VIPCBufExtra extra;
         while (true){
             loopStart = millis_since_boot();
 
-            VIPCBuf* buf;
-            VIPCBufExtra extra;
+
 
             buf = visionstream_get(&stream, &extra);
             if (buf == NULL) {
