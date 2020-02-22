@@ -90,7 +90,7 @@ void initModel(){
     initializeSNPE(runt);
 }
 
-VisionStream initVisionStream(){
+void initVisionStream(){
     int err;
     while (true) {
         err = visionstream_init(&stream, VISION_STREAM_RGB_BACK, true, &buf_info);
@@ -100,7 +100,6 @@ VisionStream initVisionStream(){
         }
         break;
     }
-    return stream;
 }
 
 int getStreamBuffer(){
@@ -186,7 +185,6 @@ double rateKeeper(double loopTime, double lastLoop){
 
 extern "C" {
     int runModelLoop(){
-        sleepFor(5.0);
         initModel(); // init stuff
         initVisionStream();
         Context * c = Context::create();
