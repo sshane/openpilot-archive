@@ -106,7 +106,7 @@ if not prebuilt:
         for i in range(3,-1,-1):
           print("....%d" % i)
           time.sleep(1)
-        subprocess.check_call(["scons", "-c"], cwd=BASEDIR, env=env)
+        # subprocess.check_call(["scons", "-c"], cwd=BASEDIR, env=env)
         shutil.rmtree("/tmp/scons_cache")
       else:
         raise RuntimeError("scons build failed")
