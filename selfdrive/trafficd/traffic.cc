@@ -123,7 +123,7 @@ std::vector<float> processStreamBuffer(VIPCBuf* buf){
     return outputVector;
 }
 
-void sendPrediction(float modelOutput[]){
+void sendPrediction(float modelOutput[], PubSocket* traffic_lights_sock){
     // std::cout << "Prediction: " << modelOutput[0] << std::endl;
     kj::ArrayPtr<const float> modelOutput_vs(&modelOutput[0], 4);
 
@@ -232,7 +232,7 @@ extern "C" {
 
 
             // sleepFor(0.1);
-            sendPrediction(modelOutput);
+            sendPrediction(modelOutput, traffic_lights_sock);
 
             visionbuf_free(buf);  // will this prevent memory leak?
 
