@@ -212,7 +212,6 @@ extern "C" {
                 printf("visionstream get failed\n");
                 return 1;
             }
-            return 0;
 
             std::vector<float> inputVector = processStreamBuffer(buf);  // writes float vector to inputVector
             // std::cout << "Vector elements: " << inputVector.size() << std::endl;
