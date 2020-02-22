@@ -238,7 +238,6 @@ extern "C" {
             // if (shouldStop()){
             //     break;
             // }
-            break;
         }
         visionstream_destroy(&stream);
         return 0;
