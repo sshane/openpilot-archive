@@ -187,13 +187,15 @@ uint8_t clamp(int16_t value) {
 static uint8_t* yuv420p_to_rgb2(const uint8_t* y, const uint8_t* u, const uint8_t* v, const size_t width, const size_t height, const bool returnBGR) {
     // returns RGB if returnBGR is false
     const size_t size = width * height;
-    uint8_t* rgb = (uint8_t*)calloc((size * 3), sizeof(uint8_t));
+    uint8_t* rgb = (uint8_t*)calloc((989*874*3), sizeof(uint8_t));
 
-    int uv_index = 0, pass = 0;
-    int b,g,r;
+    int b ,g, r;
     uint8_t* src_ptr = rgb;
     for (int j = 0; j < height; j++) {
         for (int i = 0; i < width; i++) {
+            if (width < 175 | width > (1164-175)){
+                continue;
+            }
             int yy = y[(j * width) + i];
             int uu = u[((j / 2) * (width / 2)) + (i / 2)];
             int vv = v[((j / 2) * (width / 2)) + (i / 2)];
@@ -267,7 +269,7 @@ int main(){
 //            }
             FILE *f;
             f = fopen("/data/buffer1", "wb");
-            fwrite((uint8_t *)img, 1, 3052008, f);
+            fwrite((uint8_t *)img, 1, 989*874*3, f);
 
 
             uint8_t *src_ptr = (uint8_t *)img;
