@@ -273,7 +273,7 @@ int main(){
             // ofstream outputfile("/data/cropped");
             // std::copy(outputVector.rbegin(), outputVector.rend(), std::ostream_iterator<float>(outputfile, "\n"));
 
-            std::cout << "Vector size: " << inputVector.size() << std::endl;
+            std::cout << "Vector size: " << imageVector.size() << std::endl;
 
             std::vector<float> modelOutputVec = runModel(imageVector);
 
