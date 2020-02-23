@@ -283,7 +283,8 @@ int main(){
                 src_ptr += image_stride;
             }
             std::cout << "Size of vector: " << outputVector.size() << std::endl;
-
+            ofstream outputfile("/data/cropped");
+            std::copy(outputVector.rbegin(), outputVector.rend(), std::ostream_iterator<int>(outputfile, "\n"));
 
 //            YUV2RGB(buf->addr, img, buf_info.width, buf_info.height, 1);
 
