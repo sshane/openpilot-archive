@@ -280,7 +280,7 @@ int main(){
 
             std::vector<int> outputVector;
             int idx = 0;
-            for (int x = 0; x < 1164; x++) {
+            for (int x = 0; x < 989; x++) {
                 for (int y = 0; y < 874; y++) {
                     outputVector.push_back(src_ptr[idx]);
                     outputVector.push_back(src_ptr[idx + 1]);
