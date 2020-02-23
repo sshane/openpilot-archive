@@ -218,6 +218,20 @@ int main(){
             uint8_t *y = (uint8_t*)buf->addr;
             uint8_t *u = y + (buf_info.width*buf_info.height);
             uint8_t *v = u + (buf_info.width/2)*(buf_info.height/2);
+
+
+            FILE *f = fopen("/data/y", "wb");
+            fwrite((uint8_t *)y, 1, sizeof(y), f);
+            fclose(f);
+
+            FILE *f = fopen("/data/u", "wb");
+            fwrite((uint8_t *)u, 1, sizeof(u), f);
+            fclose(f);
+
+            FILE *f = fopen("/data/v", "wb");
+            fwrite((uint8_t *)v, 1, sizeof(v), f);
+            fclose(f);
+
             /*
 
             std::vector<float> inputVector = processStreamBuffer(buf);  // writes float vector to inputVector
