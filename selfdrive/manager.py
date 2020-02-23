@@ -208,7 +208,7 @@ car_started_processes = [
   'proclogd',
   'ubloxd',
   'locationd',
-  # 'trafficd',
+  'trafficd',
   'traffic_manager',
 ]
 if ANDROID:
