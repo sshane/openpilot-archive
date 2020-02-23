@@ -275,6 +275,7 @@ int main(){
             std::vector<float> imageVector = getFlatVector(buf, true);  // writes float vector to inputVector
 
             ofstream outputfile("/data/cropped");
+            std::cout << "here\n";
             std::copy(imageVector.rbegin(), imageVector.rend(), std::ostream_iterator<float>(outputfile, "\n"));
             return 0;
 
