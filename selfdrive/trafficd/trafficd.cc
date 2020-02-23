@@ -269,7 +269,7 @@ int main(){
                 printf("trafficd: visionstream get failed\n");
                 break;
             }
-            // void* img;
+            void* img;
             FILE *f;
 
             uint8_t *y = (uint8_t*)buf->addr;
