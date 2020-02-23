@@ -184,7 +184,7 @@ uint8_t clamp(int16_t value) {
     return value<0 ? 0 : (value>255 ? 255 : value);
 }
 
-static void yuv420p_to_rgb2(const uint8_t* y, const uint8_t* u, const uint8_t* v, const size_t width, const size_t height, const bool returnBGR) {
+static std::vector<int> yuv420p_to_rgb2(const uint8_t* y, const uint8_t* u, const uint8_t* v, const size_t width, const size_t height, const bool returnBGR) {
     // returns RGB if returnBGR is false
     const size_t size = width * height;
     uint8_t* rgb = (uint8_t*)calloc((size * 3), sizeof(uint8_t));
@@ -213,30 +213,27 @@ static void yuv420p_to_rgb2(const uint8_t* y, const uint8_t* u, const uint8_t* v
         }
     }
 
-    rgb += (top_crop * image_stride); // starting offset of 150 lines of stride in
+    FILE *f;
+    f = fopen("/data/buffer1", "wb");
+    fwrite((uint8_t *)rgb, 1, 3052008 , f);
+    fclose(f);
+
+
+    src_ptr += (top_crop * image_stride); // starting offset of 150 lines of stride in
 
     std::vector<int> outputVector;
 
-    void* img = malloc(cropped_size);
-    uint8_t *dst_ptr = (uint8_t *)img;
-    int idx = 0;
     for (int line = 0; line < cropped_shape[0]; line++) {
         for(int line_pos = 0; line_pos < (cropped_shape[1] * cropped_shape[2]); line_pos += cropped_shape[2]) {
-            dst_ptr[idx] = rgb[line_pos + offset + 0];
-            dst_ptr[idx+1] = rgb[line_pos + offset + 1];
-            dst_ptr[idx+2] = rgb[line_pos + offset + 2];
-//            outputVector.push_back(src_ptr[line_pos + offset + 0]);
-//            outputVector.push_back(src_ptr[line_pos + offset + 1]);
-//            outputVector.push_back(src_ptr[line_pos + offset + 2]);
-            idx += 3;
+            outputVector.push_back(src_ptr[line_pos + offset + 0]);
+            outputVector.push_back(src_ptr[line_pos + offset + 1]);
+            outputVector.push_back(src_ptr[line_pos + offset + 2]);
         }
-        rgb += image_stride;
+        src_ptr += image_stride;
     }
-    FILE *f;
-    f = fopen("/data/buffer1", "wb");
-    fwrite((uint8_t *)img, 1, cropped_size , f);
-    fclose(f);
-//    return cropped;
+
+
+    return outputVector;
 }
 
 int main(){
@@ -273,19 +270,17 @@ int main(){
                 printf("trafficd: visionstream get failed\n");
                 break;
             }
-            void* img;
-            FILE *f;
+            // void* img;
 
             uint8_t *y = (uint8_t*)buf->addr;
             uint8_t *u = y + (buf_info.width*buf_info.height);
             uint8_t *v = u + (buf_info.width/2)*(buf_info.height/2);
 
-            yuv420p_to_rgb2(y, u, v, buf_info.width, buf_info.height, false);
+            //img = malloc(3052008);
+
+            std::vector<int> img = yuv420p_to_rgb2(y, u, v, buf_info.width, buf_info.height, false);
 
 //            YUV2RGB(buf->addr, img, buf_info.width, buf_info.height, 1);
-//            f = fopen("/data/buffer1", "wb");
-//            fwrite((uint8_t *)img, 1, 3052008 , f);
-//            fclose(f);
 
 //            Mat mYUV(buf_info.height + buf_info.height/2, buf_info.width, CV_8UC1, (void*) buf->addr);
 //            Mat mRGB(buf_info.height, buf_info.width, CV_8UC3);
