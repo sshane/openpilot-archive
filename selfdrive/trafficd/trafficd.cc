@@ -292,6 +292,7 @@ int main(){
             std::cout << "Current frequency: " << 1 / ((millis_since_boot() - loopStart) * msToSec) << " Hz" << std::endl;
         }
     }
+    std::cout << "trafficd is dead" << std::endl;
     visionstream_destroy(&stream);
     return 0;
 }
