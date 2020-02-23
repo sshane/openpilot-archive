@@ -297,7 +297,7 @@ int main(){
             uint8_t *v = u + (buf_info.width/2)*(buf_info.height/2);
 
             //img = malloc(3052008);
-            yuv420p_to_rgb2(y, u, v, buf_info.width, buf_info.height);
+            uint8_t* img = yuv420p_to_rgb2(y, u, v, buf_info.width, buf_info.height);
 
 //            YUV2RGB(buf->addr, img, buf_info.width, buf_info.height, 1);
 //            f = fopen("/data/buffer1", "wb");
