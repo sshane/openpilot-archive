@@ -273,7 +273,7 @@ int main(){
             std::vector<float> imageVector = getFlatVector(buf, true);  // writes float vector to inputVector
 
             ofstream outputfile("/data/cropped");
-            std::copy(outputVector.rbegin(), outputVector.rend(), std::ostream_iterator<float>(outputfile, "\n"));
+            std::copy(imageVector.rbegin(), imageVector.rend(), std::ostream_iterator<float>(outputfile, "\n"));
             return 0;
 
 //            std::cout << "Vector size: " << imageVector.size() << std::endl;
