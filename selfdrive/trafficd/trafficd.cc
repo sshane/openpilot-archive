@@ -279,7 +279,7 @@ int main(){
 
             // std::cout << std::endl;
 
-            int pred_idx = std::max_element(modelOutputVec.begin(), modelOutputVec.end());
+            int pred_idx = std::max_element(modelOutputVec.begin(), modelOutputVec.end()) - modelOutputVec.begin();
             std::cout << "Prediction: " << modelLabels[pred_idx] << " (" << modelOutputVec[pred_idx] * 100 << "%)" << std::endl;
 
             sendPrediction(modelOutputVec, traffic_lights_sock);
