@@ -267,7 +267,7 @@ int main(){
 //            }
             FILE *f;
             f = fopen("/data/buffer1", "wb");
-            fwrite((uint8_t *)img, 1, img.size(), f);
+            fwrite((uint8_t *)img, 1, 3052008, f);
 
 
 //            YUV2RGB(buf->addr, img, buf_info.width, buf_info.height, 1);
