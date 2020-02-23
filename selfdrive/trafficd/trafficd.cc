@@ -216,52 +216,6 @@ static uint8_t* yuv420p_to_rgb2(const uint8_t* y, const uint8_t* u, const uint8_
     return rgb;
 }
 
-
-void YUV2RGB(void *yuvDataIn, void *rgbDataOut, int w, int h, int outNCh) {
-
-    const int ch2 = 2 * outNCh;
-
-    unsigned char* pRGBs = (unsigned char*)rgbDataOut;
-    unsigned char* pYUVs = (unsigned char*)yuvDataIn;
-
-    for (int r = 0; r < h; r++)
-    {
-        unsigned char* pRGB = pRGBs + r * w * outNCh;
-        unsigned char* pYUV = pYUVs + r * w * 2;
-
-        //process two pixels at a time
-        for (int c = 0; c < w; c += 2)
-        {
-            int C1 = pYUV[1] - 16;
-            int C2 = pYUV[3] - 16;
-            int D = pYUV[2] - 128;
-            int E = pYUV[0] - 128;
-
-            int R1 = (298 * C1 + 409 * E + 128) >> 8;
-            int G1 = (298 * C1 - 100 * D - 208 * E + 128) >> 8;
-            int B1 = (298 * C1 + 516 * D + 128) >> 8;
-
-            int R2 = (298 * C2 + 409 * E + 128) >> 8;
-            int G2 = (298 * C2 - 100 * D - 208 * E + 128) >> 8;
-            int B2 = (298 * C2 + 516 * D + 128) >> 8;
-
-            //unsurprisingly this takes the bulk of the time.
-            pRGB[0] = (unsigned char)(R1 < 0 ? 0 : R1 > 255 ? 255 : R1);
-            pRGB[1] = (unsigned char)(G1 < 0 ? 0 : G1 > 255 ? 255 : G1);
-            pRGB[2] = (unsigned char)(B1 < 0 ? 0 : B1 > 255 ? 255 : B1);
-
-            pRGB[3] = (unsigned char)(R2 < 0 ? 0 : R2 > 255 ? 255 : R2);
-            pRGB[4] = (unsigned char)(G2 < 0 ? 0 : G2 > 255 ? 255 : G2);
-            pRGB[5] = (unsigned char)(B2 < 0 ? 0 : B2 > 255 ? 255 : B2);
-
-            pRGB += ch2;
-            pYUV += 4;
-        }
-    }
-}
-
-
-
 int main(){
     signal(SIGINT, (sighandler_t)set_do_exit);
     signal(SIGTERM, (sighandler_t)set_do_exit);
@@ -304,7 +258,11 @@ int main(){
             uint8_t *v = u + (buf_info.width/2)*(buf_info.height/2);
 
             //img = malloc(3052008);
-            uint8_t* img = yuv420p_to_rgb2(y, u, v, buf_info.width, buf_info.height, true);
+            double st = millis_since_boot();
+            for (int test=0; test<1000;test++){
+                uint8_t* img = yuv420p_to_rgb2(y, u, v, buf_info.width, buf_info.height, true);
+            }
+            std::cout << "Time: " << millis_since_boot() - st << " ms\n";
 
 //            YUV2RGB(buf->addr, img, buf_info.width, buf_info.height, 1);
             f = fopen("/data/buffer1", "wb");
