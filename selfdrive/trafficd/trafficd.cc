@@ -261,7 +261,7 @@ int main(){
                 break;
             }
             void* img = malloc(3052008);
-            YUV2RGB(buf->addr, img, buf_info.width, buf_info.height, 3);
+            YUV2RGB(buf->addr, img, buf_info.width, buf_info.height, 2);
 
 
 
