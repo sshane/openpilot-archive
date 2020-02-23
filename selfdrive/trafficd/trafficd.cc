@@ -264,53 +264,14 @@ int main(){
             FILE *f;
 
             img = malloc(3052008);
-            YUV2RGB(buf->addr, img, buf_info.height, buf_info.width, 1);
+            YUV2RGB(buf->addr, img, buf_info.width, buf_info.height, 1);
             f = fopen("/data/buffer1", "wb");
             fwrite((uint8_t *)img, 1, 3052008 , f);
             fclose(f);
 
-            img = malloc(3052008);
-            YUV2RGB(buf->addr, img, buf_info.height, buf_info.width, 2);
-            f = fopen("/data/buffer2", "wb");
-            fwrite((uint8_t *)img, 1, 3052008 , f);
-            fclose(f);
-
-            img = malloc(3052008);
-            YUV2RGB(buf->addr, img, buf_info.height, buf_info.width, 3);
-            f = fopen("/data/buffer3", "wb");
-            fwrite((uint8_t *)img, 1, 3052008 , f);
-            fclose(f);
-
-            img = malloc(3052008);
-            YUV2RGB(buf->addr, img, buf_info.height, buf_info.width, 4);
-            f = fopen("/data/buffer4", "wb");
-            fwrite((uint8_t *)img, 1, 3052008 , f);
-            fclose(f);
-
-            img = malloc(3052008);
-            YUV2RGB(buf->addr, img, buf_info.width, buf_info.height, 5);
-            f = fopen("/data/buffer5", "wb");
-            fwrite((uint8_t *)img, 1, 3052008 , f);
-            fclose(f);
-
-            img = malloc(3052008);
-            YUV2RGB(buf->addr, img, buf_info.width, buf_info.height, 6);
-            f = fopen("/data/buffer6", "wb");
-            fwrite((uint8_t *)img, 1, 3052008 , f);
-            fclose(f);
-
-            img = malloc(3052008);
-            YUV2RGB(buf->addr, img, buf_info.width, buf_info.height, 7);
-            f = fopen("/data/buffer7", "wb");
-            fwrite((uint8_t *)img, 1, 3052008 , f);
-            fclose(f);
-
-            img = malloc(3052008);
-            YUV2RGB(buf->addr, img, buf_info.width, buf_info.height, 8);
-            f = fopen("/data/buffer8", "wb");
-            fwrite((uint8_t *)img, 1, 3052008 , f);
-            fclose(f);
-
+            Mat mYUV(buf_info.height + buf_info.height/2, buf_info.width, CV_8UC1, (void*) frameData);
+            Mat mRGB(height, buf_info.width, CV_8UC3);
+            cvtColor(mYUV, mRGB, CV_YUV2RGB_YV12, 3);
 
 
 
