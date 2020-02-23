@@ -188,6 +188,7 @@ static uint8_t* yuv420p_to_rgb2(const uint8_t* y, const uint8_t* u, const uint8_
     // returns RGB if returnBGR is false
     const size_t size = width * height;
     uint8_t* rgb = (uint8_t*)calloc((989*874*3), sizeof(uint8_t));
+    std::cout << "1\n";
 
     int b ,g, r;
     uint8_t* src_ptr = rgb;
@@ -258,6 +259,7 @@ int main(){
             uint8_t *v = u + (buf_info.width/2)*(buf_info.height/2);
 
             // img = malloc(3052008);
+            std::cout << "1\n";
 
             img = yuv420p_to_rgb2(y, u, v, buf_info.width, buf_info.height, false);
 
