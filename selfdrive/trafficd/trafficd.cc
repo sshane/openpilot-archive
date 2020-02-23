@@ -194,7 +194,7 @@ static std::vector<uint8_t> yuv420p_to_rgb2(const uint8_t* y, const uint8_t* u, 
     std::vector<uint8_t> img;
     int y_test = 0;
     for (int y_cord = 0; y_cord < height; y_cord++) {
-        if (y_cord < 150 | y_cord > 665){
+        if (y_cord <= 150 | y_cord >= 665){
             continue;
         }
         y_test++;
