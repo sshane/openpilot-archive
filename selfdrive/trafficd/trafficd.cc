@@ -222,7 +222,7 @@ int main(){
 //            for (int i = 0; i < 10; i++) {
 //                std::cout << "Y: " << y[i] << " U: " << u[i] << " V: " << v[i] << std::endl;
 //            }
-            int siz = sizeof(array) / sizeof(short);
+            int siz = sizeof(y) / sizeof(uint8_t);
             std::cout << "true size: " << siz << std::endl;
             std::cout << "size: " << sizeof(y) << "\n";
             std::cout << "size of uint8: " << sizeof(uint8_t) << "\n";
