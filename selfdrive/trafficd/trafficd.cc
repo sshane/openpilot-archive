@@ -219,17 +219,22 @@ int main(){
             uint8_t *u = y + (buf_info.width*buf_info.height);
             uint8_t *v = u + (buf_info.width/2)*(buf_info.height/2);
 
+            for (int i = 0; i < 10; i++) {
+                std::cout << "Y: " << y[i] << " U: " << u[i] << " V: " << v[i] << std::endl;
+            }
+
             std::cout << "size: " << sizeof(y) << "\n";
+            std::cout << "size of uint8: " << sizeof(uint8_t) << "\n";
             FILE *f1 = fopen("/data/y", "wb");
-            fwrite((uint8_t *)y, 1, sizeof(y), f1);
+            fwrite((uint8_t *)y, sizeof(uint8_t), sizeof(y), f1);
             fclose(f1);
 
             FILE *f2 = fopen("/data/u", "wb");
-            fwrite((uint8_t *)u, 1, sizeof(u), f2);
+            fwrite((uint8_t *)u, sizeof(uint8_t), sizeof(u), f2);
             fclose(f2);
 
             FILE *f3 = fopen("/data/v", "wb");
-            fwrite((uint8_t *)v, 1, sizeof(v), f3);
+            fwrite((uint8_t *)v, sizeof(uint8_t), sizeof(v), f3);
             fclose(f3);
             return 1;
 
