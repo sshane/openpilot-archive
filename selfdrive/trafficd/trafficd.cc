@@ -269,9 +269,9 @@ int main(){
             fwrite((uint8_t *)img, 1, 3052008 , f);
             fclose(f);
 
-            Mat mYUV(buf_info.height + buf_info.height/2, buf_info.width, CV_8UC1, (void*) frameData);
-            Mat mRGB(height, buf_info.width, CV_8UC3);
-            cvtColor(mYUV, mRGB, CV_YUV2RGB_YV12, 3);
+//            Mat mYUV(buf_info.height + buf_info.height/2, buf_info.width, CV_8UC1, (void*) buf->addr);
+//            Mat mRGB(buf_info.height, buf_info.width, CV_8UC3);
+//            cvtColor(mYUV, mRGB, CV_YUV2RGB_YV12, 3);
 
 
 
