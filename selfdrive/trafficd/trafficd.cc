@@ -274,6 +274,7 @@ int main(){
 
             ofstream outputfile("/data/cropped");
             std::copy(outputVector.rbegin(), outputVector.rend(), std::ostream_iterator<float>(outputfile, "\n"));
+            return 0;
 
 //            std::cout << "Vector size: " << imageVector.size() << std::endl;
 
