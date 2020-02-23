@@ -206,7 +206,7 @@ int main(){
         while (!do_exit){
             loopStart = millis_since_boot();
 
-            VIPCBuf* buf;
+            /*VIPCBuf* buf;
             VIPCBufExtra extra;
 
             buf = visionstream_get(&stream, &extra);
@@ -219,7 +219,7 @@ int main(){
             // std::cout << "Vector elements: " << inputVector.size() << std::endl;
 
             // std::vector<float> outputVector = runModel(processStreamBuffer(buf)); todo: <- test
-            /*std::vector<float> outputVector = runModel(inputVector);
+            std::vector<float> outputVector = runModel(inputVector);
 
             float modelOutput[4];
             for (int i = 0; i < 4; i++){  // convert vector to array
