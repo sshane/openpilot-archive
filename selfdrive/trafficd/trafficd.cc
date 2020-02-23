@@ -203,10 +203,7 @@ static std::vector<float> getFlatVector(const VIPCBuf* buf, const bool returnBGR
     uint8_t *u = y + (width * height);
     uint8_t *v = u + (width / 2) * (height / 2);
 
-    uint8_t* rgb = (uint8_t*)calloc((original_size), sizeof(uint8_t));
-
     int b, g, r;
-    uint8_t* src_ptr = rgb;
     std::vector<float> bgrVec;
 
     for (int y_cord = top_crop; y_cord < (original_shape[0] - hood_crop); y_cord++) {
@@ -228,13 +225,8 @@ static std::vector<float> getFlatVector(const VIPCBuf* buf, const bool returnBGR
                 bgrVec.push_back(clamp(g) / 255.0);
                 bgrVec.push_back(clamp(b) / 255.0);
             }
-
-            *src_ptr++ = clamp(r);
-            *src_ptr++ = clamp(g);
-            *src_ptr++ = clamp(b);
         }
     }
-    free(rgb);
     std::reverse(bgrVec.begin(), bgrVec.end());
     return bgrVec;
 }
