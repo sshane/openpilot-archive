@@ -180,6 +180,10 @@ void set_do_exit(int sig) {
     do_exit = 1;
 }
 
+uint8_t clamp(int16_t value) {
+    return value<0 ? 0 : (value>255 ? 255 : value);
+}
+
 static uint8_t* yuv420p_to_rgb2(const uint8_t* y, const uint8_t* u, const uint8_t* v, const size_t width, const size_t height)
 {
     const size_t size = width * height;
@@ -187,7 +191,7 @@ static uint8_t* yuv420p_to_rgb2(const uint8_t* y, const uint8_t* u, const uint8_
 
     int uv_index = 0, pass = 0;
     int b,g,r;
-    //uint8_t* ptr = rgb;
+    uint8_t* ptr = rgb;
     for (int j = 0; j < height; j++) {
         for (int i = 0; i < width; i++) {
             int yy = y[(j * width) + i];
@@ -197,12 +201,9 @@ static uint8_t* yuv420p_to_rgb2(const uint8_t* y, const uint8_t* u, const uint8_
             r = 1.164 * (yy - 16) + 1.596 * (vv - 128);
             g = 1.164 * (yy - 16) - 0.813 * (vv - 128) - 0.391 * (uu - 128);
             b = 1.164 * (yy - 16) + 2.018 * (uu - 128);
-            rgb[(i * j * 3) + 0] = r;
-            rgb[(i * j * 3) + 1] = g;
-            rgb[(i * j * 3) + 2] = b;
-//            *ptr++ = clamp(r);
-//            *ptr++ = clamp(g);
-//            *ptr++ = clamp(b);
+            *ptr++ = clamp(r);
+            *ptr++ = clamp(g);
+            *ptr++ = clamp(b);
         }
     }
 
