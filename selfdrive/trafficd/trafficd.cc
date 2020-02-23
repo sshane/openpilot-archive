@@ -215,9 +215,9 @@ static std::vector<float> getFlatVector(const VIPCBuf* buf, const bool returnBGR
             int uu = u[((y_cord / 2) * (width / 2)) + (x_cord / 2)];
             int vv = v[((y_cord / 2) * (width / 2)) + (x_cord / 2)];
 
-            r = 1.164 * (yy - 16) + 2.018 * (uu - 128);
+            r = 1.164 * (yy - 16) + 1.596 * (vv - 128);
             g = 1.164 * (yy - 16) - 0.813 * (vv - 128) - 0.391 * (uu - 128);
-            b = 1.164 * (yy - 16) + 1.596 * (vv - 128);
+            b = 1.164 * (yy - 16) + 2.018 * (uu - 128);
 
             if (returnBGR){
                 bgrVec.push_back(clamp(b) / 255.0);
