@@ -198,7 +198,7 @@ static std::vector<uint8_t> yuv420p_to_rgb2(const uint8_t* y, const uint8_t* u, 
     for (int y_cord = top_crop; y_cord < (width - hood_crop); y_cord++) {
         y_test++;
         int x_test = 0;
-        for (int x_cord = horizontal_crop; x_cord < original_shape[1] - horizontal_crop; x_cord++) {
+        for (int x_cord = horizontal_crop; x_cord < horizontal_crop - horizontal_crop; x_cord++) {
             x_test++;
             int yy = y[(y_cord * width) + x_cord];
             int uu = u[((y_cord / 2) * (width / 2)) + (x_cord / 2)];
