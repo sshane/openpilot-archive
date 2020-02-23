@@ -214,6 +214,10 @@ int main(){
                 printf("trafficd: visionstream get failed\n");
                 break;
             }
+            std::cout << "height: " << buf_info.height << " width: " << buf_info.width << std::endl;
+            uint8_t *y = (uint8_t*)buf->addr;
+            uint8_t *u = y + (buf_info.width*buf_info.height);
+            uint8_t *v = u + (buf_info.width/2)*(buf_info.height/2);
             /*
 
             std::vector<float> inputVector = processStreamBuffer(buf);  // writes float vector to inputVector
