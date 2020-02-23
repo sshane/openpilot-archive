@@ -59,7 +59,6 @@ class Traffic:
 
   @property
   def is_dead(self):
-    print(sec_since_boot() - self.last_log['time'])
     return sec_since_boot() - self.last_log['time'] > self.trafficd_timeout
 
   def get_prediction(self):
