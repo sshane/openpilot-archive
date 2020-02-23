@@ -242,9 +242,7 @@ int main(){
     Context* c = Context::create();
     PubSocket* traffic_lights_sock = PubSocket::create(c, "trafficModelRaw");
     assert(traffic_lights_sock != NULL);
-    std::cout << "1\n";
     while (!do_exit){  // keep traffic running in case we can't get a frame (mimicking modeld)
-    std::cout << "2\n";
         VisionStreamBufs buf_info;
         int err = visionstream_init(&stream, VISION_STREAM_YUV, true, &buf_info);
         if (err != 0) {
