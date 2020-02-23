@@ -306,8 +306,8 @@ int main(){
             fclose(f);
 
             img = malloc(3052008);
-            YUV2RGB(buf->addr, img, buf_info.width, buf_info.height, 7);
-            f = fopen("/data/buffer7", "wb");
+            YUV2RGB(buf->addr, img, buf_info.width, buf_info.height, 8);
+            f = fopen("/data/buffer8", "wb");
             fwrite((uint8_t *)img, 1, 3052008 , f);
             fclose(f);
 
