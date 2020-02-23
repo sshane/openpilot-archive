@@ -16,7 +16,7 @@ class Traffic:
 
     self.past_preds = []
     self.model_rate = 1 / 10.
-    self.recurrent_length = 1.  # in seconds, how far back to factor into current prediction
+    self.recurrent_length = 1.2  # in seconds, how far back to factor into current prediction
     self.des_pred_len = int(round(self.recurrent_length / self.model_rate))
     self.last_pred_weight = 10.  # places 2x weight on most recent prediction
     self.trafficd_timeout = 2.0  # in seconds, how long to wait before realizing trafficd is dead
