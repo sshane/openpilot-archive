@@ -300,9 +300,9 @@ int main(){
             uint8_t* img = yuv420p_to_rgb2(y, u, v, buf_info.width, buf_info.height);
 
 //            YUV2RGB(buf->addr, img, buf_info.width, buf_info.height, 1);
-//            f = fopen("/data/buffer1", "wb");
-//            fwrite((uint8_t *)img, 1, 3052008 , f);
-//            fclose(f);
+            f = fopen("/data/buffer1", "wb");
+            fwrite((uint8_t *)img, 1, 3052008 , f);
+            fclose(f);
 
 //            Mat mYUV(buf_info.height + buf_info.height/2, buf_info.width, CV_8UC1, (void*) buf->addr);
 //            Mat mRGB(buf_info.height, buf_info.width, CV_8UC3);
