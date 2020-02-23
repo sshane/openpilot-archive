@@ -24,13 +24,6 @@
 #include <algorithm>
 
 
-#include <assert.h>
-#include "common/util.h"
-#include "nanovg_gl.h"
-#include "nanovg_gl_utils.h"
-#include "common/glutil.h"
-
-
 #include "common/visionbuf.h"
 #include "common/visionipc.h"
 #include "common/timing.h"
