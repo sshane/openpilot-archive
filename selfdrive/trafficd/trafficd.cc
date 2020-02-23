@@ -274,11 +274,13 @@ int main(){
 //            src_ptr += (top_crop * image_stride); // starting offset of 150 lines of stride in
 
             std::vector<int> outputVector;
+            int idx = 0;
             for (int x = 0; x < 1164; x++) {
                 for (int y = 0; y < 874; y++) {
-                    outputVector.push_back(src_ptr[x][y][0]);
-                    outputVector.push_back(src_ptr[x][y][1]);
-                    outputVector.push_back(src_ptr[x][y][2]);
+                    outputVector.push_back(src_ptr[idx]);
+                    outputVector.push_back(src_ptr[idx + 1]);
+                    outputVector.push_back(src_ptr[idx + 2]);
+                    idx += 3;
                 }
             }
 
