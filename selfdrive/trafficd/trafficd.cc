@@ -190,7 +190,7 @@ uint8_t clamp(int16_t value) {
 static std::vector<uint8_t> yuv420p_to_rgb2(const uint8_t* y, const uint8_t* u, const uint8_t* v, const bool returnBGR) {
     // returns RGB if returnBGR is false
     const size_t width = original_shape[1];
-    const size_t height original_shape[0];
+    const size_t height = original_shape[0];
 
     uint8_t* rgb = (uint8_t*)calloc((original_size), sizeof(uint8_t));
 
