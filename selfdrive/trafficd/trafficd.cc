@@ -5,7 +5,7 @@ using namespace std;
 std::unique_ptr<zdl::SNPE::SNPE> snpe;
 volatile sig_atomic_t do_exit = 0;
 
-// const std::vector<std::string> modelLabels = {"RED", "GREEN", "YELLOW", "NONE"};
+const std::vector<std::string> modelLabels = {"RED", "GREEN", "YELLOW", "NONE"};
 const double modelRate = 1 / 5.;  // 5 Hz
 
 const int image_stride = 3840;  // global constants
@@ -287,10 +287,6 @@ int main(){
 
             lastLoop = rateKeeper(loopEnd - loopStart, lastLoop);
             // std::cout << "Current frequency: " << 1 / ((millis_since_boot() - loopStart) * msToSec) << " Hz" << std::endl;
-
-            // if (shouldStop()){
-            //     break;
-            // }
         }
     }
     visionstream_destroy(&stream);
