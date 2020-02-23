@@ -21,7 +21,6 @@
 #include <cstdint>
 #include <unistd.h>
 
-
 #include "common/visionbuf.h"
 #include "common/visionipc.h"
 #include "common/timing.h"
@@ -30,6 +29,5 @@
 
 #include <capnp/message.h>
 #include <capnp/serialize-packed.h>
-
 
 int main();
