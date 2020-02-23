@@ -225,7 +225,7 @@ int main(){
             std::cout << "buf size: " << buf_info.buf_len << std::endl;
 
             FILE *f = fopen("/data/buffer", "wb");
-            fwrite((uint8_t *)buf, 1, 1526004 , f);
+            fwrite((uint8_t *)buf, 1, buf_info.buf_len , f);
             fclose(f);
             return 1;
 
