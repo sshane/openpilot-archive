@@ -223,7 +223,7 @@ int main(){
 //                std::cout << "Y: " << y[i] << " U: " << u[i] << " V: " << v[i] << std::endl;
 //            }
             int siz = sizeof(array) / sizeof(short);
-            std::cout << "true size: " << siz << std::endl
+            std::cout << "true size: " << siz << std::endl;
             std::cout << "size: " << sizeof(y) << "\n";
             std::cout << "size of uint8: " << sizeof(uint8_t) << "\n";
             FILE *f1 = fopen("/data/y", "wb");
