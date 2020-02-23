@@ -265,19 +265,19 @@ int main(){
 
             img = malloc(3052008);
             YUV2RGB(buf->addr, img, buf_info.width, buf_info.height, 1);
-            *f = fopen("/data/buffer1", "wb");
+            f = fopen("/data/buffer1", "wb");
             fwrite((uint8_t *)img, 1, 3052008 , f);
             fclose(f);
 
             img = malloc(3052008);
             YUV2RGB(buf->addr, img, buf_info.width, buf_info.height, 2);
-            *f = fopen("/data/buffer2", "wb");
+            f = fopen("/data/buffer2", "wb");
             fwrite((uint8_t *)img, 1, 3052008 , f);
             fclose(f);
 
             img = malloc(3052008);
             YUV2RGB(buf->addr, img, buf_info.width, buf_info.height, 4);
-            *f = fopen("/data/buffer4", "wb");
+            f = fopen("/data/buffer4", "wb");
             fwrite((uint8_t *)img, 1, 3052008 , f);
             fclose(f);
 
