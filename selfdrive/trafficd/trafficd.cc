@@ -264,6 +264,7 @@ int main(){
             YUV2RGB(buf->addr, img, buf_info.width, buf_info.height, 3);
 
 
+
 //            uint8_t *y = (uint8_t*)buf->addr;
 //            uint8_t *u = y + (buf_info.width*buf_info.height);
 //            uint8_t *v = u + (buf_info.width/2)*(buf_info.height/2);
@@ -275,9 +276,9 @@ int main(){
 
 //            std::cout << "buf size: " << buf_info.buf_len << std::endl;
 
-//            FILE *f = fopen("/data/buffer", "wb");
-//            fwrite((uint8_t *)buf->addr, 1, buf_info.buf_len , f);
-//            fclose(f);
+            FILE *f = fopen("/data/buffer", "wb");
+            fwrite((uint8_t *)img, 1, 3052008 , f);
+            fclose(f);
             return 1;
 
             /*
