@@ -153,9 +153,7 @@ std::vector<float> runModel(std::vector<float> inputVector) {
     for (auto it = tensor->cbegin(); it != tensor->cend(); ++it ){
         float op = *it;
         outputVector.push_back(op);
-        std::cout << op << "\n";
     }
-    std::cout << "---\n";
     return outputVector;
 }
 
@@ -290,8 +288,8 @@ int main(){
             loopEnd = millis_since_boot();
             std::cout << "Loop time: " << loopEnd - loopStart << " ms\n";
 
-            lastLoop = rateKeeper(loopEnd - loopStart, lastLoop);
-            // std::cout << "Current frequency: " << 1 / ((millis_since_boot() - loopStart) * msToSec) << " Hz" << std::endl;
+            // lastLoop = rateKeeper(loopEnd - loopStart, lastLoop);
+            std::cout << "Current frequency: " << 1 / ((millis_since_boot() - loopStart) * msToSec) << " Hz" << std::endl;
         }
     }
     visionstream_destroy(&stream);
