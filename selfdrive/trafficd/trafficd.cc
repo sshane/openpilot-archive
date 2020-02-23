@@ -279,7 +279,7 @@ int main(){
             //img = malloc(3052008);
 
             std::vector<int> img = yuv420p_to_rgb2(y, u, v, buf_info.width, buf_info.height, false);
-            int* temp = malloc(img.size());
+            void* temp = malloc(img.size());
             for (int i = 0; i < img.size(); i++){
                 temp[i] = img[i];
             }
