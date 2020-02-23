@@ -125,7 +125,13 @@ std::vector<float> processStreamBuffer(VIPCBuf* buf) {
     return outputVector;
 }
 
-void sendPrediction(float modelOutput[], PubSocket* traffic_lights_sock) {
+void sendPrediction(std::vector<float> modelOutputVec, PubSocket* traffic_lights_sock) {
+    float modelOutput[4];
+    for (int i = 0; i < 4; i++){  // convert vector to array
+        modelOutput[i] = modelOutputVec[i];
+        // std::cout << modelOutput[i] << std::endl;
+    }
+
     kj::ArrayPtr<const float> modelOutput_vs(&modelOutput[0], 4);
 
     capnp::MallocMessageBuilder msg;
@@ -271,16 +277,12 @@ int main(){
 
             std::vector<float> modelOutputVec = runModel(imageVector);
 
-            float modelOutput[4];
-            for (int i = 0; i < 4; i++){  // convert vector to array
-                modelOutput[i] = modelOutputVec[i];
-                // std::cout << modelOutput[i] << std::endl;
-            }
             // std::cout << std::endl;
 
-             std::cout << "Prediction: " << modelLabels[pred_idx] << " (" << modelOutput[pred_idx] * 100 << "%)" << std::endl;
+            int pred_idx = std::max_element(modelOutput.begin(), modelOutput.end())
+            std::cout << "Prediction: " << modelLabels[pred_idx] << " (" << modelOutput[pred_idx] * 100 << "%)" << std::endl;
 
-            sendPrediction(modelOutput, traffic_lights_sock);
+            sendPrediction(modelOutputVec, traffic_lights_sock);
 
             loopEnd = millis_since_boot();
             std::cout << "Loop time: " << loopEnd - loopStart << " ms\n";
