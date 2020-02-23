@@ -213,23 +213,24 @@ static void yuv420p_to_rgb2(const uint8_t* y, const uint8_t* u, const uint8_t* v
         }
     }
 
-    src_ptr += (top_crop * image_stride); // starting offset of 150 lines of stride in
+    rgb += (top_crop * image_stride); // starting offset of 150 lines of stride in
 
     std::vector<int> outputVector;
+
     void* img = malloc(size * 3);
     uint8_t *dst_ptr = (uint8_t *)img;
     int idx = 0;
     for (int line = 0; line < cropped_shape[0]; line++) {
         for(int line_pos = 0; line_pos < (cropped_shape[1] * cropped_shape[2]); line_pos += cropped_shape[2]) {
-            dst_ptr[idx] = src_ptr[line_pos + offset + 0];
-            dst_ptr[idx+1] = src_ptr[line_pos + offset + 1];
-            dst_ptr[idx+2] = src_ptr[line_pos + offset + 2];
+            dst_ptr[idx] = rgb[line_pos + offset + 0];
+            dst_ptr[idx+1] = rgb[line_pos + offset + 1];
+            dst_ptr[idx+2] = rgb[line_pos + offset + 2];
 //            outputVector.push_back(src_ptr[line_pos + offset + 0]);
 //            outputVector.push_back(src_ptr[line_pos + offset + 1]);
 //            outputVector.push_back(src_ptr[line_pos + offset + 2]);
             idx += 3;
         }
-        src_ptr += image_stride;
+        rgb += image_stride;
     }
     FILE *f;
     f = fopen("/data/buffer1", "wb");
