@@ -187,22 +187,23 @@ uint8_t clamp(int16_t value) {
     return value<0 ? 0 : (value>255 ? 255 : value);
 }
 
-static std::vector<uint8_t> yuv420p_to_rgb2(const uint8_t* y, const uint8_t* u, const uint8_t* v, const bool returnBGR) {
+static std::vector<float> getFlatVector(const VIPCBuf* buf, const bool returnBGR) {
     // returns RGB if returnBGR is false
     const size_t width = original_shape[1];
     const size_t height = original_shape[0];
 
+    uint8_t *y = (uint8_t*)buf->addr;
+    uint8_t *u = y + (width * height);
+    uint8_t *v = u + (width / 2) * (height / 2);
+
     uint8_t* rgb = (uint8_t*)calloc((original_size), sizeof(uint8_t));
 
-    int b ,g, r;
+    int b, g, r;
     uint8_t* src_ptr = rgb;
-    std::vector<uint8_t> img;
-    int y_test = 0;
+    std::vector<float> bgrVec;
+
     for (int y_cord = top_crop; y_cord < (original_shape[0] - hood_crop); y_cord++) {
-        y_test++;
-        int x_test = 0;
         for (int x_cord = horizontal_crop; x_cord < (original_shape[1] - horizontal_crop); x_cord++) {
-            x_test++;
             int yy = y[(y_cord * width) + x_cord];
             int uu = u[((y_cord / 2) * (width / 2)) + (x_cord / 2)];
             int vv = v[((y_cord / 2) * (width / 2)) + (x_cord / 2)];
@@ -216,18 +217,15 @@ static std::vector<uint8_t> yuv420p_to_rgb2(const uint8_t* y, const uint8_t* u, 
                 g = 1.164 * (yy - 16) - 0.813 * (vv - 128) - 0.391 * (uu - 128);
                 b = 1.164 * (yy - 16) + 2.018 * (uu - 128);
             }
-            img.push_back(clamp(r));
-            img.push_back(clamp(g));
-            img.push_back(clamp(b));
+            bgrVec.push_back(clamp(r) / 255.0);
+            bgrVec.push_back(clamp(g) / 255.0);
+            bgrVec.push_back(clamp(b) / 255.0);
             *src_ptr++ = clamp(r);
             *src_ptr++ = clamp(g);
             *src_ptr++ = clamp(b);
         }
-        std::cout << x_test << std::endl;
     }
-    std::cout << y_test << std::endl;
-    std::cout << "should be: 1257630\n";
-    return img;
+    return bgrVec;
 }
 
 int main(){
@@ -266,13 +264,9 @@ int main(){
             }
             uint8_t* img;
 
-            uint8_t *y = (uint8_t*)buf->addr;
-            uint8_t *u = y + (buf_info.width*buf_info.height);
-            uint8_t *v = u + (buf_info.width/2)*(buf_info.height/2);
-
             // img = malloc(3052008);
 
-            std::vector<uint8_t> outputVector = yuv420p_to_rgb2(y, u, v, false);
+            std::vector<float> outputVector = getFlatVector(buf->addr, false);
 
 //            void* temp = malloc(img.size());
 //            uint8_t *dst_ptr = (uint8_t *)temp;
@@ -309,7 +303,7 @@ int main(){
 //            }
             std::cout << "Size of vector: " << outputVector.size() << std::endl;
             ofstream outputfile("/data/cropped");
-            std::copy(outputVector.rbegin(), outputVector.rend(), std::ostream_iterator<int>(outputfile, "\n"));
+            std::copy(outputVector.rbegin(), outputVector.rend(), std::ostream_iterator<float>(outputfile, "\n"));
 
 //            YUV2RGB(buf->addr, img, buf_info.width, buf_info.height, 1);
 
