@@ -262,87 +262,28 @@ int main(){
                 printf("trafficd: visionstream get failed\n");
                 break;
             }
-            uint8_t* img;
+            std::vector<float> imageVector = getFlatVector(buf, true);  // writes float vector to inputVector
 
-            // img = malloc(3052008);
+            // ofstream outputfile("/data/cropped");
+            // std::copy(outputVector.rbegin(), outputVector.rend(), std::ostream_iterator<float>(outputfile, "\n"));
 
-            std::vector<float> outputVector = getFlatVector(buf, true);
+            std::cout << "Vector size: " << inputVector.size() << std::endl;
 
-//            void* temp = malloc(img.size());
-//            uint8_t *dst_ptr = (uint8_t *)temp;
-//
-//            for (int i = 0; i < img.size(); i++){
-//                dst_ptr[i] = img[i];
-//            }
-//            FILE *f;
-//            f = fopen("/data/buffer1", "wb");
-//            fwrite((uint8_t *)img, 1, 989*874*3, f);
-
-
-//            uint8_t *src_ptr = (uint8_t *)img;
-//            src_ptr += (top_crop * image_stride); // starting offset of 150 lines of stride in
-
-//            std::vector<int> outputVector;
-//            int idx = 0;
-//            for (int x = 0; x < 1164; x++) {
-//                for (int y = 0; y < 874; y++) {
-//                    outputVector.push_back(src_ptr[idx]);
-//                    outputVector.push_back(src_ptr[idx + 1]);
-//                    outputVector.push_back(src_ptr[idx + 2]);
-//                    idx += 3;
-//                }
-//            }
-
-//            for (int line = 0; line < cropped_shape[0]; line++) {
-//                for(int line_pos = 0; line_pos < (cropped_shape[1] * cropped_shape[2]); line_pos += cropped_shape[2]) {
-//                    outputVector.push_back(src_ptr[line_pos + offset + 0]);
-//                    outputVector.push_back(src_ptr[line_pos + offset + 1]);
-//                    outputVector.push_back(src_ptr[line_pos + offset + 2]);
-//                }
-//                src_ptr += image_stride;
-//            }
-            std::cout << "Size of vector: " << outputVector.size() << std::endl;
-            ofstream outputfile("/data/cropped");
-            std::copy(outputVector.rbegin(), outputVector.rend(), std::ostream_iterator<float>(outputfile, "\n"));
-
-//            YUV2RGB(buf->addr, img, buf_info.width, buf_info.height, 1);
-
-//            Mat mYUV(buf_info.height + buf_info.height/2, buf_info.width, CV_8UC1, (void*) buf->addr);
-//            Mat mRGB(buf_info.height, buf_info.width, CV_8UC3);
-//            cvtColor(mYUV, mRGB, CV_YUV2RGB_YV12, 3);
-
-
-
-//            for (int i = 0; i < 10; i++) {
-//                std::cout << "Y: " << y[i] << " U: " << u[i] << " V: " << v[i] << std::endl;
-//            }
-
-
-//            std::cout << "buf size: " << buf_info.buf_len << std::endl;
-
-            return 1;
-
-            /*
-
-            std::vector<float> inputVector = processStreamBuffer(buf);  // writes float vector to inputVector
-            // std::cout << "Vector elements: " << inputVector.size() << std::endl;
-
-            // std::vector<float> outputVector = runModel(processStreamBuffer(buf)); todo: <- test
-            std::vector<float> outputVector = runModel(inputVector);
+            std::vector<float> modelOutputVec = runModel(imageVector);
 
             float modelOutput[4];
             for (int i = 0; i < 4; i++){  // convert vector to array
-                modelOutput[i] = outputVector[i];
+                modelOutput[i] = modelOutputVec[i];
                 // std::cout << modelOutput[i] << std::endl;
             }
             // std::cout << std::endl;
 
-            // std::cout << "Prediction: " << modelLabels[pred_idx] << " (" << modelOutput[pred_idx] * 100 << "%)" << std::endl;
+             std::cout << "Prediction: " << modelLabels[pred_idx] << " (" << modelOutput[pred_idx] * 100 << "%)" << std::endl;
 
-            sendPrediction(modelOutput, traffic_lights_sock);*/
+            sendPrediction(modelOutput, traffic_lights_sock);
 
             loopEnd = millis_since_boot();
-            // std::cout << "Loop time: " << loopEnd - loopStart << " ms\n";
+            std::cout << "Loop time: " << loopEnd - loopStart << " ms\n";
 
             lastLoop = rateKeeper(loopEnd - loopStart, lastLoop);
             // std::cout << "Current frequency: " << 1 / ((millis_since_boot() - loopStart) * msToSec) << " Hz" << std::endl;
