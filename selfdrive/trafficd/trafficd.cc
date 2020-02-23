@@ -194,7 +194,7 @@ static uint8_t* yuv420p_to_rgb2(const uint8_t* y, const uint8_t* u, const uint8_
     uint8_t* src_ptr = rgb;
     for (int j = 0; j < height; j++) {
         for (int i = 0; i < width; i++) {
-            if (i < 175 | i > (1164-175)){
+            if (i < 175 | i > (1164-175-175)){
                 continue;
             }
             int yy = y[(j * width) + i];
