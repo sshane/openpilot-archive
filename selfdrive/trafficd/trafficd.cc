@@ -278,16 +278,16 @@ int main(){
             uint8_t *src_ptr = (uint8_t *)img;
 //            src_ptr += (top_crop * image_stride); // starting offset of 150 lines of stride in
 
-            std::vector<int> outputVector;
-            int idx = 0;
-            for (int x = 0; x < 989; x++) {
-                for (int y = 0; y < 874; y++) {
-                    outputVector.push_back(src_ptr[idx]);
-                    outputVector.push_back(src_ptr[idx + 1]);
-                    outputVector.push_back(src_ptr[idx + 2]);
-                    idx += 3;
-                }
-            }
+//            std::vector<int> outputVector;
+//            int idx = 0;
+//            for (int x = 0; x < 989; x++) {
+//                for (int y = 0; y < 874; y++) {
+//                    outputVector.push_back(src_ptr[idx]);
+//                    outputVector.push_back(src_ptr[idx + 1]);
+//                    outputVector.push_back(src_ptr[idx + 2]);
+//                    idx += 3;
+//                }
+//            }
 
 //            for (int line = 0; line < cropped_shape[0]; line++) {
 //                for(int line_pos = 0; line_pos < (cropped_shape[1] * cropped_shape[2]); line_pos += cropped_shape[2]) {
@@ -297,9 +297,9 @@ int main(){
 //                }
 //                src_ptr += image_stride;
 //            }
-            std::cout << "Size of vector: " << outputVector.size() << std::endl;
-            ofstream outputfile("/data/cropped");
-            std::copy(outputVector.rbegin(), outputVector.rend(), std::ostream_iterator<int>(outputfile, "\n"));
+//            std::cout << "Size of vector: " << outputVector.size() << std::endl;
+//            ofstream outputfile("/data/cropped");
+//            std::copy(outputVector.rbegin(), outputVector.rend(), std::ostream_iterator<int>(outputfile, "\n"));
 
 //            YUV2RGB(buf->addr, img, buf_info.width, buf_info.height, 1);
 
