@@ -116,9 +116,9 @@ std::vector<float> processStreamBuffer(VIPCBuf* buf) {
     std::vector<float> outputVector;
     for (int line = 0; line < cropped_shape[0]; line++) {
         for(int line_pos = 0; line_pos < (cropped_shape[1] * cropped_shape[2]); line_pos += cropped_shape[2]) {
-            outputVector.push_back(src_ptr[line_pos + offset + 0] / pixel_norm);
-            outputVector.push_back(src_ptr[line_pos + offset + 1] / pixel_norm);
-            outputVector.push_back(src_ptr[line_pos + offset + 2] / pixel_norm);
+            outputVector.insert(src_ptr[line_pos + offset + 0] / pixel_norm);
+            outputVector.insert(src_ptr[line_pos + offset + 1] / pixel_norm);
+            outputVector.insert(src_ptr[line_pos + offset + 2] / pixel_norm);
         }
         src_ptr += image_stride;
     }
