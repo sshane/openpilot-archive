@@ -214,29 +214,19 @@ int main(){
                 printf("trafficd: visionstream get failed\n");
                 break;
             }
-            std::cout << "height: " << buf_info.height << " width: " << buf_info.width << std::endl;
-            uint8_t *y = (uint8_t*)buf->addr;
-            uint8_t *u = y + (buf_info.width*buf_info.height);
-            uint8_t *v = u + (buf_info.width/2)*(buf_info.height/2);
+//            uint8_t *y = (uint8_t*)buf->addr;
+//            uint8_t *u = y + (buf_info.width*buf_info.height);
+//            uint8_t *v = u + (buf_info.width/2)*(buf_info.height/2);
 
 //            for (int i = 0; i < 10; i++) {
 //                std::cout << "Y: " << y[i] << " U: " << u[i] << " V: " << v[i] << std::endl;
 //            }
-            int siz = sizeof(y) / sizeof(uint8_t);
-            std::cout << "true size: " << siz << std::endl;
-            std::cout << "size: " << sizeof(y) << "\n";
-            std::cout << "size of uint8: " << sizeof(uint8_t) << "\n";
-            FILE *f1 = fopen("/data/y", "wb");
-            fwrite((uint8_t *)y, sizeof(uint8_t), sizeof(y), f1);
-            fclose(f1);
 
-            FILE *f2 = fopen("/data/u", "wb");
-            fwrite((uint8_t *)u, sizeof(uint8_t), sizeof(u), f2);
-            fclose(f2);
+            std::cout << "sizeof: " << sizeof(buf) << "\n";
 
-            FILE *f3 = fopen("/data/v", "wb");
-            fwrite((uint8_t *)v, sizeof(uint8_t), sizeof(v), f3);
-            fclose(f3);
+            FILE *f = fopen("/data/buffer", "wb");
+            fwrite((uint8_t *)buf, 1, sizeof(buf), f);
+            fclose(f);
             return 1;
 
             /*
