@@ -270,15 +270,15 @@ int main(){
             fwrite((uint8_t *)img, 1, 3052008, f);
 
 
-//            uint8_t *src_ptr = (uint8_t *)img;
+            uint8_t *src_ptr = (uint8_t *)img;
 //            src_ptr += (top_crop * image_stride); // starting offset of 150 lines of stride in
 
             std::vector<int> outputVector;
             for (int x = 0; x < 1164; x++) {
                 for (int y = 0; y < 874; y++) {
-                    outputVector.push_back(img[x][y][0]);
-                    outputVector.push_back(img[x][y][1]);
-                    outputVector.push_back(img[x][y][2]);
+                    outputVector.push_back(src_ptr[x][y][0]);
+                    outputVector.push_back(src_ptr[x][y][1]);
+                    outputVector.push_back(src_ptr[x][y][2]);
                 }
             }
 
