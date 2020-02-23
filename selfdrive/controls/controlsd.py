@@ -35,6 +35,7 @@ HwType = log.HealthData.HwType
 LaneChangeState = log.PathPlan.LaneChangeState
 LaneChangeDirection = log.PathPlan.LaneChangeDirection
 
+traffic_sm = messaging.SubMaster(['trafficModelEvent'])
 
 def add_lane_change_event(events, path_plan):
   if path_plan.laneChangeState == LaneChangeState.preLaneChange:
@@ -131,6 +132,8 @@ def data_sample(CI, CC, sm, can_sock, state, mismatch_counter, can_error_counter
 def state_transition(frame, CS, CP, state, events, soft_disable_timer, v_cruise_kph, AM):
   """Compute conditional state transitions and execute actions on state transitions"""
   enabled = isEnabled(state)
+  global traffic_sm
+  traffic_sm.update(0)
 
   v_cruise_kph_last = v_cruise_kph
 
@@ -143,6 +146,17 @@ def state_transition(frame, CS, CP, state, events, soft_disable_timer, v_cruise_
   # decrease the soft disable timer at every step, as it's reset on
   # entrance in SOFT_DISABLING state
   soft_disable_timer = max(0, soft_disable_timer - 1)
+  
+  with open('/data/traffic_events', 'a') as f:
+    f.write('{}\n'.format(traffic_sm['trafficModelEvent'].status))
+  traffic_light_status = traffic_sm['trafficModelEvent'].status
+  traffic_light_confidence = round(traffic_sm['trafficModelEvent'].confidence * 100, 2)
+  if traffic_light_status == 'RED':
+    AM.add(frame, 'redLight', enabled, extra_text_2=' ({}%)'.format(traffic_light_confidence))
+  elif traffic_light_status == 'GREEN':
+    AM.add(frame, 'greenLight', enabled, extra_text_2=' ({}%)'.format(traffic_light_confidence))
+  elif traffic_light_status == 'YELLOW':
+    AM.add(frame, 'yellowLight', enabled, extra_text_2=' ({}%)'.format(traffic_light_confidence))
 
   # DISABLED
   if state == State.disabled:
