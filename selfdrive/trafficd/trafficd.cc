@@ -184,7 +184,7 @@ uint8_t clamp(int16_t value) {
     return value<0 ? 0 : (value>255 ? 255 : value);
 }
 
-static uint8_t* std::vector<int> yuv420p_to_rgb2(const uint8_t* y, const uint8_t* u, const uint8_t* v, const size_t width, const size_t height, const bool returnBGR) {
+static uint8_t* yuv420p_to_rgb2(const uint8_t* y, const uint8_t* u, const uint8_t* v, const size_t width, const size_t height, const bool returnBGR) {
     // returns RGB if returnBGR is false
     const size_t size = width * height;
     uint8_t* rgb = (uint8_t*)calloc((size * 3), sizeof(uint8_t));
