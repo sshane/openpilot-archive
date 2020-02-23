@@ -206,7 +206,7 @@ int main(){
         while (!do_exit){
             loopStart = millis_since_boot();
 
-            /*VIPCBuf* buf;
+            VIPCBuf* buf;
             VIPCBufExtra extra;
 
             buf = visionstream_get(&stream, &extra);
@@ -214,6 +214,7 @@ int main(){
                 printf("trafficd: visionstream get failed\n");
                 break;
             }
+            /*
 
             std::vector<float> inputVector = processStreamBuffer(buf);  // writes float vector to inputVector
             // std::cout << "Vector elements: " << inputVector.size() << std::endl;
