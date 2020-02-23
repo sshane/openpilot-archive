@@ -28,7 +28,6 @@ if arch == "aarch64":
   ]
   libpath = [
     "#phonelibs/snpe/aarch64-android-clang3.8",
-    "#phonelibs/fastcv/aarch64/include",
     "/usr/lib",
     "/data/data/com.termux/files/usr/lib",
     "/system/vendor/lib64",
@@ -119,7 +118,6 @@ env = Environment(
     "#phonelibs/eigen",
     "#phonelibs/curl/include",
     "#phonelibs/opencv/include",
-    "#phonelibs/fastcv/aarch64/include",
     "#phonelibs/libgralloc/include",
     "#phonelibs/android_frameworks_native/include",
     "#phonelibs/android_hardware_libhardware/include",

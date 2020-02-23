@@ -180,6 +180,32 @@ void set_do_exit(int sig) {
     do_exit = 1;
 }
 
+static uint8_t* yuv420p_to_rgb2(const uint8_t* y, const uint8_t* u, const uint8_t* v, const size_t width, const size_t height)
+{
+    const size_t size = width * height;
+    uint8_t* rgb = (uint8_t*)calloc((size * 3), sizeof(uint8_t));
+
+    int uv_index = 0, pass = 0;
+    int b,g,r;
+    uint8_t* ptr = rgb;
+    for (int j = 0; j < height; j++) {
+        for (int i = 0; i < width; i++) {
+            int yy = y[(j * width) + i];
+            int uu = u[((j / 2) * (width / 2)) + (i / 2)];
+            int vv = v[((j / 2) * (width / 2)) + (i / 2)];
+
+            r = 1.164 * (yy - 16) + 1.596 * (vv - 128);
+            g = 1.164 * (yy - 16) - 0.813 * (vv - 128) - 0.391 * (uu - 128);
+            b = 1.164 * (yy - 16) + 2.018 * (uu - 128);
+            *ptr++ = CLAMP(r);
+            *ptr++ = CLAMP(g);
+            *ptr++ = CLAMP(b);
+        }
+    }
+
+    return rgb;
+}
+
 
 void YUV2RGB(void *yuvDataIn, void *rgbDataOut, int w, int h, int outNCh) {
 
