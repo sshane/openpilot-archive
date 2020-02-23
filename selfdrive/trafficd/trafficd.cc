@@ -184,14 +184,14 @@ uint8_t clamp(int16_t value) {
     return value<0 ? 0 : (value>255 ? 255 : value);
 }
 
-static uint8_t* yuv420p_to_rgb2(const uint8_t* y, const uint8_t* u, const uint8_t* v, const size_t width, const size_t height, const bool returnBGR) {
+static std::vector<int> yuv420p_to_rgb2(const uint8_t* y, const uint8_t* u, const uint8_t* v, const size_t width, const size_t height, const bool returnBGR) {
     // returns RGB if returnBGR is false
     const size_t size = width * height;
     uint8_t* rgb = (uint8_t*)calloc((size * 3), sizeof(uint8_t));
 
     int uv_index = 0, pass = 0;
     int b,g,r;
-    uint8_t* ptr = rgb;
+    uint8_t* src_ptr = rgb;
     for (int j = 0; j < height; j++) {
         for (int i = 0; i < width; i++) {
             int yy = y[(j * width) + i];
@@ -207,13 +207,26 @@ static uint8_t* yuv420p_to_rgb2(const uint8_t* y, const uint8_t* u, const uint8_
                 g = 1.164 * (yy - 16) - 0.813 * (vv - 128) - 0.391 * (uu - 128);
                 b = 1.164 * (yy - 16) + 2.018 * (uu - 128);
             }
-            *ptr++ = clamp(r);
-            *ptr++ = clamp(g);
-            *ptr++ = clamp(b);
+            *src_ptr++ = clamp(r);
+            *src_ptr++ = clamp(g);
+            *src_ptr++ = clamp(b);
         }
     }
 
-    return rgb;
+    src_ptr += (top_crop * image_stride); // starting offset of 150 lines of stride in
+
+    std::vector<int> outputVector;
+    for (int line = 0; line < cropped_shape[0]; line++) {
+        for(int line_pos = 0; line_pos < (cropped_shape[1] * cropped_shape[2]); line_pos += cropped_shape[2]) {
+            outputVector.push_back(src_ptr[line_pos + offset + 0]);
+            outputVector.push_back(src_ptr[line_pos + offset + 1]);
+            outputVector.push_back(src_ptr[line_pos + offset + 2]);
+        }
+        src_ptr += image_stride;
+    }
+
+
+    return outputVector;
 }
 
 int main(){
@@ -258,16 +271,13 @@ int main(){
             uint8_t *v = u + (buf_info.width/2)*(buf_info.height/2);
 
             //img = malloc(3052008);
-            double st = millis_since_boot();
-            for (int test=0; test<1000;test++){
-                uint8_t* img = yuv420p_to_rgb2(y, u, v, buf_info.width, buf_info.height, true);
-            }
-            std::cout << "Time: " << millis_since_boot() - st << " ms\n";
+
+            std::vector<int> img = yuv420p_to_rgb2(y, u, v, buf_info.width, buf_info.height, false);
 
 //            YUV2RGB(buf->addr, img, buf_info.width, buf_info.height, 1);
-//            f = fopen("/data/buffer1", "wb");
-//            fwrite((uint8_t *)img, 1, 3052008 , f);
-//            fclose(f);
+            f = fopen("/data/buffer1", "wb");
+            fwrite((uint8_t *)img, 1, 3052008 , f);
+            fclose(f);
 
 //            Mat mYUV(buf_info.height + buf_info.height/2, buf_info.width, CV_8UC1, (void*) buf->addr);
 //            Mat mRGB(buf_info.height, buf_info.width, CV_8UC3);
