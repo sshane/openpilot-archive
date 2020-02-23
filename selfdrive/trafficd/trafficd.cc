@@ -235,6 +235,7 @@ static std::vector<float> getFlatVector(const VIPCBuf* buf, const bool returnBGR
         }
     }
     free(rgb);
+    std::reverse(bgrVec.begin(), bgrVec.end());
     return bgrVec;
 }
 
