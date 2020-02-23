@@ -217,7 +217,7 @@ static void yuv420p_to_rgb2(const uint8_t* y, const uint8_t* u, const uint8_t* v
 
     std::vector<int> outputVector;
 
-    void* img = malloc(size * 3);
+    void* img = malloc(cropped_size);
     uint8_t *dst_ptr = (uint8_t *)img;
     int idx = 0;
     for (int line = 0; line < cropped_shape[0]; line++) {
@@ -234,7 +234,7 @@ static void yuv420p_to_rgb2(const uint8_t* y, const uint8_t* u, const uint8_t* v
     }
     FILE *f;
     f = fopen("/data/buffer1", "wb");
-    fwrite((uint8_t *)img, 1, 3052008 , f);
+    fwrite((uint8_t *)img, 1, cropped_size , f);
     fclose(f);
 //    return cropped;
 }
