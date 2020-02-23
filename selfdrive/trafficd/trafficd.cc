@@ -109,21 +109,21 @@ void initModel() {
 //    return 0;
 //}
 
-std::vector<float> processStreamBuffer(VIPCBuf* buf) {
-    uint8_t *src_ptr = (uint8_t *)buf->addr;
-    src_ptr += (top_crop * image_stride); // starting offset of 150 lines of stride in
-
-    std::vector<float> outputVector;
-    for (int line = 0; line < cropped_shape[0]; line++) {
-        for(int line_pos = 0; line_pos < (cropped_shape[1] * cropped_shape[2]); line_pos += cropped_shape[2]) {
-            outputVector.insert(outputVector.begin(), src_ptr[line_pos + offset + 0] / pixel_norm);
-            outputVector.insert(outputVector.begin(), src_ptr[line_pos + offset + 1] / pixel_norm);
-            outputVector.insert(outputVector.begin(), src_ptr[line_pos + offset + 2] / pixel_norm);
-        }
-        src_ptr += image_stride;
-    }
-    return outputVector;
-}
+//std::vector<float> processStreamBuffer(VIPCBuf* buf) {
+//    uint8_t *src_ptr = (uint8_t *)buf->addr;
+//    src_ptr += (top_crop * image_stride); // starting offset of 150 lines of stride in
+//
+//    std::vector<float> outputVector;
+//    for (int line = 0; line < cropped_shape[0]; line++) {
+//        for(int line_pos = 0; line_pos < (cropped_shape[1] * cropped_shape[2]); line_pos += cropped_shape[2]) {
+//            outputVector.push_back(src_ptr[line_pos + offset + 0] / pixel_norm);
+//            outputVector.push_back(src_ptr[line_pos + offset + 1] / pixel_norm);
+//            outputVector.push_back(src_ptr[line_pos + offset + 2] / pixel_norm);
+//        }
+//        src_ptr += image_stride;
+//    }
+//    return outputVector;
+//}
 
 void sendPrediction(std::vector<float> modelOutputVec, PubSocket* traffic_lights_sock) {
     float modelOutput[4];
@@ -224,9 +224,11 @@ static std::vector<float> getFlatVector(const VIPCBuf* buf, const bool returnBGR
                 g = 1.164 * (yy - 16) - 0.813 * (vv - 128) - 0.391 * (uu - 128);
                 r = 1.164 * (yy - 16) + 2.018 * (uu - 128);
             }
-            bgrVec.push_back(clamp(r) / 255.0);
-            bgrVec.push_back(clamp(g) / 255.0);
-            bgrVec.push_back(clamp(b) / 255.0);
+
+            bgrVec.insert(bgrVec.begin(), clamp(r) / 255.0);
+            bgrVec.insert(bgrVec.begin(), clamp(g) / 255.0);
+            bgrVec.insert(bgrVec.begin(), clamp(b) / 255.0);
+
             *src_ptr++ = clamp(r);
             *src_ptr++ = clamp(g);
             *src_ptr++ = clamp(b);
