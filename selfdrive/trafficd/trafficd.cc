@@ -129,8 +129,9 @@ void sendPrediction(std::vector<float> modelOutputVec, PubSocket* traffic_lights
     float modelOutput[4];
     for (int i = 0; i < 4; i++){  // convert vector to array
         modelOutput[i] = modelOutputVec[i];
-        // std::cout << modelOutput[i] << std::endl;
+        std::cout << modelOutput[i] << std::endl;
     }
+    std::cout << std::endl;
 
     kj::ArrayPtr<const float> modelOutput_vs(&modelOutput[0], 4);
 
