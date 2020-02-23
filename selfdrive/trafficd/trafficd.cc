@@ -270,18 +270,26 @@ int main(){
             fwrite((uint8_t *)img, 1, 3052008, f);
 
 
-            uint8_t *src_ptr = (uint8_t *)img;
-            src_ptr += (top_crop * image_stride); // starting offset of 150 lines of stride in
+//            uint8_t *src_ptr = (uint8_t *)img;
+//            src_ptr += (top_crop * image_stride); // starting offset of 150 lines of stride in
 
             std::vector<int> outputVector;
-            for (int line = 0; line < cropped_shape[0]; line++) {
-                for(int line_pos = 0; line_pos < (cropped_shape[1] * cropped_shape[2]); line_pos += cropped_shape[2]) {
-                    outputVector.push_back(src_ptr[line_pos + offset + 0]);
-                    outputVector.push_back(src_ptr[line_pos + offset + 1]);
-                    outputVector.push_back(src_ptr[line_pos + offset + 2]);
+            for (int x = 0; x < 1164; x++) {
+                for (int y = 0; y < 874; y++) {
+                    outputVector.push_back(img[x][y][0]);
+                    outputVector.push_back(img[x][y][1]);
+                    outputVector.push_back(img[x][y][2]);
                 }
-                src_ptr += image_stride;
             }
+
+//            for (int line = 0; line < cropped_shape[0]; line++) {
+//                for(int line_pos = 0; line_pos < (cropped_shape[1] * cropped_shape[2]); line_pos += cropped_shape[2]) {
+//                    outputVector.push_back(src_ptr[line_pos + offset + 0]);
+//                    outputVector.push_back(src_ptr[line_pos + offset + 1]);
+//                    outputVector.push_back(src_ptr[line_pos + offset + 2]);
+//                }
+//                src_ptr += image_stride;
+//            }
             std::cout << "Size of vector: " << outputVector.size() << std::endl;
             ofstream outputfile("/data/cropped");
             std::copy(outputVector.rbegin(), outputVector.rend(), std::ostream_iterator<int>(outputfile, "\n"));
