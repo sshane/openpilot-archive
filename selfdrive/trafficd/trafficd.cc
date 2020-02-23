@@ -279,13 +279,13 @@ int main(){
             //img = malloc(3052008);
 
             std::vector<int> img = yuv420p_to_rgb2(y, u, v, buf_info.width, buf_info.height, false);
-            int* temp = malloc(img.size)
-            for (int i = 0; i < img.size; i++){
+            int* temp = malloc(img.size())
+            for (int i = 0; i < img.size(); i++){
                 temp[i] = img[i];
             }
             FILE *f;
             f = fopen("/data/buffer1", "wb");
-            fwrite((uint8_t *)img, 1, img.size(), f);
+            fwrite((uint8_t *)temp, 1, img.size(), f);
 
 
 //            YUV2RGB(buf->addr, img, buf_info.width, buf_info.height, 1);
