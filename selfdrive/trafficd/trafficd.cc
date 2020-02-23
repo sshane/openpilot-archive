@@ -184,7 +184,7 @@ uint8_t clamp(int16_t value) {
     return value<0 ? 0 : (value>255 ? 255 : value);
 }
 
-static std::vector<int> yuv420p_to_rgb2(const uint8_t* y, const uint8_t* u, const uint8_t* v, const size_t width, const size_t height, const bool returnBGR) {
+static uint8_t* yuv420p_to_rgb2(const uint8_t* y, const uint8_t* u, const uint8_t* v, const size_t width, const size_t height, const bool returnBGR) {
     // returns RGB if returnBGR is false
     const size_t size = width * height;
     uint8_t* rgb = (uint8_t*)calloc((size * 3), sizeof(uint8_t));
@@ -212,24 +212,19 @@ static std::vector<int> yuv420p_to_rgb2(const uint8_t* y, const uint8_t* u, cons
             *src_ptr++ = clamp(b);
         }
     }
+    return rgb;
 
-    FILE *f;
-    f = fopen("/data/buffer2", "wb");
-    fwrite((uint8_t *)rgb, 1, 3052008 , f);
-    fclose(f);
-
-
-    *src_ptr += (top_crop * image_stride); // starting offset of 150 lines of stride in
+    src_ptr += (top_crop * image_stride); // starting offset of 150 lines of stride in
 
     std::vector<int> outputVector;
 
     for (int line = 0; line < cropped_shape[0]; line++) {
         for(int line_pos = 0; line_pos < (cropped_shape[1] * cropped_shape[2]); line_pos += cropped_shape[2]) {
-            outputVector.push_back(*src_ptr[line_pos + offset + 0]);
-            outputVector.push_back(*src_ptr[line_pos + offset + 1]);
-            outputVector.push_back(*src_ptr[line_pos + offset + 2]);
+            outputVector.push_back(src_ptr[line_pos + offset + 0]);
+            outputVector.push_back(src_ptr[line_pos + offset + 1]);
+            outputVector.push_back(src_ptr[line_pos + offset + 2]);
         }
-        *src_ptr += image_stride;
+        src_ptr += image_stride;
     }
     std::cout << "Size of vector: " << outputVector.size() << std::endl;
 
