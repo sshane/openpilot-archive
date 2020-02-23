@@ -220,17 +220,17 @@ int main(){
             uint8_t *v = u + (buf_info.width/2)*(buf_info.height/2);
 
 
-            FILE *f = fopen("/data/y", "wb");
-            fwrite((uint8_t *)y, 1, sizeof(y), f);
-            fclose(f);
+            FILE *f1 = fopen("/data/y", "wb");
+            fwrite((uint8_t *)y, 1, sizeof(y), f1);
+            fclose(f1);
 
-            FILE *f = fopen("/data/u", "wb");
-            fwrite((uint8_t *)u, 1, sizeof(u), f);
-            fclose(f);
+            FILE *f2 = fopen("/data/u", "wb");
+            fwrite((uint8_t *)u, 1, sizeof(u), f2);
+            fclose(f2);
 
-            FILE *f = fopen("/data/v", "wb");
-            fwrite((uint8_t *)v, 1, sizeof(v), f);
-            fclose(f);
+            FILE *f3 = fopen("/data/v", "wb");
+            fwrite((uint8_t *)v, 1, sizeof(v), f3);
+            fclose(f3);
             break;
 
             /*
