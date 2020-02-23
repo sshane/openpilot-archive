@@ -215,6 +215,7 @@ static uint8_t* yuv420p_to_rgb2(const uint8_t* y, const uint8_t* u, const uint8_
             *src_ptr++ = clamp(b);
         }
     }
+    std::cout << "finished loop\n";
     return rgb;
 }
 
