@@ -9,9 +9,10 @@ volatile sig_atomic_t do_exit = 0;
 const double modelRate = 1 / 5.;  // 5 Hz
 
 const int image_stride = 3840;  // global constants
-const int cropped_size = 515 * 814 * 3;
 const int original_shape[3] = {874, 1164, 3};
+const int original_size = 874 * 1164 * 3;
 const int cropped_shape[3] = {515, 814, 3};
+const int cropped_size = 515 * 814 * 3;
 
 const float pixel_norm = 255.0;
 const int horizontal_crop = 175;
@@ -188,8 +189,7 @@ uint8_t clamp(int16_t value) {
 
 static std::vector<uint8_t> yuv420p_to_rgb2(const uint8_t* y, const uint8_t* u, const uint8_t* v, const size_t width, const size_t height, const bool returnBGR) {
     // returns RGB if returnBGR is false
-    const size_t size = width * height;
-    uint8_t* rgb = (uint8_t*)calloc((size * 3), sizeof(uint8_t));
+    uint8_t* rgb = (uint8_t*)calloc((original_size), sizeof(uint8_t));
 
     int b ,g, r;
     uint8_t* src_ptr = rgb;
