@@ -209,13 +209,13 @@ static std::vector<float> getFlatVector(const VIPCBuf* buf, const bool returnBGR
             int vv = v[((y_cord / 2) * (width / 2)) + (x_cord / 2)];
 
             if (returnBGR){
-                b = 1.164 * (yy - 16) + 1.596 * (vv - 128);
-                g = 1.164 * (yy - 16) - 0.813 * (vv - 128) - 0.391 * (uu - 128);
-                r = 1.164 * (yy - 16) + 2.018 * (uu - 128);
-            } else {
                 r = 1.164 * (yy - 16) + 1.596 * (vv - 128);
                 g = 1.164 * (yy - 16) - 0.813 * (vv - 128) - 0.391 * (uu - 128);
                 b = 1.164 * (yy - 16) + 2.018 * (uu - 128);
+            } else {
+                b = 1.164 * (yy - 16) + 1.596 * (vv - 128);
+                g = 1.164 * (yy - 16) - 0.813 * (vv - 128) - 0.391 * (uu - 128);
+                r = 1.164 * (yy - 16) + 2.018 * (uu - 128);
             }
             bgrVec.push_back(clamp(r) / 255.0);
             bgrVec.push_back(clamp(g) / 255.0);
