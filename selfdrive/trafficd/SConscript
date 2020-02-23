@@ -1,7 +1,7 @@
-Import('env', 'arch', 'messaging', 'common', 'gpucommon', 'visionipc', 'fastcv')
+Import('env', 'arch', 'messaging', 'common', 'gpucommon', 'visionipc')
 lenv = env.Clone()
 
-libs = [messaging, common, 'OpenCL', 'SNPE', 'capnp', 'zmq', 'kj', 'yuv', gpucommon, visionipc, fastcv]
+libs = [messaging, common, 'OpenCL', 'SNPE', 'capnp', 'zmq', 'kj', 'yuv', gpucommon, visionipc, 'fastcv']
 
 
 if arch == "aarch64":
