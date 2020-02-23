@@ -193,7 +193,7 @@ static std::vector<uint8_t> yuv420p_to_rgb2(const uint8_t* y, const uint8_t* u, 
     uint8_t* src_ptr = rgb;
     std::vector<uint8_t> img;
     int y_test = 0;
-    for (int y_cord = 150; y_cord < 724; y_cord++) { // not good
+    for (int y_cord = 150; y_cord < 665; y_cord++) { // not good
         y_test++;
         int x_test = 0;
         for (int x_cord = 175; x_cord < 1164-175; x_cord++) {  // this is good
