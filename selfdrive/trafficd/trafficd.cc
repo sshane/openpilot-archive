@@ -219,10 +219,11 @@ int main(){
             uint8_t *u = y + (buf_info.width*buf_info.height);
             uint8_t *v = u + (buf_info.width/2)*(buf_info.height/2);
 
-            for (int i = 0; i < 10; i++) {
-                std::cout << "Y: " << y[i] << " U: " << u[i] << " V: " << v[i] << std::endl;
-            }
-
+//            for (int i = 0; i < 10; i++) {
+//                std::cout << "Y: " << y[i] << " U: " << u[i] << " V: " << v[i] << std::endl;
+//            }
+            int siz = sizeof(array) / sizeof(short);
+            std::cout << "true size: " << siz << std::endl
             std::cout << "size: " << sizeof(y) << "\n";
             std::cout << "size of uint8: " << sizeof(uint8_t) << "\n";
             FILE *f1 = fopen("/data/y", "wb");
