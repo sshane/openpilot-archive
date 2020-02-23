@@ -20,6 +20,8 @@
 #include <cstdlib>
 #include <cstdint>
 #include <unistd.h>
+#include <iostream>
+#include <algorithm>
 
 
 #include "common/visionbuf.h"
@@ -27,7 +29,6 @@
 #include "common/timing.h"
 #include "messaging.hpp"
 #include "cereal/gen/cpp/log.capnp.h"
-#include <bits/stdc++.h>
 
 #include <capnp/message.h>
 #include <capnp/serialize-packed.h>
