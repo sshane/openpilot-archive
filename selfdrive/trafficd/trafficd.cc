@@ -200,9 +200,6 @@ int main(){
             usleep(100000);
         }
 
-        cl_mem yuv_cl;
-        VisionBuf yuv_ion = visionbuf_allocate_cl(buf_info.buf_len, device_id, context, &yuv_cl);
-
         double loopStart;
         double loopEnd;
         double lastLoop = 0;
