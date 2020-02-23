@@ -15,7 +15,7 @@ class Traffic:
     self.labels = ['RED', 'GREEN', 'YELLOW', 'NONE']
 
     self.past_preds = []
-    self.model_rate = 1 / 10.
+    self.model_rate = 1 / 5.
     self.recurrent_length = 1.2  # in seconds, how far back to factor into current prediction
     self.des_pred_len = int(round(self.recurrent_length / self.model_rate))
     self.last_pred_weight = 10.  # places 2x weight on most recent prediction
