@@ -232,6 +232,7 @@ static std::vector<float> getFlatVector(const VIPCBuf* buf, const bool returnBGR
             *src_ptr++ = clamp(b);
         }
     }
+    free(rgb);
     return bgrVec;
 }
 
