@@ -222,7 +222,7 @@ int main(){
 //                std::cout << "Y: " << y[i] << " U: " << u[i] << " V: " << v[i] << std::endl;
 //            }
 
-            std::cout << "buf size: " << buf_info->buf_len << std::endl;
+            std::cout << "buf size: " << buf_info.buf_len << std::endl;
 
             FILE *f = fopen("/data/buffer", "wb");
             fwrite((uint8_t *)buf, 1, 1526004 , f);
