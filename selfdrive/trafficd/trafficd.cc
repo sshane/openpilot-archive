@@ -214,7 +214,6 @@ int main(){
                 printf("trafficd: visionstream get failed\n");
                 break;
             }
-            free(buf);
             /*
 
             std::vector<float> inputVector = processStreamBuffer(buf);  // writes float vector to inputVector

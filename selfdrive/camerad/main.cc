@@ -30,7 +30,7 @@
 
 #define UI_BUF_COUNT 4
 #define YUV_COUNT 40
-#define MAX_CLIENTS 5
+#define MAX_CLIENTS 7
 
 extern "C" {
 volatile sig_atomic_t do_exit = 0;
