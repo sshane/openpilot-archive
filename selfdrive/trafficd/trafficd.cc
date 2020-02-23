@@ -194,7 +194,7 @@ int main(){
 
     while (!do_exit){  // keep traffic running in case we can't get a frame (mimicking modeld)
         VisionStreamBufs buf_info;
-        int err = visionstream_init(&stream, VISION_STREAM_RGB_BACK, true, &buf_info);
+        int err = visionstream_init(&stream, VISION_STREAM_RGB_BACK, false, &buf_info);
         if (err != 0) {
             printf("trafficd: visionstream fail\n");
             usleep(100000);
