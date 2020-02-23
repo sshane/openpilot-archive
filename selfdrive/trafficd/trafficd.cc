@@ -224,8 +224,9 @@ static std::vector<uint8_t> yuv420p_to_rgb2(const uint8_t* y, const uint8_t* u, 
             *src_ptr++ = clamp(g);
             *src_ptr++ = clamp(b);
         }
+        std::cout << x_test << std::endl;
     }
-    std::cout << x_test << " " << y_test << std::endl;
+    std::cout << y_test << std::endl;
     std::cout << "finished loop\n";
     return img;
 }
