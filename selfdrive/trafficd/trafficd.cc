@@ -180,7 +180,7 @@ void set_do_exit(int sig) {
     do_exit = 1;
 }
 
-static uint8_t* yuv420p_to_rgb2(const uint8_t* y, const uint8_t* u, const uint8_t* v, const size_t width, const size_t height)
+void yuv420p_to_rgb2(const uint8_t* y, const uint8_t* u, const uint8_t* v, const size_t width, const size_t height, void *buf)
 {
     const size_t size = width * height;
     uint8_t* rgb = (uint8_t*)calloc((size * 3), sizeof(uint8_t));
@@ -197,9 +197,12 @@ static uint8_t* yuv420p_to_rgb2(const uint8_t* y, const uint8_t* u, const uint8_
             r = 1.164 * (yy - 16) + 1.596 * (vv - 128);
             g = 1.164 * (yy - 16) - 0.813 * (vv - 128) - 0.391 * (uu - 128);
             b = 1.164 * (yy - 16) + 2.018 * (uu - 128);
-            *ptr++ = clamp(r);
-            *ptr++ = clamp(g);
-            *ptr++ = clamp(b);
+            buf[(i * j * 3) + 0] = r;
+            buf[(i * j * 3) + 1] = g;
+            buf[(i * j * 3) + 2] = b;
+//            *ptr++ = clamp(r);
+//            *ptr++ = clamp(g);
+//            *ptr++ = clamp(b);
         }
     }
 
@@ -289,21 +292,23 @@ int main(){
             void* img;
             FILE *f;
 
+            uint8_t *y = (uint8_t*)buf->addr;
+            uint8_t *u = y + (buf_info.width*buf_info.height);
+            uint8_t *v = u + (buf_info.width/2)*(buf_info.height/2);
+
             img = malloc(3052008);
-            YUV2RGB(buf->addr, img, buf_info.width, buf_info.height, 1);
-            f = fopen("/data/buffer1", "wb");
-            fwrite((uint8_t *)img, 1, 3052008 , f);
-            fclose(f);
+            //yuv420p_to_rgb2(y, u, v, buf_info.width, buf_info.height, img);
+
+//            YUV2RGB(buf->addr, img, buf_info.width, buf_info.height, 1);
+//            f = fopen("/data/buffer1", "wb");
+//            fwrite((uint8_t *)img, 1, 3052008 , f);
+//            fclose(f);
 
 //            Mat mYUV(buf_info.height + buf_info.height/2, buf_info.width, CV_8UC1, (void*) buf->addr);
 //            Mat mRGB(buf_info.height, buf_info.width, CV_8UC3);
 //            cvtColor(mYUV, mRGB, CV_YUV2RGB_YV12, 3);
 
 
-
-//            uint8_t *y = (uint8_t*)buf->addr;
-//            uint8_t *u = y + (buf_info.width*buf_info.height);
-//            uint8_t *v = u + (buf_info.width/2)*(buf_info.height/2);
 
 //            for (int i = 0; i < 10; i++) {
 //                std::cout << "Y: " << y[i] << " U: " << u[i] << " V: " << v[i] << std::endl;
