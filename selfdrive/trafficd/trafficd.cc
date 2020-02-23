@@ -200,7 +200,7 @@ static std::vector<uint8_t> yuv420p_to_rgb2(const uint8_t* y, const uint8_t* u, 
         y_test++;
         int x_test = 0;
         for (int x_cord = 0; x_cord < width; x_cord++) {
-            if (x_cord < 150 | x_cord > 1164 - 150){
+            if (x_cord < 175 | x_cord > 1164 - 175){
                 continue;
             }
             x_test++;
