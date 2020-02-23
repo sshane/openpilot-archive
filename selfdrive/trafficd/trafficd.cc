@@ -6,7 +6,7 @@ std::unique_ptr<zdl::SNPE::SNPE> snpe;
 volatile sig_atomic_t do_exit = 0;
 
 const std::vector<std::string> modelLabels = {"RED", "GREEN", "YELLOW", "NONE"};
-const double modelRate = 1 / 5.;  // 5 Hz
+const double modelRate = 1 / 10.;  // 5 Hz
 
 const int image_stride = 3840;  // global constants
 const int original_shape[3] = {874, 1164, 3};
@@ -268,10 +268,9 @@ int main(){
             }
             std::vector<float> imageVector = getFlatVector(buf, true);  // writes float vector to inputVector
 
-            ofstream outputfile("/data/cropped");
-            std::cout << "here\n";
-            std::copy(imageVector.rbegin(), imageVector.rend(), std::ostream_iterator<float>(outputfile, "\n"));
-            return 0;
+//            ofstream outputfile("/data/cropped");
+//            std::cout << "here\n";
+//            std::copy(imageVector.rbegin(), imageVector.rend(), std::ostream_iterator<float>(outputfile, "\n"));
 
 //            std::cout << "Vector size: " << imageVector.size() << std::endl;
 
