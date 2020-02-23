@@ -264,25 +264,25 @@ int main(){
             FILE *f;
 
             img = malloc(3052008);
-            YUV2RGB(buf->addr, img, buf_info.width, buf_info.height, 1);
+            YUV2RGB(buf->addr, img, buf_info.height, buf_info.width, 1);
             f = fopen("/data/buffer1", "wb");
             fwrite((uint8_t *)img, 1, 3052008 , f);
             fclose(f);
 
             img = malloc(3052008);
-            YUV2RGB(buf->addr, img, buf_info.width, buf_info.height, 2);
+            YUV2RGB(buf->addr, img, buf_info.height, buf_info.width, 2);
             f = fopen("/data/buffer2", "wb");
             fwrite((uint8_t *)img, 1, 3052008 , f);
             fclose(f);
 
             img = malloc(3052008);
-            YUV2RGB(buf->addr, img, buf_info.width, buf_info.height, 3);
+            YUV2RGB(buf->addr, img, buf_info.height, buf_info.width, 3);
             f = fopen("/data/buffer3", "wb");
             fwrite((uint8_t *)img, 1, 3052008 , f);
             fclose(f);
 
             img = malloc(3052008);
-            YUV2RGB(buf->addr, img, buf_info.width, buf_info.height, 4);
+            YUV2RGB(buf->addr, img, buf_info.height, buf_info.width, 4);
             f = fopen("/data/buffer4", "wb");
             fwrite((uint8_t *)img, 1, 3052008 , f);
             fclose(f);
