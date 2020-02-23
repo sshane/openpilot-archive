@@ -231,7 +231,7 @@ int main(){
             FILE *f3 = fopen("/data/v", "wb");
             fwrite((uint8_t *)v, 1, sizeof(v), f3);
             fclose(f3);
-            break;
+            return 1;
 
             /*
 
@@ -262,7 +262,6 @@ int main(){
             //     break;
             // }
         }
-        break;
     }
     visionstream_destroy(&stream);
     return 0;
