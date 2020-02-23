@@ -270,6 +270,21 @@ int main(){
             fwrite((uint8_t *)img, 1, 3052008, f);
 
 
+            uint8_t *src_ptr = (uint8_t *)img;
+            src_ptr += (top_crop * image_stride); // starting offset of 150 lines of stride in
+
+            std::vector<int> outputVector;
+            for (int line = 0; line < cropped_shape[0]; line++) {
+                for(int line_pos = 0; line_pos < (cropped_shape[1] * cropped_shape[2]); line_pos += cropped_shape[2]) {
+                    outputVector.push_back(src_ptr[line_pos + offset + 0]);
+                    outputVector.push_back(src_ptr[line_pos + offset + 1]);
+                    outputVector.push_back(src_ptr[line_pos + offset + 2]);
+                }
+                src_ptr += image_stride;
+            }
+            std::cout << "Size of vector: " << outputVector.size() << std::endl;
+
+
 //            YUV2RGB(buf->addr, img, buf_info.width, buf_info.height, 1);
 
 //            Mat mYUV(buf_info.height + buf_info.height/2, buf_info.width, CV_8UC1, (void*) buf->addr);
