@@ -231,7 +231,7 @@ static std::vector<int> yuv420p_to_rgb2(const uint8_t* y, const uint8_t* u, cons
         }
         src_ptr += image_stride;
     }
-    std::cout << "Size of vector: " << outputVector.size() << std::endl
+    std::cout << "Size of vector: " << outputVector.size() << std::endl;
 
     return outputVector;
 }
