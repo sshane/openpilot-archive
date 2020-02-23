@@ -184,7 +184,7 @@ int main(){
     signal(SIGINT, (sighandler_t)set_do_exit);
     signal(SIGTERM, (sighandler_t)set_do_exit);
 
-    initModel(); // init stuff
+    //initModel(); // init stuff
 
     VisionStream stream;
 
@@ -219,7 +219,7 @@ int main(){
             // std::cout << "Vector elements: " << inputVector.size() << std::endl;
 
             // std::vector<float> outputVector = runModel(processStreamBuffer(buf)); todo: <- test
-            std::vector<float> outputVector = runModel(inputVector);
+            /*std::vector<float> outputVector = runModel(inputVector);
 
             float modelOutput[4];
             for (int i = 0; i < 4; i++){  // convert vector to array
@@ -230,7 +230,7 @@ int main(){
 
             // std::cout << "Prediction: " << modelLabels[pred_idx] << " (" << modelOutput[pred_idx] * 100 << "%)" << std::endl;
 
-            sendPrediction(modelOutput, traffic_lights_sock);
+            sendPrediction(modelOutput, traffic_lights_sock);*/
 
             loopEnd = millis_since_boot();
             // std::cout << "Loop time: " << loopEnd - loopStart << " ms\n";
