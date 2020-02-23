@@ -184,7 +184,7 @@ uint8_t clamp(int16_t value) {
     return value<0 ? 0 : (value>255 ? 255 : value);
 }
 
-static void* yuv420p_to_rgb2(const uint8_t* y, const uint8_t* u, const uint8_t* v, const size_t width, const size_t height, const bool returnBGR) {
+static void yuv420p_to_rgb2(const uint8_t* y, const uint8_t* u, const uint8_t* v, const size_t width, const size_t height, const bool returnBGR) {
     // returns RGB if returnBGR is false
     const size_t size = width * height;
     uint8_t* rgb = (uint8_t*)calloc((size * 3), sizeof(uint8_t));
@@ -216,7 +216,7 @@ static void* yuv420p_to_rgb2(const uint8_t* y, const uint8_t* u, const uint8_t* 
     src_ptr += (top_crop * image_stride); // starting offset of 150 lines of stride in
 
     std::vector<int> outputVector;
-    void* cropped = malloc(size * 3);
+    uint8_t* cropped = malloc(size * 3);
     int idx = 0;
     for (int line = 0; line < cropped_shape[0]; line++) {
         for(int line_pos = 0; line_pos < (cropped_shape[1] * cropped_shape[2]); line_pos += cropped_shape[2]) {
@@ -232,7 +232,7 @@ static void* yuv420p_to_rgb2(const uint8_t* y, const uint8_t* u, const uint8_t* 
     }
 
 
-    return cropped;
+//    return cropped;
 }
 
 int main(){
@@ -276,13 +276,12 @@ int main(){
             uint8_t *u = y + (buf_info.width*buf_info.height);
             uint8_t *v = u + (buf_info.width/2)*(buf_info.height/2);
 
-            img = malloc(3052008);
-            img = yuv420p_to_rgb2(y, u, v, buf_info.width, buf_info.height, false);
+            yuv420p_to_rgb2(y, u, v, buf_info.width, buf_info.height, false);
 
 //            YUV2RGB(buf->addr, img, buf_info.width, buf_info.height, 1);
-            f = fopen("/data/buffer1", "wb");
-            fwrite((uint8_t *)img, 1, 3052008 , f);
-            fclose(f);
+//            f = fopen("/data/buffer1", "wb");
+//            fwrite((uint8_t *)img, 1, 3052008 , f);
+//            fclose(f);
 
 //            Mat mYUV(buf_info.height + buf_info.height/2, buf_info.width, CV_8UC1, (void*) buf->addr);
 //            Mat mRGB(buf_info.height, buf_info.width, CV_8UC3);
