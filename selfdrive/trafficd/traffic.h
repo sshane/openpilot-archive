@@ -27,6 +27,7 @@
 #include "common/timing.h"
 #include "messaging.hpp"
 #include "cereal/gen/cpp/log.capnp.h"
+#include <bits/stdc++.h>
 
 #include <capnp/message.h>
 #include <capnp/serialize-packed.h>
