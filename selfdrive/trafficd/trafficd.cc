@@ -2,10 +2,10 @@
 
 using namespace std;
 
-std::unique_ptr <zdl::SNPE::SNPE> snpe;
+std::unique_ptr<zdl::SNPE::SNPE> snpe;
 volatile sig_atomic_t do_exit = 0;
 
-const std::vector <std::string> modelLabels = {"RED", "GREEN", "YELLOW", "NONE"};
+const std::vector<std::string> modelLabels = {"RED", "GREEN", "YELLOW", "NONE"};
 const double modelRate = 1 / 5.;  // 5 Hz
 
 const int image_stride = 3840;  // global constants
@@ -35,25 +35,24 @@ zdl::DlSystem::Runtime_t checkRuntime() {
 }
 
 void initializeSNPE(zdl::DlSystem::Runtime_t runtime) {
-    std::unique_ptr <zdl::DlContainer::IDlContainer> container;
+    std::unique_ptr<zdl::DlContainer::IDlContainer> container;
     container = zdl::DlContainer::IDlContainer::open("../../models/traffic_model.dlc");
     zdl::SNPE::SNPEBuilder snpeBuilder(container.get());
     snpe = snpeBuilder.setOutputLayers({})
-            .setRuntimeProcessor(runtime)
-            .setUseUserSuppliedBuffers(false)
-            .setPerformanceProfile(zdl::DlSystem::PerformanceProfile_t::HIGH_PERFORMANCE)
-            .setCPUFallbackMode(true)
-            .build();
+                      .setRuntimeProcessor(runtime)
+                      .setUseUserSuppliedBuffers(false)
+                      .setPerformanceProfile(zdl::DlSystem::PerformanceProfile_t::HIGH_PERFORMANCE)
+                      .setCPUFallbackMode(true)
+                      .build();
 }
 
-std::unique_ptr <zdl::DlSystem::ITensor>
-loadInputTensor(std::unique_ptr <zdl::SNPE::SNPE> &snpe, std::vector<float> inputVec) {
-    std::unique_ptr <zdl::DlSystem::ITensor> input;
+std::unique_ptr<zdl::DlSystem::ITensor> loadInputTensor(std::unique_ptr<zdl::SNPE::SNPE> &snpe, std::vector<float> inputVec) {
+    std::unique_ptr<zdl::DlSystem::ITensor> input;
     const auto &strList_opt = snpe->getInputTensorNames();
 
     if (!strList_opt) throw std::runtime_error("Error obtaining Input tensor names");
     const auto &strList = *strList_opt;
-    assert(strList.size() == 1);
+    assert (strList.size() == 1);
 
     const auto &inputDims_opt = snpe->getInputDimensions(strList.at(0));
     const auto &inputShape = *inputDims_opt;
@@ -65,20 +64,19 @@ loadInputTensor(std::unique_ptr <zdl::SNPE::SNPE> &snpe, std::vector<float> inpu
     return input;
 }
 
-zdl::DlSystem::ITensor *
-executeNetwork(std::unique_ptr <zdl::SNPE::SNPE> &snpe, std::unique_ptr <zdl::DlSystem::ITensor> &input) {
+zdl::DlSystem::ITensor* executeNetwork(std::unique_ptr<zdl::SNPE::SNPE>& snpe, std::unique_ptr<zdl::DlSystem::ITensor>& input) {
     static zdl::DlSystem::TensorMap outputTensorMap;
     snpe->execute(input.get(), outputTensorMap);
     zdl::DlSystem::StringList tensorNames = outputTensorMap.getTensorNames();
 
-    const char *name = tensorNames.at(0);  // only should the first
+    const char* name = tensorNames.at(0);  // only should the first
     auto tensorPtr = outputTensorMap.getTensor(name);
     return tensorPtr;
 }
 
-void setModelOutput(const zdl::DlSystem::ITensor *tensor, float *outputArray) {
+void setModelOutput(const zdl::DlSystem::ITensor* tensor, float* outputArray) {
     int counter = 0;
-    for (auto it = tensor->cbegin(); it != tensor->cend(); ++it) {
+    for (auto it = tensor->cbegin(); it != tensor->cend(); ++it ){
         float op = *it;
         outputArray[counter] = op;
         counter += 1;
@@ -86,7 +84,7 @@ void setModelOutput(const zdl::DlSystem::ITensor *tensor, float *outputArray) {
 }
 
 void initModel() {
-    zdl::DlSystem::Runtime_t runt = checkRuntime();
+    zdl::DlSystem::Runtime_t runt=checkRuntime();
     initializeSNPE(runt);
 }
 
@@ -111,13 +109,13 @@ void initModel() {
 //    return 0;
 //}
 
-std::vector<float> processStreamBuffer(VIPCBuf *buf) {
-    uint8_t *src_ptr = (uint8_t *) buf->addr;
+std::vector<float> processStreamBuffer(VIPCBuf* buf) {
+    uint8_t *src_ptr = (uint8_t *)buf->addr;
     src_ptr += (top_crop * image_stride); // starting offset of 150 lines of stride in
 
     std::vector<float> outputVector;
     for (int line = 0; line < cropped_shape[0]; line++) {
-        for (int line_pos = 0; line_pos < (cropped_shape[1] * cropped_shape[2]); line_pos += cropped_shape[2]) {
+        for(int line_pos = 0; line_pos < (cropped_shape[1] * cropped_shape[2]); line_pos += cropped_shape[2]) {
             outputVector.push_back(src_ptr[line_pos + offset + 0] / pixel_norm);
             outputVector.push_back(src_ptr[line_pos + offset + 1] / pixel_norm);
             outputVector.push_back(src_ptr[line_pos + offset + 2] / pixel_norm);
@@ -127,9 +125,9 @@ std::vector<float> processStreamBuffer(VIPCBuf *buf) {
     return outputVector;
 }
 
-void sendPrediction(std::vector<float> modelOutputVec, PubSocket *traffic_lights_sock) {
+void sendPrediction(std::vector<float> modelOutputVec, PubSocket* traffic_lights_sock) {
     float modelOutput[4];
-    for (int i = 0; i < 4; i++) {  // convert vector to array
+    for (int i = 0; i < 4; i++){  // convert vector to array
         modelOutput[i] = modelOutputVec[i];
         // std::cout << modelOutput[i] << std::endl;
     }
@@ -145,15 +143,15 @@ void sendPrediction(std::vector<float> modelOutputVec, PubSocket *traffic_lights
 
     auto words = capnp::messageToFlatArray(msg);
     auto bytes = words.asBytes();
-    traffic_lights_sock->send((char *) bytes.begin(), bytes.size());
+    traffic_lights_sock->send((char*)bytes.begin(), bytes.size());
 }
 
 std::vector<float> runModel(std::vector<float> inputVector) {
-    std::unique_ptr <zdl::DlSystem::ITensor> inputTensor = loadInputTensor(snpe, inputVector);  // inputVec)
-    zdl::DlSystem::ITensor *tensor = executeNetwork(snpe, inputTensor);
+    std::unique_ptr<zdl::DlSystem::ITensor> inputTensor = loadInputTensor(snpe, inputVector);  // inputVec)
+    zdl::DlSystem::ITensor* tensor = executeNetwork(snpe, inputTensor);
 
     std::vector<float> outputVector;
-    for (auto it = tensor->cbegin(); it != tensor->cend(); ++it) {
+    for (auto it = tensor->cbegin(); it != tensor->cend(); ++it ){
         float op = *it;
         outputVector.push_back(op);
     }
@@ -171,17 +169,15 @@ void sleepFor(double sec) {
 
 double rateKeeper(double loopTime, double lastLoop) {
     double toSleep;
-    if (lastLoop < 0) {  // don't sleep if last loop lagged
-        lastLoop = std::max(lastLoop,
-                            -modelRate);  // this should ensure we don't keep adding negative time to lastLoop if a frame lags pretty badly
-        // negative time being time to subtract from sleep time
+    if (lastLoop < 0){  // don't sleep if last loop lagged
+        lastLoop = std::max(lastLoop, -modelRate);  // this should ensure we don't keep adding negative time to lastLoop if a frame lags pretty badly
+                                                    // negative time being time to subtract from sleep time
         // std::cout << "Last frame lagged by " << -lastLoop << " seconds. Sleeping for " << modelRate - (loopTime * msToSec) + lastLoop << " seconds" << std::endl;
-        toSleep = modelRate - (loopTime * msToSec) +
-                  lastLoop;  // keep time as close as possible to our rate, this reduces the time slept this iter
+        toSleep = modelRate - (loopTime * msToSec) + lastLoop;  // keep time as close as possible to our rate, this reduces the time slept this iter
     } else {
         toSleep = modelRate - (loopTime * msToSec);
     }
-    if (toSleep > 0) {  // don't sleep for negative time, in case loop takes too long one iteration
+    if (toSleep > 0){  // don't sleep for negative time, in case loop takes too long one iteration
         sleepFor(toSleep);
     } else {
         std::cout << "trafficd lagging by " << -(toSleep / msToSec) << " ms." << std::endl;
@@ -195,22 +191,22 @@ void set_do_exit(int sig) {
 }
 
 uint8_t clamp(int16_t value) {
-    return value < 0 ? 0 : (value > 255 ? 255 : value);
+    return value<0 ? 0 : (value>255 ? 255 : value);
 }
 
-static std::vector<float> getFlatVector(const VIPCBuf *buf, const bool returnBGR) {
+static std::vector<float> getFlatVector(const VIPCBuf* buf, const bool returnBGR) {
     // returns RGB if returnBGR is false
     const size_t width = original_shape[1];
     const size_t height = original_shape[0];
 
-    uint8_t *y = (uint8_t *) buf->addr;
+    uint8_t *y = (uint8_t*)buf->addr;
     uint8_t *u = y + (width * height);
     uint8_t *v = u + (width / 2) * (height / 2);
 
-    uint8_t *rgb = (uint8_t *) calloc((original_size), sizeof(uint8_t));
+    uint8_t* rgb = (uint8_t*)calloc((original_size), sizeof(uint8_t));
 
     int b, g, r;
-    uint8_t *src_ptr = rgb;
+    uint8_t* src_ptr = rgb;
     std::vector<float> bgrVec;
 
     for (int y_cord = top_crop; y_cord < (original_shape[0] - hood_crop); y_cord++) {
@@ -219,7 +215,7 @@ static std::vector<float> getFlatVector(const VIPCBuf *buf, const bool returnBGR
             int uu = u[((y_cord / 2) * (width / 2)) + (x_cord / 2)];
             int vv = v[((y_cord / 2) * (width / 2)) + (x_cord / 2)];
 
-            if (returnBGR) {
+            if (returnBGR){
                 b = 1.164 * (yy - 16) + 2.018 * (uu - 128);
                 g = 1.164 * (yy - 16) - 0.813 * (vv - 128) - 0.391 * (uu - 128);
                 r = 1.164 * (yy - 16) + 1.596 * (vv - 128);
@@ -239,19 +235,19 @@ static std::vector<float> getFlatVector(const VIPCBuf *buf, const bool returnBGR
     return bgrVec;
 }
 
-int main() {
-    signal(SIGINT, (sighandler_t) set_do_exit);
-    signal(SIGTERM, (sighandler_t) set_do_exit);
+int main(){
+    signal(SIGINT, (sighandler_t)set_do_exit);
+    signal(SIGTERM, (sighandler_t)set_do_exit);
 
     initModel(); // init stuff
 
     VisionStream stream;
 
-    Context *c = Context::create();
-    PubSocket *traffic_lights_sock = PubSocket::create(c, "trafficModelRaw");
+    Context* c = Context::create();
+    PubSocket* traffic_lights_sock = PubSocket::create(c, "trafficModelRaw");
     assert(traffic_lights_sock != NULL);
 
-    while (!do_exit) {  // keep traffic running in case we can't get a frame (mimicking modeld)
+    while (!do_exit){  // keep traffic running in case we can't get a frame (mimicking modeld)
         VisionStreamBufs buf_info;
         int err = visionstream_init(&stream, VISION_STREAM_YUV, true, &buf_info);
         if (err != 0) {
@@ -262,10 +258,10 @@ int main() {
         double loopStart;
         double loopEnd;
         double lastLoop = 0;
-        while (!do_exit) {
+        while (!do_exit){
             loopStart = millis_since_boot();
 
-            VIPCBuf *buf;
+            VIPCBuf* buf;
             VIPCBufExtra extra;
 
             buf = visionstream_get(&stream, &extra);
