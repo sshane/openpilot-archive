@@ -225,9 +225,9 @@ static std::vector<float> getFlatVector(const VIPCBuf* buf, const bool returnBGR
                 r = 1.164 * (yy - 16) + 2.018 * (uu - 128);
             }
 
-            bgrVec.insert(bgrVec.begin(), clamp(r) / 255.0);
-            bgrVec.insert(bgrVec.begin(), clamp(g) / 255.0);
-            bgrVec.insert(bgrVec.begin(), clamp(b) / 255.0);
+            bgrVec.push_back(clamp(r) / 255.0);
+            bgrVec.push_back(clamp(g) / 255.0);
+            bgrVec.push_back(clamp(b) / 255.0);
 
             *src_ptr++ = clamp(r);
             *src_ptr++ = clamp(g);
