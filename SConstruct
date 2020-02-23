@@ -28,6 +28,7 @@ if arch == "aarch64":
   ]
   libpath = [
     "#phonelibs/snpe/aarch64-android-clang3.8",
+    "#phonelibs/fastcv/aarch64/include",
     "/usr/lib",
     "/data/data/com.termux/files/usr/lib",
     "/system/vendor/lib64",
