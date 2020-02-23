@@ -187,8 +187,11 @@ uint8_t clamp(int16_t value) {
     return value<0 ? 0 : (value>255 ? 255 : value);
 }
 
-static std::vector<uint8_t> yuv420p_to_rgb2(const uint8_t* y, const uint8_t* u, const uint8_t* v, const size_t width, const size_t height, const bool returnBGR) {
+static std::vector<uint8_t> yuv420p_to_rgb2(const uint8_t* y, const uint8_t* u, const uint8_t* v, const bool returnBGR) {
     // returns RGB if returnBGR is false
+    const size_t width = original_shape[1];
+    const size_t height original_shape[0];
+
     uint8_t* rgb = (uint8_t*)calloc((original_size), sizeof(uint8_t));
 
     int b ,g, r;
@@ -269,7 +272,7 @@ int main(){
 
             // img = malloc(3052008);
 
-            std::vector<uint8_t> outputVector = yuv420p_to_rgb2(y, u, v, buf_info.width, buf_info.height, false);
+            std::vector<uint8_t> outputVector = yuv420p_to_rgb2(y, u, v, false);
 
 //            void* temp = malloc(img.size());
 //            uint8_t *dst_ptr = (uint8_t *)temp;
