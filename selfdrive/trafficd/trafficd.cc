@@ -184,8 +184,8 @@ uint8_t clamp(int16_t value) {
     return value<0 ? 0 : (value>255 ? 255 : value);
 }
 
-static uint8_t* yuv420p_to_rgb2(const uint8_t* y, const uint8_t* u, const uint8_t* v, const size_t width, const size_t height, const bool returnRgb)
-{
+static uint8_t* yuv420p_to_rgb2(const uint8_t* y, const uint8_t* u, const uint8_t* v, const size_t width, const size_t height, const bool returnBGR) {
+    // returns RGB if returnBGR is false
     const size_t size = width * height;
     uint8_t* rgb = (uint8_t*)calloc((size * 3), sizeof(uint8_t));
 
@@ -198,14 +198,14 @@ static uint8_t* yuv420p_to_rgb2(const uint8_t* y, const uint8_t* u, const uint8_
             int uu = u[((j / 2) * (width / 2)) + (i / 2)];
             int vv = v[((j / 2) * (width / 2)) + (i / 2)];
 
-            if (returnRgb){
-                r = 1.164 * (yy - 16) + 1.596 * (vv - 128);
-                g = 1.164 * (yy - 16) - 0.813 * (vv - 128) - 0.391 * (uu - 128);
-                b = 1.164 * (yy - 16) + 2.018 * (uu - 128);
-            } else {
+            if (returnBGR){
                 b = 1.164 * (yy - 16) + 1.596 * (vv - 128);
                 g = 1.164 * (yy - 16) - 0.813 * (vv - 128) - 0.391 * (uu - 128);
                 r = 1.164 * (yy - 16) + 2.018 * (uu - 128);
+            } else {
+                r = 1.164 * (yy - 16) + 1.596 * (vv - 128);
+                g = 1.164 * (yy - 16) - 0.813 * (vv - 128) - 0.391 * (uu - 128);
+                b = 1.164 * (yy - 16) + 2.018 * (uu - 128);
             }
             *ptr++ = clamp(r);
             *ptr++ = clamp(g);
@@ -304,7 +304,7 @@ int main(){
             uint8_t *v = u + (buf_info.width/2)*(buf_info.height/2);
 
             //img = malloc(3052008);
-            uint8_t* img = yuv420p_to_rgb2(y, u, v, buf_info.width, buf_info.height, false);
+            uint8_t* img = yuv420p_to_rgb2(y, u, v, buf_info.width, buf_info.height, true);
 
 //            YUV2RGB(buf->addr, img, buf_info.width, buf_info.height, 1);
             f = fopen("/data/buffer1", "wb");
