@@ -10,13 +10,13 @@ const double modelRate = 1 / 5.;  // 5 Hz
 
 const int image_stride = 3840;  // global constants
 const int cropped_size = 515 * 814 * 3;
-const int cropped_shape[3] = {515, 814, 3};
 const int original_shape[3] = {874, 1164, 3};
+const int cropped_shape[3] = {515, 814, 3};
 
 const float pixel_norm = 255.0;
 const int horizontal_crop = 175;
 const int top_crop = 150;
-const int hood_crop = 219;
+const int hood_crop = 209;
 const int offset = horizontal_crop * cropped_shape[2];
 const double msToSec = 1 / 1000.;  // multiply
 const double secToUs = 1e+6;
@@ -195,10 +195,10 @@ static std::vector<uint8_t> yuv420p_to_rgb2(const uint8_t* y, const uint8_t* u, 
     uint8_t* src_ptr = rgb;
     std::vector<uint8_t> img;
     int y_test = 0;
-    for (int y_cord = top_crop; y_cord < (width - hood_crop); y_cord++) {
+    for (int y_cord = top_crop; y_cord < (original_shape[0] - hood_crop); y_cord++) {
         y_test++;
         int x_test = 0;
-        for (int x_cord = horizontal_crop; x_cord < horizontal_crop - horizontal_crop; x_cord++) {
+        for (int x_cord = horizontal_crop; x_cord < (original_shape[1] - horizontal_crop); x_cord++) {
             x_test++;
             int yy = y[(y_cord * width) + x_cord];
             int uu = u[((y_cord / 2) * (width / 2)) + (x_cord / 2)];
