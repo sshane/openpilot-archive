@@ -200,6 +200,9 @@ int main(){
             usleep(100000);
         }
 
+        cl_mem yuv_cl;
+        VisionBuf yuv_ion = visionbuf_allocate_cl(buf_info.buf_len, device_id, context, &yuv_cl);
+
         double loopStart;
         double loopEnd;
         double lastLoop = 0;
@@ -222,10 +225,11 @@ int main(){
 //                std::cout << "Y: " << y[i] << " U: " << u[i] << " V: " << v[i] << std::endl;
 //            }
 
+
             std::cout << "buf size: " << buf_info.buf_len << std::endl;
 
             FILE *f = fopen("/data/buffer", "wb");
-            fwrite((uint8_t *)buf, 1, buf_info.buf_len , f);
+            fwrite((uint8_t *)buf->addr, 1, buf_info.buf_len , f);
             fclose(f);
             return 1;
 
