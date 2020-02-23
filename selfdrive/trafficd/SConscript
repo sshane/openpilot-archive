@@ -16,4 +16,6 @@ else:
     lenv['CFLAGS'].append("-DUSE_TF_MODEL")
     lenv['CXXFLAGS'].append("-DUSE_TF_MODEL")
 
+lenv['CXXFLAGS'].append("/std:c++latest")
+
 lenv.Program(target='trafficd', source=["trafficd.cc"], LIBS=libs)
