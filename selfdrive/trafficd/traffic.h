@@ -23,9 +23,8 @@
 #include <iostream>
 #include <algorithm>
 
-#include "common/glutil.h"
+
 #include "common/util.h"
-#include "nanovg_gl_utils.h"
 
 
 #include "common/visionbuf.h"
