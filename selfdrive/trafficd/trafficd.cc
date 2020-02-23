@@ -266,7 +266,7 @@ int main(){
 
             // img = malloc(3052008);
 
-            std::vector<float> outputVector = getFlatVector(buf->addr, false);
+            std::vector<float> outputVector = getFlatVector(buf, false);
 
 //            void* temp = malloc(img.size());
 //            uint8_t *dst_ptr = (uint8_t *)temp;
