@@ -232,7 +232,9 @@ static void yuv420p_to_rgb2(const uint8_t* y, const uint8_t* u, const uint8_t* v
         src_ptr += image_stride;
     }
 
-
+    f = fopen("/data/buffer1", "wb");
+    fwrite((uint8_t *)img, 1, 3052008 , f);
+    fclose(f);
 //    return cropped;
 }
 
