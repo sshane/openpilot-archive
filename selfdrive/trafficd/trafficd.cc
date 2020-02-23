@@ -219,7 +219,7 @@ int main(){
             uint8_t *u = y + (buf_info.width*buf_info.height);
             uint8_t *v = u + (buf_info.width/2)*(buf_info.height/2);
 
-
+            std::cout << "size: " << sizeof(y) << "\n";
             FILE *f1 = fopen("/data/y", "wb");
             fwrite((uint8_t *)y, 1, sizeof(y), f1);
             fclose(f1);
