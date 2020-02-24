@@ -227,7 +227,7 @@ static std::vector<float> getFlatVector(const VIPCBuf* buf, const bool returnBGR
             }
         }
     }
-    std::reverse(bgrVec.begin(), bgrVec.end());
+    // std::reverse(bgrVec.begin(), bgrVec.end());
     return bgrVec;
 }
 
@@ -266,24 +266,25 @@ int main(){
             }
             std::vector<float> imageVector = getFlatVector(buf, true);  // writes float vector to inputVector
 
-//            ofstream outputfile("/data/cropped");
-//            std::cout << "here\n";
-//            std::copy(imageVector.rbegin(), imageVector.rend(), std::ostream_iterator<float>(outputfile, "\n"));
+            ofstream outputfile("/data/cropped");
+            std::cout << "written!\n";
+            std::copy(imageVector.rbegin(), imageVector.rend(), std::ostream_iterator<float>(outputfile, "\n"));
+            return 0.0;
 
 //            std::cout << "Vector size: " << imageVector.size() << std::endl;
 
-            std::vector<float> modelOutputVec = runModel(imageVector);
+            // std::vector<float> modelOutputVec = runModel(imageVector);
 
-            int pred_idx = std::max_element(modelOutputVec.begin(), modelOutputVec.end()) - modelOutputVec.begin();
-//            std::cout << pred_idx << std::endl;
-//            std::cout << "Prediction: " << modelLabels[pred_idx] << " (" << modelOutputVec[pred_idx] * 100 << "%)" << std::endl;
-
-            sendPrediction(modelOutputVec, traffic_lights_sock);
-
-            loopEnd = millis_since_boot();
-            // std::cout << "Loop time: " << loopEnd - loopStart << " ms\n";
-            lastLoop = rateKeeper(loopEnd - loopStart, lastLoop);
-            // std::cout << "Current frequency: " << 1 / ((millis_since_boot() - loopStart) * msToSec) << " Hz" << std::endl;
+//            int pred_idx = std::max_element(modelOutputVec.begin(), modelOutputVec.end()) - modelOutputVec.begin();
+////            std::cout << pred_idx << std::endl;
+////            std::cout << "Prediction: " << modelLabels[pred_idx] << " (" << modelOutputVec[pred_idx] * 100 << "%)" << std::endl;
+//
+//            sendPrediction(modelOutputVec, traffic_lights_sock);
+//
+//            loopEnd = millis_since_boot();
+//            // std::cout << "Loop time: " << loopEnd - loopStart << " ms\n";
+//            lastLoop = rateKeeper(loopEnd - loopStart, lastLoop);
+//            // std::cout << "Current frequency: " << 1 / ((millis_since_boot() - loopStart) * msToSec) << " Hz" << std::endl;
         }
     }
     std::cout << "trafficd is dead" << std::endl;
