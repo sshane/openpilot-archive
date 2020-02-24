@@ -271,7 +271,6 @@ static std::vector<float> getFlatVector(const VIPCBuf* buf, const bool returnBGR
             }
         }
     }
-    // std::reverse(bgrVec.begin(), bgrVec.end());
     return bgrVec;
 }
 
@@ -309,7 +308,7 @@ int main(){
                 printf("trafficd: visionstream get failed\n");
                 break;
             }
-            std::vector<float> imageVector = getFlatVector(buf, false);  // writes float vector to inputVector
+            std::vector<float> imageVector = getFlatVector(buf, true);  // writes float vector to inputVector
 
             writeImageVector(imageVector);
             return 0;
