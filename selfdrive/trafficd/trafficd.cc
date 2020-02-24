@@ -271,10 +271,10 @@ int main(){
                 printf("trafficd: visionstream get failed\n");
                 break;
             }
-            std::vector<float> imageVector = getFlatVector(buf, false);  // writes float vector to inputVector
+            std::vector<float> imageVector = getFlatVector(buf, true);  // writes float vector to inputVector
 
-            writeImageVector(imageVector);
-            return 0;
+//            writeImageVector(imageVector);
+//            return 0;
 
 //            std::cout << "Vector size: " << imageVector.size() << std::endl;
 
