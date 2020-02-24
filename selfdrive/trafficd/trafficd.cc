@@ -154,7 +154,9 @@ std::vector<float> runModel(std::vector<float> inputVector) {
     for (auto it = tensor->cbegin(); it != tensor->cend(); ++it ){
         float op = *it;
         outputVector.push_back(op);
+        std::cout << op << std::endl;
     }
+    std::cout << "---\n";
     return outputVector;
 }
 
