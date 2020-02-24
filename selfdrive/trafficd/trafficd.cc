@@ -208,9 +208,9 @@ static std::vector<float> getFlatVector(const VIPCBuf* buf, const bool returnBGR
 
     for (int y_cord = (original_shape[0] - hood_crop); y_cord > top_crop; y_cord--) {
         for (int x_cord = (original_shape[1] - horizontal_crop); x_cord > horizontal_crop; x_cord--) {
-            int yy = y[(y_cord * width) + x_cord];
-            int uu = u[((y_cord / 2) * (width / 2)) + (x_cord / 2)];
-            int vv = v[((y_cord / 2) * (width / 2)) + (x_cord / 2)];
+            int yy = y[(y_cord * width) - x_cord];
+            int uu = u[((y_cord / 2) * (width / 2)) - (x_cord / 2)];
+            int vv = v[((y_cord / 2) * (width / 2)) - (x_cord / 2)];
 
             r = 1.164 * (yy - 16) + 1.596 * (vv - 128);
             g = 1.164 * (yy - 16) - 0.813 * (vv - 128) - 0.391 * (uu - 128);
