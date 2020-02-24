@@ -208,7 +208,7 @@ static std::vector<float> getFlatVector(const VIPCBuf* buf, const bool returnBGR
     std::cout << (original_shape[1] - horizontal_crop) << std::endl;
     for (int y_cord = (original_shape[0] - hood_crop) - 1; y_cord >= top_crop; y_cord--) {
         std::cout << "Y: " << y_cord << std::endl;
-        for (int x_cord = (original_shape[1] - horizontal_crop); x_cord < horizontal_crop; x_cord--) {
+        for (int x_cord = (original_shape[1] - horizontal_crop); x_cord >= horizontal_crop; x_cord--) {
             if (y_cord==300){
                 std::cout << "X: " << x_cord << std::endl;
             }
