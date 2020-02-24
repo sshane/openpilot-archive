@@ -216,13 +216,13 @@ static std::vector<float> getFlatVector(const VIPCBuf* buf, const bool returnBGR
             b = 1.164 * (yy - 16) + 2.018 * (uu - 128);
 
             if (returnBGR){
-                bgrVec.push_back(clamp(b) / 255.0);
-                bgrVec.push_back(clamp(g) / 255.0);
                 bgrVec.push_back(clamp(r) / 255.0);
+                bgrVec.push_back(clamp(g) / 255.0);
+                bgrVec.push_back(clamp(b) / 255.0);
             } else {
-                bgrVec.push_back(clamp(r) / 255.0);
-                bgrVec.push_back(clamp(g) / 255.0);
                 bgrVec.push_back(clamp(b) / 255.0);
+                bgrVec.push_back(clamp(g) / 255.0);
+                bgrVec.push_back(clamp(r) / 255.0);
             }
         }
     }
