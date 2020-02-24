@@ -163,7 +163,7 @@ std::vector<float> runModel(std::vector<float> inputVector) {
 void writeImageVector(std::vector<float> imageVector){
     ofstream outputfile("/data/cropped");
     std::cout << "written!\n";
-    std::copy(imageVector.rbegin(), imageVector.rend(), std::ostream_iterator<float>(outputfile, "\n"));
+    std::copy(imageVector.begin(), imageVector.end(), std::ostream_iterator<float>(outputfile, "\n"));
 }
 
 bool shouldStop() {
