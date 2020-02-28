@@ -16,7 +16,7 @@ const int cropped_size = 515 * 814 * 3;
 
 const float pixel_norm = 255.0;
 const int horizontal_crop = 175;
-const int top_crop = 150;
+const int top_crop = 0;
 const int hood_crop = 209;
 const int offset = horizontal_crop * cropped_shape[2];
 const double msToSec = 1 / 1000.;  // multiply
