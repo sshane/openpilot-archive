@@ -15,10 +15,10 @@ class Traffic:
     self.labels = ['RED', 'GREEN', 'YELLOW', 'NONE']
 
     self.past_preds = []
-    self.model_rate = 1 / 4.
-    self.recurrent_length = 1.0  # in seconds, how far back to factor into current prediction
+    self.model_rate = 1 / 5.
+    self.recurrent_length = 1.2  # in seconds, how far back to factor into current prediction
     self.des_pred_len = int(round(self.recurrent_length / self.model_rate))
-    self.last_pred_weight = 8.  # places 2x weight on most recent prediction
+    self.last_pred_weight = 9.  # places 2x weight on most recent prediction
     self.trafficd_timeout = 2.0  # in seconds, how long to wait before realizing trafficd is dead
 
 
