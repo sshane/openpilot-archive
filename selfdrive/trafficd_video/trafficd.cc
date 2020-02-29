@@ -144,7 +144,7 @@ int main(){
             std::cout << "Vector size: " << images.size() << std::endl;
             double startTime = millis_since_boot();
             std::vector<float> modelOutputVec = runModel(images);
-            std::vector<float> modelOutputVec = runModel(images);
+            modelOutputVec = runModel(images);
             double endTime = millis_since_boot();
             std::cout << "time to predict: " << endTime - startTime << " ms\n";
             return 0;
