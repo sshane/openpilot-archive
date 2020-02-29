@@ -101,7 +101,7 @@ void createUserBuffer(){
                                                               product*sizeof(float),
                                                               strides,
                                                               &userBufferEncodingFloat));
-    userBufferMap.add(snpeUserBackedBuffers.back().get());
+    userBufferMap.add(input_tensor_name, snpeUserBackedBuffers.back().get());
 
 //    inputBuffer = ubFactory.createUserBuffer(inputImages, product*sizeof(float), strides, &userBufferEncodingFloat);
 //    inputMap.add(input_tensor_name, inputBuffer.get());
