@@ -47,6 +47,8 @@ void initializeSNPE(zdl::DlSystem::Runtime_t runtime) {
 }
 
 void createUserBuffer(zdl::DlSystem::UserBufferMap& inputMap, std::unique_ptr<zdl::DlSystem::IUserBuffer>& inputBuffer){
+    zdl::DlSystem::IUserBufferFactory& ubFactory = zdl::SNPE::SNPEFactory::getUserBufferFactory();
+    zdl::DlSystem::UserBufferEncodingFloat userBufferEncodingFloat;
     const auto &strListi_opt = snpe->getInputTensorNames();
     if (!strListi_opt) throw std::runtime_error("Error obtaining Input tensor names");
     const auto &strListi = *strListi_opt;
@@ -70,7 +72,7 @@ void createUserBuffer(zdl::DlSystem::UserBufferMap& inputMap, std::unique_ptr<zd
       stride *= bufferShape[i];
       strides[i-1] = stride;
     }
-    printf("input product is %u\n", product);
+    // printf("input product is %u\n", product);
     inputBuffer = ubFactory.createUserBuffer(NULL, product*sizeof(float), strides, &userBufferEncodingFloat);
     inputMap.add(input_tensor_name, inputBuffer.get());
 
@@ -104,24 +106,24 @@ void createUserBuffer(zdl::DlSystem::UserBufferMap& inputMap, std::unique_ptr<zd
 //    userBufferMap.add(name, snpeUserBackedBuffers.back().get());
 }
 
-void executeNetwork(zdl::DlSystem::UserBufferMap& inputMap,
-                    zdl::DlSystem::UserBufferMap& outputMap,
-                    std::unordered_map<std::string,std::vector<uint8_t>>& applicationOutputBuffers,
-                    const std::string& outputDir,
-                    int num)
-{
-    // Execute the network and store the outputs in user buffers specified in outputMap
-    snpe->execute(inputMap, outputMap);
-    // Get all output buffer names from the network
-    const zdl::DlSystem::StringList& outputBufferNames = outputMap.getUserBufferNames();
-    // Iterate through output buffers and print each output to a raw file
-    std::for_each(outputBufferNames.begin(), outputBufferNames.end(), [&](const char* name)
-    {
-       std::ostringstream path;
-       path << outputDir << "/Result_" << num << "/" << name << ".raw";
-       SaveUserBuffer(path.str(), applicationOutputBuffers.at(name));
-    });
-}
+//void executeNetwork(zdl::DlSystem::UserBufferMap& inputMap,
+//                    zdl::DlSystem::UserBufferMap& outputMap,
+//                    std::unordered_map<std::string,std::vector<uint8_t>>& applicationOutputBuffers,
+//                    const std::string& outputDir,
+//                    int num)
+//{
+//    // Execute the network and store the outputs in user buffers specified in outputMap
+//    snpe->execute(inputMap, outputMap);
+//    // Get all output buffer names from the network
+//    const zdl::DlSystem::StringList& outputBufferNames = outputMap.getUserBufferNames();
+//    // Iterate through output buffers and print each output to a raw file
+//    std::for_each(outputBufferNames.begin(), outputBufferNames.end(), [&](const char* name)
+//    {
+//       std::ostringstream path;
+//       path << outputDir << "/Result_" << num << "/" << name << ".raw";
+//       SaveUserBuffer(path.str(), applicationOutputBuffers.at(name));
+//    });
+//}
 // The following is a partial snippet of the function
 void SaveUserBuffer(const std::string& path, const std::vector<uint8_t>& buffer) {
 
