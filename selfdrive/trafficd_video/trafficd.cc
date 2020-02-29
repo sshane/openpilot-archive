@@ -61,15 +61,6 @@ void initializeSNPE(zdl::DlSystem::Runtime_t runtime) {
 
 void loadInputTensor(std::unique_ptr<zdl::SNPE::SNPE> &snpe, std::vector<float> inputVec) {
     double startTime = millis_since_boot();
-
-    //const auto &inputShape = *inputDims_opt;
-    //std::cout << "time: " << millis_since_boot() - startTime << " ms\n";
-
-
-
-    /* Copy the loaded input file contents into the networks input tensor. SNPE's ITensor supports C++ STL functions like std::copy() */
-
-    std::cout << "time: " << millis_since_boot() - startTime << " ms\n";
     std::copy(inputVec.begin(), inputVec.end(), input->begin());
     std::cout << "time: " << millis_since_boot() - startTime << " ms\n";
 }
@@ -152,6 +143,7 @@ int main(){
             infile.close();
             std::cout << "Vector size: " << images.size() << std::endl;
             double startTime = millis_since_boot();
+            std::vector<float> modelOutputVec = runModel(images);
             std::vector<float> modelOutputVec = runModel(images);
             double endTime = millis_since_boot();
             std::cout << "time to predict: " << endTime - startTime << " ms\n";
