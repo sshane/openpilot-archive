@@ -48,6 +48,10 @@ void initializeSNPE(zdl::DlSystem::Runtime_t runtime) {
                       .setPerformanceProfile(zdl::DlSystem::PerformanceProfile_t::HIGH_PERFORMANCE)
                       .setCPUFallbackMode(true)
                       .build();
+}
+
+std::unique_ptr<zdl::DlSystem::ITensor> loadInputTensor(std::unique_ptr<zdl::SNPE::SNPE> &snpe, std::vector<float> inputVec) {
+    double startTime = millis_since_boot();
     const auto &strList_opt = snpe->getInputTensorNames();
 
     if (!strList_opt) throw std::runtime_error("Error obtaining Input tensor names");
@@ -59,11 +63,6 @@ void initializeSNPE(zdl::DlSystem::Runtime_t runtime) {
     const auto &inputShape = *inputDims_opt;
 
     input = zdl::SNPE::SNPEFactory::getTensorFactory().createTensor(inputShape);
-}
-
-std::unique_ptr<zdl::DlSystem::ITensor> loadInputTensor(std::unique_ptr<zdl::SNPE::SNPE> &snpe, std::vector<float> inputVec) {
-    double startTime = millis_since_boot();
-
 
     /* Copy the loaded input file contents into the networks input tensor. SNPE's ITensor supports C++ STL functions like std::copy() */
 
