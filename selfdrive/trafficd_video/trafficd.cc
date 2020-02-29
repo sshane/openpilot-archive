@@ -133,11 +133,13 @@ int main(){
             ifstream infile;
             infile.open("/data/openpilot/selfdrive/trafficd_video/images/video");
             int idx = 0;
+            string line;
             while(!infile.eof){
                 if (idx > 10){
                     break;
                 }
-                std::cout << getline(infile) << "\n";
+                getline(infile, line);
+                std::cout << line << "\n";
                 idx++;
             }
             infile.close();
