@@ -129,7 +129,7 @@ int main(){
 
         while (!do_exit){
             loopStart = millis_since_boot();
-            std::vector images;
+            // std::vector images;
             ifstream infile;
             infile.open("/data/openpilot/selfdrive/trafficd_video/images/video");
             int idx = 0;
