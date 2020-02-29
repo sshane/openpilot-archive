@@ -50,6 +50,7 @@ void initializeSNPE(zdl::DlSystem::Runtime_t runtime) {
 void loadInputTensor(std::unique_ptr<zdl::SNPE::SNPE> &snpe, std::vector<float> inputVec) {
     double startTime = millis_since_boot();
     const zdl::DlSystem::Optional<zdl::DlSystem::StringList> &strList_opt = snpe->getInputTensorNames();
+    std::cout << "time: " << millis_since_boot() - startTime << " ms\n";
 
     if (!strList_opt) throw std::runtime_error("Error obtaining Input tensor names");
     const auto &strList = *strList_opt;
