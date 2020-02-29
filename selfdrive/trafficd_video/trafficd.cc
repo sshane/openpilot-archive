@@ -98,7 +98,7 @@ void createUserBuffer(){
     zdl::DlSystem::UserBufferMap outputMap;
 
     size_t output_size = 4;
-    float output[4];
+    float* output;
     std::vector<size_t> outputStrides = {output_size * sizeof(float), sizeof(float)};
     outputBuffer = ubFactory.createUserBuffer(output, output_size * sizeof(float), outputStrides, &userBufferEncodingFloat);
     outputMap.add(output_tensor_name, outputBuffer.get());
@@ -107,12 +107,6 @@ void createUserBuffer(){
     snpe->execute(inputMap, outputMap);
     for (int i=0; i < 4; i++){
         std::cout << output[i] << std::endl;
-    }
-    for (int i=0; i < 4; i++){
-        std::cout << outputBuffer[i] << std::endl;
-    }
-    for (int i=0; i < 4; i++){
-        std::cout << outputMap[i] << std::endl;
     }
 
 //    const zdl::DlSystem::StringList& outputBufferNames = outputMap.getUserBufferNames();
