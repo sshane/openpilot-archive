@@ -60,6 +60,7 @@ void loadInputTensor(std::unique_ptr<zdl::SNPE::SNPE> &snpe, std::vector<float> 
 
     const auto &strList = *strList_opt;
     assert (strList.size() == 1);
+    std::cout << "time: " << millis_since_boot() - startTime << " ms\n";
 
     const auto &inputDims_opt = snpe->getInputDimensions(strList.at(0));
     const auto &inputShape = *inputDims_opt;
