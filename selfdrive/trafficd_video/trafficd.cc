@@ -105,8 +105,14 @@ void createUserBuffer(){
 
     assert(inputBuffer->setBufferAddress(inputImages));
     snpe->execute(inputMap, outputMap);
-    for (int i=0; i<3;i++){
+    for (int i=0; i < 4; i++){
         std::cout << output[i] << std::endl;
+    }
+    for (int i=0; i < 4; i++){
+        std::cout << outputBuffer[i] << std::endl;
+    }
+    for (int i=0; i < 4; i++){
+        std::cout << outputMap[i] << std::endl;
     }
 
 //    const zdl::DlSystem::StringList& outputBufferNames = outputMap.getUserBufferNames();
