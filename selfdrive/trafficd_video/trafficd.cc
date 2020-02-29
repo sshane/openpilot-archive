@@ -72,7 +72,7 @@ void createUserBuffer(zdl::DlSystem::UserBufferMap& inputMap, std::unique_ptr<zd
       stride *= bufferShape[i];
       strides[i-1] = stride;
     }
-    // printf("input product is %u\n", product);
+    std::cout << "input product is " << product << "\n";
     inputBuffer = ubFactory.createUserBuffer(NULL, product*sizeof(float), strides, &userBufferEncodingFloat);
     inputMap.add(input_tensor_name, inputBuffer.get());
 
@@ -382,17 +382,17 @@ int main(){
 //            return 0;
 
 
-            std::vector<float> modelOutputVec = runModel(imageVector);
+            //std::vector<float> modelOutputVec = runModel(imageVector);
 
 //            int pred_idx = std::max_element(modelOutputVec.begin(), modelOutputVec.end()) - modelOutputVec.begin();
 //            std::cout << pred_idx << std::endl;
 //            std::cout << "Prediction: " << modelLabels[pred_idx] << " (" << modelOutputVec[pred_idx] * 100 << "%)" << std::endl;
 
-            sendPrediction(modelOutputVec, traffic_lights_sock);
+            //sendPrediction(modelOutputVec, traffic_lights_sock);
 
-            loopEnd = millis_since_boot();
+            //loopEnd = millis_since_boot();
             // std::cout << "Loop time: " << loopEnd - loopStart << " ms\n";
-            lastLoop = rateKeeper(loopEnd - loopStart, lastLoop);
+            //lastLoop = rateKeeper(loopEnd - loopStart, lastLoop);
             // std::cout << "Current frequency: " << 1 / ((millis_since_boot() - loopStart) * msToSec) << " Hz" << std::endl;
         }
     }
