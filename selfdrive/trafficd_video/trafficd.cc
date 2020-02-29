@@ -88,27 +88,6 @@ void initModel() {
     initializeSNPE(runt);
 }
 
-void sendPrediction(std::vector<float> modelOutputVec, PubSocket* traffic_lights_sock) {
-    float modelOutput[4];
-    for (int i = 0; i < 4; i++){  // convert vector to array
-        modelOutput[i] = modelOutputVec[i];
-        // std::cout << modelOutput[i] << std::endl;
-    }
-    // std::cout << std::endl;
-
-    kj::ArrayPtr<const float> modelOutput_vs(&modelOutput[0], 4);
-
-    capnp::MallocMessageBuilder msg;
-    cereal::Event::Builder event = msg.initRoot<cereal::Event>();
-    event.setLogMonoTime(nanos_since_boot());
-    auto traffic_lights = event.initTrafficModelRaw();
-    traffic_lights.setPrediction(modelOutput_vs);
-
-    auto words = capnp::messageToFlatArray(msg);
-    auto bytes = words.asBytes();
-    traffic_lights_sock->send((char*)bytes.begin(), bytes.size());
-}
-
 std::vector<float> runModel(std::vector<float> inputVector) {
     std::unique_ptr<zdl::DlSystem::ITensor> inputTensor = loadInputTensor(snpe, inputVector);  // inputVec)
     zdl::DlSystem::ITensor* tensor = executeNetwork(snpe, inputTensor);
@@ -123,82 +102,13 @@ std::vector<float> runModel(std::vector<float> inputVector) {
     return outputVector;
 }
 
-void writeImageVector(std::vector<float> imageVector){
-    ofstream outputfile("/data/cropped");
-    std::cout << "written!\n";
-    std::copy(imageVector.begin(), imageVector.end(), std::ostream_iterator<float>(outputfile, "\n"));
-}
-
-bool shouldStop() {
-    std::ifstream infile("/data/openpilot/selfdrive/trafficd/stop");
-    return infile.good();
-}
-
 void sleepFor(double sec) {
     usleep(sec * secToUs);
-}
-
-double rateKeeper(double loopTime, double lastLoop) {
-    double toSleep;
-    if (lastLoop < 0){  // don't sleep if last loop lagged
-        lastLoop = std::max(lastLoop, -modelRate);  // this should ensure we don't keep adding negative time to lastLoop if a frame lags pretty badly
-                                                    // negative time being time to subtract from sleep time
-        // std::cout << "Last frame lagged by " << -lastLoop << " seconds. Sleeping for " << modelRate - (loopTime * msToSec) + lastLoop << " seconds" << std::endl;
-        toSleep = modelRate - (loopTime * msToSec) + lastLoop;  // keep time as close as possible to our rate, this reduces the time slept this iter
-    } else {
-        toSleep = modelRate - (loopTime * msToSec);
-    }
-    if (toSleep > 0){  // don't sleep for negative time, in case loop takes too long one iteration
-        sleepFor(toSleep);
-    } else {
-        std::cout << "trafficd lagging by " << -(toSleep / msToSec) << " ms." << std::endl;
-    }
-    return toSleep;
 }
 
 void set_do_exit(int sig) {
     std::cout << "received signal: " << sig << std::endl;
     do_exit = 1;
-}
-
-uint8_t clamp(int16_t value) {
-    return value<0 ? 0 : (value>255 ? 255 : value);
-}
-
-
-static std::vector<float> getFlatVector(const VIPCBuf* buf, const bool returnBGR) {
-    // returns RGB if returnBGR is false
-    const size_t width = original_shape[1];
-    const size_t height = original_shape[0];
-
-    uint8_t *y = (uint8_t*)buf->addr;
-    uint8_t *u = y + (width * height);
-    uint8_t *v = u + (width / 2) * (height / 2);
-
-    int b, g, r;
-    std::vector<float> bgrVec;
-    for (int y_cord = top_crop; y_cord < (original_shape[0] - hood_crop); y_cord++) {
-        for (int x_cord = horizontal_crop; x_cord < (original_shape[1] - horizontal_crop); x_cord++) {
-            int yy = y[(y_cord * width) + x_cord];
-            int uu = u[((y_cord / 2) * (width / 2)) + (x_cord / 2)];
-            int vv = v[((y_cord / 2) * (width / 2)) + (x_cord / 2)];
-
-            r = 1.164 * (yy - 16) + 1.596 * (vv - 128);
-            g = 1.164 * (yy - 16) - 0.813 * (vv - 128) - 0.391 * (uu - 128);
-            b = 1.164 * (yy - 16) + 2.018 * (uu - 128);
-
-            if (returnBGR){
-                bgrVec.push_back(clamp(b) / 255.0);
-                bgrVec.push_back(clamp(g) / 255.0);
-                bgrVec.push_back(clamp(r) / 255.0);
-            } else {
-                bgrVec.push_back(clamp(r) / 255.0);
-                bgrVec.push_back(clamp(g) / 255.0);
-                bgrVec.push_back(clamp(b) / 255.0);
-            }
-        }
-    }
-    return bgrVec;
 }
 
 
@@ -213,8 +123,6 @@ int main(){
     Context* c = Context::create();
 
     while (!do_exit){  // keep traffic running in case we can't get a frame (mimicking modeld)
-
-
         double loopStart;
         double loopEnd;
         double lastLoop = 0;
@@ -234,26 +142,6 @@ int main(){
             }
             infile.close();
             return 0;
-
-
-            std::vector<float> imageVector = getFlatVector(buf, true);  // writes float vector to inputVector
-//            std::cout << "Vector size: " << imageVector.size() << std::endl; // uncomment to debug
-//            writeImageVector(imageVector);
-//            return 0;
-
-
-            std::vector<float> modelOutputVec = runModel(imageVector);
-
-//            int pred_idx = std::max_element(modelOutputVec.begin(), modelOutputVec.end()) - modelOutputVec.begin();
-//            std::cout << pred_idx << std::endl;
-//            std::cout << "Prediction: " << modelLabels[pred_idx] << " (" << modelOutputVec[pred_idx] * 100 << "%)" << std::endl;
-
-            sendPrediction(modelOutputVec, traffic_lights_sock);
-
-            loopEnd = millis_since_boot();
-            // std::cout << "Loop time: " << loopEnd - loopStart << " ms\n";
-            lastLoop = rateKeeper(loopEnd - loopStart, lastLoop);
-            // std::cout << "Current frequency: " << 1 / ((millis_since_boot() - loopStart) * msToSec) << " Hz" << std::endl;
         }
     }
     std::cout << "trafficd is dead" << std::endl;
