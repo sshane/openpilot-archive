@@ -89,8 +89,11 @@ void initModel() {
 }
 
 std::vector<float> runModel(std::vector<float> inputVector) {
+    double startTime = millis_since_boot();
     std::unique_ptr<zdl::DlSystem::ITensor> inputTensor = loadInputTensor(snpe, inputVector);  // inputVec)
+    std::cout << "time: " << millis_since_boot() - startTime << " ms\n";
     zdl::DlSystem::ITensor* tensor = executeNetwork(snpe, inputTensor);
+    std::cout << "time: " << millis_since_boot() - startTime << " ms\n";
 
     std::vector<float> outputVector;
     for (auto it = tensor->cbegin(); it != tensor->cend(); ++it ){
