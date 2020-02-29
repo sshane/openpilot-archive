@@ -130,17 +130,18 @@ int main(){
         while (!do_exit){
             loopStart = millis_since_boot();
             // std::vector images;
-            ifstream infile;
-            infile.open("/data/openpilot/selfdrive/trafficd_video/images/video");
+            ifstream infile("/data/openpilot/selfdrive/trafficd_video/images/video");
             int idx = 0;
             string line;
-            while(!infile.eof){
-                if (idx > 10){
-                    break;
+            if (infile.is_open()){
+                while(infile.good()){
+                    if (idx > 10){
+                        break;
+                    }
+                    getline(infile, line);
+                    std::cout << line << "\n";
+                    idx++;
                 }
-                getline(infile, line);
-                std::cout << line << "\n";
-                idx++;
             }
             infile.close();
             return 0;
