@@ -46,7 +46,7 @@ void initializeSNPE(zdl::DlSystem::Runtime_t runtime) {
                       .build();
 }
 
-void createUserBuffer(zdl::DlSystem::UserBufferMap& inputMap){
+void createUserBuffer(zdl::DlSystem::UserBufferMap& inputMap, std::unique_ptr<zdl::DlSystem::IUserBuffer>& inputBuffer){
     const auto &strListi_opt = snpe->getInputTensorNames();
     if (!strListi_opt) throw std::runtime_error("Error obtaining Input tensor names");
     const auto &strListi = *strListi_opt;
@@ -336,8 +336,14 @@ int main(){
 
     initModel(); // init stuff
 
+    // snpe input stuff
     zdl::DlSystem::UserBufferMap inputMap;
-    createUserBuffer(inputMap);
+    std::unique_ptr<zdl::DlSystem::IUserBuffer> inputBuffer;
+
+    // snpe output stuff
+    zdl::DlSystem::UserBufferMap outputMap;
+    std::unique_ptr<zdl::DlSystem::IUserBuffer> outputBuffer;
+    createUserBuffer(inputMap, inputBuffer);
     std::cout << "successful!";
     return 0;
 
