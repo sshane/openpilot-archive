@@ -51,6 +51,7 @@ void createUserBuffer(){
     zdl::DlSystem::UserBufferMap outputMap;
     std::unique_ptr<zdl::DlSystem::IUserBuffer> inputBuffer;
     std::unique_ptr<zdl::DlSystem::IUserBuffer> outputBuffer;
+    zdl::DlSystem::UserBufferMap userBufferMap;
 
     zdl::DlSystem::IUserBufferFactory& ubFactory = zdl::SNPE::SNPEFactory::getUserBufferFactory();
     zdl::DlSystem::UserBufferEncodingFloat userBufferEncodingFloat;
@@ -95,8 +96,15 @@ void createUserBuffer(){
     }
     infile.close();
 
-    inputBuffer = ubFactory.createUserBuffer(inputImages, product*sizeof(float), strides, &userBufferEncodingFloat);
-    inputMap.add(input_tensor_name, inputBuffer.get());
+    std::vector<std::unique_ptr<zdl::DlSystem::IUserBuffer>>& snpeUserBackedBuffers;
+    snpeUserBackedBuffers.push_back(ubFactory.createUserBuffer(inputImages,
+                                                              product*sizeof(float),
+                                                              strides,
+                                                              &userBufferEncodingFloat));
+    userBufferMap.add(snpeUserBackedBuffers.back().get());
+
+//    inputBuffer = ubFactory.createUserBuffer(inputImages, product*sizeof(float), strides, &userBufferEncodingFloat);
+//    inputMap.add(input_tensor_name, inputBuffer.get());
 
     size_t output_size = 4;
     float *output;
@@ -104,8 +112,8 @@ void createUserBuffer(){
     outputBuffer = ubFactory.createUserBuffer(output, output_size * sizeof(float), outputStrides, &userBufferEncodingFloat);
     outputMap.add(output_tensor_name, outputBuffer.get());
 
-    assert(inputBuffer->setBufferAddress(inputImages));
-    snpe->execute(inputMap, outputMap);
+    // assert(inputBuffer->setBufferAddress(inputImages));
+    snpe->execute(userBufferMap, outputMap);
     for (int i=0; i < 4; i++){
         std::cout << output[i] << std::endl;
     }
