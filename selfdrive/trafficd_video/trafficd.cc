@@ -80,11 +80,12 @@ void createUserBuffer(){
     inputBuffer = ubFactory.createUserBuffer(NULL, product*sizeof(float), strides, &userBufferEncodingFloat);
     inputMap.add(input_tensor_name, inputBuffer.get());
 
-
+    std::cout << "here1\n";
     std::vector<float> images;
     float inputImages[15260040];
     ifstream infile("/data/openpilot/selfdrive/trafficd_video/images/video");
     string line;
+    std::cout << "here2\n";
     if (infile.is_open()){
         int idx = 0;
         while(infile.good()){
@@ -102,6 +103,7 @@ void createUserBuffer(){
     std::vector<size_t> outputStrides = {output_size * sizeof(float), sizeof(float)};
     outputBuffer = ubFactory.createUserBuffer(output, output_size * sizeof(float), outputStrides, &userBufferEncodingFloat);
     outputMap.add(output_tensor_name, outputBuffer.get());
+    std::cout << "here3\n";
 
     assert(inputBuffer->setBufferAddress(inputImages));
     snpe->execute(inputMap, outputMap);
