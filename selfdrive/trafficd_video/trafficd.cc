@@ -49,6 +49,7 @@ void initializeSNPE(zdl::DlSystem::Runtime_t runtime) {
 void createUserBuffer(){
     zdl::DlSystem::UserBufferMap inputMap;
     std::unique_ptr<zdl::DlSystem::IUserBuffer> inputBuffer;
+    std::unique_ptr<zdl::DlSystem::IUserBuffer> outputBuffer;
 
     zdl::DlSystem::IUserBufferFactory& ubFactory = zdl::SNPE::SNPEFactory::getUserBufferFactory();
     zdl::DlSystem::UserBufferEncodingFloat userBufferEncodingFloat;
@@ -81,7 +82,7 @@ void createUserBuffer(){
 
 
     std::vector<float> images;
-    float[15260040] inputImages;
+    float inputImages[15260040];
     ifstream infile("/data/openpilot/selfdrive/trafficd_video/images/video");
     string line;
     if (infile.is_open()){
@@ -97,6 +98,7 @@ void createUserBuffer(){
     zdl::DlSystem::UserBufferMap outputMap;
 
     size_t output_size = 4;
+    float* output;
     std::vector<size_t> outputStrides = {output_size * sizeof(float), sizeof(float)};
     outputBuffer = ubFactory.createUserBuffer(output, output_size * sizeof(float), outputStrides, &userBufferEncodingFloat);
     outputMap.add(output_tensor_name, outputBuffer.get());
@@ -371,7 +373,6 @@ int main(){
     // snpe input stuff
 
     // snpe output stuff
-    std::unique_ptr<zdl::DlSystem::IUserBuffer> outputBuffer;
     createUserBuffer();
     std::cout << "successful!\n";
 
