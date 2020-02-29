@@ -129,7 +129,7 @@ int main(){
 
         while (!do_exit){
             loopStart = millis_since_boot();
-            // std::vector images;
+            std::vector<float> images;
             ifstream infile("/data/openpilot/selfdrive/trafficd_video/images/video");
             int idx = 0;
             string line;
@@ -139,7 +139,8 @@ int main(){
                         break;
                     }
                     getline(infile, line);
-                    std::cout << line << "\n";
+                    std::cout << stoi(line)/255. << "\n";
+                    images.push_back(stoi(line) / 255);
                     idx++;
                 }
             }
