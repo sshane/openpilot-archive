@@ -51,12 +51,13 @@ void initializeSNPE(zdl::DlSystem::Runtime_t runtime) {
                       .setCPUFallbackMode(true)
                       .build();
     strList_opt = snpe->getInputTensorNames();
+    if (!strList_opt) throw std::runtime_error("Error obtaining Input tensor names");
 }
 
 void loadInputTensor(std::unique_ptr<zdl::SNPE::SNPE> &snpe, std::vector<float> inputVec) {
     double startTime = millis_since_boot();
 
-    if (!strList_opt) throw std::runtime_error("Error obtaining Input tensor names");
+
     const auto &strList = *strList_opt;
     assert (strList.size() == 1);
 
