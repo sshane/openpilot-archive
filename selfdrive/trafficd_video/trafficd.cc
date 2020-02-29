@@ -36,7 +36,7 @@ zdl::DlSystem::Runtime_t checkRuntime() {
 
 void initializeSNPE(zdl::DlSystem::Runtime_t runtime) {
     std::unique_ptr<zdl::DlContainer::IDlContainer> container;
-    container = zdl::DlContainer::IDlContainer::open("../../models/traffic_model.dlc");
+    container = zdl::DlContainer::IDlContainer::open("../../models/video_test.dlc");
     zdl::SNPE::SNPEBuilder snpeBuilder(container.get());
     snpe = snpeBuilder.setOutputLayers({})
                       .setRuntimeProcessor(runtime)
