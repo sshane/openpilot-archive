@@ -203,19 +203,19 @@ void sendPrediction(std::vector<float> modelOutputVec, PubSocket* traffic_lights
     traffic_lights_sock->send((char*)bytes.begin(), bytes.size());
 }
 
-std::vector<float> runModel(std::vector<float> inputVector) {
-    std::unique_ptr<zdl::DlSystem::ITensor> inputTensor = loadInputTensor(snpe, inputVector);  // inputVec)
-    zdl::DlSystem::ITensor* tensor = executeNetwork(snpe, inputTensor);
-
-    std::vector<float> outputVector;
-    for (auto it = tensor->cbegin(); it != tensor->cend(); ++it ){
-        float op = *it;
-        outputVector.push_back(op);
-        std::cout << op << std::endl;
-    }
-    std::cout << "---\n";
-    return outputVector;
-}
+//std::vector<float> runModel(std::vector<float> inputVector) {
+//    std::unique_ptr<zdl::DlSystem::ITensor> inputTensor = loadInputTensor(snpe, inputVector);  // inputVec)
+//    zdl::DlSystem::ITensor* tensor = executeNetwork(snpe, inputTensor);
+//
+//    std::vector<float> outputVector;
+//    for (auto it = tensor->cbegin(); it != tensor->cend(); ++it ){
+//        float op = *it;
+//        outputVector.push_back(op);
+//        std::cout << op << std::endl;
+//    }
+//    std::cout << "---\n";
+//    return outputVector;
+//}
 
 void writeImageVector(std::vector<float> imageVector){
     ofstream outputfile("/data/cropped");
