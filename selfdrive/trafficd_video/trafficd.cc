@@ -56,19 +56,16 @@ void initializeSNPE(zdl::DlSystem::Runtime_t runtime) {
     const auto &strList = *strList_opt;
     assert (strList.size() == 1);
     inputDims_opt = snpe->getInputDimensions(strList.at(0));
+    input = zdl::SNPE::SNPEFactory::getTensorFactory().createTensor(*inputDims_opt);
 }
 
 void loadInputTensor(std::unique_ptr<zdl::SNPE::SNPE> &snpe, std::vector<float> inputVec) {
     double startTime = millis_since_boot();
 
-    std::cout << "time: " << millis_since_boot() - startTime << " ms\n";
-
-
-    std::cout << "time: " << millis_since_boot() - startTime << " ms\n";
     //const auto &inputShape = *inputDims_opt;
     //std::cout << "time: " << millis_since_boot() - startTime << " ms\n";
 
-    input = zdl::SNPE::SNPEFactory::getTensorFactory().createTensor(*inputDims_opt);
+
 
     /* Copy the loaded input file contents into the networks input tensor. SNPE's ITensor supports C++ STL functions like std::copy() */
 
