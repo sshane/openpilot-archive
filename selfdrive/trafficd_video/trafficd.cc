@@ -80,7 +80,7 @@ void createUserBuffer(){
     std::cout << "input product is " << product << "\n";
 
     std::vector<float> images;
-    float *inputImages = new float[15260040];
+    float inputImages = new float[15260040];
     ifstream infile("/data/openpilot/selfdrive/trafficd_video/images/video");
     string line;
 
@@ -88,7 +88,7 @@ void createUserBuffer(){
         int idx = 0;
         while(infile.good()){
             getline(infile, line);
-            inputImages[idx] = stoi(line) / 1.0;
+            inputImages[idx] = stoi(line) / 255.0;
             // images.push_back(stoi(line) / 255.0);
             idx++;
         }
