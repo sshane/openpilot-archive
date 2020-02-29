@@ -96,7 +96,7 @@ void createUserBuffer(){
     }
     infile.close();
 
-    std::vector<std::unique_ptr<zdl::DlSystem::IUserBuffer>>& snpeUserBackedBuffers;
+    std::vector<std::unique_ptr<zdl::DlSystem::IUserBuffer>> snpeUserBackedBuffers;
     snpeUserBackedBuffers.push_back(ubFactory.createUserBuffer(inputImages,
                                                               product*sizeof(float),
                                                               strides,
