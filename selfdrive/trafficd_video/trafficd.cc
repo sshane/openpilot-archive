@@ -60,9 +60,7 @@ void initializeSNPE(zdl::DlSystem::Runtime_t runtime) {
 }
 
 void loadInputTensor(std::unique_ptr<zdl::SNPE::SNPE> &snpe, std::vector<float> inputVec) {
-    double startTime = millis_since_boot();
     std::copy(inputVec.begin(), inputVec.end(), input->begin());
-    std::cout << "time: " << millis_since_boot() - startTime << " ms\n";
 }
 
 zdl::DlSystem::ITensor* executeNetwork() {
@@ -90,9 +88,11 @@ void initModel() {
 }
 
 std::vector<float> runModel(std::vector<float> inputVector) {
+    double startTime = millis_since_boot();
     loadInputTensor(snpe, inputVector);  // inputVec)
-
+    std::cout << "time: " << millis_since_boot() - startTime << " ms\n";
     zdl::DlSystem::ITensor* tensor = executeNetwork();
+    std::cout << "time: " << millis_since_boot() - startTime << " ms\n";
 
     std::vector<float> outputVector;
     for (auto it = tensor->cbegin(); it != tensor->cend(); ++it ){
@@ -144,7 +144,6 @@ int main(){
             std::cout << "Vector size: " << images.size() << std::endl;
             double startTime = millis_since_boot();
             std::vector<float> modelOutputVec = runModel(images);
-            modelOutputVec = runModel(images);
             double endTime = millis_since_boot();
             std::cout << "time to predict: " << endTime - startTime << " ms\n";
             return 0;
