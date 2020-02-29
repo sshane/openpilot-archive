@@ -80,7 +80,7 @@ void createUserBuffer(){
     std::cout << "input product is " << product << "\n";
 
     std::vector<float> images;
-    float *inputImages;
+    float *inputImages = new float[15260040];
     ifstream infile("/data/openpilot/selfdrive/trafficd_video/images/video");
     string line;
 
