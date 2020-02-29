@@ -80,7 +80,6 @@ void createUserBuffer(){
     }
     std::cout << "input product is " << product << "\n";
 
-    std::vector<float> images;
     float *inputImages = new float[15260040];
     ifstream infile("/data/openpilot/selfdrive/trafficd_video/images/video");
     string line;
@@ -95,7 +94,7 @@ void createUserBuffer(){
         }
     }
     infile.close();
-
+    double startTime = millis_since_boot();
     std::vector<std::unique_ptr<zdl::DlSystem::IUserBuffer>> snpeUserBackedBuffers;
     snpeUserBackedBuffers.push_back(ubFactory.createUserBuffer(inputImages,
                                                               product*sizeof(float),
@@ -117,6 +116,7 @@ void createUserBuffer(){
     for (int i=0; i < 4; i++){
         std::cout << output[i] << std::endl;
     }
+    std::cout << "user buffer time: " << millis_since_boot() - startTime << " ms \n"
 
 //    const zdl::DlSystem::StringList& outputBufferNames = outputMap.getUserBufferNames();
 
