@@ -336,7 +336,7 @@ int main(){
 
     initModel(); // init stuff
 
-    zdl::DlSystem::UserBufferMap& inputMap;
+    zdl::DlSystem::UserBufferMap inputMap;
     createUserBuffer(inputMap);
     std::cout << "successful!";
     return 0;
