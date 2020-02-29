@@ -4,7 +4,7 @@ using namespace std;
 
 std::unique_ptr<zdl::SNPE::SNPE> snpe;
 std::unique_ptr<zdl::DlSystem::ITensor> input;
-zdl::DlSystem::Optional<zdl::DlSystem::StringList> &strList_opt;
+zdl::DlSystem::Optional<zdl::DlSystem::StringList> strList_opt;
 
 
 
