@@ -99,12 +99,12 @@ void createUserBuffer(){
     inputMap.add(input_tensor_name, inputBuffer.get());
 
     size_t output_size = 4;
-    float* output;
+    float output[4];
     std::vector<size_t> outputStrides = {output_size * sizeof(float), sizeof(float)};
     outputBuffer = ubFactory.createUserBuffer(output, output_size * sizeof(float), outputStrides, &userBufferEncodingFloat);
     outputMap.add(output_tensor_name, outputBuffer.get());
 
-    // assert(inputBuffer->setBufferAddress(inputImages));
+    assert(inputBuffer->setBufferAddress(inputImages));
     snpe->execute(inputMap, outputMap);
     for (int i=0; i < 4; i++){
         std::cout << output[i] << std::endl;
