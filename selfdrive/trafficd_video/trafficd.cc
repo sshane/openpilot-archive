@@ -139,7 +139,11 @@ int main(){
                 }
             }
             infile.close();
-            std::cout << images.size();
+            std::cout << "Vector size: " << images.size() << std::endl;
+            std::vector<float> modelOutputVec = runModel(images);
+            for (int idx=0; idx < modelOutputVec.size(); idx++){
+                std::cout << modelOutputVec[idx] << std::endl;
+            }
             return 0;
         }
     }
