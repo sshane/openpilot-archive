@@ -48,6 +48,7 @@ void initializeSNPE(zdl::DlSystem::Runtime_t runtime) {
                       .setPerformanceProfile(zdl::DlSystem::PerformanceProfile_t::HIGH_PERFORMANCE)
                       .setCPUFallbackMode(true)
                       .build();
+    input = zdl::SNPE::SNPEFactory::getTensorFactory().createTensor(inputShape);
 }
 
 std::unique_ptr<zdl::DlSystem::ITensor> loadInputTensor(std::unique_ptr<zdl::SNPE::SNPE> &snpe, std::vector<float> inputVec) {
@@ -61,8 +62,6 @@ std::unique_ptr<zdl::DlSystem::ITensor> loadInputTensor(std::unique_ptr<zdl::SNP
 
     const auto &inputDims_opt = snpe->getInputDimensions(strList.at(0));
     const auto &inputShape = *inputDims_opt;
-
-    input = zdl::SNPE::SNPEFactory::getTensorFactory().createTensor(inputShape);
 
     /* Copy the loaded input file contents into the networks input tensor. SNPE's ITensor supports C++ STL functions like std::copy() */
 
