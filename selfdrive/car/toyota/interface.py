@@ -9,6 +9,7 @@ from selfdrive.car import STD_CARGO_KG, scale_rot_inertia, scale_tire_stiffness,
 from selfdrive.swaglog import cloudlog
 from selfdrive.car.interfaces import CarInterfaceBase
 from common.travis_checker import travis
+from common.op_params import opParams
 
 ButtonType = car.CarState.ButtonEvent.Type
 GearShifter = car.CarState.GearShifter
@@ -28,6 +29,7 @@ class CarInterface(CarInterfaceBase):
 
     self.cp = get_can_parser(CP)
     self.cp_cam = get_cam_can_parser(CP)
+    self.disengage_on_gas = opParams().get('disengage_on_gas', default=True)
 
     self.CC = None
     if CarController is not None:
@@ -444,11 +446,11 @@ class CarInterface(CarInterfaceBase):
       events.append(create_event('pcmDisable', [ET.USER_DISABLE]))
 
     # disable on pedals rising edge or when brake is pressed and speed isn't zero
-    if (ret.gasPressed and not self.gas_pressed_prev) or \
+    if (ret.gasPressed and not self.gas_pressed_prev and self.disengage_on_gas) or \
        (ret.brakePressed and (not self.brake_pressed_prev or ret.vEgo > 0.001)):
       events.append(create_event('pedalPressed', [ET.NO_ENTRY, ET.USER_DISABLE]))
 
-    if ret.gasPressed:
+    if ret.gasPressed and self.disengage_on_gas:
       events.append(create_event('pedalPressed', [ET.PRE_ENABLE]))
 
     ret.events = events
