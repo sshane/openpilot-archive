@@ -135,14 +135,15 @@ int main(){
             if (infile.is_open()){
                 while(infile.good()){
                     getline(infile, line);
-                    images.push_back(stoi(line) / 255);
+                    images.push_back(stoi(line) / 255.0);
                 }
             }
             infile.close();
             std::cout << "Vector size: " << images.size() << std::endl;
             double startTime = millis_since_boot();
             std::vector<float> modelOutputVec = runModel(images);
-            std::cout << "time to predict: " << millis_since_boot() - startTime << " ms\n";
+            double endTime = millis_since_boot();
+            std::cout << "time to predict: " << endTime - startTime << " ms\n";
             return 0;
         }
     }
