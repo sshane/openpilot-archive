@@ -4,6 +4,11 @@ using namespace std;
 
 std::unique_ptr<zdl::SNPE::SNPE> snpe;
 std::unique_ptr<zdl::DlSystem::ITensor> input;
+zdl::DlSystem::Optional<zdl::DlSystem::StringList> &strList_opt;
+
+
+
+
 volatile sig_atomic_t do_exit = 0;
 
 const std::vector<std::string> modelLabels = {"RED", "GREEN", "YELLOW", "NONE"};
@@ -45,12 +50,11 @@ void initializeSNPE(zdl::DlSystem::Runtime_t runtime) {
                       .setPerformanceProfile(zdl::DlSystem::PerformanceProfile_t::HIGH_PERFORMANCE)
                       .setCPUFallbackMode(true)
                       .build();
+    strList_opt = snpe->getInputTensorNames();
 }
 
 void loadInputTensor(std::unique_ptr<zdl::SNPE::SNPE> &snpe, std::vector<float> inputVec) {
     double startTime = millis_since_boot();
-    const zdl::DlSystem::Optional<zdl::DlSystem::StringList> &strList_opt = snpe->getInputTensorNames();
-    std::cout << "time: " << millis_since_boot() - startTime << " ms\n";
 
     if (!strList_opt) throw std::runtime_error("Error obtaining Input tensor names");
     const auto &strList = *strList_opt;
