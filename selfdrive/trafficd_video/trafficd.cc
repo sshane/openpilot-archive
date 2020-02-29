@@ -88,7 +88,7 @@ void createUserBuffer(){
         int idx = 0;
         while(infile.good()){
             getline(infile, line);
-            inputImages[idx] = stoi(line) / 255.0;
+            inputImages[idx] = stoi(line) / 1;
             // images.push_back(stoi(line) / 255.0);
             idx++;
         }
