@@ -64,12 +64,18 @@ void loadInputTensor(std::unique_ptr<zdl::SNPE::SNPE> &snpe, std::vector<float> 
 }
 
 zdl::DlSystem::ITensor* executeNetwork() {
+    double startTime = millis_since_boot();
     static zdl::DlSystem::TensorMap outputTensorMap;
+    std::cout << "time: " << millis_since_boot() - startTime << " ms\n";
     snpe->execute(input.get(), outputTensorMap);
+    std::cout << "time: " << millis_since_boot() - startTime << " ms\n";
     zdl::DlSystem::StringList tensorNames = outputTensorMap.getTensorNames();
+    std::cout << "time: " << millis_since_boot() - startTime << " ms\n";
 
     const char* name = tensorNames.at(0);  // only should the first
+    std::cout << "time: " << millis_since_boot() - startTime << " ms\n";
     auto tensorPtr = outputTensorMap.getTensor(name);
+    std::cout << "time: " << millis_since_boot() - startTime << " ms\n";
     return tensorPtr;
 }
 
@@ -88,11 +94,8 @@ void initModel() {
 }
 
 std::vector<float> runModel(std::vector<float> inputVector) {
-    double startTime = millis_since_boot();
     loadInputTensor(snpe, inputVector);  // inputVec)
-    std::cout << "time: " << millis_since_boot() - startTime << " ms\n";
     zdl::DlSystem::ITensor* tensor = executeNetwork();
-    std::cout << "time: " << millis_since_boot() - startTime << " ms\n";
 
     std::vector<float> outputVector;
     for (auto it = tensor->cbegin(); it != tensor->cend(); ++it ){
