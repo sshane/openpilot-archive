@@ -53,15 +53,14 @@ void initializeSNPE(zdl::DlSystem::Runtime_t runtime) {
                       .build();
     strList_opt = snpe->getInputTensorNames();
     if (!strList_opt) throw std::runtime_error("Error obtaining Input tensor names");
+    const auto &strList = *strList_opt;
+    assert (strList.size() == 1);
     inputDims_opt = snpe->getInputDimensions(strList.at(0));
 }
 
 void loadInputTensor(std::unique_ptr<zdl::SNPE::SNPE> &snpe, std::vector<float> inputVec) {
     double startTime = millis_since_boot();
 
-
-    const auto &strList = *strList_opt;
-    assert (strList.size() == 1);
     std::cout << "time: " << millis_since_boot() - startTime << " ms\n";
 
 
