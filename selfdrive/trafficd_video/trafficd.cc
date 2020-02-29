@@ -67,7 +67,7 @@ void loadInputTensor(std::unique_ptr<zdl::SNPE::SNPE> &snpe, std::vector<float> 
     std::cout << "time: " << millis_since_boot() - startTime << " ms\n";
 }
 
-zdl::DlSystem::ITensor* executeNetwork(std::unique_ptr<zdl::SNPE::SNPE>& snpe) {
+zdl::DlSystem::ITensor* executeNetwork() {
     static zdl::DlSystem::TensorMap outputTensorMap;
     snpe->execute(input.get(), outputTensorMap);
     zdl::DlSystem::StringList tensorNames = outputTensorMap.getTensorNames();
@@ -94,7 +94,7 @@ void initModel() {
 std::vector<float> runModel(std::vector<float> inputVector) {
     loadInputTensor(snpe, inputVector);  // inputVec)
 
-    zdl::DlSystem::ITensor* tensor = executeNetwork(snpe);
+    zdl::DlSystem::ITensor* tensor = executeNetwork();
 
     std::vector<float> outputVector;
     for (auto it = tensor->cbegin(); it != tensor->cend(); ++it ){
