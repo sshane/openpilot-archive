@@ -63,7 +63,9 @@ void loadInputTensor(std::unique_ptr<zdl::SNPE::SNPE> &snpe, std::vector<float> 
     std::cout << "time: " << millis_since_boot() - startTime << " ms\n";
 
     const auto &inputDims_opt = snpe->getInputDimensions(strList.at(0));
+    std::cout << "time: " << millis_since_boot() - startTime << " ms\n";
     const auto &inputShape = *inputDims_opt;
+    std::cout << "time: " << millis_since_boot() - startTime << " ms\n";
 
     input = zdl::SNPE::SNPEFactory::getTensorFactory().createTensor(inputShape);
 
