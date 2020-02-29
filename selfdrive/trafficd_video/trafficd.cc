@@ -5,6 +5,7 @@ using namespace std;
 std::unique_ptr<zdl::SNPE::SNPE> snpe;
 std::unique_ptr<zdl::DlSystem::ITensor> input;
 zdl::DlSystem::Optional<zdl::DlSystem::StringList> strList_opt;
+zdl::DlSystem::Optional<zdl::DlSystem::TensorShape> inputDims_opt;
 
 
 
@@ -52,6 +53,7 @@ void initializeSNPE(zdl::DlSystem::Runtime_t runtime) {
                       .build();
     strList_opt = snpe->getInputTensorNames();
     if (!strList_opt) throw std::runtime_error("Error obtaining Input tensor names");
+    inputDims_opt = snpe->getInputDimensions(strList.at(0));
 }
 
 void loadInputTensor(std::unique_ptr<zdl::SNPE::SNPE> &snpe, std::vector<float> inputVec) {
@@ -62,7 +64,7 @@ void loadInputTensor(std::unique_ptr<zdl::SNPE::SNPE> &snpe, std::vector<float> 
     assert (strList.size() == 1);
     std::cout << "time: " << millis_since_boot() - startTime << " ms\n";
 
-    const zdl::DlSystem::Optional<zdl::DlSystem::TensorShape> inputDims_opt = snpe->getInputDimensions(strList.at(0));
+
     std::cout << "time: " << millis_since_boot() - startTime << " ms\n";
     //const auto &inputShape = *inputDims_opt;
     //std::cout << "time: " << millis_since_boot() - startTime << " ms\n";
