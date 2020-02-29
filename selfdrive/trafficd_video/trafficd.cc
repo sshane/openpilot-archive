@@ -116,7 +116,7 @@ void createUserBuffer(){
     for (int i=0; i < 4; i++){
         std::cout << output[i] << std::endl;
     }
-    std::cout << "user buffer time: " << millis_since_boot() - startTime << " ms \n"
+    std::cout << "user buffer time: " << millis_since_boot() - startTime << " ms \n";
 
 //    const zdl::DlSystem::StringList& outputBufferNames = outputMap.getUserBufferNames();
 
