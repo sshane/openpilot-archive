@@ -47,6 +47,7 @@ void initializeSNPE(zdl::DlSystem::Runtime_t runtime) {
 }
 
 void createUserBuffer(){
+    std::cout << "here-1\n";
     zdl::DlSystem::UserBufferMap inputMap;
     std::unique_ptr<zdl::DlSystem::IUserBuffer> inputBuffer;
     std::unique_ptr<zdl::DlSystem::IUserBuffer> outputBuffer;
@@ -82,7 +83,7 @@ void createUserBuffer(){
 
     std::cout << "here1\n";
     std::vector<float> images;
-    float inputImages[15260040];
+    float *inputImages = new float[15260040];
     ifstream infile("/data/openpilot/selfdrive/trafficd_video/images/video");
     string line;
     std::cout << "here2\n";
