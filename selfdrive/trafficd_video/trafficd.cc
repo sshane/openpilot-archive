@@ -46,7 +46,10 @@ void initializeSNPE(zdl::DlSystem::Runtime_t runtime) {
                       .build();
 }
 
-void createUserBuffer(zdl::DlSystem::UserBufferMap& inputMap, std::unique_ptr<zdl::DlSystem::IUserBuffer>& inputBuffer){
+void createUserBuffer(){
+    zdl::DlSystem::UserBufferMap inputMap;
+    std::unique_ptr<zdl::DlSystem::IUserBuffer> inputBuffer;
+
     zdl::DlSystem::IUserBufferFactory& ubFactory = zdl::SNPE::SNPEFactory::getUserBufferFactory();
     zdl::DlSystem::UserBufferEncodingFloat userBufferEncodingFloat;
     const auto &strListi_opt = snpe->getInputTensorNames();
@@ -75,6 +78,33 @@ void createUserBuffer(zdl::DlSystem::UserBufferMap& inputMap, std::unique_ptr<zd
     std::cout << "input product is " << product << "\n";
     inputBuffer = ubFactory.createUserBuffer(NULL, product*sizeof(float), strides, &userBufferEncodingFloat);
     inputMap.add(input_tensor_name, inputBuffer.get());
+
+
+    std::vector<float> images;
+    float[15260040] inputImages;
+    ifstream infile("/data/openpilot/selfdrive/trafficd_video/images/video");
+    string line;
+    if (infile.is_open()){
+        int idx = 0;
+        while(infile.good()){
+            getline(infile, line);
+            inputImages[idx] = stoi(line) / 255.0;
+            // images.push_back(stoi(line) / 255.0);
+            idx++;
+        }
+    }
+    infile.close();
+    zdl::DlSystem::UserBufferMap outputMap;
+
+    size_t output_size = 4;
+    std::vector<size_t> outputStrides = {output_size * sizeof(float), sizeof(float)};
+    outputBuffer = ubFactory.createUserBuffer(output, output_size * sizeof(float), outputStrides, &userBufferEncodingFloat);
+    outputMap.add(output_tensor_name, outputBuffer.get());
+
+    assert(inputBuffer->setBufferAddress(inputImages));
+    snpe->execute(inputMap, outputMap);
+
+//    const zdl::DlSystem::StringList& outputBufferNames = outputMap.getUserBufferNames();
 
 
 
@@ -339,14 +369,12 @@ int main(){
     initModel(); // init stuff
 
     // snpe input stuff
-    zdl::DlSystem::UserBufferMap inputMap;
-    std::unique_ptr<zdl::DlSystem::IUserBuffer> inputBuffer;
 
     // snpe output stuff
-    zdl::DlSystem::UserBufferMap outputMap;
     std::unique_ptr<zdl::DlSystem::IUserBuffer> outputBuffer;
-    createUserBuffer(inputMap, inputBuffer);
-    std::cout << "successful!";
+    createUserBuffer();
+    std::cout << "successful!\n";
+
     return 0;
 
     VisionStream stream;
