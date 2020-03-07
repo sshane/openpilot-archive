@@ -6,6 +6,9 @@
 #include <sys/mman.h>
 #include <sys/resource.h>
 
+#include <capnp/serialize.h>
+#include "cereal/gen/cpp/log.capnp.h"
+
 #include <json.h>
 #include <czmq.h>
 
@@ -112,12 +115,14 @@ static void ui_init(UIState *s) {
   s->uilayout_sock = SubSocket::create(s->ctx, "uiLayoutState");
   s->livecalibration_sock = SubSocket::create(s->ctx, "liveCalibration");
   s->radarstate_sock = SubSocket::create(s->ctx, "radarState");
+  s->dynamicfollowbutton_sock = PubSocket::create(s->ctx, "dynamicFollowButton");
 
   assert(s->model_sock != NULL);
   assert(s->controlsstate_sock != NULL);
   assert(s->uilayout_sock != NULL);
   assert(s->livecalibration_sock != NULL);
   assert(s->radarstate_sock != NULL);
+  assert(s->dynamicfollowbutton_sock != NULL);
 
   s->poller = Poller::create({
                               s->model_sock,
@@ -173,6 +178,7 @@ static void ui_init_vision(UIState *s, const VisionStreamBufs back_bufs,
       .front_box_height = ui_info.front_box_height,
       .world_objects_visible = false,  // Invisible until we receive a calibration message.
       .gps_planner_active = false,
+      .dfButtonStatus = 0,
   };
 
   s->rgb_width = back_bufs.width;
@@ -201,6 +207,24 @@ static void ui_init_vision(UIState *s, const VisionStreamBufs back_bufs,
   s->longitudinal_control_timeout = UI_FREQ / 3;
   s->is_metric_timeout = UI_FREQ / 2;
   s->limit_set_speed_timeout = UI_FREQ;
+}
+
+bool df_button_clicked(int touch_x, int touch_y) {
+  if ((touch_x >= 1700) && (touch_y >= 830)) {
+    return true;
+  }
+  return false;
+}
+
+void send_df(UIState *s, int status){
+  capnp::MallocMessageBuilder msg;
+  cereal::Event::Builder event = msg.initRoot<cereal::Event>();
+  auto dfStatus = event.initDynamicFollowButton();
+  dfStatus.setStatus(status);
+
+  auto words = capnp::messageToFlatArray(msg);
+  auto bytes = words.asBytes();
+  s->dynamicfollowbutton_sock->send((char*)bytes.begin(), bytes.size());
 }
 
 static PathData read_path(cereal_ModelData_PathData_ptr pathp) {
@@ -883,6 +907,19 @@ int main(int argc, char* argv[]) {
       s->awake_timeout--;
     } else {
       set_awake(s, false);
+    }
+
+    //dfButton manager  // code below thanks to kumar: https://github.com/arne182/openpilot/commit/71d5aac9f8a3f5942e89634b20cbabf3e19e3e78
+    if (s->awake && s->vision_connected && s->active_app == cereal_UiLayoutState_App_home && s->status != STATUS_STOPPED) {
+      int touch_x = -1, touch_y = -1;
+      int touched = touch_poll(&touch, &touch_x, &touch_y, 0);  // s->awake ? 0 : 100
+      if (df_button_clicked(touch_x, touch_y)) {
+        s->scene.dfButtonStatus++;
+        if (s->scene.dfButtonStatus > 2){
+          s->scene.dfButtonStatus = 0;
+        }
+        send_df(s, s->scene.dfButtonStatus);
+      }
     }
 
     // Don't waste resources on drawing in case screen is off or car is not started.

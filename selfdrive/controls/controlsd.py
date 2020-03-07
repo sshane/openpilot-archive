@@ -28,6 +28,7 @@ from selfdrive.controls.lib.gps_helpers import is_rhd_region
 from selfdrive.locationd.calibration_helpers import Calibration, Filter
 from common.travis_checker import travis
 from common.op_params import opParams
+from selfdrive.controls.df_alert_manager import DfAlertManager
 
 LANE_DEPARTURE_THRESHOLD = 0.1
 
@@ -152,7 +153,7 @@ def data_sample(CI, CC, sm, can_sock, driver_status, state, mismatch_counter, ca
   return CS, events, cal_perc, mismatch_counter, can_error_counter
 
 
-def state_transition(frame, CS, CP, state, events, soft_disable_timer, v_cruise_kph, AM):
+def state_transition(frame, CS, CP, state, events, soft_disable_timer, v_cruise_kph, AM, sm_smiskol, df_alert_manager):
   """Compute conditional state transitions and execute actions on state transitions"""
   enabled = isEnabled(state)
 
@@ -167,6 +168,10 @@ def state_transition(frame, CS, CP, state, events, soft_disable_timer, v_cruise_
   # decrease the soft disable timer at every step, as it's reset on
   # entrance in SOFT_DISABLING state
   soft_disable_timer = max(0, soft_disable_timer - 1)
+
+  df_alert = df_alert_manager.update(sm_smiskol)
+  if df_alert is not None:
+    AM.add(frame, 'dfButtonAlert', enabled, extra_text_1=df_alert, extra_text_2='Dynamic follow: {} profile active'.format(df_alert))
 
   # DISABLED
   if state == State.disabled:
@@ -494,7 +499,7 @@ def controlsd_thread(sm=None, pm=None, can_sock=None):
   if sm is None:
     sm = messaging.SubMaster(['thermal', 'health', 'liveCalibration', 'driverMonitoring', 'plan', 'pathPlan', \
                               'model', 'gpsLocation'], ignore_alive=['gpsLocation'])
-  sm_smiskol = messaging.SubMaster(['radarState', 'smiskolData', 'liveTracks'])
+  sm_smiskol = messaging.SubMaster(['radarState', 'smiskolData', 'liveTracks', 'dynamicFollowButton'])
 
 
   if can_sock is None:
@@ -570,6 +575,7 @@ def controlsd_thread(sm=None, pm=None, can_sock=None):
 
   prof = Profiler(False)  # off by default
   op_params = opParams()
+  df_alert_manager = DfAlertManager(op_params)
 
   while True:
     sm_smiskol.update(0)
@@ -615,7 +621,7 @@ def controlsd_thread(sm=None, pm=None, can_sock=None):
     if not read_only:
       # update control state
       state, soft_disable_timer, v_cruise_kph, v_cruise_kph_last = \
-        state_transition(sm.frame, CS, CP, state, events, soft_disable_timer, v_cruise_kph, AM)
+        state_transition(sm.frame, CS, CP, state, events, soft_disable_timer, v_cruise_kph, AM, sm_smiskol, df_alert_manager)
       prof.checkpoint("State transition")
 
     # Compute actuators (runs PID loops and lateral MPC)
