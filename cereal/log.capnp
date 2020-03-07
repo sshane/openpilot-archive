@@ -1829,6 +1829,10 @@ struct SmiskolData {
   mpcTR @0 :Float32;
 }
 
+struct DynamicFollowButton {
+  status @0 :UInt16;
+}
+
 struct Event {
   # in nanoseconds?
   logMonoTime @0 :UInt64;
@@ -1905,5 +1909,6 @@ struct Event {
     carParams @69: Car.CarParams;
     frontFrame @70: FrameData;
     smiskolData @71 :SmiskolData;
+    dynamicFollowButton @72 :DynamicFollowButton;
   }
 }
