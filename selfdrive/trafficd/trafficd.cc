@@ -232,7 +232,7 @@ int main(){
                 break;
             }
             std::vector<float> imageVector = getFlatVector(buf, true);  // writes float vector to inputVector
-//            std::cout << "Vector size: " << imageVector.size() << std::endl; // uncomment to debug
+            std::cout << "Vector size: " << imageVector.size() << std::endl; // uncomment to debug
 //            writeImageVector(imageVector);
 //            return 0;
 
