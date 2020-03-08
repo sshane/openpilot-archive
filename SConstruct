@@ -131,7 +131,6 @@ env = Environment(
     "#selfdrive/loggerd/include",
     "#selfdrive/modeld",
     "#selfdrive/trafficd",
-    "#selfdrive/trafficd_video",
     "#cereal/messaging",
     "#cereal",
     "#opendbc/can",
@@ -214,7 +213,6 @@ if arch != "Darwin":
   SConscript(['selfdrive/camerad/SConscript'])
   SConscript(['selfdrive/modeld/SConscript'])
   SConscript(['selfdrive/trafficd/SConscript'])
-  SConscript(['selfdrive/trafficd_video/SConscript'])
 
 SConscript(['selfdrive/controls/lib/cluster/SConscript'])
 SConscript(['selfdrive/controls/lib/lateral_mpc/SConscript'])
