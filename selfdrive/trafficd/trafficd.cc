@@ -114,9 +114,9 @@ std::vector<float> runModel(std::vector<float> inputVector) {
     for (auto it = tensor->cbegin(); it != tensor->cend(); ++it ){
         float op = *it;
         outputVector.push_back(op);
-        std::cout << op << std::endl;
+        // std::cout << op << std::endl;
     }
-    std::cout << "---\n";
+    // std::cout << "---\n";
     return outputVector;
 }
 
@@ -232,16 +232,16 @@ int main(){
                 break;
             }
             std::vector<float> imageVector = getFlatVector(buf, true);  // writes float vector to inputVector
-            std::cout << "Vector size: " << imageVector.size() << std::endl; // uncomment to debug
+//            std::cout << "Vector size: " << imageVector.size() << std::endl; // uncomment to debug
 //            writeImageVector(imageVector);
 //            return 0;
 
 
             std::vector<float> modelOutputVec = runModel(imageVector);
 
-//            int pred_idx = std::max_element(modelOutputVec.begin(), modelOutputVec.end()) - modelOutputVec.begin();
-//            std::cout << pred_idx << std::endl;
-//            std::cout << "Prediction: " << modelLabels[pred_idx] << " (" << modelOutputVec[pred_idx] * 100 << "%)" << std::endl;
+            int pred_idx = std::max_element(modelOutputVec.begin(), modelOutputVec.end()) - modelOutputVec.begin();
+            std::cout << pred_idx << std::endl;
+            std::cout << "Prediction: " << modelLabels[pred_idx] << " (" << modelOutputVec[pred_idx] * 100 << "%)" << std::endl;
 
             sendPrediction(modelOutputVec, traffic_lights_sock);
 
