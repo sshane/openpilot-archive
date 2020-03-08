@@ -8,17 +8,14 @@ volatile sig_atomic_t do_exit = 0;
 const std::vector<std::string> modelLabels = {"RED", "GREEN", "YELLOW", "NONE"};
 const double modelRate = 1 / 5.;  // 5 Hz
 
-const int image_stride = 3840;  // global constants
-const int original_shape[3] = {874, 1164, 3};
+const int original_shape[3] = {874, 1164, 3};   // global constants
 const int original_size = 874 * 1164 * 3;
-const int cropped_shape[3] = {515, 814, 3};
-const int cropped_size = 515 * 814 * 3;
+const int cropped_shape[3] = {665, 814, 3};
+const int cropped_size = 665 * 814 * 3;
 
-const float pixel_norm = 255.0;
 const int horizontal_crop = 175;
 const int top_crop = 0;
 const int hood_crop = 209;
-const int offset = horizontal_crop * cropped_shape[2];
 const double msToSec = 1 / 1000.;  // multiply
 const double secToUs = 1e+6;
 
@@ -87,43 +84,6 @@ void initModel() {
     zdl::DlSystem::Runtime_t runt=checkRuntime();
     initializeSNPE(runt);
 }
-
-//void initVisionStream(){
-//    int err;
-//    while (true) {
-//        err = visionstream_init(&stream, VISION_STREAM_RGB_BACK, true, &buf_info);
-//        if (err != 0) {
-//            printf("visionstream fail\n");
-//            usleep(100000);
-//        }
-//        break;
-//    }
-//}
-
-//int getStreamBuffer(){
-//    buf = visionstream_get(&stream, &extra);
-//    if (buf == NULL) {
-//        printf("visionstream get failed\n");
-//        return 1;
-//    }
-//    return 0;
-//}
-
-//std::vector<float> processStreamBuffer(VIPCBuf* buf) {
-//    uint8_t *src_ptr = (uint8_t *)buf->addr;
-//    src_ptr += (top_crop * image_stride); // starting offset of 150 lines of stride in
-//
-//    std::vector<float> outputVector;
-//    for (int line = 0; line < cropped_shape[0]; line++) {
-//        for(int line_pos = 0; line_pos < (cropped_shape[1] * cropped_shape[2]); line_pos += cropped_shape[2]) {
-//            outputVector.push_back(src_ptr[line_pos + offset + 0] / pixel_norm);
-//            outputVector.push_back(src_ptr[line_pos + offset + 1] / pixel_norm);
-//            outputVector.push_back(src_ptr[line_pos + offset + 2] / pixel_norm);
-//        }
-//        src_ptr += image_stride;
-//    }
-//    return outputVector;
-//}
 
 void sendPrediction(std::vector<float> modelOutputVec, PubSocket* traffic_lights_sock) {
     float modelOutput[4];
@@ -201,43 +161,6 @@ void set_do_exit(int sig) {
 uint8_t clamp(int16_t value) {
     return value<0 ? 0 : (value>255 ? 255 : value);
 }
-
-//static std::vector<float> getFlatVector(const VIPCBuf* buf, const bool returnBGR) {
-//    // returns RGB if returnBGR is false
-//    const size_t width = original_shape[1];
-//    const size_t height = original_shape[0];
-//
-//    uint8_t *y = (uint8_t*)buf->addr;
-//    uint8_t *u = y + (width * height);
-//    uint8_t *v = u + (width / 2) * (height / 2);
-//
-//    int b, g, r;
-//    std::vector<float> bgrVec;
-//    for (int y_cord = (original_shape[0] - hood_crop - 1); y_cord >= top_crop; y_cord--) {
-//        for (int x_cord = (original_shape[1] - horizontal_crop - 1); x_cord >= horizontal_crop; x_cord--) {
-//            int yy = y[(y_cord * width) + x_cord];
-//            int uu = u[((y_cord / 2) * (width / 2)) + (x_cord / 2)];
-//            int vv = v[((y_cord / 2) * (width / 2)) + (x_cord / 2)];
-//
-//            r = 1.164 * (yy - 16) + 1.596 * (vv - 128);
-//            g = 1.164 * (yy - 16) - 0.813 * (vv - 128) - 0.391 * (uu - 128);
-//            b = 1.164 * (yy - 16) + 2.018 * (uu - 128);
-//
-//            if (returnBGR){
-//                bgrVec.push_back(clamp(r) / 255.0);
-//                bgrVec.push_back(clamp(g) / 255.0);
-//                bgrVec.push_back(clamp(b) / 255.0);
-//            } else {
-//                bgrVec.push_back(clamp(b) / 255.0);
-//                bgrVec.push_back(clamp(g) / 255.0);
-//                bgrVec.push_back(clamp(r) / 255.0);
-//            }
-//        }
-//    }
-//    // std::reverse(bgrVec.begin(), bgrVec.end());
-//    return bgrVec;
-//}
-
 
 static std::vector<float> getFlatVector(const VIPCBuf* buf, const bool returnBGR) {
     // returns RGB if returnBGR is false
