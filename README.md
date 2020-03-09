@@ -109,17 +109,17 @@ Installation
 
 The `stock_additions` branch is my release branch that will receive occasional and verified updates from my [development branch](https://github.com/ShaneSmiskol/openpilot/tree/stock_additions-devel). With automatic updates, you should only need to run the following commands on your EON once (will only clone the release branch):
 
-    ```
-    cd /data/
-    mv openpilot openpilot.old
-    git clone -b stock_additions --single-branch https://github.com/shanesmiskol/openpilot
-    reboot
-    ```
+```
+cd /data/
+mv openpilot openpilot.old
+git clone -b stock_additions --single-branch https://github.com/shanesmiskol/openpilot
+reboot
+```
 
 For those on an old branch of my fork you can run the following commands to get set up:
 
-    ```
-    cd /data/openpilot;git fetch;git pull;git checkout stock_additions;git reset --hard origin/stock_additions;git checkout stock_additions;git clean -xfd;git pull
-    ```
+```
+cd /data/openpilot;git fetch;git pull;git checkout stock_additions;git reset --hard origin/stock_additions;git checkout stock_additions;git clean -xfd;git pull
+```
 
 The command above is just a one time process for users that have cloned the branch in the past and resolves conflicts.
