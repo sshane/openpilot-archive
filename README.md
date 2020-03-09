@@ -13,7 +13,7 @@ Highlight Features
 * [**Custom wheel offset to reduce lane hugging**](#Custom-wheel-offset-to-reduce-lane-hugging)
 * [**Live tuning support**](#Live-tuning-support)
 * [**Automatic updates**](#Automatic-updates)
-* [**Installation**](#Installation)
+* [**Quick Installation**](#Quick-installation)
 
 -----
 
@@ -104,15 +104,19 @@ When a new update is available on GitHub for the `stock_additions` branch, your 
 
 Therefore, if the EON sees an update while you're driving it will reboot 5 minutes after you stop your drive, it resets the timer if you start driving again before the 5 minutes is up.
 
-Installation
+Quick Installation
 -----
 
-The `stock_additions` branch is my release branch that will receive occasional and verified updates from my [development branch](https://github.com/ShaneSmiskol/openpilot/tree/stock_additions-devel). With automatic updates, you should only need to run the following commands on your EON once (will only clone the release branch):
+The `stock_additions` branch is my release branch that will receive occasional and verified updates from my [development branch](https://github.com/ShaneSmiskol/openpilot/tree/stock_additions-devel).
+
+`stock_additions-release` however is the release-release branch that will contain 1 commit containing the latest of all the commits in the `stock_additions` branch. This branch only takes 70MB enabling fast cloning of this fork!
+
+To install Stock Additions, just run the following on your EON/C2:
 
 ```
 cd /data/
 mv openpilot openpilot.old
-git clone -b stock_additions --single-branch https://github.com/shanesmiskol/openpilot
+git clone -b stock_additions-release --single-branch https://github.com/shanesmiskol/openpilot
 reboot
 ```
 
