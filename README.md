@@ -1,9 +1,3 @@
-**Update: The `stock_additions` branch will now be the main branch that will receive occasional and verified updates from my development branches. To ensure an up to date experience, checkout and drive on the main `stock_additions` branch! Run this command on your EON to set everything up:**
-
-`cd /data/openpilot;git fetch;git pull;git checkout stock_additions;git reset --hard origin/stock_additions;git checkout stock_additions;git clean -xfd;git pull`
-
-The command above is just a one time process for users that have cloned the branch in the past and resolves conflicts.
-
 Shane's Stock Additions 0.7.1 (version 0.2)
 =====
 
@@ -19,6 +13,7 @@ Highlight Features
 * [**Custom wheel offset to reduce lane hugging**](#Custom-wheel-offset-to-reduce-lane-hugging)
 * [**Live tuning support**](#Live-tuning-support)
 * [**Automatic updates**](#Automatic-updates)
+* [**Installation**](#Installation)
 
 -----
 
@@ -110,3 +105,23 @@ When a new update is available on GitHub for the current branch you're on, your 
 - your EON has been inactive for more than 5 minutes.
 
 Therefore, if the EON sees an update while you're driving it will reboot 5 minutes after you stop your drive, it resets the timer if you start driving again before the 5 minutes is up.
+
+Installation
+-----
+
+The `stock_additions` branch is my release branch that will receive occasional and verified updates from my [development branch](https://github.com/ShaneSmiskol/openpilot/tree/stock_additions-devel). With automatic updates, you should only need to run the following commands on your EON once:
+
+    ```
+    cd /data/
+    mv openpilot openpilot.old
+    git clone -b stock_additions --single-branch https://github.com/shanesmiskol/openpilot
+    reboot
+    ```
+
+For those on an old branch of my fork you can run the following commands to get set up:
+
+    ```
+    cd /data/openpilot;git fetch;git pull;git checkout stock_additions;git reset --hard origin/stock_additions;git checkout stock_additions;git clean -xfd;git pull
+    ```
+
+The command above is just a one time process for users that have cloned the branch in the past and resolves conflicts.
