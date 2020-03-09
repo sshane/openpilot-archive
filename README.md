@@ -110,7 +110,7 @@ Quick Installation
 
 The `stock_additions` branch is my release branch that will receive occasional and verified updates from my [development branch](https://github.com/ShaneSmiskol/openpilot/tree/stock_additions-devel).
 
-`stock_additions-release` however is the release-release branch that will contain 1 commit containing the latest of all the commits in the `stock_additions` branch. This branch only takes 70MB enabling fast cloning of this fork!
+`stock_additions-release` however is the release-release branch that will contain 1 commit containing the latest of all the commits in the `stock_additions` branch. This branch is only 70MB enabling fast cloning of this fork!
 
 To install Stock Additions, just run the following on your EON/C2:
 
