@@ -120,11 +120,3 @@ mv openpilot openpilot.old
 git clone -b stock_additions-release --single-branch https://github.com/shanesmiskol/openpilot
 reboot
 ```
-
-For those on an old branch of my fork you can run the following commands to get set up:
-
-```
-cd /data/openpilot;git fetch;git pull;git checkout stock_additions;git reset --hard origin/stock_additions;git checkout stock_additions;git clean -xfd;git pull
-```
-
-The command above is just a one time process for users that have cloned the branch in the past and resolves conflicts.
