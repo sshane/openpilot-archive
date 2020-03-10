@@ -21,7 +21,7 @@ class opEdit:  # use by running `python /data/openpilot/op_edit.py`
         self.live_tuning = True
         self.run_loop()
         break
-      elif choice in ['n', 'no']:
+      elif choice in ['n', 'no', '']:
         self.run_loop()
         break
       elif choice in ['e', 'exit']:
