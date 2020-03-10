@@ -4,6 +4,7 @@ import json
 import time
 import string
 import random
+from selfdrive.swaglog import cloudlog
 from common.travis_checker import travis
 
 
@@ -151,18 +152,21 @@ class opParams:
       if key_info.has_allowed_types:
         value = self.params[key]
         allowed_types = self.default_params[key]['allowed_types']
-        valid_type = type(value) in allowed_types
-        if not valid_type:
-          if key_info.has_default:  # if value in op_params.json is not correct type, use default
-            value = self.default_params[key]['default']
-          else:  # else use a standard value based on type (last resort to keep openpilot running)
-            value = self.value_from_types(allowed_types)
+        if type(value) not in allowed_types:
+          cloudlog.warning('op_params: User\'s value is not valid!')
+          if key_info.has_default:  # invalid value type, try to use default value
+            default_value = self.default_params[key]['default']
+            if type(default_value) in allowed_types:  # actually check if the default is valid
+              # return default value because user's value of key is not in the allowed_types to avoid crashing openpilot
+              return default_value
+          else:  # else use a standard value based on type (last resort to keep openpilot running if user's value is of invalid type)
+            return self.value_from_types(allowed_types)
+        else:
+          return value  # all good, returning user's value
       else:
-        value = self.params[key]
-    else:
-      value = default
+        return self.params[key]  # no defined allowed types, returning user's value
 
-    return value
+    return default  # not in params
 
   def get_all(self):  # returns all non-hidden params
     return {k: v for k, v in self.params.items() if not self.key_info(k).hidden}
