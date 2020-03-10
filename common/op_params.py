@@ -147,7 +147,7 @@ class opParams:
       return self.get_all()
 
     if key in self.params:
-      key_info = self.get_key_info(key)
+      key_info = self.key_info(key)
       if key_info.has_allowed_types:
         value = self.params[key]
         allowed_types = self.default_params[key]['allowed_types']
@@ -165,9 +165,9 @@ class opParams:
     return value
 
   def get_all(self):  # returns all non-hidden params
-    return {k: v for k, v in self.params.items() if not self.get_key_info(k).hidden}
+    return {k: v for k, v in self.params.items() if not self.key_info(k).hidden}
 
-  def get_key_info(self, key):
+  def key_info(self, key):
     key_info = KeyInfo()
     if key is None:
       return key_info
@@ -176,14 +176,14 @@ class opParams:
         allowed_types = self.default_params[key]['allowed_types']
         if isinstance(allowed_types, list) and len(allowed_types) > 0:
           key_info.has_allowed_types = True
-      if 'live' in self.default_params[key] and self.default_params[key]['live'] is True:
-        key_info.live = True
+      if 'live' in self.default_params[key]:
+        key_info.live = self.default_params[key]['live']
       if 'default' in self.default_params[key]:
         key_info.has_default = True
       if 'description' in self.default_params[key]:
         key_info.has_description = True
       if 'hide' in self.default_params[key]:
-        key_info.hidden = True
+        key_info.hidden = self.default_params[key]['hide']
     return key_info
 
   def value_from_types(self, allowed_types):
@@ -198,7 +198,7 @@ class opParams:
     return None  # unknown type
 
   def update_params(self, key, force_update):
-    if force_update or self.get_key_info(key).live:  # if is a live param, we want to get updates while openpilot is running
+    if force_update or self.key_info(key).live:  # if is a live param, we want to get updates while openpilot is running
       if not travis and (time.time() - self.last_read_time >= self.read_frequency or force_update):  # make sure we aren't reading file too often
         self.params, read_status = read_params(self.params_file, self.format_default_params())
         if not read_status:

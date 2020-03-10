@@ -21,10 +21,10 @@ class opEdit:  # use by running `python /data/openpilot/op_edit.py`
         print('Here are your live parameters:\n')
       self.params = self.op_params.get(force_update=True)
       if self.live_tuning:  # only display live tunable params
-        self.params = {k: v for k, v in self.params.items() if self.op_params.get_key_info(k).live}
+        self.params = {k: v for k, v in self.params.items() if self.op_params.key_info(k).live}
 
       values_list = [self.params[i] if len(str(self.params[i])) < 20 else '{} ... {}'.format(str(self.params[i])[:30], str(self.params[i])[-15:]) for i in self.params]
-      live = ['(live!)' if self.op_params.get_key_info(i).live else '' for i in self.params]
+      live = ['(live!)' if self.op_params.key_info(i).live else '' for i in self.params]
 
       to_print = ['{}. {}: {}  {}'.format(idx + 1, i, values_list[idx], live[idx]) for idx, i in enumerate(self.params)]
       to_print.append('---\n{}. Add new parameter'.format(len(to_print) + 1))
@@ -76,7 +76,7 @@ class opEdit:  # use by running `python /data/openpilot/op_edit.py`
   def change_parameter(self, choice):
     while True:
       chosen_key = list(self.params)[choice]
-      key_info = self.op_params.get_key_info(chosen_key)
+      key_info = self.op_params.key_info(chosen_key)
 
       old_value = self.params[chosen_key]
       print('Chosen parameter: {}'.format(chosen_key))
