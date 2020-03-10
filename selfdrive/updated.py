@@ -322,7 +322,7 @@ def main(gctx=None):
   except IOError:
     raise RuntimeError("couldn't get overlay lock; is another updated running?")
 
-  time_offroad = time.time() - (3 * 60)
+  time_offroad = 0
   need_reboot = False
   while True:
     time_wrong = datetime.datetime.now().year < 2019
