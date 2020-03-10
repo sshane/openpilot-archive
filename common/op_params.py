@@ -30,6 +30,7 @@ class KeyInfo:
   live = False
   has_default = False
   has_description = False
+  hidden = False
 
 
 class opParams:
@@ -65,7 +66,8 @@ class opParams:
                            'min_dynamic_lane_speed': {'default': 20.0, 'allowed_types': [float, int], 'description': 'The minimum speed to allow dynamic lane speed to operate (in MPH)', 'live': False},
                            'upload_on_hotspot': {'default': False, 'allowed_types': [bool], 'description': 'If False, openpilot will not upload driving data while connected to your phone\'s hotspot', 'live': False},
                            'reset_integral': {'default': False, 'allowed_types': [bool], 'description': 'This resets integral whenever the longitudinal PID error crosses or is zero.\nShould help it recover from overshoot quicker', 'live': False},
-                           'disengage_on_gas': {'default': True, 'allowed_types': [bool], 'description': 'Whether you want openpilot to be disengage on gas input or not. It can cause issues on specific cars'}}
+                           'disengage_on_gas': {'default': True, 'allowed_types': [bool], 'description': 'Whether you want openpilot to be disengage on gas input or not. It can cause issues on specific cars'},
+                           'op_edit_live_mode': {'default': False, 'hide': True}}
 
     self.params = {}
     self.params_file = "/data/op_params.json"
@@ -142,7 +144,7 @@ class opParams:
   def get(self, key=None, default=None, force_update=False):  # can specify a default value if key doesn't exist
     self.update_params(key, force_update)
     if key is None:
-      return self.params
+      return self.get_all()
 
     if key in self.params:
       key_info = self.get_key_info(key)
@@ -162,8 +164,13 @@ class opParams:
 
     return value
 
+  def get_all(self):  # returns all non-hidden params
+    return {k: v for k, v in self.params.items() if not self.get_key_info(k).hidden}
+
   def get_key_info(self, key):
     key_info = KeyInfo()
+    if key is None:
+      return key_info
     if key in self.default_params:
       if 'allowed_types' in self.default_params[key]:
         allowed_types = self.default_params[key]['allowed_types']
@@ -175,6 +182,8 @@ class opParams:
         key_info.has_default = True
       if 'description' in self.default_params[key]:
         key_info.has_description = True
+      if 'hide' in self.default_params[key]:
+        key_info.hidden = True
     return key_info
 
   def value_from_types(self, allowed_types):
@@ -190,7 +199,7 @@ class opParams:
 
   def update_params(self, key, force_update):
     if force_update or self.get_key_info(key).live:  # if is a live param, we want to get updates while openpilot is running
-      if not travis and time.time() - self.last_read_time >= self.read_frequency:  # make sure we aren't reading file too often
+      if not travis and (time.time() - self.last_read_time >= self.read_frequency or force_update):  # make sure we aren't reading file too often
         self.params, read_status = read_params(self.params_file, self.format_default_params())
         if not read_status:
           time.sleep(1/100.)
