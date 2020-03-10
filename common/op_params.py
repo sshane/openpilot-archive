@@ -67,7 +67,7 @@ class opParams:
                            'upload_on_hotspot': {'default': False, 'allowed_types': [bool], 'description': 'If False, openpilot will not upload driving data while connected to your phone\'s hotspot', 'live': False},
                            'reset_integral': {'default': False, 'allowed_types': [bool], 'description': 'This resets integral whenever the longitudinal PID error crosses or is zero.\nShould help it recover from overshoot quicker', 'live': False},
                            'disengage_on_gas': {'default': True, 'allowed_types': [bool], 'description': 'Whether you want openpilot to be disengage on gas input or not. It can cause issues on specific cars'},
-                           'op_edit_live_mode': {'default': False, 'hide': True}}
+                           'op_edit_live_mode': {'default': False, 'description': 'This parameter controls which mode opEdit starts in. It should be hidden from the user with the hide key', 'hide': True}}
 
     self.params = {}
     self.params_file = "/data/op_params.json"
