@@ -1,5 +1,6 @@
-Shane's Stock Additions 0.7.1 (version 0.2) ![Travis (.org)](https://img.shields.io/travis/ShaneSmiskol/openpilot)
+Shane's Stock Additions 0.7.1 (version 0.2)
 =====
+![Travis (.org)](https://img.shields.io/travis/ShaneSmiskol/openpilot)
 
 This branch is simply stock openpilot with some additions to help it drive as smooth as possible on my 2017 Toyota Corolla w/ comma pedal.
 
