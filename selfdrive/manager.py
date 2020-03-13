@@ -8,6 +8,7 @@ import signal
 import shutil
 import subprocess
 import datetime
+from common.op_params import opParams
 
 from common.basedir import BASEDIR
 from common.android import ANDROID
@@ -25,6 +26,8 @@ except FileExistsError:
 
 if ANDROID:
   os.chmod("/dev/shm", 0o777)
+
+no_ota_updates = opParams().get('no_ota_updates', False) or os.path.exists('/data/no_ota_updates')
 
 def unblock_stdout():
   # get a non-blocking stdout
@@ -186,8 +189,9 @@ if ANDROID:
   persistent_processes += [
     'logcatd',
     'tombstoned',
-    'updated',
   ]
+  if not no_ota_updates:
+    persistent_processes.append('updated')
 
 car_started_processes = [
   'controlsd',
