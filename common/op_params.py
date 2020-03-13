@@ -38,18 +38,19 @@ class opParams:
   def __init__(self):
     """
       To add your own parameter to opParams in your fork, simply add a new dictionary entry with the name of your parameter and its default value to save to new users' op_params.json file.
-      The description, allowed_types, and live keys are no longer required but recommended to help users edit their parameters with opEdit and opTune correctly.
-        - The description value will be shown to users when they use opEdit or opTune to change the value of the parameter.
+      The description, allowed_types, and live keys are no longer required but recommended to help users edit their parameters with opEdit correctly.
+        - The description value will be shown to users when they use opEdit to change the value of the parameter.
         - The allowed_types key is used to restrict what kinds of values can be entered with opEdit so that users can't reasonably break the fork with unintended behavior.
           Limiting the range of floats or integers is still recommended when `.get`ting the parameter.
           When a None value is allowed, use `type(None)` instead of None, as opEdit checks the type against the values in the key with `isinstance()`.
-        - Finally, the live key tells both opParams and opTune that it's a live parameter that will change. Therefore, you must place the `op_params.get()` call in the update function so that it can update.
+        - Finally, the live key tells both opParams and opEdit that it's a live parameter that will change. Therefore, you must place the `op_params.get()` call in the update function so that it can update.
       Here's an example of the minimum required dictionary:
 
       self.default_params = {'camera_offset': {'default': 0.06}}
     """
 
-    self.default_params = {'camera_offset': {'default': 0.06, 'allowed_types': [float, int], 'description': 'Your camera offset to use in lane_planner.py', 'live': True},
+    self.default_params = {'op_edit_live_mode': {'default': False, 'allowed_types': [bool], 'description': 'This parameter controls which mode opEdit starts in. It should be hidden from the user with the hide key', 'hide': True},
+                           'camera_offset': {'default': 0.06, 'allowed_types': [float, int], 'description': 'Your camera offset to use in lane_planner.py', 'live': True},
                            'awareness_factor': {'default': 3.0, 'allowed_types': [float, int], 'description': 'Multiplier for the awareness times', 'live': False},
                            'lane_hug_direction': {'default': None, 'allowed_types': [type(None), str], 'description': "(None, 'left', 'right'): Direction of your lane hugging, if present. None will disable this modification", 'live': False},
                            'lane_hug_angle_offset': {'default': 0.0, 'allowed_types': [float, int], 'description': ('This is the angle your wheel reads when driving straight at highway speeds.\n'
@@ -68,7 +69,7 @@ class opParams:
                            'upload_on_hotspot': {'default': False, 'allowed_types': [bool], 'description': 'If False, openpilot will not upload driving data while connected to your phone\'s hotspot', 'live': False},
                            'reset_integral': {'default': False, 'allowed_types': [bool], 'description': 'This resets integral whenever the longitudinal PID error crosses or is zero.\nShould help it recover from overshoot quicker', 'live': False},
                            'disengage_on_gas': {'default': True, 'allowed_types': [bool], 'description': 'Whether you want openpilot to be disengage on gas input or not. It can cause issues on specific cars'},
-                           'op_edit_live_mode': {'default': False, 'description': 'This parameter controls which mode opEdit starts in. It should be hidden from the user with the hide key', 'hide': True}}
+                           'no_ota_updates': {'default': False, 'allowed_types': [bool], 'description': 'Set this to True to disable all automatic updates. Reboot to take effect'}}
 
     self.params = {}
     self.params_file = "/data/op_params.json"
