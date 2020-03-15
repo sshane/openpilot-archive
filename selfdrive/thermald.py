@@ -22,8 +22,8 @@ FW_SIGNATURE = get_expected_signature()
 
 ThermalStatus = log.ThermalData.ThermalStatus
 CURRENT_TAU = 15.   # 15s time constant
-DAYS_NO_CONNECTIVITY_MAX = 7  # do not allow to engage after a week without internet
-DAYS_NO_CONNECTIVITY_PROMPT = 4  # send an offroad prompt after 4 days with no internet
+DAYS_NO_CONNECTIVITY_MAX = 0  # do not allow to engage after a week without internet
+DAYS_NO_CONNECTIVITY_PROMPT = 0  # send an offroad prompt after 4 days with no internet
 
 
 with open(BASEDIR + "/selfdrive/controls/lib/alerts_offroad.json") as json_file:
@@ -256,12 +256,12 @@ def thermald_thread():
       last_update = now
     dt = now - last_update
 
-    if dt.days > DAYS_NO_CONNECTIVITY_MAX:
+    if dt.days > DAYS_NO_CONNECTIVITY_MAX > 1:
       if current_connectivity_alert != "expired":
         current_connectivity_alert = "expired"
         params.delete("Offroad_ConnectivityNeededPrompt")
         params.put("Offroad_ConnectivityNeeded", json.dumps(OFFROAD_ALERTS["Offroad_ConnectivityNeeded"]))
-    elif dt.days > DAYS_NO_CONNECTIVITY_PROMPT:
+    elif dt.days > DAYS_NO_CONNECTIVITY_PROMPT > 1:
       remaining_time = str(DAYS_NO_CONNECTIVITY_MAX - dt.days)
       if current_connectivity_alert != "prompt" + remaining_time:
         current_connectivity_alert = "prompt" + remaining_time
