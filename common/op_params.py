@@ -2,8 +2,6 @@
 import os
 import json
 import time
-import string
-import random
 from selfdrive.swaglog import cloudlog
 from common.travis_checker import travis
 
@@ -21,7 +19,7 @@ def read_params(params_file, default_params):
       params = json.load(f)
     return params, True
   except Exception as e:
-    print(e)
+    cloudlog.error(e)
     params = default_params
     return params, False
 
@@ -49,8 +47,7 @@ class opParams:
       self.default_params = {'camera_offset': {'default': 0.06}}
     """
 
-    self.default_params = {'op_edit_live_mode': {'default': False, 'allowed_types': [bool], 'description': 'This parameter controls which mode opEdit starts in. It should be hidden from the user with the hide key', 'hide': True},
-                           'camera_offset': {'default': 0.06, 'allowed_types': [float, int], 'description': 'Your camera offset to use in lane_planner.py', 'live': True},
+    self.default_params = {'camera_offset': {'default': 0.06, 'allowed_types': [float, int], 'description': 'Your camera offset to use in lane_planner.py', 'live': True},
                            'awareness_factor': {'default': 3.0, 'allowed_types': [float, int], 'description': 'Multiplier for the awareness times', 'live': False},
                            'lane_hug_direction': {'default': None, 'allowed_types': [type(None), str], 'description': "(None, 'left', 'right'): Direction of your lane hugging, if present. None will disable this modification", 'live': False},
                            'lane_hug_angle_offset': {'default': 0.0, 'allowed_types': [float, int], 'description': ('This is the angle your wheel reads when driving straight at highway speeds.\n'
@@ -69,48 +66,37 @@ class opParams:
                            'upload_on_hotspot': {'default': False, 'allowed_types': [bool], 'description': 'If False, openpilot will not upload driving data while connected to your phone\'s hotspot', 'live': False},
                            'reset_integral': {'default': False, 'allowed_types': [bool], 'description': 'This resets integral whenever the longitudinal PID error crosses or is zero.\nShould help it recover from overshoot quicker', 'live': False},
                            'disengage_on_gas': {'default': True, 'allowed_types': [bool], 'description': 'Whether you want openpilot to be disengage on gas input or not. It can cause issues on specific cars'},
-                           'no_ota_updates': {'default': False, 'allowed_types': [bool], 'description': 'Set this to True to disable all automatic updates. Reboot to take effect'}}
+                           'no_ota_updates': {'default': False, 'allowed_types': [bool], 'description': 'Set this to True to disable all automatic updates. Reboot to take effect'},
+                           'dynamic_gas': {'default': True, 'allowed_types': [bool], 'description': 'Whether to use dynamic gas if your car is supported'},
+
+                           'op_edit_live_mode': {'default': False, 'allowed_types': [bool], 'description': 'This parameter controls which mode opEdit starts in. It should be hidden from the user with the hide key', 'hide': True}}
 
     self.params = {}
     self.params_file = "/data/op_params.json"
-    self.kegman_file = "/data/kegman.json"
     self.last_read_time = time.time()
     self.read_frequency = 5.0  # max frequency to read with self.get(...) (sec)
     self.force_update = False  # replaces values with default params if True, not just add add missing key/value pairs
-    self.to_delete = ['dynamic_lane_speed', 'longkiV', 'following_distance', 'static_steer_ratio']
+    self.to_delete = ['dynamic_lane_speed', 'longkiV', 'following_distance', 'static_steer_ratio', 'uniqueID']  # a list of params you want to delete (unused)
     self.run_init()  # restores, reads, and updates params
-
-  def create_id(self):  # creates unique identifier to send with sentry errors. please update uniqueID with op_edit.py to your username!
-    need_id = False
-    if "uniqueID" not in self.params:
-      need_id = True
-    if "uniqueID" in self.params and self.params["uniqueID"] is None:
-      need_id = True
-    if need_id:
-      random_id = ''.join([random.choice(string.ascii_lowercase + string.ascii_uppercase + string.digits) for i in range(15)])
-      self.params["uniqueID"] = random_id
 
   def add_default_params(self):
     prev_params = dict(self.params)
-    if not travis:
-      self.create_id()
-      for key in self.default_params:
-        if self.force_update:
-          self.params[key] = self.default_params[key]['default']
-        elif key not in self.params:
-          self.params[key] = self.default_params[key]['default']
+    for key in self.default_params:
+      if self.force_update:
+        self.params[key] = self.default_params[key]['default']
+      elif key not in self.params:
+        self.params[key] = self.default_params[key]['default']
     return prev_params == self.params
 
   def format_default_params(self):
     return {key: self.default_params[key]['default'] for key in self.default_params}
 
-  def run_init(self):  # does first time initializing of default params, and/or restoring from kegman.json
+  def run_init(self):  # does first time initializing of default params
     if travis:
       self.params = self.format_default_params()
       return
     self.params = self.format_default_params()  # in case any file is corrupted
     to_write = False
-    no_params = False
     if os.path.isfile(self.params_file):
       self.params, read_status = read_params(self.params_file, self.format_default_params())
       if read_status:
@@ -118,18 +104,10 @@ class opParams:
         if self.delete_old():  # or if old params have been deleted
           to_write = True
       else:  # don't overwrite corrupted params, just print to screen
-        print("ERROR: Can't read op_params.json file")
-    elif os.path.isfile(self.kegman_file):
-      to_write = True  # write no matter what
-      try:
-        with open(self.kegman_file, "r") as f:  # restore params from kegman
-          self.params = json.load(f)
-          self.add_default_params()
-      except:
-        print("ERROR: Can't read kegman.json file")
+        cloudlog.error("ERROR: Can't read op_params.json file")
     else:
-      no_params = True  # user's first time running a fork with kegman_conf or op_params
-    if to_write or no_params:
+      to_write = True  # user's first time running a fork with op_params, write default params
+    if to_write:
       write_params(self.params, self.params_file)
 
   def delete_old(self):
