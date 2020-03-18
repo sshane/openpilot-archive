@@ -23,6 +23,7 @@ class ETA:
     self.this_ips = 0
     self.last_ips = 0
     self.has_update = False
+    self.run_thread = False
     self.scons_finished_progress = sfp
     threading.Thread(target=self.start_eta_thread()).start()
 
@@ -32,6 +33,8 @@ class ETA:
 
   def start_eta_thread(self):
     while self.progress < self.max_progress:
+      if not self.run_thread:
+        continue
       if self.has_update:
         print('HAS UPDATE!\n------')
         self.has_update = False
@@ -42,7 +45,7 @@ class ETA:
 
 
   def update(self, progress, t):
-    self.has_update = True
+    self.run_thread = True
     self.progress = progress
     self.time = t
 
