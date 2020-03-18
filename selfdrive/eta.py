@@ -1,4 +1,5 @@
 import datetime
+import numpy as np
 
 
 class ETA:
@@ -20,7 +21,9 @@ class ETA:
 
   def get_eta(self):
     elapsed = self.time - self.start_time
-    etr = self.max_progress * (elapsed / (self.progress + 1)) ** 0.75 - elapsed
+    percentage = elapsed / (self.progress + 1)
+    factor = np.interp(self.progress, [0, self.max_progress], [0.75, 0.5])
+    etr = self.max_progress * percentage ** 0.75 - elapsed
     hours, remainder = divmod(round(etr), self.seconds ** 2)
     minutes, seconds = divmod(remainder, self.seconds)
 
