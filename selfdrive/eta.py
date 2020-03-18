@@ -50,7 +50,10 @@ class ETA:
     if last_ips < total_ips:
       ips = last_ips * 0.8 + total_ips * 0.8
 
-    if last_ips > 10 or time.time() - time.time() > 10:  # probably pulling from cache
+    if time.time() - self._start > 5:
+      return 'calculating', '', ''
+
+    if last_ips > 10:  # probably pulling from cache
       self.start_time = time.time()  # ensures ips accuracy
       self.progress_subtract = self.progress
       return 'calculating', '', ''
