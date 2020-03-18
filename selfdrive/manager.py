@@ -9,6 +9,7 @@ import shutil
 import subprocess
 import datetime
 from common.op_params import opParams
+from selfdrive.eta import ETA
 
 from common.basedir import BASEDIR, PARAMS
 from common.android import ANDROID
@@ -93,6 +94,9 @@ if not prebuilt:
     scons_finished_progress = 70.0
 
     # Read progress from stderr and update spinner
+    eta_tool = ETA(time.time(), TOTAL_SCONS_NODES)
+    last_eta = None
+    last_eta_time = 0
     while scons.poll() is None:
       try:
         line = scons.stderr.readline()
@@ -104,8 +108,11 @@ if not prebuilt:
         if line.startswith(prefix):
           i = int(line[len(prefix):])
           if spinner is not None:
+            eta_tool.log(i, time.time())
+            if time.time() - last_eta_time > 5:
+              last_eta = eta_tool.etr
             percentage = i / TOTAL_SCONS_NODES
-            spinner.update("%d" % (percentage * scons_finished_progress), 'compiling: {}%\nnew line'.format(round(percentage * 100, 1)))
+            spinner.update("%d" % (percentage * scons_finished_progress), 'compiling: {}% (ETA: {})'.format(round(percentage * 100, 1), last_eta))
         elif len(line):
           print(line.decode('utf8'))
       except Exception:
