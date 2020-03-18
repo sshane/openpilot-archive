@@ -110,7 +110,7 @@ if not prebuilt:
           if spinner is not None:
             eta_tool.log(i, time.time())
             if time.time() - last_eta_time > 1:
-              last_eta = eta_tool.etr
+              last_eta = eta_tool.get_eta()
               last_eta_time = time.time()
 
             percentage = i / TOTAL_SCONS_NODES
