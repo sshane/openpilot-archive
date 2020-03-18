@@ -27,32 +27,14 @@ class ETA:
     elapsed = self.time - self.start_time
     last_ips = (self.progress - self.last_progress) / (self.time - self.last_time)
     remaining = self.max_progress - self.progress
-    etr_new = remaining / last_ips
+    etr = remaining / last_ips
     total_ips = (self.progress) / (self.time - self.start_time)
 
     self.last_progress = int(self.progress)
     self.last_time = float(self.time)
 
 
-    return etr_new, last_ips, total_ips
 
-
-
-    last_elapsed = (self.time - self.last_time) / (self.progress - self.last_progress)
-    print('last_elapsed: {}'.format(last_elapsed))
-    print('avg. elapsed: {}'.format((elapsed / self.progress)))
-    # print(self.progress - self.last_progress)
-    # print(self.progress)
-
-    percentage = elapsed / (self.progress + 1)
-
-    factor = last_elapsed - (elapsed / self.progress)
-    factor *= (self.progress - self.last_progress)
-    print(factor)
-
-    factor = np.interp(factor, [-20, 0, 400], [4.0, 1, 0.35])
-    etr = (self.max_progress * ((percentage + 1) ** factor - 1)) - elapsed
-    return etr1, etr
     hours, remainder = divmod(round(etr), self.seconds ** 2)
     minutes, seconds = divmod(remainder, self.seconds)
 
@@ -68,4 +50,5 @@ class ETA:
     self.last_time = float(self.time)
     self.last_progress = int(self.progress)
     print(self.last_progress)
-    return ', '.join(etr_list)
+    return ', '.join(etr_list), last_ips, total_ips
+    # return ', '.join(etr_list)
