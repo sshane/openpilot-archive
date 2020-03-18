@@ -105,7 +105,7 @@ if not prebuilt:
           i = int(line[len(prefix):])
           if spinner is not None:
             percentage = i / TOTAL_SCONS_NODES
-            spinner.update("%d" % percentage * scons_finished_progress, 'compiling: {}%'.format(round(percentage * 100, 2)))
+            spinner.update("%d" % (percentage * scons_finished_progress), 'compiling: {}%'.format(round(percentage * 100, 2)))
         elif len(line):
           print(line.decode('utf8'))
       except Exception:
