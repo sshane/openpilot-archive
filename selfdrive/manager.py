@@ -114,6 +114,7 @@ if not prebuilt:
               last_eta_time = time.time()
 
             percentage = i / TOTAL_SCONS_NODES
+            print(last_eta)
             spinner.update("%d" % (percentage * scons_finished_progress), 'compiling: {}% (ETA: {})'.format(round(percentage * 100, 1), last_eta))
         elif len(line):
           print(line.decode('utf8'))
