@@ -88,7 +88,7 @@ if not prebuilt:
     # env['SCONS_CACHE'] = "1"
 
     nproc = os.cpu_count()
-    j_flag = "-j5000"  # "" if nproc is None else "-j%d" % (nproc - 1)
+    j_flag = "-j32"  # "" if nproc is None else "-j%d" % (nproc - 1)
     scons = subprocess.Popen(["scons", j_flag], cwd=BASEDIR, env=env, stderr=subprocess.PIPE)
     scons_finished_progress = 70.0
 
