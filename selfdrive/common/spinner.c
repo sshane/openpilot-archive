@@ -84,8 +84,7 @@ int spin(int argc, char** argv) {
     // Check stdin for new text
     if (stdin_input_available()){
       fgets(spintext, SPINTEXT_LENGTH, stdin);
-      size_t len = strlen(spintext);
-      spintext[len] = 0;
+      spintext[strcspn(spintext, "\n")] = 0;
 
       // Get current status
       has_extra = strchr(spintext, ',') != NULL;
@@ -95,6 +94,7 @@ int spin(int argc, char** argv) {
       }
 
       // Check if number (update progress bar)
+      size_t len = strlen(spintext);
       bool is_number = len > 0;
       for (int i = 0; i < len; i++){
         if (!isdigit(spintext[i])){
