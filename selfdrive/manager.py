@@ -94,7 +94,7 @@ if not prebuilt:
     scons_finished_progress = 70.0
 
     # Read progress from stderr and update spinner
-    eta_tool = ETA(time.time(), TOTAL_SCONS_NODES, 2)
+    eta_tool = ETA(time.time(), TOTAL_SCONS_NODES, 1)
     last_eta = ''
     ips = 0
     total_ips = 0
@@ -111,7 +111,7 @@ if not prebuilt:
         i = int(line[len(prefix):])
         if spinner is not None:
           eta_tool.log(i, time.time())
-          if (time.time() - last_eta_time) > 2:
+          if (time.time() - last_eta_time) > 1:
             last_eta, ips, total_ips = eta_tool.get_eta()
             last_eta_time = time.time()
 
