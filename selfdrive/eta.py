@@ -27,7 +27,7 @@ class ETA:
     last_elapsed = (self.time - self.last_time) / (self.progress - self.last_progress)
     # print(last_elapsed)
     # print(self.progress - self.last_progress)
-    print(self.progress)
+    # print(self.progress)
 
     percentage = elapsed / (self.progress + 1)
     factor = last_elapsed - (elapsed / self.progress)
@@ -49,4 +49,5 @@ class ETA:
 
     self.last_time = float(self.time)
     self.last_progress = int(self.progress)
+    print(self.last_progress)
     return ', '.join(etr_list)
