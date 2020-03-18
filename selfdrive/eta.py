@@ -18,6 +18,7 @@ class ETA:
 
   def log(self, progress, t):
     self.progress = progress
+    self.last_time = self.time
     self.time = t
 
   def get_eta(self):
@@ -30,7 +31,7 @@ class ETA:
     factor *= self.progress
 
     # factor = np.interp(self.progress, [0, self.max_progress], [2.0, 1.0])
-    etr = (self.max_progress * ((percentage + 1) ** factor - 1)) - elapsed
+    etr = (self.max_progress * ((percentage) ** factor)) - elapsed
     hours, remainder = divmod(round(etr), self.seconds ** 2)
     minutes, seconds = divmod(remainder, self.seconds)
 
@@ -42,6 +43,4 @@ class ETA:
       plural = 's' if t != 1 else ''
       if t != 0:
         etr_list.append('{} {}{}'.format(t, t_str, plural))
-
-    self.last_time = self.time
     return ', '.join(etr_list)
