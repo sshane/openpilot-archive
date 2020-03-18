@@ -41,6 +41,7 @@ class ETA:
 
   def get_eta(self):
     self.set_ips()
+
     print('TOTAL IPS: {}'.format(self.total_ips))
     self.last_time = float(self.time)
     self.last_progress = int(self.progress)
