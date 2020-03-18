@@ -52,7 +52,7 @@ class ETA:
     self.last_time = float(self.time)
 
     ips_list_len = len(self.ips_list)
-    if ips_list_len / self.frequency > 5:  # at least x seconds of data
+    if ips_list_len / self.frequency > 1:  # at least x seconds of data
       last_pred_weight = 2.0  # places x weight on most recent ips
       weights = np.linspace(1, last_pred_weight, ips_list_len)
       weight_sum = sum(weights)
