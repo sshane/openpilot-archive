@@ -4,8 +4,9 @@ import time
 import threading
 
 
-class ETA:
+class ETA(threading.Thread):
   def __init__(self, start_time, max_progress, frequency, sfp, spinner=None):  # only supports up to minutes
+    threading.Thread.__init__(self)
     self.start_time = start_time
     self.max_progress = max_progress
     self.frequency = frequency
@@ -47,12 +48,10 @@ class ETA:
 
 
   def update(self, progress, t):
-    if not self.run_thread:
-      threading.Thread(target=self.start_eta_thread()).start()
-      self.run_thread = True
     self.progress = progress
     self.time = t
     self.has_update = True
+    self.run_thread = True
 
   def set_ips(self):
     self.last_ips = float(self.this_ips)
