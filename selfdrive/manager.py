@@ -109,6 +109,7 @@ if not prebuilt:
           i = int(line[len(prefix):])
           if spinner is not None:
             eta_tool.log(i, time.time())
+            print(time.time() - last_eta_time)
             if (time.time() - last_eta_time) > 1:
               last_eta = eta_tool.get_eta()
               last_eta_time = time.time()
