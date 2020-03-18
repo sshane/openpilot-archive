@@ -116,7 +116,7 @@ if not prebuilt:
           # with open('/data/scons_times', 'a') as f:
           #   f.write('{}\n'.format(time.time() - start_time))
           percentage = i / TOTAL_SCONS_NODES
-          spinner.update("%d" % (percentage * scons_finished_progress), 'compiling: {}% ETA: {}'.format(round(percentage * 100, 1), last_eta_time))
+          spinner.update("%d" % (percentage * scons_finished_progress), 'compiling: {}% ETA: {}'.format(round(percentage * 100, 1), last_eta))
           # spinner.update("%d" % (percentage * scons_finished_progress), 'ETA: {}, last IPS: {}, total IPS: {}'.format(last_eta, ips, total_ips))
       elif len(line):
         print(line.decode('utf8'))
