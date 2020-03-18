@@ -43,9 +43,9 @@ class ETA:
     total_ips = self.progress / (self.time - self.start_time)
     last_ips = (self.progress - self.last_progress) / (self.time - self.last_time)
     if last_ips < total_ips:
-      ips = total_ips * 0.6 + last_ips * 0.4
+      ips = last_ips * 0.6 + total_ips * 0.4
     else:
-      ips = total_ips * 0.4 + last_ips * 0.6
+      ips = last_ips * 0.4 + total_ips * 0.6
 
     remaining = self.max_progress - self.progress
     etr = remaining / ips
