@@ -112,7 +112,7 @@ if not prebuilt:
             if time.time() - last_eta_time > 1:
               last_eta = eta_tool.etr
               last_eta_time = time.time()
-
+            print(eta_tool.etr)
             percentage = i / TOTAL_SCONS_NODES
             spinner.update("%d" % (percentage * scons_finished_progress), 'compiling: {}% (ETA: {})'.format(round(percentage * 100, 1), last_eta))
         elif len(line):

@@ -22,6 +22,7 @@ class ETA:
     def get_eta(self):
         elapsed = self.time - self.start_time
         etr = self.max_progress * (elapsed / (self.progress + 1)) - elapsed
+        print(etr)
 
         sec_string = ''
         min_string = ''
