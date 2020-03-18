@@ -2,6 +2,7 @@ Stock Additions 0.7.4 (version 0.2)
 ========================
  * Sidebar will not pop out when you tap the Dynamic Follow profile change button when driving
  * Display more information when openpilot is booting (with a pretty color)
+ * Display 
 
 Version 0.7.4 (2020-03-20)
 ========================

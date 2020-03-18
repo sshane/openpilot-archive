@@ -96,8 +96,8 @@ if not prebuilt:
     # Read progress from stderr and update spinner
     eta_tool = ETA(time.time(), TOTAL_SCONS_NODES, 1)
     last_eta = ''
-    ips = ''
-    total_ips = ''
+    ips = 0
+    total_ips = 0
     last_eta_time = time.time()
     while scons.poll() is None:
       # try:
