@@ -47,6 +47,6 @@ class ETA:
       if t != 0:
         etr_list.append('{} {}{}'.format(t, t_str, plural))
 
-    self.last_time = self.time
-    self.last_progress = self.progress
+    self.last_time = float(self.time)
+    self.last_progress = int(self.progress)
     return ', '.join(etr_list)
