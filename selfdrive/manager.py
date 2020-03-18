@@ -117,7 +117,7 @@ if not prebuilt:
 
           percentage = i / TOTAL_SCONS_NODES
           # spinner.update("%d" % (percentage * scons_finished_progress), 'compiling: {}% (ETA: {}, IPS: {})'.format(round(percentage * 100, 1), last_eta, ips))
-          spinner.update("%d" % (percentage * scons_finished_progress), 'ETA: {}, last IPS: {}, total IPS: {}'.format(last_eta, round(ips, 2), round(total_ips, 2)))
+          spinner.update("%d" % (percentage * scons_finished_progress), 'ETA: {}, last IPS: {}, total IPS: {}'.format(last_eta, ips, total_ips))
       elif len(line):
         print(line.decode('utf8'))
       # except Exception:

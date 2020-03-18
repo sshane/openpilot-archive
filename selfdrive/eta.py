@@ -68,7 +68,7 @@ class ETA:
       etr = etr_total * 0.5 + etr_weighted * 0.5
       etr = self.format_etr(etr)
 
-      return etr, last_ips, total_ips
+      return etr, round(last_ips, 2), round(total_ips, 2)
       # return ', '.join(etr_list)
     else:
       return 'calculating...', '', ''
