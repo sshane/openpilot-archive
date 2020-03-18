@@ -21,7 +21,6 @@ class ETA:
     self.time = t
 
   def get_eta(self):
-    self.last_time = self.time
     elapsed = self.time - self.start_time
     last_elapsed = self.time - self.last_time
 
@@ -43,4 +42,6 @@ class ETA:
       plural = 's' if t != 1 else ''
       if t != 0:
         etr_list.append('{} {}{}'.format(t, t_str, plural))
+
+    self.last_time = self.time
     return ', '.join(etr_list)
