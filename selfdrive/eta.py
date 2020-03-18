@@ -42,15 +42,17 @@ class ETA:
   def get_eta(self):
     total_ips = self.progress / (self.time - self.start_time)
     last_ips = (self.progress - self.last_progress) / (self.time - self.last_time)
+
+    ips = total_ips * 0.8 + last_ips * 0.8
     if last_ips < total_ips:
-      ips = last_ips * 0.6 + total_ips * 0.4
-    else:
-      ips = last_ips * 0.4 + total_ips * 0.6
+      ips = last_ips * 0.8 + total_ips * 0.8
+    if ips > 10:
+      return 'calculating', '', ''
 
     remaining = self.max_progress - self.progress
-    etr = remaining / ips
+    etr = self.format_etr(remaining / ips)
 
     self.last_time = float(self.time)
     self.last_progress = int(self.progress)
-    etr = self.format_etr(etr)
+
     return etr, round(last_ips, 2), round(total_ips, 2)
