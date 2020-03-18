@@ -22,7 +22,7 @@ class ETA:
   def get_eta(self):
     elapsed = self.time - self.start_time
     percentage = elapsed / (self.progress + 1)
-    factor = np.interp(self.progress, [0, self.max_progress], [4.0, 1.0])
+    factor = np.interp(self.progress, [0, self.max_progress], [2.0, 1.0])
     etr = (self.max_progress * ((percentage + 1) ** factor - 1)) - elapsed
     hours, remainder = divmod(round(etr), self.seconds ** 2)
     minutes, seconds = divmod(remainder, self.seconds)
