@@ -54,4 +54,4 @@ class ETA:
     self.last_time = float(self.time)
     self.last_progress = int(self.progress)
     etr = self.format_etr(etr)
-    return etr, last_ips, total_ips
+    return etr, round(last_ips, 2), round(total_ips, 2)
