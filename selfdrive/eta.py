@@ -23,6 +23,8 @@ class ETA:
     etr = self.max_progress * (elapsed / (self.progress + 1)) - elapsed
     hours, remainder = divmod(round(etr), self.seconds**2)
     minutes, seconds = divmod(remainder, self.seconds)
+    print(etr)
+    print(minutes)
 
     time_list = [hours, minutes, seconds]
     time_str_list = ['hour', 'minute', 'second']
