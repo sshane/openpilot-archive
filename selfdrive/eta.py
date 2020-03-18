@@ -23,16 +23,16 @@ class ETA:
     etr = self.max_progress * (elapsed / (self.progress + 1)) - elapsed
     hours, remainder = divmod(round(etr), self.seconds**2)
     minutes, seconds = divmod(remainder, self.seconds)
-    print(etr)
-    print(minutes)
 
     time_list = [hours, minutes, seconds]
     time_str_list = ['hour', 'minute', 'second']
 
     etr_list = []
     for t, t_str in zip(time_list, time_str_list):
+      print(t)
+      print(t_str)
       plural = 's' if t != 1 else ''
       if t != 0:
         etr_list.append('{} {}{}'.format(hours, t_str, plural))
-
+    print(etr_list)
     return ', '.join(etr_list)
