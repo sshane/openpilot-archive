@@ -98,28 +98,28 @@ if not prebuilt:
     last_eta = ''
     last_eta_time = 0
     while scons.poll() is None:
-      try:
-        line = scons.stderr.readline()
-        if line is None:
-          continue
+      # try:
+      line = scons.stderr.readline()
+      if line is None:
+        continue
 
-        line = line.rstrip()
-        prefix = b'progress: '
-        if line.startswith(prefix):
-          i = int(line[len(prefix):])
-          if spinner is not None:
-            eta_tool.log(i, time.time())
-            print(time.time() - last_eta_time)
-            if (time.time() - last_eta_time) > 1:
-              last_eta = eta_tool.get_eta()
-              last_eta_time = time.time()
+      line = line.rstrip()
+      prefix = b'progress: '
+      if line.startswith(prefix):
+        i = int(line[len(prefix):])
+        if spinner is not None:
+          eta_tool.log(i, time.time())
+          print(time.time() - last_eta_time)
+          if (time.time() - last_eta_time) > 1:
+            last_eta = eta_tool.get_eta()
+            last_eta_time = time.time()
 
-            percentage = i / TOTAL_SCONS_NODES
-            spinner.update("%d" % (percentage * scons_finished_progress), 'compiling: {}% (ETA: {})'.format(round(percentage * 100, 1), last_eta))
-        elif len(line):
-          print(line.decode('utf8'))
-      except Exception:
-        pass
+          percentage = i / TOTAL_SCONS_NODES
+          spinner.update("%d" % (percentage * scons_finished_progress), 'compiling: {}% (ETA: {})'.format(round(percentage * 100, 1), last_eta))
+      elif len(line):
+        print(line.decode('utf8'))
+      # except Exception:
+      #   pass
 
     if scons.returncode != 0:
       if retry:
