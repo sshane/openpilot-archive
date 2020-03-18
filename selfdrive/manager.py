@@ -96,6 +96,7 @@ if not prebuilt:
     # Read progress from stderr and update spinner
     eta_tool = ETA(time.time(), TOTAL_SCONS_NODES, 1)
     last_eta = ''
+    ips = ''
     last_eta_time = time.time()
     while scons.poll() is None:
       # try:
@@ -110,12 +111,11 @@ if not prebuilt:
         if spinner is not None:
           eta_tool.log(i, time.time())
           if (time.time() - last_eta_time) > 1:
-            last_eta = eta_tool.get_eta()
+            last_eta, ips = eta_tool.get_eta()
             last_eta_time = time.time()
 
           percentage = i / TOTAL_SCONS_NODES
-          # spinner.update("%d" % (percentage * scons_finished_progress), 'compiling: {}% (ETA: {})'.format(round(percentage * 100, 1), last_eta))
-          spinner.update("%d" % (percentage * scons_finished_progress), 'ETA: {} - IPS: {}'.format(*last_eta))
+          spinner.update("%d" % (percentage * scons_finished_progress), 'compiling: {}% (ETA: {}, IPS: {})'.format(round(percentage * 100, 1), last_eta, ips))
       elif len(line):
         print(line.decode('utf8'))
       # except Exception:
