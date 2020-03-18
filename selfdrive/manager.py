@@ -78,7 +78,7 @@ from multiprocessing import Process
 
 # Run scons
 spinner = Spinner()
-spinner.update("0", 'starting openpilot')
+spinner.update("0", 'starting openpilot...')
 
 if not prebuilt:
   for retry in [True, False]:
@@ -104,8 +104,8 @@ if not prebuilt:
         if line.startswith(prefix):
           i = int(line[len(prefix):])
           if spinner is not None:
-            percentage = scons_finished_progress * (i / TOTAL_SCONS_NODES)
-            spinner.update("%d" % percentage, 'compiling: {}%'.format(round(percentage, 2)))
+            percentage = i / TOTAL_SCONS_NODES
+            spinner.update("%d" % percentage * scons_finished_progress, 'compiling: {}%'.format(round(percentage * 100, 2)))
         elif len(line):
           print(line.decode('utf8'))
       except Exception:
