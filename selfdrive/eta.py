@@ -41,7 +41,7 @@ class ETA:
     return ', '.join(etr_list)
 
   def get_eta(self):
-    times_idx = self.progress / self.max_progress
+    times_idx = len(self.times) * (self.progress / self.max_progress)
     if times_idx == round(times_idx):
       etr = self.times[int(times_idx)]
     else:
