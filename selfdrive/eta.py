@@ -40,36 +40,18 @@ class ETA:
     return ', '.join(etr_list)
 
   def get_eta(self):
+    total_ips = self.progress / (self.time - self.start_time)
     last_ips = (self.progress - self.last_progress) / (self.time - self.last_time)
 
-    self.ips_list.append(last_ips)
-    # if last_ips < total_ips:
-    #   etr = etr_total * 0.6 + etr_last * 0.4
-    # else:
-    #   etr = etr_total * 0.4 + etr_last * 0.6
-
-    self.last_progress = int(self.progress)
-    self.last_time = float(self.time)
-
-    ips_list_len = len(self.ips_list)
-    if ips_list_len / self.frequency > 1:  # at least x seconds of data
-      last_pred_weight = 2.0  # places x weight on most recent ips
-      weights = np.linspace(1, last_pred_weight, ips_list_len)
-      weight_sum = sum(weights)
-      #
-
-      time_weighted_ips = [weight * ips for weight, ips in zip(weights, self.ips_list)]
-      time_weighted_ips = sum([ips / weight_sum for ips in time_weighted_ips])
-      total_ips = self.progress / (self.time - self.start_time)
-
-      remaining = self.max_progress - self.progress
-      etr_total = remaining / total_ips
-      etr_weighted = remaining / time_weighted_ips
-
-      etr = etr_total * 0.5 + etr_weighted * 0.5
-      etr = self.format_etr(etr)
-
-      return etr, round(last_ips, 2), round(total_ips, 2)
-      # return ', '.join(etr_list)
+    remaining = self.max_progress - self.progress
+    etr_total = remaining / total_ips
+    etr_last = remaining / last_ips
+    if last_ips < total_ips:
+      etr = etr_total * 0.6 + etr_last * 0.4
     else:
-      return 'calculating...', '', ''
+      etr = etr_total * 0.4 + etr_last * 0.6
+
+    self.last_time = float(self.time)
+    self.last_progress = int(self.progress)
+    etr = self.format_etr(etr)
+    return etr, last_ips, total_ips
