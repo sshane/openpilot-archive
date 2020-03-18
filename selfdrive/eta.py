@@ -45,6 +45,7 @@ class ETA:
     last_ips = (self.progress - self.last_progress) / (self.time - self.last_time)
     self.last_time = float(self.time)
     self.last_progress = int(self.progress)
+    percentage = self.progress / self.max_progress
 
     ips = total_ips * 0.8 + last_ips * 0.8
     if last_ips < total_ips:
@@ -54,7 +55,6 @@ class ETA:
       # self.start_time = time.time()  # ensures ips accuracy
       # self.progress_subtract = self.progress
       remaining = self.max_progress - self.progress
-      percentage = self.progress / self.max_progress
       return 'checking compiled: {}% ETA: {}'.format(round(percentage * 100, 1), self.format_etr(remaining / ips))
 
     times_idx = len(self.times) * (self.progress / self.max_progress)
@@ -64,7 +64,7 @@ class ETA:
       times_scale = [self.times[round(times_idx + i)] for i in [-1, 1]]
       etr = sum(times_scale) / 2.0
 
-    return self.format_etr(etr)
+    return 'compiling: {}% ETA: {}'.format(percentage, self.format_etr(etr))
 
 
   def get_eta_old(self):
