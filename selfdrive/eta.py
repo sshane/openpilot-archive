@@ -26,6 +26,7 @@ class ETA(threading.Thread):
     self.has_update = False
     self.run_thread = False
     self.scons_finished_progress = sfp
+    self.start_eta_thread()
 
   # def init(self, t, max_progress):
   #     self.start_time = t
