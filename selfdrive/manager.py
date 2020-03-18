@@ -96,7 +96,7 @@ if not prebuilt:
     # Read progress from stderr and update spinner
     eta_tool = ETA(time.time(), TOTAL_SCONS_NODES, 1)
     last_eta = ''
-    last_eta_time = 0
+    last_eta_time = time.time()
     while scons.poll() is None:
       # try:
       line = scons.stderr.readline()
@@ -109,7 +109,6 @@ if not prebuilt:
         i = int(line[len(prefix):])
         if spinner is not None:
           eta_tool.log(i, time.time())
-          print(time.time() - last_eta_time)
           if (time.time() - last_eta_time) > 1:
             last_eta = eta_tool.get_eta()
             last_eta_time = time.time()
