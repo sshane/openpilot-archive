@@ -43,10 +43,11 @@ class ETA:
   def get_eta(self):
     times_idx = self.progress / self.max_progress
     if times_idx == round(times_idx):
-      etr = self.times[times_idx]
+      etr = self.times[int(times_idx)]
     else:
       times_scale = [self.times[round(times_idx + i)] for i in [-1, 1]]
-      return self.format_etr(sum(times_scale) / 2.0)
+      etr = sum(times_scale) / 2.0
+    return self.format_etr(etr)
 
 
   def get_eta_old(self):
