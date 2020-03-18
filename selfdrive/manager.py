@@ -94,7 +94,7 @@ if not prebuilt:
     scons_finished_progress = 70.0
 
     # Read progress from stderr and update spinner
-    eta_tool = ETA(time.time(), TOTAL_SCONS_NODES, 1)
+    eta_tool = ETA(time.time(), TOTAL_SCONS_NODES, 1, scons_finished_progress, spinner)
     eta_message = ''
     last_eta_time = time.time()
     # start_time = time.time()
@@ -109,14 +109,14 @@ if not prebuilt:
       if line.startswith(prefix):
         i = int(line[len(prefix):])
         if spinner is not None:
-          eta_tool.log(i, time.time())
-          if (time.time() - last_eta_time) > 1:
-            eta_message = eta_tool.get_eta()
-            last_eta_time = time.time()
+          eta_tool.update(i, time.time())
+          # if (time.time() - last_eta_time) > 1:
+          #   eta_message = eta_tool.get_eta()
+          #   last_eta_time = time.time()
           # with open('/data/scons_times', 'a') as f:
           #   f.write('{}\n'.format(time.time() - start_time))
-          percentage = i / TOTAL_SCONS_NODES
-          spinner.update("%d" % (percentage * scons_finished_progress), eta_message)
+          # percentage = i / TOTAL_SCONS_NODES
+          # spinner.update("%d" % (percentage * scons_finished_progress), eta_message)
           # spinner.update("%d" % (percentage * scons_finished_progress), 'ETA: {}, last IPS: {}, total IPS: {}'.format(last_eta, ips, total_ips))
       elif len(line):
         print(line.decode('utf8'))
