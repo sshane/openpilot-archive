@@ -41,14 +41,28 @@ class ETA:
     return ', '.join(etr_list)
 
   def get_eta(self):
+    total_ips = (self.progress - self.progress_subtract) / (self.time - self.start_time)
+    last_ips = (self.progress - self.last_progress) / (self.time - self.last_time)
+    self.last_time = float(self.time)
+    self.last_progress = int(self.progress)
+
+    ips = total_ips * 0.8 + last_ips * 0.8
+    if last_ips < total_ips:
+      ips = last_ips * 0.8 + total_ips * 0.8
+
+    if last_ips > 10:  # probably pulling from cache
+      # self.start_time = time.time()  # ensures ips accuracy
+      # self.progress_subtract = self.progress
+      remaining = self.max_progress - self.progress
+      return self.format_etr(remaining / ips)
+
     times_idx = len(self.times) * (self.progress / self.max_progress)
     if times_idx == round(times_idx):
       etr = self.times[int(times_idx)]
     else:
       times_scale = [self.times[round(times_idx + i)] for i in [-1, 1]]
-      print(times_scale)
       etr = sum(times_scale) / 2.0
-      print(etr)
+
     return self.format_etr(etr)
 
 
