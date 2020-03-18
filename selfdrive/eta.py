@@ -52,6 +52,7 @@ class ETA:
       self.run_thread = True
     self.progress = progress
     self.time = t
+    self.has_update = True
 
   def set_ips(self):
     self.last_ips = float(self.this_ips)
