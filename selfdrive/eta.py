@@ -25,6 +25,7 @@ class ETA:
   def get_eta(self):
     elapsed = self.time - self.start_time
     last_elapsed = (self.time - self.last_time) / (self.progress - self.last_progress)
+    print(last_elapsed)
 
     percentage = elapsed / (self.progress + 1)
     factor = last_elapsed - (elapsed / self.progress)
