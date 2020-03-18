@@ -30,6 +30,7 @@ class ETA:
     self.time = t
 
     if self.this_ips > 10 and self.last_ips < 10:
+      print('RESET HERE!!!--------\n')
       self.start_time = time.time()  # ensures ips accuracy
       self.progress_subtract = self.progress
 
