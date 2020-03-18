@@ -25,10 +25,10 @@ class ETA:
 
   def get_eta(self):
     elapsed = self.time - self.start_time
-    last_ips = (self.progress - self.last_progress) / (self.time - self.last_time)
+    last_ips = (self.progress - self.last_progress) / (time.time() - self.last_time)
     remaining = self.max_progress - self.progress
     etr_new = remaining / last_ips
-    total_ips = (self.progress) / (self.time - self.start_time)
+    total_ips = (self.progress) / (time.time() - self.start_time)
 
 
     return etr_new, last_ips, total_ips
