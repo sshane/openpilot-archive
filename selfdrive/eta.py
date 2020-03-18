@@ -30,6 +30,9 @@ class ETA:
     etr_new = remaining / last_ips
     total_ips = (self.progress) / (time.time() - self.start_time)
 
+    self.last_progress = self.progress
+    self.last_time = self.time
+
 
     return etr_new, last_ips, total_ips
 
