@@ -33,6 +33,6 @@ class ETA:
       print(t_str)
       plural = 's' if t != 1 else ''
       if t != 0:
-        etr_list.append('{} {}{}'.format(hours, t_str, plural))
+        etr_list.append('{} {}{}'.format(t, t_str, plural))
     print(etr_list)
     return ', '.join(etr_list)
