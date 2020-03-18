@@ -51,6 +51,7 @@ class ETA:
       ips = self.this_ips * 0.8 + self.total_ips * 0.2
       if self.last_ips < self.this_ips:
         ips = self.last_ips * 0.8 + ips * 0.2
+        print('USING IPS: {}\n---------'.format(ips))
 
     if self.this_ips > 10:  # probably pulling from cache
       remaining = self.max_progress - self.progress
