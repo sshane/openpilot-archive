@@ -37,7 +37,7 @@ class ETA:
     factor *= (self.progress - self.last_progress)
     print(factor)
 
-    factor = np.interp(factor, [-20, 400], [2.0, 0.35])
+    factor = np.interp(factor, [-20, 400], [4.0, 0.35])
     etr = (self.max_progress * ((percentage + 1) ** factor - 1)) - elapsed
     hours, remainder = divmod(round(etr), self.seconds ** 2)
     minutes, seconds = divmod(remainder, self.seconds)
