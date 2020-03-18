@@ -28,6 +28,7 @@ class ETA:
     # print(last_elapsed)
     # print(self.progress - self.last_progress)
     # print(self.progress)
+    print(factor)
 
     percentage = elapsed / (self.progress + 1)
     factor = last_elapsed - (elapsed / self.progress)
