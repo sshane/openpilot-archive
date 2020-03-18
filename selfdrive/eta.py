@@ -18,10 +18,10 @@ class ETA:
 
   def log(self, progress, t):
     self.progress = progress
-    self.last_time = self.time
     self.time = t
 
   def get_eta(self):
+    self.last_time = self.time
     elapsed = self.time - self.start_time
     last_elapsed = self.time - self.last_time
 
