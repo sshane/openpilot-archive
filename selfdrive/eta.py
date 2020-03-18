@@ -54,7 +54,8 @@ class ETA:
       # self.start_time = time.time()  # ensures ips accuracy
       # self.progress_subtract = self.progress
       remaining = self.max_progress - self.progress
-      return self.format_etr(remaining / ips)
+      percentage = self.progress / self.max_progress
+      return 'checking compiled: {}% ETA: {}'.format(round(percentage * 100, 1), self.format_etr(remaining / ips))
 
     times_idx = len(self.times) * (self.progress / self.max_progress)
     if times_idx == round(times_idx):
