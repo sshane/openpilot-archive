@@ -31,10 +31,10 @@ class ETA:
     # print(self.progress - self.last_progress)
     # print(self.progress)
 
-
     percentage = elapsed / (self.progress + 1)
+
     factor = last_elapsed - (elapsed / self.progress)
-    factor *= self.progress
+    factor *= (self.progress - self.last_progress)
     print(factor)
 
     # factor = np.interp(self.progress, [0, self.max_progress], [2.0, 1.0])
