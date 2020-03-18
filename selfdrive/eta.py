@@ -46,7 +46,9 @@ class ETA:
       etr = self.times[int(times_idx)]
     else:
       times_scale = [self.times[round(times_idx + i)] for i in [-1, 1]]
+      print(times_scale)
       etr = sum(times_scale) / 2.0
+      print(etr)
     return self.format_etr(etr)
 
 
