@@ -29,8 +29,6 @@ class ETA:
 
     etr_list = []
     for t, t_str in zip(time_list, time_str_list):
-      print(t)
-      print(t_str)
       plural = 's' if t != 1 else ''
       if t != 0:
         etr_list.append('{} {}{}'.format(t, t_str, plural))
