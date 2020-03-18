@@ -8,6 +8,7 @@ class ETA:
     self.max_progress = max_progress
     self.progress = 0
     self.time = 0
+    self.last_time = 0
     self.etr = 0  # in seconds, estimated time remained
     self.seconds = 60
 
@@ -17,12 +18,19 @@ class ETA:
 
   def log(self, progress, t):
     self.progress = progress
+    self.last_time = self.time
     self.time = t
 
   def get_eta(self):
     elapsed = self.time - self.start_time
+    last_elapsed = self.time - self.last_time
+
+
     percentage = elapsed / (self.progress + 1)
-    factor = np.interp(self.progress, [0, self.max_progress], [2.0, 1.0])
+    factor = last_elapsed - (elapsed / self.progress)
+    factor *= self.progress
+
+    # factor = np.interp(self.progress, [0, self.max_progress], [2.0, 1.0])
     etr = (self.max_progress * ((percentage + 1) ** factor - 1)) - elapsed
     hours, remainder = divmod(round(etr), self.seconds ** 2)
     minutes, seconds = divmod(remainder, self.seconds)
