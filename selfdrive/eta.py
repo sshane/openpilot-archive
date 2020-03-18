@@ -27,7 +27,7 @@ class ETA:
     elapsed = self.time - self.start_time
     last_elapsed = (self.time - self.last_time) / (self.progress - self.last_progress)
     print('last_elapsed: {}'.format(last_elapsed))
-    print('elapsed: {}'.format(elapsed))
+    print('avg. elapsed: {}'.format((elapsed / self.progress)))
     # print(self.progress - self.last_progress)
     # print(self.progress)
 
