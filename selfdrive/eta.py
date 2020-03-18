@@ -30,9 +30,6 @@ class ETA:
     etr = remaining / last_ips
     total_ips = (self.progress) / (self.time - self.start_time)
 
-    self.last_progress = int(self.progress)
-    self.last_time = float(self.time)
-
 
 
     hours, remainder = divmod(round(etr), self.seconds ** 2)
@@ -50,5 +47,9 @@ class ETA:
     self.last_time = float(self.time)
     self.last_progress = int(self.progress)
     print(self.last_progress)
+
+    self.last_progress = int(self.progress)
+    self.last_time = float(self.time)
+
     return ', '.join(etr_list), last_ips, total_ips
     # return ', '.join(etr_list)
