@@ -85,7 +85,7 @@ if not prebuilt:
     # run scons
     env = os.environ.copy()
     env['SCONS_PROGRESS'] = "1"
-    env['SCONS_CACHE'] = "1"
+    # env['SCONS_CACHE'] = "1"
 
     nproc = os.cpu_count()
     j_flag = "-j16"  # "" if nproc is None else "-j%d" % (nproc - 1)
