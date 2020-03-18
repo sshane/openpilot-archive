@@ -3,8 +3,8 @@ import datetime
 
 class ETA:
     def __init__(self, start_time, max_progress):  # only supports up to minutes
-        self.start_time = 0
-        self.max_progress = 0
+        self.start_time = start_time
+        self.max_progress = max_progress
         self.progress = 0
         self.time = 0
         self.etr = 0  # in seconds, estimated time remained
