@@ -20,8 +20,8 @@ class ETA:
 
   def get_eta(self):
     elapsed = self.time - self.start_time
-    etr = self.max_progress * (elapsed / (self.progress + 1)) - elapsed
-    hours, remainder = divmod(round(etr), self.seconds**2)
+    etr = self.max_progress * (elapsed / (self.progress + 1)) ** 0.75 - elapsed
+    hours, remainder = divmod(round(etr), self.seconds ** 2)
     minutes, seconds = divmod(remainder, self.seconds)
 
     time_list = [hours, minutes, seconds]
@@ -32,5 +32,4 @@ class ETA:
       plural = 's' if t != 1 else ''
       if t != 0:
         etr_list.append('{} {}{}'.format(t, t_str, plural))
-    print(etr_list)
     return ', '.join(etr_list)
