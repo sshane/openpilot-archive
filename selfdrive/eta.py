@@ -24,11 +24,14 @@ class ETA:
     self.time = t
 
   def get_eta(self):
-    elapsed = self.time - self.start_time
+    total_ips = self.progress / (self.time - self.start_time)
     last_ips = (self.progress - self.last_progress) / (self.time - self.last_time)
+
     remaining = self.max_progress - self.progress
-    etr = remaining / last_ips
-    total_ips = (self.progress) / (self.time - self.start_time)
+    etr_total = remaining / total_ips
+    etr_last = remaining / last_ips
+    etr = (etr_total + etr_last) / 2.0
+
 
 
 
