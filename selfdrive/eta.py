@@ -33,6 +33,7 @@ class ETA:
   def start_eta_thread(self):
     while self.progress < self.max_progress:
       if self.has_update:
+        print('HAS UPDATE!\n------')
         self.has_update = False
       eta_message = self.get_eta()
       self.spinner.update("%d" % (self.progress / self.max_progress * self.scons_finished_progress), eta_message)
