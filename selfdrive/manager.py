@@ -97,6 +97,7 @@ if not prebuilt:
     eta_tool = ETA(time.time(), TOTAL_SCONS_NODES, 1)
     last_eta = ''
     ips = ''
+    total_ips = ''
     last_eta_time = time.time()
     while scons.poll() is None:
       # try:
@@ -116,7 +117,7 @@ if not prebuilt:
 
           percentage = i / TOTAL_SCONS_NODES
           # spinner.update("%d" % (percentage * scons_finished_progress), 'compiling: {}% (ETA: {}, IPS: {})'.format(round(percentage * 100, 1), last_eta, ips))
-          spinner.update("%d" % (percentage * scons_finished_progress), 'last IPS: {}, total IPS:'.format(round(last_eta, 2), round(ips, 2), round(total_ips, 2)))
+          spinner.update("%d" % (percentage * scons_finished_progress), 'ETA: {}, last IPS: {}, total IPS:'.format(round(last_eta, 2), round(ips, 2), round(total_ips, 2)))
       elif len(line):
         print(line.decode('utf8'))
       # except Exception:
