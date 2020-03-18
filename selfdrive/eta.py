@@ -13,6 +13,8 @@ class ETA:
     self.time = 0
     self.last_time = time.time()
     self.etr = 0  # in seconds, estimated time remained
+    self.ips_list = []
+
     self.seconds = 60
 
   # def init(self, t, max_progress):
@@ -23,18 +25,7 @@ class ETA:
     self.progress = progress
     self.time = t
 
-  def get_eta(self):
-    total_ips = self.progress / (self.time - self.start_time)
-    last_ips = (self.progress - self.last_progress) / (self.time - self.last_time)
-
-    remaining = self.max_progress - self.progress
-    etr_total = remaining / total_ips
-    etr_last = remaining / last_ips
-    etr = (etr_total + etr_last) / 2.0
-
-
-
-
+  def format_etr(self, etr):
     hours, remainder = divmod(round(etr), self.seconds ** 2)
     minutes, seconds = divmod(remainder, self.seconds)
 
@@ -46,13 +37,38 @@ class ETA:
       plural = 's' if t != 1 else ''
       if t != 0:
         etr_list.append('{} {}{}'.format(t, t_str, plural))
+    return ', '.join(etr_list)
 
-    self.last_time = float(self.time)
+  def get_eta(self):
+    last_ips = (self.progress - self.last_progress) / (self.time - self.last_time)
+
+    self.ips_list.append(last_ips)
+    # if last_ips < total_ips:
+    #   etr = etr_total * 0.6 + etr_last * 0.4
+    # else:
+    #   etr = etr_total * 0.4 + etr_last * 0.6
+
     self.last_progress = int(self.progress)
-    print(self.last_progress)
-
-    self.last_progress = int(self.progress)
     self.last_time = float(self.time)
 
-    return ', '.join(etr_list), last_ips, total_ips
-    # return ', '.join(etr_list)
+    ips_list_len = len(self.ips_list)
+    if ips_list_len / self.frequency > 5:  # at least x seconds of data
+      last_pred_weight = 2.0  # places x weight on most recent ips
+      weights = np.linspace(1, last_pred_weight, ips_list_len)
+      weight_sum = sum(weights)
+
+      time_weighted_ips = [weight * ips for weight, ips in zip(weights, self.ips_list)]
+      time_weighted_ips = sum([ips / weight_sum for ips in time_weighted_ips])
+      total_ips = self.progress / (self.time - self.start_time)
+
+      remaining = self.max_progress - self.progress
+      etr_total = remaining / total_ips
+      etr_weighted = remaining / time_weighted_ips
+
+      etr = etr_total * 0.5 + etr_weighted * 0.5
+      etr = self.format_etr(etr)
+
+      return etr, last_ips, total_ips
+      # return ', '.join(etr_list)
+    else:
+      return 'calculating...', '', ''
