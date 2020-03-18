@@ -111,7 +111,7 @@ if not prebuilt:
         i = int(line[len(prefix):])
         if spinner is not None:
           eta_tool.log(i, time.time())
-          if (time.time() - last_eta_time) > 1:
+          if (time.time() - last_eta_time) > 10:
             last_eta, ips, total_ips = eta_tool.get_eta()
             last_eta_time = time.time()
 
