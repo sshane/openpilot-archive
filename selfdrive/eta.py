@@ -13,7 +13,7 @@ class ETA:
     self.time = 0
     self.last_time = time.time()
     self.etr = 0  # in seconds, estimated time remained
-    self.ips_list = []
+    self._start = time.time()
 
     self.seconds = 60
 
@@ -42,17 +42,18 @@ class ETA:
   def get_eta(self):
     total_ips = self.progress / (self.time - self.start_time)
     last_ips = (self.progress - self.last_progress) / (self.time - self.last_time)
+    self.last_time = float(self.time)
+    self.last_progress = int(self.progress)
 
     ips = total_ips * 0.8 + last_ips * 0.8
     if last_ips < total_ips:
       ips = last_ips * 0.8 + total_ips * 0.8
-    # if last_ips > 10:
-    #   return 'calculating', '', ''
+
+    if last_ips > 10 or time.time() - time.time() > 10:  # probably pulling from cache
+      self.start_time = time.time()  # reset start time for accuracy
+      return 'calculating', '', ''
 
     remaining = self.max_progress - self.progress
     etr = self.format_etr(remaining / ips)
-
-    self.last_time = float(self.time)
-    self.last_progress = int(self.progress)
 
     return etr, round(last_ips, 2), round(total_ips, 2)
