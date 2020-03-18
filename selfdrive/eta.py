@@ -56,6 +56,7 @@ class ETA:
       last_pred_weight = 2.0  # places x weight on most recent ips
       weights = np.linspace(1, last_pred_weight, ips_list_len)
       weight_sum = sum(weights)
+      #
 
       time_weighted_ips = [weight * ips for weight, ips in zip(weights, self.ips_list)]
       time_weighted_ips = sum([ips / weight_sum for ips in time_weighted_ips])
