@@ -104,7 +104,8 @@ if not prebuilt:
         if line.startswith(prefix):
           i = int(line[len(prefix):])
           if spinner is not None:
-            spinner.update("%d" % (scons_finished_progress * (i / TOTAL_SCONS_NODES)), 'compiling: {} of {}'.format(i, TOTAL_SCONS_NODES))
+            percentage = scons_finished_progress * (i / TOTAL_SCONS_NODES)
+            spinner.update("%d" % (scons_finished_progress * (i / TOTAL_SCONS_NODES)), 'compiling: {:0.1%}'.format(percentage))
         elif len(line):
           print(line.decode('utf8'))
       except Exception:
@@ -121,7 +122,7 @@ if not prebuilt:
       else:
         raise RuntimeError("scons build failed")
     else:
-      spinner.update("%d" % scons_finished_progress, "finished compiling")
+      spinner.update("%d" % scons_finished_progress, "compiling: done...")
       break
 
 import cereal
