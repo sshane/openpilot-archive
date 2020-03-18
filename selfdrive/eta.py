@@ -46,8 +46,8 @@ class ETA:
     ips = total_ips * 0.8 + last_ips * 0.8
     if last_ips < total_ips:
       ips = last_ips * 0.8 + total_ips * 0.8
-    if last_ips > 10:
-      return 'calculating', '', ''
+    # if last_ips > 10:
+    #   return 'calculating', '', ''
 
     remaining = self.max_progress - self.progress
     etr = self.format_etr(remaining / ips)
