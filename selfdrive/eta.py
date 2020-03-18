@@ -34,14 +34,13 @@ class ETA:
     self.total_ips = (self.progress - self.progress_subtract) / (self.time - self.start_time)
     self.this_ips = (self.progress - self.last_progress) / (self.time - self.last_time)
 
-  def get_eta(self):
-    self.set_ips()
-
     if self.this_ips < 10 < self.last_ips:
       print('RESET HERE!!!\n--------')
       self.start_time = self.time  # ensures ips accuracy
       self.progress_subtract = self.progress
 
+  def get_eta(self):
+    self.set_ips()
     print('TOTAL IPS: {}\n------------'.format(self.total_ips))
     self.last_time = float(self.time)
     self.last_progress = int(self.progress)
