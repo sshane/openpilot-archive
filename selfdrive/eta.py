@@ -25,6 +25,12 @@ class ETA:
 
   def get_eta(self):
     elapsed = self.time - self.start_time
+    items_per_second = (self.progress - self.last_progress) / (self.time - self.last_time)
+    remaining = self.max_progress - self.progress
+    etr1 = remaining / items_per_second
+
+
+
     last_elapsed = (self.time - self.last_time) / (self.progress - self.last_progress)
     print('last_elapsed: {}'.format(last_elapsed))
     print('avg. elapsed: {}'.format((elapsed / self.progress)))
@@ -39,6 +45,7 @@ class ETA:
 
     factor = np.interp(factor, [-20, 0, 400], [4.0, 1, 0.35])
     etr = (self.max_progress * ((percentage + 1) ** factor - 1)) - elapsed
+    return etr1, etr
     hours, remainder = divmod(round(etr), self.seconds ** 2)
     minutes, seconds = divmod(remainder, self.seconds)
 
