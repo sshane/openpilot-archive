@@ -27,7 +27,11 @@ class ETA:
     elapsed = self.time - self.start_time
     items_per_second = (self.progress - self.last_progress) / (self.time - self.last_time)
     remaining = self.max_progress - self.progress
-    etr1 = remaining / items_per_second
+    etr_new = remaining / items_per_second
+
+    elapsed =self.time - self.start_time
+    etr = self.max_progress * (elapsed / (self.progress + 1)) - elapsed
+    return etr_new, etr
 
 
 
