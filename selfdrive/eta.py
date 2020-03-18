@@ -29,7 +29,7 @@ class ETA:
     self.progress = progress
     self.time = t
 
-    if self.last_ips > 10 and self.this_ips > 10:
+    if self.this_ips > 10 and self.last_ips < 10:
       self.start_time = time.time()  # ensures ips accuracy
       self.progress_subtract = self.progress
 
