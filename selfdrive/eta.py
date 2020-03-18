@@ -10,7 +10,7 @@ class ETA:
     self.progress = 0
     self.last_progress = 0
     self.time = 0
-    self.last_time = 0
+    self.last_time = time.time()
     self.etr = 0  # in seconds, estimated time remained
     self.seconds = 60
 
