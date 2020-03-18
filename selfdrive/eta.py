@@ -33,7 +33,10 @@ class ETA:
 
   def start_eta_thread(self):
     while self.progress < self.max_progress:
+      print(self.run_thread)
       if not self.run_thread:
+        print('NOT RUNNING THREAD')
+        time.sleep(1)
         continue
       if self.has_update:
         print('HAS UPDATE!\n------')
