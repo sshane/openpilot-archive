@@ -31,8 +31,6 @@ class ETA(threading.Thread):
     self.eta_data = []
     self.scons_finished_progress = sfp
     threading.Thread.__init__(self)
-    self.window_len = 10 * self.frequency
-    self.etrs = []
 
   # def init(self, t, max_progress):
   #     self.start_time = t
@@ -100,25 +98,16 @@ class ETA(threading.Thread):
     print('TOTAL IPS: {}\n---------'.format(round(self.total_ips, 2)))
     # return 'TOTAL IPS: {}'.format(self.total_ips)
     avg = self.total_ips * 0.7 + self.this_ips * 0.15 + self.last_ips * 0.15
-    w = np.hanning(self.window_len)
-    self.etr = (self.max_progress - self.get_eta_data().progress) / avg
-    self.etrs.append(self.etr)
-
-    s = np.r_[self.etrs[self.window_len-1:0:-1],self.etrs,self.etrs[-1:-self.window_len:-1]]
-    y = np.convolve(w/w.sum(),s,mode='valid')
-    if len(y) + 1 < self.window_len:
-      return "calculating..."
-    etr = self.format_etr(y[self.window_len])
-    # if time.time() - self.get_eta_data().time > 5 or self.etr == 0:
-    #   self.etr = (self.max_progress - self.get_eta_data().progress) / avg
-    # elif avg < 10:
-    #   # print('=====---=====')
-    #   # print('avg: {}'.format(avg))
-    #   # print('before etr: {}'.format(self.etr))
-    #   # print('avg*freq: {}'.format(avg * self.frequency))
-    #   self.etr -= avg / self.frequency
-    # # print('after etr: {}'.format(self.etr))
-    # etr = self.format_etr(self.etr)
+    if time.time() - self.get_eta_data().time > 5 or self.etr == 0:
+      self.etr = (self.max_progress - self.get_eta_data().progress) / avg
+    elif avg < 10:
+      # print('=====---=====')
+      # print('avg: {}'.format(avg))
+      # print('before etr: {}'.format(self.etr))
+      # print('avg*freq: {}'.format(avg * self.frequency))
+      self.etr -= avg / self.frequency
+    # print('after etr: {}'.format(self.etr))
+    etr = self.format_etr(self.etr)
     return 'compiling: {}% ETA: {}'.format(percentage, etr)
 
     # ips = self.total_ips * 0.6 + self.this_ips * 0.4  # todo: need to fix
