@@ -69,6 +69,8 @@ class ETA(threading.Thread):
       del self.eta_data[0]
       removed = True
 
+    print(time.time() - self.get_eta_data().time))
+
     self.updated = True
     if not self.run_thread:
       self.run_thread = removed  # wait until we have enough data
