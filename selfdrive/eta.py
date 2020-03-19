@@ -5,15 +5,17 @@ import threading
 import os
 
 
+class ETAData:
+  def __init__(self, t=None, progress=None):
+    self.time = t
+    self.progress = progress
+
 class ETA(threading.Thread):
   def __init__(self, start_time, max_progress, frequency, sfp, spinner=None):  # only supports up to minutes
     self.start_time = start_time
     self.max_progress = max_progress
     self.frequency = frequency
-    self.progress = 0
-    self.last_progress = 0
     self.time = 0
-    self.last_time = time.time()
     self.etr = 0  # in seconds, estimated time remained
     self._start = time.time()
     self.progress_subtract = 0
@@ -25,6 +27,7 @@ class ETA(threading.Thread):
     self.last_ips = 0
     self.has_update = False
     self.run_thread = False
+    self.eta_data = []
     self.scons_finished_progress = sfp
     threading.Thread.__init__(self)
 
@@ -32,27 +35,38 @@ class ETA(threading.Thread):
   #     self.start_time = t
   #     self.max_progress = max_progress
 
+  def get_eta_data(self, idx=-1):
+    # By default this will return latest
+    return self.eta_data[idx]
+
   def run(self):
-    while self.progress < self.max_progress:
+    progress = 0
+    while progress < self.max_progress:
+      progress = self.get_eta_data().progress
       if os.path.exists('/data/stop'):
         os.remove('/data/stop')
         return
       if not self.run_thread:
+        self.spinner.update("%d" % (progress / self.max_progress * self.scons_finished_progress), 'calculating...')
         time.sleep(1)
         continue
-      if self.has_update:
-        self.has_update = False
+      # if self.has_update:
+      #   self.has_update = False
       eta_message = self.get_eta()
-      self.spinner.update("%d" % (self.progress / self.max_progress * self.scons_finished_progress), eta_message)
+      self.spinner.update("%d" % (progress / self.max_progress * self.scons_finished_progress), eta_message)
       # spinner.update("%d" % (percentage * scons_finished_progress), eta_message)
       time.sleep(1 / self.frequency)
 
-
   def update(self, progress, t):
-    self.progress = progress
-    self.time = t
-    self.has_update = True
-    self.run_thread = True
+    self.eta_data.append(ETAData(progress=progress, t=t))
+    removed = False
+    while len(self.eta_data) > 3:  # we only need past 3
+      del self.eta_data[0]
+      removed = True
+
+    # self.has_update = True
+    if not self.run_thread:
+      self.run_thread = removed  # wait until we have enough data
 
   def set_ips(self):
     # self.last_ips = float(self.this_ips)
@@ -60,27 +74,27 @@ class ETA(threading.Thread):
     # print(self.last_time)
     cur_time = time.time()
     # # if self.has_update:
-    # self.this_ips = (self.progress - self.last_progress) / (cur_time - self.last_time)
+    self.this_ips = (self.get_eta_data().progress - self.get_eta_data(-2).progress) / (cur_time - self.get_eta_data(-2))
     #
     # if self.this_ips < 10 < self.last_ips:
     #   print('RESET HERE!!!\n--------')
     #   self.start_time = float(self.last_time)  # ensures ips accuracy
     #   self.progress_subtract = int(self.progress)
 
-    self.total_ips = (self.progress - self.progress_subtract) / (cur_time - self.start_time)
+    self.total_ips = (self.get_eta_data().progress - self.progress_subtract) / (cur_time - self.start_time)
 
   def get_eta(self):
     self.set_ips()
     print('TOTAL IPS: {}\n------------'.format(self.total_ips))
     # return 'TOTAL IPS: {}'.format(self.total_ips)
-    remaining = self.max_progress - self.progress
-    return 'ETA: {} TOTAL IPS:'.format(self.format_etr(remaining / self.total_ips), self.total_ips)
+    etr = self.format_etr((self.max_progress - self.get_eta_data().progress) / self.total_ips)
+    return 'ETA: {} TOTAL IPS: {} CUR IPS: {}'.format(etr, self.total_ips, self.this_ips)
 
 
 
-    self.last_time = float(time.time())
-    self.last_progress = int(self.progress)
-    percentage = round(self.progress / self.max_progress * 100, 1)
+    # self.last_time = float(time.time())
+    self.get_eta_data(-2).progress = int(self.get_eta_data().progress)
+    percentage = round(self.get_eta_data().progress / self.max_progress * 100, 1)
 
     ips = self.total_ips * 0.6 + self.this_ips * 0.4
     if self.this_ips < self.total_ips:
@@ -90,10 +104,10 @@ class ETA(threading.Thread):
         print('USING IPS: {}\n---------'.format(ips))
 
     if self.this_ips > 10:  # probably pulling from cache
-      remaining = self.max_progress - self.progress
+      remaining = self.max_progress - self.get_eta_data().progress
       return 'compiled: {}% ETA: {}'.format(percentage, self.format_etr(remaining / ips))
 
-    remaining = self.max_progress - self.progress
+    remaining = self.max_progress - self.get_eta_data().progress
     return 'compiling: {}% ETA: {}'.format(percentage, self.format_etr(remaining / ips))
 
   def format_etr(self, etr):
