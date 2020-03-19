@@ -60,6 +60,7 @@ class ETA(threading.Thread):
       time.sleep(1 / self.frequency)
 
   def update(self, progress, t):
+    self.last_ips = float(self.this_ips)
     self.eta_data.append(ETAData(progress=progress, t=t))
     removed = False
     while len(self.eta_data) > 3:  # we only need past 3
@@ -71,7 +72,6 @@ class ETA(threading.Thread):
       self.run_thread = removed  # wait until we have enough data
 
   def set_ips(self):
-    # self.last_ips = float(self.this_ips)
     # print(self.time)
     # print(self.last_time)
     cur_time = time.time()
@@ -93,12 +93,12 @@ class ETA(threading.Thread):
     ips = self.total_ips * 0.6 + self.this_ips * 0.4
     if self.this_ips < self.total_ips:
       ips = self.this_ips * 0.8 + ips * 0.2
-      # if self.last_ips < self.this_ips:
-      #   ips = self.last_ips * 0.8 + ips * 0.2
+      if self.last_ips < self.this_ips:
+        ips = self.last_ips * 0.8 + ips * 0.2
 
     etr = self.format_etr((self.max_progress - self.get_eta_data().progress) / ips)
 
-    return 'ETA: {} TOTAL IPS: {} CUR IPS: {} USING IPS: {}'.format(etr, round(self.total_ips, 2), round(self.this_ips, 2), round(ips, 2))
+    return 'TOTAL IPS: {} CUR IPS: {} USING IPS: {}'.format(round(self.total_ips, 2), round(self.this_ips, 2), round(ips, 2))
 
 
 
