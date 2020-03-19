@@ -87,7 +87,7 @@ class ETA(threading.Thread):
 
   def get_eta(self):
     self.set_ips()
-    print('TOTAL IPS: {}\n------------'.format(round(self.total_ips, 2)))
+    #print('TOTAL IPS: {}\n------------'.format(round(self.total_ips, 2)))
     # return 'TOTAL IPS: {}'.format(self.total_ips)
 
     ips = self.total_ips * 0.6 + self.this_ips * 0.4
