@@ -86,7 +86,7 @@ if not prebuilt:
     # run scons
     env = os.environ.copy()
     env['SCONS_PROGRESS'] = "1"
-    # env['SCONS_CACHE'] = "1"
+    env['SCONS_CACHE'] = "1"
 
     nproc = os.cpu_count()
     j_flag = "" if nproc is None else "-j%d" % (nproc - 1)
@@ -100,29 +100,21 @@ if not prebuilt:
     # last_eta_time = time.time()
     # start_time = time.time()
     while scons.poll() is None:
-      # try:
-      line = scons.stderr.readline()
-      if line is None:
-        continue
+      try:
+        line = scons.stderr.readline()
+        if line is None:
+          continue
 
-      line = line.rstrip()
-      prefix = b'progress: '
-      if line.startswith(prefix):
-        i = int(line[len(prefix):])
-        if spinner is not None:
-          eta_tool.update(i, time.time())
-          # if (time.time() - last_eta_time) > 1:
-          #   eta_message = eta_tool.get_eta()
-          #   last_eta_time = time.time()
-          # with open('/data/scons_times', 'a') as f:
-          #   f.write('{}\n'.format(time.time() - start_time))
-          # percentage = i / TOTAL_SCONS_NODES
-          # spinner.update("%d" % (percentage * scons_finished_progress), eta_message)
-          # spinner.update("%d" % (percentage * scons_finished_progress), 'ETA: {}, last IPS: {}, total IPS: {}'.format(last_eta, ips, total_ips))
-      elif len(line):
-        print(line.decode('utf8'))
-      # except Exception:
-      #   pass
+        line = line.rstrip()
+        prefix = b'progress: '
+        if line.startswith(prefix):
+          i = int(line[len(prefix):])
+          if spinner is not None:
+            eta_tool.update(i, time.time())
+        elif len(line):
+          print(line.decode('utf8'))
+      except Exception:
+        pass
 
     if scons.returncode != 0:
       if retry:
@@ -135,6 +127,7 @@ if not prebuilt:
       else:
         raise RuntimeError("scons build failed")
     else:
+      del eta_tool
       spinner.update("%d" % scons_finished_progress, "compiling: done...")
       break
 
