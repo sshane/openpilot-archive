@@ -92,7 +92,7 @@ class ETA(threading.Thread):
 
     ips = self.total_ips * 0.6 + self.this_ips * 0.4
     if self.this_ips < self.total_ips:
-      ips = self.this_ips * 0.8 + self.total_ips * 0.2
+      ips = self.this_ips * 0.8 + ips * 0.2
       # if self.last_ips < self.this_ips:
       #   ips = self.last_ips * 0.8 + ips * 0.2
 
