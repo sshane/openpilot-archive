@@ -108,9 +108,19 @@ class ETA(threading.Thread):
       if self.last_ips < ips:
         ips = self.last_ips * 0.8 + ips * 0.2
     print('USING IPS: {} THIS IPS: {}\n---------'.format(round(ips, 2), round(self.this_ips, 2)))
-
+    if self.this_ips > 10:  # probably pulling from cache
+      remaining = self.max_progress - self.get_eta_data().progress
+      return 'compiled: {}% ETA: {}'.format(percentage, self.format_etr(remaining / ips))
 
     # avg = self.total_ips * 0.7 + self.this_ips * 0.15 + self.last_ips * 0.15
+    if time.time() - self.get_eta_data().time > 5 or self.etr == 0:
+      self.etr = (self.max_progress - self.get_eta_data().progress) / ips
+      self.etrs.append(self.etr)
+    elif ips < 10:
+      self.etr -= ips / self.frequency
+      return self.format_etr(self.etr)
+
+
     w = np.hanning(self.window_len)
     self.etr = (self.max_progress - self.get_eta_data().progress) / ips
     self.etrs.append(self.etr)
@@ -123,22 +133,11 @@ class ETA(threading.Thread):
       print('calculated: {}'.format(y[-1]))
       return "calculating..."
     etr = self.format_etr(y[self.window_len] + 4)
-    # if time.time() - self.get_eta_data().time > 5 or self.etr == 0:
-    #   self.etr = (self.max_progress - self.get_eta_data().progress) / avg
-    # elif avg < 10:
-    #   # print('=====---=====')
-    #   # print('avg: {}'.format(avg))
-    #   # print('before etr: {}'.format(self.etr))
-    #   # print('avg*freq: {}'.format(avg * self.frequency))
-    #   self.etr -= avg / self.frequency
+
     # # print('after etr: {}'.format(self.etr))
     # etr = self.format_etr(self.etr)
     return 'compiling: {}% ETA: {}'.format(percentage, etr)
 
-    #
-    # if self.this_ips > 10:  # probably pulling from cache
-    #   remaining = self.max_progress - self.get_eta_data().progress
-    #   return 'compiled: {}% ETA: {}'.format(percentage, self.format_etr(remaining / ips))
     #
     # etr = self.format_etr((self.max_progress - self.get_eta_data().progress) / ips)
     # # print("ETA: {}".format(etr))
