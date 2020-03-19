@@ -101,9 +101,18 @@ class ETA(threading.Thread):
     # return 'TOTAL IPS: {}'.format(self.total_ips)
     while len(self.etrs) > self.window_len + 10:
       del self.etrs[0]
-    avg = self.total_ips * 0.7 + self.this_ips * 0.15 + self.last_ips * 0.15
+
+    ips = self.total_ips * 0.6 + self.this_ips * 0.4  # todo: need to fix
+    if self.this_ips < ips > 5:
+      ips = self.this_ips * 0.8 + ips * 0.2
+      if self.last_ips < ips:
+        ips = self.last_ips * 0.8 + ips * 0.2
+    print('USING IPS: {} THIS IPS: {}\n---------'.format(round(ips, 2), round(self.this_ips, 2)))
+
+
+    # avg = self.total_ips * 0.7 + self.this_ips * 0.15 + self.last_ips * 0.15
     w = np.hanning(self.window_len)
-    self.etr = (self.max_progress - self.get_eta_data().progress) / avg
+    self.etr = (self.max_progress - self.get_eta_data().progress) / ips
     self.etrs.append(self.etr)
 
     s = np.r_[self.etrs[self.window_len-1:0:-1],self.etrs,self.etrs[-1:-self.window_len:-1]]
@@ -126,12 +135,6 @@ class ETA(threading.Thread):
     # etr = self.format_etr(self.etr)
     return 'compiling: {}% ETA: {}'.format(percentage, etr)
 
-    # ips = self.total_ips * 0.6 + self.this_ips * 0.4  # todo: need to fix
-    # if self.this_ips < ips > 5:
-    #   ips = self.this_ips * 0.8 + ips * 0.2
-    #   if self.last_ips < ips:
-    #     ips = self.last_ips * 0.8 + ips * 0.2
-    # print('USING IPS: {} THIS IPS: {}\n---------'.format(round(ips, 2), round(self.this_ips, 2)))
     #
     # if self.this_ips > 10:  # probably pulling from cache
     #   remaining = self.max_progress - self.get_eta_data().progress
