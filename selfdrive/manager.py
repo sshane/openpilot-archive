@@ -100,7 +100,7 @@ if not prebuilt:
     # last_eta_time = time.time()
     # start_time = time.time()
     while scons.poll() is None:
-    try:
+      # try:
       line = scons.stderr.readline()
       if line is None:
         continue
@@ -113,8 +113,8 @@ if not prebuilt:
           eta_tool.update(i, time.time())
       elif len(line):
         print(line.decode('utf8'))
-    except Exception:
-      pass
+      # except Exception:
+      #   pass
 
     if scons.returncode != 0:
       if retry:
