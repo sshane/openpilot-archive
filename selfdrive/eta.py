@@ -97,8 +97,7 @@ class ETA(threading.Thread):
   def get_eta(self):
     self.set_ips()
     percentage = round(self.get_eta_data().progress / self.max_progress * 100, 1)
-    print('TOTAL IPS: {}\n---------'.format(round(self.total_ips, 2)))
-    # return 'TOTAL IPS: {}'.format(self.total_ips)
+    # print('TOTAL IPS: {}\n---------'.format(round(self.total_ips, 2)))
     while len(self.etrs) > self.window_len + 10:
       del self.etrs[0]
 
