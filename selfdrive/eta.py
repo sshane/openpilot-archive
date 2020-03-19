@@ -113,7 +113,7 @@ class ETA(threading.Thread):
     if len(y) - 1 < self.window_len:
       print('calculated: {}'.format(y[-1]))
       return "calculating..."
-    etr = self.format_etr(y[self.window_len])
+    etr = self.format_etr(y[self.window_len] + 4)
     # if time.time() - self.get_eta_data().time > 5 or self.etr == 0:
     #   self.etr = (self.max_progress - self.get_eta_data().progress) / avg
     # elif avg < 10:
