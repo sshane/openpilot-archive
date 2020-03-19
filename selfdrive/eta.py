@@ -156,5 +156,5 @@ class ETA(threading.Thread):
     for t, t_str in zip(time_list, time_str_list):
       plural = 's' if t != 1 else ''
       if t != 0:
-        etr_list.append('{} {}{}'.format(t, t_str, plural))
+        etr_list.append('{} {}{}'.format(int(t), t_str, plural))
     return ', '.join(etr_list)
