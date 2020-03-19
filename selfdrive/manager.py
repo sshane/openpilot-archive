@@ -106,7 +106,6 @@ if not prebuilt:
         continue
 
       line = line.rstrip()
-      print(line)
       prefix = b'progress: '
       if line.startswith(prefix):
         i = int(line[len(prefix):])
