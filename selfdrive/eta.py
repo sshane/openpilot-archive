@@ -31,8 +31,8 @@ class ETA(threading.Thread):
     self.eta_data = []
     self.scons_finished_progress = sfp
     threading.Thread.__init__(self)
-    self.window_len = 10 * self.frequency
-    self.etrs = []
+    self.window_len = 20 * self.frequency
+    self.etrs = [16 * 60 for _ in range(int(self.window_len / 2))]
 
   # def init(self, t, max_progress):
   #     self.start_time = t
