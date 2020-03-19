@@ -45,6 +45,7 @@ class ETA(threading.Thread):
 
 
   def update(self, progress, t):
+    print('GOT UPDATE')
     self.progress = progress
     self.time = t
     self.has_update = True
@@ -54,6 +55,7 @@ class ETA(threading.Thread):
     self.last_ips = float(self.this_ips)
     print(self.time)
     print(self.last_time)
+    # if self.has_update:
     self.this_ips = (self.progress - self.last_progress) / (self.time - self.last_time)
 
     if self.this_ips < 10 < self.last_ips:
