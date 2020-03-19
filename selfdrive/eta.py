@@ -97,8 +97,8 @@ class ETA(threading.Thread):
     print('TOTAL IPS: {}\n---------'.format(round(self.total_ips, 2)))
     # return 'TOTAL IPS: {}'.format(self.total_ips)
 
-    ips = self.total_ips * 0.6 + self.this_ips * 0.4
-    if self.this_ips < ips:
+    ips = self.total_ips * 0.85 + self.this_ips * 0.15
+    if self.this_ips < ips > 5:
       ips = self.this_ips * 0.8 + ips * 0.2
       if self.last_ips < ips:
         ips = self.last_ips * 0.8 + ips * 0.2
