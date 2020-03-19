@@ -106,7 +106,7 @@ class ETA(threading.Thread):
 
     s = np.r_[self.etrs[self.window_len-1:0:-1],self.etrs,self.etrs[-1:-self.window_len:-1]]
     y = np.convolve(w/w.sum(),s,mode='valid')
-    if len(y) + 1 < self.window_len:
+    if len(y) - 1 < self.window_len:
       return "calculating..."
     etr = self.format_etr(y[self.window_len])
     # if time.time() - self.get_eta_data().time > 5 or self.etr == 0:
