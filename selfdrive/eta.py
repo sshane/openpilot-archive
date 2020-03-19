@@ -91,9 +91,9 @@ class ETA(threading.Thread):
     # return 'TOTAL IPS: {}'.format(self.total_ips)
 
     ips = self.total_ips * 0.6 + self.this_ips * 0.4
-    if self.this_ips < self.total_ips:
+    if self.this_ips < ips:
       ips = self.this_ips * 0.8 + ips * 0.2
-      if self.last_ips < self.this_ips:
+      if self.last_ips < ips:
         ips = self.last_ips * 0.8 + ips * 0.2
 
     etr = self.format_etr((self.max_progress - self.get_eta_data().progress) / ips)
