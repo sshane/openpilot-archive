@@ -117,7 +117,7 @@ class ETA(threading.Thread):
       self.etrs.append(self.etr)
     elif ips < 10:
       self.etr -= ips / self.frequency
-      return self.format_etr(self.etr)
+      return 'compiled: {}% ETA: {}'.format(percentage, self.format_etr(self.etr))
 
 
     w = np.hanning(self.window_len)
@@ -126,8 +126,7 @@ class ETA(threading.Thread):
 
     s = np.r_[self.etrs[self.window_len-1:0:-1],self.etrs,self.etrs[-1:-self.window_len:-1]]
     y = np.convolve(w/w.sum(),s,mode='valid')
-    print(len(self.etrs))
-    print(len(y))
+
     if len(y) - 1 < self.window_len:
       print('calculated: {}'.format(y[-1]))
       return "calculating..."
