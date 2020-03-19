@@ -28,7 +28,6 @@ class ETA(threading.Thread):
     self.has_update = False
     self.run_thread = False
     self.eta_data = []
-    self.can_reset = False
     self.scons_finished_progress = sfp
     threading.Thread.__init__(self)
 
