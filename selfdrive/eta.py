@@ -99,6 +99,8 @@ class ETA(threading.Thread):
     percentage = round(self.get_eta_data().progress / self.max_progress * 100, 1)
     print('TOTAL IPS: {}\n---------'.format(round(self.total_ips, 2)))
     # return 'TOTAL IPS: {}'.format(self.total_ips)
+    while len(self.etrs) > self.window_len + 10:
+      del self.etrs[0]
     avg = self.total_ips * 0.7 + self.this_ips * 0.15 + self.last_ips * 0.15
     w = np.hanning(self.window_len)
     self.etr = (self.max_progress - self.get_eta_data().progress) / avg
@@ -106,8 +108,8 @@ class ETA(threading.Thread):
 
     s = np.r_[self.etrs[self.window_len-1:0:-1],self.etrs,self.etrs[-1:-self.window_len:-1]]
     y = np.convolve(w/w.sum(),s,mode='valid')
-    print(len(y))
     if len(y) - 1 < self.window_len:
+      print('calculated: {}'.format(y[-1]))
       return "calculating..."
     etr = self.format_etr(y[self.window_len])
     # if time.time() - self.get_eta_data().time > 5 or self.etr == 0:
