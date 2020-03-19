@@ -100,21 +100,21 @@ if not prebuilt:
     # last_eta_time = time.time()
     # start_time = time.time()
     while scons.poll() is None:
-      try:
-        line = scons.stderr.readline()
-        if line is None:
-          continue
+    try:
+      line = scons.stderr.readline()
+      if line is None:
+        continue
 
-        line = line.rstrip()
-        prefix = b'progress: '
-        if line.startswith(prefix):
-          i = int(line[len(prefix):])
-          if spinner is not None:
-            eta_tool.update(i, time.time())
-        elif len(line):
-          print(line.decode('utf8'))
-      except Exception:
-        pass
+      line = line.rstrip()
+      prefix = b'progress: '
+      if line.startswith(prefix):
+        i = int(line[len(prefix):])
+        if spinner is not None:
+          eta_tool.update(i, time.time())
+      elif len(line):
+        print(line.decode('utf8'))
+    except Exception:
+      pass
 
     if scons.returncode != 0:
       if retry:
