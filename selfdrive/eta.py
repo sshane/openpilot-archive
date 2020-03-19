@@ -56,7 +56,7 @@ class ETA(threading.Thread):
     print(self.time)
     print(self.last_time)
     # if self.has_update:
-    self.this_ips = (self.progress - self.last_progress) / (self.time - self.last_time)
+    self.this_ips = (self.progress - self.last_progress) / (time.time() - self.last_time)
 
     if self.this_ips < 10 < self.last_ips:
       print('RESET HERE!!!\n--------')
