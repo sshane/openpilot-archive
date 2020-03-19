@@ -101,11 +101,11 @@ class ETA(threading.Thread):
     while len(self.etrs) > self.window_len + 10:
       del self.etrs[0]
 
-    ips = self.total_ips * 0.6 + self.this_ips * 0.4  # todo: need to fix
+    ips = self.total_ips * 0.8 + self.this_ips * 0.2  # todo: need to fix
     if self.this_ips < ips:
-      ips = self.this_ips * 0.5 + ips * 0.5
+      ips = self.this_ips * 0.2 + ips * 0.8
       if self.last_ips < ips:
-        ips = self.last_ips * 0.5 + ips * 0.5
+        ips = self.last_ips * 0.2 + ips * 0.8
     print('USING IPS: {} THIS IPS: {}\n---------'.format(round(ips, 2), round(self.this_ips, 2)))
     if self.this_ips > 10:  # probably pulling from cache
       remaining = self.max_progress - self.get_eta_data().progress
