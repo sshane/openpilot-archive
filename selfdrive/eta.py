@@ -96,7 +96,7 @@ class ETA(threading.Thread):
     self.set_ips()
     percentage = round(self.get_eta_data().progress / self.max_progress * 100, 1)
     # print('TOTAL IPS: {}\n---------'.format(round(self.total_ips, 2)))
-    # return 'TOTAL IPS: {}'.format(self.total_ips)
+    return 'TOTAL IPS: {}'.format(self.total_ips)
     if self.updated or self.etr == 0:
       self.etr = (self.max_progress - self.get_eta_data().progress) / (sum([self.total_ips, self.this_ips, self.last_ips])/3)
     self.etr -= 1.14 / self.scons_finished_progress
