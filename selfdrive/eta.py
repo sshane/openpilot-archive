@@ -6,7 +6,7 @@ import os
 
 
 class ETAData:
-  def __init__(self, t=None, progress=None):
+  def __init__(self, t=0, progress=0):
     self.time = t
     self.progress = progress
 
@@ -37,6 +37,8 @@ class ETA(threading.Thread):
 
   def get_eta_data(self, idx=-1):
     # By default this will return latest
+    if len(self.eta_data) == 0:
+      return ETAData()
     return self.eta_data[idx]
 
   def run(self):
