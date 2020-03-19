@@ -33,12 +33,10 @@ class ETA(threading.Thread):
 
   def run(self):
     while self.progress < self.max_progress:
-      print(self.run_thread)
       if not self.run_thread:
         time.sleep(1)
         continue
       if self.has_update:
-        print('HAS UPDATE!\n------')
         self.has_update = False
       eta_message = self.get_eta()
       self.spinner.update("%d" % (self.progress / self.max_progress * self.scons_finished_progress), eta_message)
@@ -54,6 +52,8 @@ class ETA(threading.Thread):
 
   def set_ips(self):
     self.last_ips = float(self.this_ips)
+    print(self.time)
+    print(self.last_time)
     self.this_ips = (self.progress - self.last_progress) / (self.time - self.last_time)
 
     if self.this_ips < 10 < self.last_ips:
