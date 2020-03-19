@@ -61,7 +61,7 @@ class ETA(threading.Thread):
 
     if self.this_ips < 10 < self.last_ips:
       print('RESET HERE!!!\n--------')
-      self.start_time = float(time.time())  # ensures ips accuracy
+      self.start_time = float(self.last_time)  # ensures ips accuracy
       self.progress_subtract = int(self.progress)
 
     self.total_ips = (self.progress - self.progress_subtract) / (cur_time - self.start_time)
@@ -69,7 +69,7 @@ class ETA(threading.Thread):
   def get_eta(self):
     self.set_ips()
     print('TOTAL IPS: {}\n------------'.format(self.total_ips))
-    self.last_time = float(self.time)
+    self.last_time = float(time.time())
     self.last_progress = int(self.progress)
     percentage = round(self.progress / self.max_progress * 100, 1)
 
