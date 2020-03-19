@@ -69,7 +69,8 @@ class ETA(threading.Thread):
       del self.eta_data[0]
       removed = True
 
-    print(time.time() - self.get_eta_data().time)
+    if time.time() - self.get_eta_data().time < 1e-4:
+      self.progress_subtract += 1
 
     self.updated = True
     if not self.run_thread:
