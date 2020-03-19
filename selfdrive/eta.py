@@ -64,6 +64,7 @@ class ETA(threading.Thread):
   def update(self, progress, t):
     self.last_ips = float(self.this_ips)
     self.eta_data.append(ETAData(progress=progress, t=t))
+    self.updated = True
     removed = False
     while len(self.eta_data) > 3:  # we only need past 3
       del self.eta_data[0]
@@ -74,7 +75,6 @@ class ETA(threading.Thread):
     # else:
     #   print('GOT UPDATE')
 
-    self.updated = True
     if not self.run_thread:
       self.run_thread = removed  # wait until we have enough data
 
@@ -100,7 +100,7 @@ class ETA(threading.Thread):
     avg = self.total_ips * 0.7 + self.this_ips * 0.15 + self.last_ips * 0.15
     if self.updated or self.etr == 0:
       self.etr = (self.max_progress - self.get_eta_data().progress) / avg
-    else:
+    elif avg < 10:
       self.etr -= avg * self.frequency
     print(self.etr)
     etr = self.format_etr(self.etr)
