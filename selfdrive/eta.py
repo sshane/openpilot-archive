@@ -101,6 +101,7 @@ class ETA(threading.Thread):
     if self.updated or self.etr == 0:
       self.etr = (self.max_progress - self.get_eta_data().progress) / avg
     elif avg < 10:
+      print('=====---=====')
       print(self.etr)
       print(avg * self.frequency)
       self.etr -= avg * self.frequency
