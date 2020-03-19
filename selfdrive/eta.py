@@ -45,7 +45,6 @@ class ETA(threading.Thread):
 
 
   def update(self, progress, t):
-    print('GOT UPDATE')
     self.progress = progress
     self.time = t
     self.has_update = True
@@ -69,6 +68,7 @@ class ETA(threading.Thread):
   def get_eta(self):
     self.set_ips()
     print('TOTAL IPS: {}\n------------'.format(self.total_ips))
+    return 'TOTAL IPS: {}'.format(self.total_ips)
     self.last_time = float(time.time())
     self.last_progress = int(self.progress)
     percentage = round(self.progress / self.max_progress * 100, 1)
@@ -87,15 +87,6 @@ class ETA(threading.Thread):
     remaining = self.max_progress - self.progress
     return 'compiling: {}% ETA: {}'.format(percentage, self.format_etr(remaining / ips))
 
-    times_idx = len(self.times) * (self.progress / self.max_progress)
-    if times_idx == round(times_idx):
-      etr = self.times[int(times_idx)]
-    else:
-      times_scale = [self.times[round(times_idx + i)] for i in [-1, 1]]
-      etr = sum(times_scale) / 2.0
-
-    return 'compiling: {}% ETA: {}'.format(percentage, self.format_etr(etr))
-
   def format_etr(self, etr):
     hours, remainder = divmod(round(etr), self.seconds ** 2)
     minutes, seconds = divmod(remainder, self.seconds)
@@ -110,25 +101,3 @@ class ETA(threading.Thread):
         etr_list.append('{} {}{}'.format(t, t_str, plural))
     return ', '.join(etr_list)
 
-  def get_eta_old(self):
-    total_ips = (self.progress - self.progress_subtract) / (self.time - self.start_time)
-    last_ips = (self.progress - self.last_progress) / (self.time - self.last_time)
-    self.last_time = float(self.time)
-    self.last_progress = int(self.progress)
-
-    ips = total_ips * 0.8 + last_ips * 0.8
-    if last_ips < total_ips:
-      ips = last_ips * 0.8 + total_ips * 0.8
-
-    if time.time() - self._start > 5:
-      return 'calculating', '', ''
-
-    if last_ips > 10:  # probably pulling from cache
-      self.start_time = time.time()  # ensures ips accuracy
-      self.progress_subtract = self.progress
-      return 'calculating', '', ''
-
-    remaining = self.max_progress - self.progress
-    etr = self.format_etr(remaining / ips)
-
-    return etr, round(last_ips, 2), round(total_ips, 2)
