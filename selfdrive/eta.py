@@ -89,7 +89,15 @@ class ETA(threading.Thread):
     self.set_ips()
     print('TOTAL IPS: {}\n------------'.format(round(self.total_ips, 2)))
     # return 'TOTAL IPS: {}'.format(self.total_ips)
-    etr = self.format_etr((self.max_progress - self.get_eta_data().progress) / self.total_ips)
+
+    ips = self.total_ips * 0.6 + self.this_ips * 0.4
+    if self.this_ips < self.total_ips:
+      ips = self.this_ips * 0.8 + self.total_ips * 0.2
+      # if self.last_ips < self.this_ips:
+      #   ips = self.last_ips * 0.8 + ips * 0.2
+
+    etr = self.format_etr((self.max_progress - self.get_eta_data().progress) / ips)
+
     return 'ETA: {} TOTAL IPS: {} CUR IPS: {}'.format(etr, round(self.total_ips, 2), round(self.this_ips, 2))
 
 
