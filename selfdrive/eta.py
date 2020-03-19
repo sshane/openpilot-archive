@@ -47,6 +47,7 @@ class ETA(threading.Thread):
   def run(self):
     progress = 0
     while progress < self.max_progress:
+      print('HERE!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
       progress = self.get_eta_data().progress
       if os.path.exists('/data/stop'):
         os.remove('/data/stop')
