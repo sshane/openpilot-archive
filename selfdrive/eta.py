@@ -76,7 +76,8 @@ class ETA(threading.Thread):
     self.updated = True
     if not self.run_thread:
       self.run_thread = removed  # wait until we have enough data
-    self.set_ips()
+    if self.run_thread:
+      self.set_ips()
 
   def set_ips(self):
     # print(self.time)
