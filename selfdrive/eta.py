@@ -25,7 +25,7 @@ class ETA(threading.Thread):
     self.spinner = spinner
     self.this_ips = 0
     self.last_ips = 0
-    self.has_update = False
+    self.updated = False
     self.run_thread = False
     self.eta_data = []
     self.scons_finished_progress = sfp
@@ -56,11 +56,12 @@ class ETA(threading.Thread):
       eta_message = self.get_eta()
       self.spinner.update("%d" % (progress / self.max_progress * self.scons_finished_progress), eta_message)
       # spinner.update("%d" % (percentage * scons_finished_progress), eta_message)
-      if self.has_update:
-        self.has_update = False
+      if self.updated:
+        self.updated = False
       time.sleep(1 / self.frequency)
 
   def update(self, progress, t):
+    print('GOT UPDATE')
     self.last_ips = float(self.this_ips)
     self.eta_data.append(ETAData(progress=progress, t=t))
     removed = False
@@ -68,7 +69,7 @@ class ETA(threading.Thread):
       del self.eta_data[0]
       removed = True
 
-    self.has_update = True
+    self.updated = True
     if not self.run_thread:
       self.run_thread = removed  # wait until we have enough data
 
@@ -79,7 +80,7 @@ class ETA(threading.Thread):
     # # if self.has_update:
     self.this_ips = (self.get_eta_data().progress - self.get_eta_data(-2).progress) / (cur_time - self.get_eta_data(-2).time)
 
-    if self.this_ips < 10 < self.last_ips and self.has_update:
+    if self.this_ips < 10 < self.last_ips and self.updated:
       print('RESET HERE!!!\n---------')
       print(float(self.get_eta_data(-1).time) - self.start_time)
       self.start_time = float(self.get_eta_data(-1).time)  # reset total ips when we stop getting cached files
