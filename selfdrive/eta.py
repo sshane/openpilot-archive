@@ -6,7 +6,6 @@ import threading
 
 class ETA(threading.Thread):
   def __init__(self, start_time, max_progress, frequency, sfp, spinner=None):  # only supports up to minutes
-    threading.Thread.__init__(self)
     self.start_time = start_time
     self.max_progress = max_progress
     self.frequency = frequency
@@ -26,6 +25,7 @@ class ETA(threading.Thread):
     self.has_update = False
     self.run_thread = False
     self.scons_finished_progress = sfp
+    threading.Thread.__init__(self)
 
   # def init(self, t, max_progress):
   #     self.start_time = t
@@ -35,7 +35,6 @@ class ETA(threading.Thread):
     while self.progress < self.max_progress:
       print(self.run_thread)
       if not self.run_thread:
-        print('NOT RUNNING THREAD')
         time.sleep(1)
         continue
       if self.has_update:
