@@ -2,6 +2,7 @@ import datetime
 import numpy as np
 import time
 import threading
+import os
 
 
 class ETA(threading.Thread):
@@ -33,6 +34,9 @@ class ETA(threading.Thread):
 
   def run(self):
     while self.progress < self.max_progress:
+      if os.path.exists('/data/stop'):
+        os.remove('/data/stop')
+        return
       if not self.run_thread:
         time.sleep(1)
         continue
