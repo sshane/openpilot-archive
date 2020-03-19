@@ -108,6 +108,8 @@ class ETA(threading.Thread):
 
     s = np.r_[self.etrs[self.window_len-1:0:-1],self.etrs,self.etrs[-1:-self.window_len:-1]]
     y = np.convolve(w/w.sum(),s,mode='valid')
+    print(len(self.etrs))
+    print(len(y))
     if len(y) - 1 < self.window_len:
       print('calculated: {}'.format(y[-1]))
       return "calculating..."
