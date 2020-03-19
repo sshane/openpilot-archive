@@ -102,7 +102,7 @@ class ETA(threading.Thread):
       del self.etrs[0]
 
     ips = self.total_ips * 0.6 + self.this_ips * 0.4  # todo: need to fix
-    if self.this_ips < ips > 5:
+    if self.this_ips < ips:
       ips = self.this_ips * 0.8 + ips * 0.2
       if self.last_ips < ips:
         ips = self.last_ips * 0.8 + ips * 0.2
