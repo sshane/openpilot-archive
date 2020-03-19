@@ -98,9 +98,10 @@ class ETA(threading.Thread):
     # print('TOTAL IPS: {}\n---------'.format(round(self.total_ips, 2)))
     # return 'TOTAL IPS: {}'.format(self.total_ips)
     if self.updated or self.etr == 0:
-      self.etr = self.format_etr((self.max_progress - self.get_eta_data().progress) / (sum([self.total_ips, self.this_ips, self.last_ips])/3))
+      self.etr = (self.max_progress - self.get_eta_data().progress) / (sum([self.total_ips, self.this_ips, self.last_ips])/3)
     self.etr -= 1.14 / self.scons_finished_progress
-    return 'compiling: {}% ETA: {}'.format(percentage, self.etr)
+    etr = self.format_etr(self.etr)
+    return 'compiling: {}% ETA: {}'.format(percentage, etr)
 
     # ips = self.total_ips * 0.6 + self.this_ips * 0.4  # todo: need to fix
     # if self.this_ips < ips > 5:
