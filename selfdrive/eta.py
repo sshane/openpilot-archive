@@ -76,6 +76,7 @@ class ETA(threading.Thread):
     self.updated = True
     if not self.run_thread:
       self.run_thread = removed  # wait until we have enough data
+    self.set_ips()
 
   def set_ips(self):
     # print(self.time)
@@ -92,7 +93,7 @@ class ETA(threading.Thread):
     self.total_ips = (self.get_eta_data().progress - self.progress_subtract) / (cur_time - self.start_time)
 
   def get_eta(self):
-    self.set_ips()
+
     percentage = round(self.get_eta_data().progress / self.max_progress * 100, 1)
     print('TOTAL IPS: {}\n---------'.format(round(self.total_ips, 2)))
     # return 'TOTAL IPS: {}'.format(self.total_ips)
