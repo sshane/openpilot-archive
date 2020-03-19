@@ -74,7 +74,10 @@ class ETA(threading.Thread):
     print('TOTAL IPS: {}\n------------'.format(self.total_ips))
     # return 'TOTAL IPS: {}'.format(self.total_ips)
     remaining = self.max_progress - self.progress
-    return 'ETA: {} TOTAL IPS:'.format(self.format_etr(remaining / self.total_ips))
+    return 'ETA: {} TOTAL IPS:'.format(self.format_etr(remaining / self.total_ips), self.total_ips)
+
+
+
     self.last_time = float(time.time())
     self.last_progress = int(self.progress)
     percentage = round(self.progress / self.max_progress * 100, 1)
