@@ -105,7 +105,7 @@ class ETA(threading.Thread):
       print('avg: {}'.format(avg))
       print('before etr: {}'.format(self.etr))
       print('avg*freq: {}'.format(avg * self.frequency))
-      self.etr -= avg * self.frequency
+      self.etr -= avg / self.frequency
     print('after etr: {}'.format(self.etr))
     etr = self.format_etr(self.etr)
     return 'compiling: {}% ETA: {}'.format(percentage, etr)
