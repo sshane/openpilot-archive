@@ -114,9 +114,11 @@ class ETA(threading.Thread):
 
     # avg = self.total_ips * 0.7 + self.this_ips * 0.15 + self.last_ips * 0.15
 
-    # if time.time() - self.get_eta_data().time > 5 or self.etr == 0:  # todo: is this needed??
-    #   self.etr = (self.max_progress - self.get_eta_data().progress) / ips
-    #   self.etrs.append(self.etr)
+    if time.time() - self.get_eta_data().time > 5 or self.etr == 0:  # todo: is this needed??
+      self.etr = (self.max_progress - self.get_eta_data().progress) / ips
+    else:
+      self.etr = (self.max_progress - self.get_eta_data().progress) / ips
+    self.etrs.append(self.etr)
 
     # elif ips < 10:  # probably don't need with moving average
     #   self.etr -= ips / self.frequency
@@ -125,8 +127,7 @@ class ETA(threading.Thread):
 
 
     w = np.hanning(self.window_len)
-    self.etr = (self.max_progress - self.get_eta_data().progress) / ips
-    self.etrs.append(self.etr)
+
 
     s = np.r_[self.etrs[self.window_len-1:0:-1],self.etrs,self.etrs[-1:-self.window_len:-1]]
     y = np.convolve(w/w.sum(),s,mode='valid')
