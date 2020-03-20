@@ -116,10 +116,10 @@ class ETA(threading.Thread):
     if time.time() - self.get_eta_data().time > 5 or self.etr == 0:
       self.etr = (self.max_progress - self.get_eta_data().progress) / ips
       self.etrs.append(self.etr)
-    elif ips < 10:
-      self.etr -= ips / self.frequency
-      print('LAST UPDATE OVER 5 SECONDS!')
-      return 'compiling: {}% ETA: {}'.format(percentage, self.format_etr(self.etr))
+    # elif ips < 10:  # probably don't need with moving average
+    #   self.etr -= ips / self.frequency
+    #   print('LAST UPDATE OVER 5 SECONDS!')
+    #   return 'compiling: {}% ETA: {}'.format(percentage, self.format_etr(self.etr))
 
 
     w = np.hanning(self.window_len)
