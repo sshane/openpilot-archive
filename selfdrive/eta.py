@@ -120,7 +120,17 @@ class ETA(threading.Thread):
     print('USING IPS: {} THIS IPS: {}\n---------'.format(round(ips, 2), round(self.this_ips, 2)))
     self.etr = (self.max_progress - self.get_eta_data().progress) / ips
     print(self.etr)
+    self.etrs.append(self.etr)
     # self.etr -= ips / self.frequency
+
+    w = np.hanning(self.window_len)
+
+    s = np.r_[self.etrs[self.window_len-1:0:-1],self.etrs,self.etrs[-1:-self.window_len:-1]]
+    y = np.convolve(w/w.sum(),s,mode='valid')
+
+    if len(y) - 1 < self.window_len:
+      print('calculated: {}'.format(y[-1]))
+      return "calculating..."
 
 
 
@@ -141,16 +151,6 @@ class ETA(threading.Thread):
     #   # return 'compiling: {}% ETA: {}'.format(percentage, self.format_etr(self.etr))
     # print('NORMAL ETR: {}'.format(self.etr))
 
-    # w = np.hanning(self.window_len)
-    # self.etr = (self.max_progress - self.get_eta_data().progress) / ips
-    # self.etrs.append(self.etr)
-    #
-    # s = np.r_[self.etrs[self.window_len-1:0:-1],self.etrs,self.etrs[-1:-self.window_len:-1]]
-    # y = np.convolve(w/w.sum(),s,mode='valid')
-    #
-    # if len(y) - 1 < self.window_len:
-    #   print('calculated: {}'.format(y[-1]))
-    #   return "calculating..."
     # etr = self.format_etr(y[self.window_len])
 
     # # print('after etr: {}'.format(self.etr))
