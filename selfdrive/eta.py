@@ -144,7 +144,7 @@ class ETA(threading.Thread):
     # # print('after etr: {}'.format(self.etr))
     etr = self.format_etr(self.etr)
     # print('NORMAL!')
-    return 'compiling: {}% ETA: {}'.format(percentage, self.etr)
+    return 'compiling: {}% ETA: {}'.format(percentage, etr)
 
     #
     # etr = self.format_etr((self.max_progress - self.get_eta_data().progress) / ips)
