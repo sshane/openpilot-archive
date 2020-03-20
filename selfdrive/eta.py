@@ -120,6 +120,13 @@ class ETA(threading.Thread):
       print('calculated: {}'.format(y[-1]))
       return "calculating step 1..."
 
+    self.etr = (self.max_progress - self.get_eta_data().progress) / ips
+    self.etrs.append(self.etr)
+
+
+    if len(self.etrs) - 1 < self.window_len:
+      print('calculated: {}'.format(y[-1]))
+      return "calculating step 2..."
 
     w = np.hanning(self.window_len)
 
@@ -127,16 +134,10 @@ class ETA(threading.Thread):
     y = np.convolve(w/w.sum(), s, mode='valid')
     if len(y) - 1 < self.window_len:
       print('calculated: {}'.format(y[-1]))
-      return "calculating step 2..."
+      return "calculating step 3..."
     ips = y[self.window_len - 2]
 
 
-
-    self.etr = (self.max_progress - self.get_eta_data().progress) / ips
-    self.etrs.append(self.etr)
-    if len(self.etrs) - 1 < self.window_len:
-      print('calculated: {}'.format(y[-1]))
-      return "calculating step 1..."
 
     # ips *= np.interp(self.get_eta_data().progress, [self.scons_finished_progress * 0.75, self.scons_finished_progress], [1.0, 0.5])
 
