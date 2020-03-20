@@ -108,6 +108,7 @@ class ETA(threading.Thread):
     #     ips = self.last_ips * 0.2 + ips * 0.8
     print('USING IPS: {} THIS IPS: {}\n---------'.format(round(ips, 2), round(self.this_ips, 2)))
     self.etr = (self.max_progress - self.get_eta_data().progress) / ips
+    print(self.etr)
     self.etr -= ips / self.frequency
 
 
@@ -141,7 +142,7 @@ class ETA(threading.Thread):
     # etr = self.format_etr(y[self.window_len])
 
     # # print('after etr: {}'.format(self.etr))
-    # etr = self.format_etr(self.etr)
+    etr = self.format_etr(self.etr)
     # print('NORMAL!')
     return 'compiling: {}% ETA: {}'.format(percentage, self.etr)
 
