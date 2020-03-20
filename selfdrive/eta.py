@@ -117,6 +117,7 @@ class ETA(threading.Thread):
     if time.time() - self.get_eta_data().time > 5 or self.etr == 0:  # todo: is this needed??
       self.etr = (self.max_progress - self.get_eta_data().progress) / ips
       self.etr -= ips / self.frequency
+      print('SUBTRACTING!\n---------------------------')
     else:
       self.etr = (self.max_progress - self.get_eta_data().progress) / ips
     self.etrs.append(self.etr)
@@ -135,13 +136,13 @@ class ETA(threading.Thread):
     y = np.convolve(w/w.sum(),s,mode='valid')
 
     if len(y) - 1 < self.window_len:
-      print('calculated: {}'.format(y[-1]))
+      # print('calculated: {}'.format(y[-1]))
       return "calculating..."
     etr = self.format_etr(y[self.window_len - 4])
 
     # # print('after etr: {}'.format(self.etr))
     # etr = self.format_etr(self.etr)
-    print('NORMAL!')
+    # print('NORMAL!')
     return 'compiling: {}% ETA: {}'.format(percentage, etr)
 
     #
