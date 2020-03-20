@@ -105,8 +105,8 @@ class ETA(threading.Thread):
       print('RESET HERE! p_s: {}, p: {}\n---------'.format(self.progress_subtract, int(self.get_eta_data(-1).progress)))
       self.total_ips = self.this_ips
     else:
-      print('progress: {}'.format(self.get_eta_data().progress))
-      print('time: {}\n---'.format(cur_time - self.start_time))
+      # print('progress: {}'.format(self.get_eta_data().progress))
+      # print('time: {}\n---'.format(cur_time - self.start_time))
       self.total_ips = (self.get_eta_data().progress - self.progress_subtract) / (cur_time - self.start_time)
 
   def get_eta(self):
