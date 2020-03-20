@@ -107,10 +107,10 @@ class ETA(threading.Thread):
       if self.last_ips < ips:
         ips = self.last_ips * 0.2 + ips * 0.8
     print('USING IPS: {} THIS IPS: {}\n---------'.format(round(ips, 2), round(self.this_ips, 2)))
-    if self.this_ips > 10:  # probably pulling from cache
-      remaining = self.max_progress - self.get_eta_data().progress
-      print('CACHE!')
-      return 'compiled: {}% ETA: {}'.format(percentage, self.format_etr(remaining / ips))
+    # if self.this_ips > 10:  # probably pulling from cache
+    #   remaining = self.max_progress - self.get_eta_data().progress
+    #   print('CACHE!')
+    #   return 'compiled: {}% ETA: {}'.format(percentage, self.format_etr(remaining / ips))
 
     # avg = self.total_ips * 0.7 + self.this_ips * 0.15 + self.last_ips * 0.15
     if time.time() - self.get_eta_data().time > 5 or self.etr == 0:
@@ -119,7 +119,7 @@ class ETA(threading.Thread):
     elif ips < 10:
       self.etr -= ips / self.frequency
       print('LAST UPDATE OVER 5 SECONDS!')
-      return 'compiled: {}% ETA: {}'.format(percentage, self.format_etr(self.etr))
+      return 'compiling: {}% ETA: {}'.format(percentage, self.format_etr(self.etr))
 
 
     w = np.hanning(self.window_len)
