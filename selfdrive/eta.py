@@ -109,7 +109,14 @@ class ETA(threading.Thread):
       # print('time: {}\n---'.format(cur_time - self.start_time))
       self.total_ips = (self.get_eta_data().progress - self.progress_subtract) / (cur_time - self.start_time)
 
+  def keep_len(self):
+    while len(self.etrs) > self.window_len:
+      del self.etrs[0]
+    while len(self.ipss) > self.window_len:
+      del self.ipss[0]
+
   def get_eta(self):
+    self.keep_len()
     self.set_ips()
     percentage = round(self.get_eta_data().progress / self.max_progress * 100, 1)
     print('TOTAL IPS: {}\n---------'.format(round(self.total_ips, 2)))
@@ -153,12 +160,6 @@ class ETA(threading.Thread):
 
 
 
-
-    # if self.this_ips > 10:  # probably pulling from cache
-    #   remaining = self.max_progress - self.get_eta_data().progress
-    #   print('CACHE!')
-    #   return 'compiled: {}% ETA: {}'.format(percentage, self.format_etr(remaining / ips))
-
     # avg = self.total_ips * 0.7 + self.this_ips * 0.15 + self.last_ips * 0.15
     # elif ips < 10:
     #   self.etr -= ips / self.frequency
@@ -170,15 +171,8 @@ class ETA(threading.Thread):
 
     # # print('after etr: {}'.format(self.etr))
     # etr = self.format_etr(self.etr)
-    # print('NORMAL!')
+
     return 'compiling: {}% ETA: {}'.format(percentage, etr)
-
-    #
-    # etr = self.format_etr((self.max_progress - self.get_eta_data().progress) / ips)
-    # # print("ETA: {}".format(etr))
-    # # return 'TOTAL IPS: {} - CUR IPS: {} - LAST IPS: {} - USING IPS: {}'.format(round(self.total_ips, 2), round(self.this_ips, 2), round(self.last_ips, 2), round(ips, 2))
-    # return 'compiling: {}% ETA: {}'.format(percentage, etr)
-
   def format_etr(self, etr):
     hours, remainder = divmod(round(etr), self.seconds ** 2)
     minutes, seconds = divmod(remainder, self.seconds)
