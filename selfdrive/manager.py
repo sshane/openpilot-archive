@@ -94,7 +94,7 @@ if not prebuilt:
     scons_finished_progress = 70.0
 
     # Read progress from stderr and update spinner
-    eta_tool = ETA(time.time(), TOTAL_SCONS_NODES, 2, scons_finished_progress, spinner)
+    eta_tool = ETA(time.time(), TOTAL_SCONS_NODES, 5, scons_finished_progress, spinner)
     eta_tool.start()
     # eta_message = ''
     # last_eta_time = time.time()
