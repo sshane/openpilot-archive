@@ -101,49 +101,44 @@ class ETA(threading.Thread):
     while len(self.etrs) > self.window_len + 10:
       del self.etrs[0]
 
-    ips = self.total_ips * 0.8 + self.this_ips * 0.2
-    # if self.this_ips < ips:
-    #   ips = self.this_ips * 0.2 + ips * 0.8
-    #   if self.last_ips < ips:
-    #     ips = self.last_ips * 0.2 + ips * 0.8
+    ips = self.total_ips * 0.8 + self.this_ips * 0.2  # todo: need to fix
+    if self.this_ips < ips:
+      ips = self.this_ips * 0.2 + ips * 0.8
+      if self.last_ips < ips:
+        ips = self.last_ips * 0.2 + ips * 0.8
     print('USING IPS: {} THIS IPS: {}\n---------'.format(round(ips, 2), round(self.this_ips, 2)))
-    self.etr = (self.max_progress - self.get_eta_data().progress) / ips
-    self.etr -= ips / self.frequency
-
-
-
     # if self.this_ips > 10:  # probably pulling from cache
     #   remaining = self.max_progress - self.get_eta_data().progress
     #   print('CACHE!')
     #   return 'compiled: {}% ETA: {}'.format(percentage, self.format_etr(remaining / ips))
 
     # avg = self.total_ips * 0.7 + self.this_ips * 0.15 + self.last_ips * 0.15
-    # if time.time() - self.get_eta_data().time > 5 or self.etr == 0:
-    #   self.etr = (self.max_progress - self.get_eta_data().progress) / ips
-    #   print('---WAITING ETR: {}'.format(self.etr))
-    #   self.etrs.append(self.etr)
-    # elif ips < 10:
-    #   self.etr -= ips / self.frequency
-    #   # print('LAST UPDATE OVER 5 SECONDS!')
-    #   # return 'compiling: {}% ETA: {}'.format(percentage, self.format_etr(self.etr))
-    # print('NORMAL ETR: {}'.format(self.etr))
+    if time.time() - self.get_eta_data().time > 5 or self.etr == 0:
+      self.etr = (self.max_progress - self.get_eta_data().progress) / ips
+      print('---WAITING ETR: {}'.format(self.etr))
+      self.etrs.append(self.etr)
+    elif ips < 10:
+      self.etr -= ips / self.frequency
+      # print('LAST UPDATE OVER 5 SECONDS!')
+      # return 'compiling: {}% ETA: {}'.format(percentage, self.format_etr(self.etr))
+    print('NORMAL ETR: {}'.format(self.etr))
 
-    # w = np.hanning(self.window_len)
-    # self.etr = (self.max_progress - self.get_eta_data().progress) / ips
-    # self.etrs.append(self.etr)
-    #
-    # s = np.r_[self.etrs[self.window_len-1:0:-1],self.etrs,self.etrs[-1:-self.window_len:-1]]
-    # y = np.convolve(w/w.sum(),s,mode='valid')
-    #
-    # if len(y) - 1 < self.window_len:
-    #   print('calculated: {}'.format(y[-1]))
-    #   return "calculating..."
-    # etr = self.format_etr(y[self.window_len])
+    w = np.hanning(self.window_len)
+    self.etr = (self.max_progress - self.get_eta_data().progress) / ips
+    self.etrs.append(self.etr)
+
+    s = np.r_[self.etrs[self.window_len-1:0:-1],self.etrs,self.etrs[-1:-self.window_len:-1]]
+    y = np.convolve(w/w.sum(),s,mode='valid')
+
+    if len(y) - 1 < self.window_len:
+      print('calculated: {}'.format(y[-1]))
+      return "calculating..."
+    etr = self.format_etr(y[self.window_len])
 
     # # print('after etr: {}'.format(self.etr))
     # etr = self.format_etr(self.etr)
     # print('NORMAL!')
-    return 'compiling: {}% ETA: {}'.format(percentage, self.etr)
+    return 'compiling: {}% ETA: {}'.format(percentage, etr)
 
     #
     # etr = self.format_etr((self.max_progress - self.get_eta_data().progress) / ips)
