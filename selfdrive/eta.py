@@ -34,6 +34,7 @@ class ETA(threading.Thread):
     threading.Thread.__init__(self)
     self.window_len = 20 * self.frequency  # in seconds * frequency
     self.etrs = [16 * 60 for _ in range(int(self.window_len / 2))]
+    self.ipss = [1.95 * 60 for _ in range(int(self.window_len / 2))]
 
   # def init(self, t, max_progress):
   #     self.start_time = t
@@ -112,8 +113,14 @@ class ETA(threading.Thread):
     y = [(i + 1) ** -2 for i in x]
 
     ips = np.interp(ips / 10, x, y) * ips  # penalize large ips's
+    ips = 1.974
+    etr = (self.max_progress - self.get_eta_data().progress) / ips
+    etr = self.format_etr(etr)
 
-    ips *= np.interp(self.get_eta_data().progress, [self.scons_finished_progress * 0.75, self.scons_finished_progress], [1.0, 0.5])
+    return 'compiling: {}% ETA: {}'.format(percentage, etr)
+
+
+    # ips *= np.interp(self.get_eta_data().progress, [self.scons_finished_progress * 0.75, self.scons_finished_progress], [1.0, 0.5])
 
     if time.time() - self.get_eta_data().time > 5 or self.etr == 0:
       self.etr = (self.max_progress - self.get_eta_data().progress) / ips
