@@ -113,9 +113,11 @@ class ETA(threading.Thread):
     #   return 'compiled: {}% ETA: {}'.format(percentage, self.format_etr(remaining / ips))
 
     # avg = self.total_ips * 0.7 + self.this_ips * 0.15 + self.last_ips * 0.15
-    if time.time() - self.get_eta_data().time > 5 or self.etr == 0:
-      self.etr = (self.max_progress - self.get_eta_data().progress) / ips
-      self.etrs.append(self.etr)
+
+    # if time.time() - self.get_eta_data().time > 5 or self.etr == 0:  # todo: is this needed??
+    #   self.etr = (self.max_progress - self.get_eta_data().progress) / ips
+    #   self.etrs.append(self.etr)
+
     # elif ips < 10:  # probably don't need with moving average
     #   self.etr -= ips / self.frequency
     #   print('LAST UPDATE OVER 5 SECONDS!')
