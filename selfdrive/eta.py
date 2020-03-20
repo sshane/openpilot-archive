@@ -115,12 +115,13 @@ class ETA(threading.Thread):
     # avg = self.total_ips * 0.7 + self.this_ips * 0.15 + self.last_ips * 0.15
     if time.time() - self.get_eta_data().time > 5 or self.etr == 0:
       self.etr = (self.max_progress - self.get_eta_data().progress) / ips
+      print('---WAITING ETR: {}'.format(self.etr))
       self.etrs.append(self.etr)
     elif ips < 10:
       self.etr -= ips / self.frequency
       # print('LAST UPDATE OVER 5 SECONDS!')
       # return 'compiling: {}% ETA: {}'.format(percentage, self.format_etr(self.etr))
-
+    print('NORMAL ETR: {}'.format(self.etr))
 
     w = np.hanning(self.window_len)
     self.etr = (self.max_progress - self.get_eta_data().progress) / ips
@@ -132,11 +133,11 @@ class ETA(threading.Thread):
     if len(y) - 1 < self.window_len:
       print('calculated: {}'.format(y[-1]))
       return "calculating..."
-    etr = self.format_etr(y[self.window_len] + 4)
+    etr = self.format_etr(y[self.window_len])
 
     # # print('after etr: {}'.format(self.etr))
     # etr = self.format_etr(self.etr)
-    print('NORMAL!')
+    # print('NORMAL!')
     return 'compiling: {}% ETA: {}'.format(percentage, etr)
 
     #
