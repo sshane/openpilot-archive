@@ -31,7 +31,7 @@ class ETA(threading.Thread):
     self.eta_data = []
     self.scons_finished_progress = sfp
     threading.Thread.__init__(self)
-    self.window_len = 20 * self.frequency
+    self.window_len = 20 * self.frequency  # in seconds * frequency
     self.etrs = [16 * 60 for _ in range(int(self.window_len / 2))]
 
   # def init(self, t, max_progress):
@@ -98,7 +98,7 @@ class ETA(threading.Thread):
     self.set_ips()
     percentage = round(self.get_eta_data().progress / self.max_progress * 100, 1)
     print('TOTAL IPS: {}\n---------'.format(round(self.total_ips, 2)))
-    while len(self.etrs) > self.window_len + 10:
+    while len(self.etrs) > self.window_len:
       del self.etrs[0]
 
     ips = self.total_ips * 0.8 + self.this_ips * 0.2
