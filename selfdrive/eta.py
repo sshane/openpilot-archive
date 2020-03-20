@@ -113,7 +113,7 @@ class ETA(threading.Thread):
 
     ips = np.interp(ips / 10, x, y) * ips  # penalize large ips's
 
-    ips *= np.interp(self.get_eta_data().progress, [0, self.scons_finished_progress], [1.0, 0.25])
+    ips *= np.interp(self.get_eta_data().progress, [self.scons_finished_progress / 2, self.scons_finished_progress], [1.0, 0.5])
 
     if time.time() - self.get_eta_data().time > 5 or self.etr == 0:
       self.etr = (self.max_progress - self.get_eta_data().progress) / ips
