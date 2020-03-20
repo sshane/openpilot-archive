@@ -64,6 +64,7 @@ class ETA(threading.Thread):
       time.sleep(1 / self.frequency)
 
   def update(self, progress, t):
+    self.can_reset = True
     self.last_ips = float(self.this_ips)
     self.eta_data.append(ETAData(progress=progress, t=t))
     self.updated = True
@@ -87,7 +88,8 @@ class ETA(threading.Thread):
     # # if self.has_update:
     self.this_ips = (self.get_eta_data().progress - self.get_eta_data(-2).progress) / (cur_time - self.get_eta_data(-2).time)
     print('last ips: {}'.format(self.last_ips))
-    if self.this_ips < 10 < self.last_ips:  # and self.updated:
+    if self.this_ips < 10 < self.last_ips and self.can_reset:  # and self.updated:
+      self.can_reset = False
       print('RESET HERE!!!\n---------')
       self.start_time = cur_time  # reset total ips when we stop getting cached files
       self.progress_subtract = int(self.get_eta_data(-1).progress)
