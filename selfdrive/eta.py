@@ -97,9 +97,9 @@ class ETA(threading.Thread):
   def get_eta(self):
     self.set_ips()
     percentage = round(self.get_eta_data().progress / self.max_progress * 100, 1)
-    # print('TOTAL IPS: {}\n---------'.format(round(self.total_ips, 2)))
-    # while len(self.etrs) > self.window_len + 10:
-    #   del self.etrs[0]
+    print('TOTAL IPS: {}\n---------'.format(round(self.total_ips, 2)))
+    while len(self.etrs) > self.window_len + 10:
+      del self.etrs[0]
 
     ips = self.total_ips * 0.8 + self.this_ips * 0.2
     ips = np.interp(ips, [0, 10], [1, 2])
@@ -134,6 +134,7 @@ class ETA(threading.Thread):
       print('calculated: {}'.format(y[-1]))
       return "calculating..."
 
+    print(y)
     etr = self.format_etr(y[self.window_len])
 
 
