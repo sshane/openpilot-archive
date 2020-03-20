@@ -116,7 +116,10 @@ class ETA(threading.Thread):
 
     if time.time() - self.get_eta_data().time > 5 or self.etr == 0:  # todo: is this needed??
       self.etr = (self.max_progress - self.get_eta_data().progress) / ips
-      self.etrs.append(self.etr)
+      self.etr -= ips / self.frequency
+    else:
+      self.etr = (self.max_progress - self.get_eta_data().progress) / ips
+    self.etrs.append(self.etr)
 
     # elif ips < 10:  # probably don't need with moving average
     #   self.etr -= ips / self.frequency
