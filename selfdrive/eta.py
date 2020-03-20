@@ -120,7 +120,8 @@ class ETA(threading.Thread):
     print('USING IPS: {} THIS IPS: {}\n---------'.format(round(ips, 2), round(self.this_ips, 2)))
     self.etr = (self.max_progress - self.get_eta_data().progress) / ips
     print(self.etr)
-    self.etr -= ips / self.frequency
+    # self.etr -= ips / self.frequency
+
 
 
 
