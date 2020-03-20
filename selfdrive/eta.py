@@ -106,7 +106,7 @@ class ETA(threading.Thread):
       ips = self.this_ips * 0.2 + ips * 0.8
       if self.last_ips < ips:
         ips = self.last_ips * 0.2 + ips * 0.8
-    print('USING IPS: {} THIS IPS: {}\n---------'.format(round(ips, 2), round(self.this_ips, 2)))
+    # print('USING IPS: {} THIS IPS: {}\n---------'.format(round(ips, 2), round(self.this_ips, 2)))
     # if self.this_ips > 10:  # probably pulling from cache
     #   remaining = self.max_progress - self.get_eta_data().progress
     #   print('CACHE!')
