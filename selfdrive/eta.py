@@ -90,9 +90,9 @@ class ETA(threading.Thread):
     self.this_ips = (self.get_eta_data().progress - self.get_eta_data(-2).progress) / (cur_time - self.get_eta_data(-2).time)
     print('last ips: {}'.format(self.last_ips))
     if self.this_ips < 10 < self.last_ips and self.can_reset:  # and self.updated:
-      print('RESET HERE!!!\n---------')
       self.start_time = cur_time  # reset total ips when we stop getting cached files
       self.progress_subtract = int(self.get_eta_data(-1).progress)
+      print('RESET HERE! p_s: {}, p: {}\n---------'.format(self.progress_subtract, int(self.get_eta_data(-1).progress)))
       self.total_ips = self.this_ips
     else:
       print('progress: {}'.format(self.get_eta_data().progress - self.progress_subtract))
