@@ -76,8 +76,8 @@ class ETA(threading.Thread):
 
     if time.time() - self.get_eta_data().time < 1e-4:  # we don't care about these updates
       self.progress_subtract += 1
-    # else:
-    #   print('GOT UPDATE')
+    else:
+      print('GOT UPDATE')
 
     if not self.run_thread:
       self.run_thread = removed  # wait until we have enough data
