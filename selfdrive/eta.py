@@ -33,10 +33,10 @@ class ETA(threading.Thread):
     self.scons_finished_progress = sfp
     threading.Thread.__init__(self)
     self.window_len = 20 * self.frequency  # in seconds * frequency
-    # self.etrs = [12 * 60 for _ in range(int(self.window_len / 2))]
-    self.etrs = []
-    self.ipss = []
-    # self.ipss = [1.95 for _ in range(int(self.window_len / 2))]
+    self.etrs = [12.15 * 60 for _ in range(int(self.window_len / 2))]
+    # self.etrs = []
+    # self.ipss = []
+    self.ipss = [1.95 for _ in range(int(self.window_len / 2))]
 
   # def init(self, t, max_progress):
   #     self.start_time = t
@@ -110,14 +110,15 @@ class ETA(threading.Thread):
       del self.etrs[0]
 
     ips = self.total_ips * 0.8 + self.this_ips * 0.2
+    ips = self.this_ips
 
-    x = np.linspace(0, 1, 10)
-    y = [(i + 1) ** -2 for i in x]
-
-    ips = np.interp(ips / 10, x, y) * ips  # penalize large ips's
+    # x = np.linspace(0, 1, 10)
+    # y = [(i + 1) ** -2 for i in x]
+    #
+    # ips = np.interp(ips / 10, x, y) * ips  # penalize large ips's
     self.ipss.append(ips)
     if len(self.ipss) - 1 < self.window_len:
-      print('calculated: {}'.format(y[-1]))
+      # print('calculated: {}'.format(y[-1]))
       return "calculating step 1..."
 
     self.etr = (self.max_progress - self.get_eta_data().progress) / ips
@@ -125,7 +126,6 @@ class ETA(threading.Thread):
 
 
     if len(self.etrs) - 1 < self.window_len:
-      print('calculated: {}'.format(y[-1]))
       return "calculating step 2..."
 
     w = np.hanning(self.window_len)
@@ -133,7 +133,6 @@ class ETA(threading.Thread):
     s = np.r_[self.etrs[self.window_len-1:0:-1], self.etrs, self.etrs[-1:-self.window_len:-1]]
     y = np.convolve(w/w.sum(), s, mode='valid')
     if len(y) - 1 < self.window_len:
-      print('calculated: {}'.format(y[-1]))
       return "calculating step 3..."
     ips = y[self.window_len - 2]
 
