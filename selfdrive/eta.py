@@ -27,6 +27,7 @@ class ETA(threading.Thread):
     self.last_ips = 0
     self.updated = False
     self.etr = 0
+    self.can_reset = False
     self.run_thread = False
     self.eta_data = []
     self.scons_finished_progress = sfp
