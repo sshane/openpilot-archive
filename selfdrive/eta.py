@@ -134,8 +134,7 @@ class ETA(threading.Thread):
       print('calculated: {}'.format(y[-1]))
       return "calculating..."
 
-    print(y)
-    etr = self.format_etr(y[self.window_len])
+    etr = self.format_etr(y[self.window_len - 2])
 
 
 
