@@ -27,8 +27,8 @@ class ETA(threading.Thread):
     self.last_ips = 0
     self.updated = False
     self.etr = 0
-    self.can_reset = False
     self.run_thread = False
+    self.can_reset = False
     self.eta_data = []
     self.scons_finished_progress = sfp
     threading.Thread.__init__(self)
@@ -76,8 +76,8 @@ class ETA(threading.Thread):
 
     if time.time() - self.get_eta_data().time < 1e-4:  # we don't care about these updates
       self.progress_subtract += 1
-    else:
-      print('GOT UPDATE')
+    # else:
+    #   print('GOT UPDATE')
 
     if not self.run_thread:
       self.run_thread = removed  # wait until we have enough data
@@ -90,12 +90,13 @@ class ETA(threading.Thread):
     self.this_ips = (self.get_eta_data().progress - self.get_eta_data(-2).progress) / (cur_time - self.get_eta_data(-2).time)
     print('last ips: {}'.format(self.last_ips))
     if self.this_ips < 10 < self.last_ips and self.can_reset:  # and self.updated:
-      self.can_reset = False
       print('RESET HERE!!!\n---------')
       self.start_time = cur_time  # reset total ips when we stop getting cached files
       self.progress_subtract = int(self.get_eta_data(-1).progress)
       self.total_ips = self.this_ips
     else:
+      print('progress: {}'.format(self.get_eta_data().progress - self.progress_subtract))
+      print('time: {}\n---'.format(cur_time - self.start_time))
       self.total_ips = (self.get_eta_data().progress - self.progress_subtract) / (cur_time - self.start_time)
 
   def get_eta(self):
@@ -115,7 +116,7 @@ class ETA(threading.Thread):
     if time.time() - self.get_eta_data().time > 5 or self.etr == 0:
       self.etr = (self.max_progress - self.get_eta_data().progress) / ips
       self.etr -= self.total_ips / self.frequency
-      print('---WAITING ETR: {}'.format(self.etr))
+      # print('---WAITING ETR: {}'.format(self.etr))
 
     else:
       self.etr = (self.max_progress - self.get_eta_data().progress) / ips
@@ -135,8 +136,6 @@ class ETA(threading.Thread):
 
     s = np.r_[self.etrs[self.window_len-1:0:-1], self.etrs, self.etrs[-1:-self.window_len:-1]]
     y = np.convolve(w/w.sum(), s, mode='valid')
-    print(len(self.etrs))
-    print(len(y))
 
     if len(y) - 1 < self.window_len:
       print('calculated: {}'.format(y[-1]))
