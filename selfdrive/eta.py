@@ -81,7 +81,7 @@ class ETA(threading.Thread):
       self.progress_subtract += 1
     # else:
     #   print('GOT UPDATE')
-
+    print('data len: {}'.format(len(self.eta_data)))
     if not self.run_thread:
       self.run_thread = removed  # wait until we have enough data
 
