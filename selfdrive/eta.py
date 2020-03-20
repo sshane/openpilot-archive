@@ -101,17 +101,12 @@ class ETA(threading.Thread):
     while len(self.etrs) > self.window_len:
       del self.etrs[0]
 
-    ips = self.total_ips * 0.8 + self.this_ips * 0.2
-    ips = np.interp(ips, [0, 10], [1, 2])
-
-    # x = np.linspace(0, 1, 10)
-    # y = [1-(i)**3 for i in x]
-    # ips = np.interp(ips / 10, x, y)
-
     x = np.linspace(0, 1, 10)
-    y = [(i+1)**-2 for i in x]
+    y = [(i + 1) ** -2 for i in x]
 
-    ips = np.interp(ips / 10, x, y) * ips
+    ips = self.total_ips * 0.8 + self.this_ips * 0.2
+
+    ips = np.interp(ips / 10, x, y) * ips  # penalize large ips's
 
     # if self.this_ips < ips:
     #   ips = self.this_ips * 0.2 + ips * 0.8
@@ -135,38 +130,7 @@ class ETA(threading.Thread):
       return "calculating..."
 
     etr = self.format_etr(y[self.window_len - 2])
-
-
-
-
-    # if self.this_ips > 10:  # probably pulling from cache
-    #   remaining = self.max_progress - self.get_eta_data().progress
-    #   print('CACHE!')
-    #   return 'compiled: {}% ETA: {}'.format(percentage, self.format_etr(remaining / ips))
-
-    # avg = self.total_ips * 0.7 + self.this_ips * 0.15 + self.last_ips * 0.15
-    # if time.time() - self.get_eta_data().time > 5 or self.etr == 0:
-    #   self.etr = (self.max_progress - self.get_eta_data().progress) / ips
-    #   print('---WAITING ETR: {}'.format(self.etr))
-    #   self.etrs.append(self.etr)
-    # elif ips < 10:
-    #   self.etr -= ips / self.frequency
-    #   # print('LAST UPDATE OVER 5 SECONDS!')
-    #   # return 'compiling: {}% ETA: {}'.format(percentage, self.format_etr(self.etr))
-    # print('NORMAL ETR: {}'.format(self.etr))
-
-    # etr = self.format_etr(y[self.window_len])
-
-    # # print('after etr: {}'.format(self.etr))
-    # etr = self.format_etr(self.etr)
-    # print('NORMAL!')
     return 'compiling: {}% ETA: {}'.format(percentage, etr)
-
-    #
-    # etr = self.format_etr((self.max_progress - self.get_eta_data().progress) / ips)
-    # # print("ETA: {}".format(etr))
-    # # return 'TOTAL IPS: {} - CUR IPS: {} - LAST IPS: {} - USING IPS: {}'.format(round(self.total_ips, 2), round(self.this_ips, 2), round(self.last_ips, 2), round(ips, 2))
-    # return 'compiling: {}% ETA: {}'.format(percentage, etr)
 
   def format_etr(self, etr):
     hours, remainder = divmod(round(etr), self.seconds ** 2)
