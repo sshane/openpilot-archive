@@ -85,6 +85,13 @@ class ETA(threading.Thread):
     if not self.run_thread:
       self.run_thread = removed  # wait until we have enough data
 
+  def moving_average(self, seq):
+    w = np.hanning(self.window_len)
+
+    s = np.r_[seq[self.window_len-1:0:-1], seq, seq[-1:-self.window_len:-1]]
+    y = np.convolve(w / w.sum(), s, mode='valid')
+    return y[self.window_len]
+
   def set_ips(self):
     # print(self.time)
     # print(self.last_time)
@@ -109,7 +116,7 @@ class ETA(threading.Thread):
     while len(self.etrs) > self.window_len:
       del self.etrs[0]
 
-    ips = self.total_ips * 0.8 + self.this_ips * 0.2
+    # ips = self.total_ips * 0.8 + self.this_ips * 0.2
     ips = self.this_ips
 
     # x = np.linspace(0, 1, 10)
@@ -121,6 +128,8 @@ class ETA(threading.Thread):
       # print('calculated: {}'.format(y[-1]))
       return "calculating step 1..."
 
+    ips = self.moving_average(self.ipss)
+
     self.etr = (self.max_progress - self.get_eta_data().progress) / ips
     self.etrs.append(self.etr)
 
@@ -128,14 +137,7 @@ class ETA(threading.Thread):
     if len(self.etrs) - 1 < self.window_len:
       return "calculating step 2..."
 
-    w = np.hanning(self.window_len)
-
-    s = np.r_[self.ipss[self.window_len-1:0:-1], self.ipss, self.ipss[-1:-self.window_len:-1]]
-    y = np.convolve(w/w.sum(), s, mode='valid')
-    if len(y) - 1 < self.window_len:
-      return "calculating step 3..."
-    ips = y[self.window_len - 2]
-
+    etr = self.format_etr(self.moving_average(self.etrs))
 
 
     # ips *= np.interp(self.get_eta_data().progress, [self.scons_finished_progress * 0.75, self.scons_finished_progress], [1.0, 0.5])
@@ -146,20 +148,8 @@ class ETA(threading.Thread):
     #     ips = self.last_ips * 0.2 + ips * 0.8
     print('USING IPS: {} THIS IPS: {}\n---------'.format(round(ips, 2), round(self.this_ips, 2)))
 
-    print(self.etr)
-
     # self.etr -= ips / self.frequency
 
-    w = np.hanning(self.window_len)
-
-    s = np.r_[self.etrs[self.window_len-1:0:-1], self.etrs, self.etrs[-1:-self.window_len:-1]]
-    y = np.convolve(w/w.sum(), s, mode='valid')
-
-    if len(y) - 1 < self.window_len:
-      print('calculated: {}'.format(y[-1]))
-      return "calculating step 4..."
-
-    etr = self.format_etr(y[self.window_len - 2])
 
 
 
