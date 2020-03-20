@@ -132,7 +132,7 @@ class ETA(threading.Thread):
     if len(y) - 1 < self.window_len:
       print('calculated: {}'.format(y[-1]))
       return "calculating..."
-    etr = self.format_etr(y[self.window_len] + 4)
+    etr = self.format_etr(y[self.window_len - 4])
 
     # # print('after etr: {}'.format(self.etr))
     # etr = self.format_etr(self.etr)
