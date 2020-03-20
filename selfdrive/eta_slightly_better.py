@@ -116,30 +116,25 @@ class ETA(threading.Thread):
 
     ips = np.interp(ips / 10, x, y) * ips  # penalize large ips's
     self.ipss.append(ips)
-    w = np.hanning(self.window_len)
-
-    s = np.r_[self.etrs[self.window_len-1:0:-1], self.etrs, self.etrs[-1:-self.window_len:-1]]
-    y = np.convolve(w/w.sum(), s, mode='valid')
-    if len(y) - 1 < self.window_len:
-      print('calculated: {}'.format(y[-1]))
-      return "calculating step 1..."
-    ips = y[self.window_len - 2]
-
-
-
-    self.etr = (self.max_progress - self.get_eta_data().progress) / ips
-    self.etrs.append(self.etr)
 
     # ips *= np.interp(self.get_eta_data().progress, [self.scons_finished_progress * 0.75, self.scons_finished_progress], [1.0, 0.5])
+
+    if time.time() - self.get_eta_data().time > 5 or self.etr == 0:
+      self.etr = (self.max_progress - self.get_eta_data().progress) / ips
+      self.etr -= self.total_ips / self.frequency
+      # print('---WAITING ETR: {}'.format(self.etr))
+    else:
+      self.etr = (self.max_progress - self.get_eta_data().progress) / ips
+    self.etrs.append(self.etr)
 
     # if self.this_ips < ips:
     #   ips = self.this_ips * 0.2 + ips * 0.8
     #   if self.last_ips < ips:
     #     ips = self.last_ips * 0.2 + ips * 0.8
     print('USING IPS: {} THIS IPS: {}\n---------'.format(round(ips, 2), round(self.this_ips, 2)))
-
+    self.etr = (self.max_progress - self.get_eta_data().progress) / ips
     print(self.etr)
-
+    self.etrs.append(self.etr)
     # self.etr -= ips / self.frequency
 
     w = np.hanning(self.window_len)
@@ -149,7 +144,7 @@ class ETA(threading.Thread):
 
     if len(y) - 1 < self.window_len:
       print('calculated: {}'.format(y[-1]))
-      return "calculating step 2..."
+      return "calculating..."
 
     etr = self.format_etr(y[self.window_len - 2])
 
