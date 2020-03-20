@@ -130,7 +130,7 @@ class ETA(threading.Thread):
 
     w = np.hanning(self.window_len)
 
-    s = np.r_[self.etrs[self.window_len-1:0:-1], self.etrs, self.etrs[-1:-self.window_len:-1]]
+    s = np.r_[self.ipss[self.window_len-1:0:-1], self.ipss, self.ipss[-1:-self.window_len:-1]]
     y = np.convolve(w/w.sum(), s, mode='valid')
     if len(y) - 1 < self.window_len:
       return "calculating step 3..."
