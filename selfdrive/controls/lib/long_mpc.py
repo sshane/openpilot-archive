@@ -92,7 +92,7 @@ class LongitudinalMpc():
 
   def change_cost(self, TR):
     TRs = [0.9, 1.8, 2.7]
-    costs = [1.0, 0.11, 0.05]
+    costs = [1.0, 0.1, 0.05]
     cost = interp(TR, TRs, costs)
     if self.last_cost != cost:
       self.libmpc.change_tr(MPC_COST_LONG.TTC, cost, MPC_COST_LONG.ACCELERATION, MPC_COST_LONG.JERK)
@@ -180,9 +180,9 @@ class LongitudinalMpc():
     profile_mod_neg = interp(self.car_data['v_ego'], profile_mod_x, profile_mod_neg)
 
     # if self.sng:  # only if we're in sng todo: test this
-    x = [sng_speed / 5.0, sng_speed]  # as we approach 0, apply 10% more distance
-    y = [1.1, 1.0]
-    profile_mod_pos *= interp(self.car_data['v_ego'], x, y)
+    # x = [sng_speed / 5.0, sng_speed]  # as we approach 0, apply 10% more distance
+    # y = [1.1, 1.0]
+    # profile_mod_pos *= interp(self.car_data['v_ego'], x, y)
 
     TR_mod = sum([mod * profile_mod_neg if mod < 0 else mod * profile_mod_pos for mod in TR_mod])  # alter TR modification according to profile
     TR += TR_mod
