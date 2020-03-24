@@ -49,7 +49,7 @@ int spin(int argc, char** argv) {
   bool has_extra = false;
   float progress_val = 0.0;
 
-  char *spinerror;
+  char *spinstatus;
   char spintext[SPINTEXT_LENGTH];
   spintext[0] = 0;
 
@@ -89,8 +89,8 @@ int spin(int argc, char** argv) {
       // Get current status
       has_extra = strchr(spintext, ',') != NULL;
       if (has_extra) {
-        spinerror = strchr(spintext, ',');
-        *spinerror++ = '\0';  // split spintext and error message
+        spinstatus = strchr(spintext, ',');
+        *spinstatus++ = '\0';  // split spintext and error message
       }
 
       // Check if number (update progress bar)
@@ -187,7 +187,7 @@ int spin(int argc, char** argv) {
       nvgFontSize(vg, 59.0f);
       // nvgTextBox(s->vg, metric_x + 35, metric_y + (strlen(message_str) > 8 ? 40 : 50), metric_w - 50, message_str, NULL);
       int new_line_length = 1600;
-      nvgTextBox(vg, fb_w/2 - (new_line_length / 2), (fb_h*2/3)+24+96, new_line_length, spinerror, NULL);
+      nvgTextBox(vg, fb_w/2 - (new_line_length / 2), (fb_h*2/3)+24+96, new_line_length, spinstatus, NULL);
     }
 
     nvgEndFrame(vg);
