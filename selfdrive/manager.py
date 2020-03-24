@@ -90,7 +90,7 @@ if not prebuilt:
     scons = subprocess.Popen(["scons", j_flag], cwd=BASEDIR, env=env, stderr=subprocess.PIPE)
 
     # Read progress from stderr and update spinner
-    i = 0
+    p = 0
     build_error = False
     while scons.poll() is None:
       try:
@@ -101,16 +101,16 @@ if not prebuilt:
         line = line.rstrip()
         prefix = b'progress: '
         if line.startswith(prefix):
-          i = int(line[len(prefix):])
+          p = int(line[len(prefix):])
           if spinner is not None:
-            spinner.update("%d" % (scons_finished_progress * (i / TOTAL_SCONS_NODES)))
+            spinner.update("%d" % (scons_finished_progress * (p / TOTAL_SCONS_NODES)))
         elif len(line):
           line = line.decode('utf8')
           if 'error: ' in line:
             build_error = True
             print('----\nerror line: {}\n----'.format(line))
             # str_err = re.search('error: (.*)\n', line).span()
-            spinner.update("%d" % (scons_finished_progress * (i / TOTAL_SCONS_NODES)), line)
+            spinner.update("%d" % (scons_finished_progress * (p / TOTAL_SCONS_NODES)), line)
             time.sleep(10)
             break
           # always print
@@ -121,12 +121,12 @@ if not prebuilt:
     if scons.returncode != 0 or build_error:
       if retry:
         print("scons build failed, cleaning in")
-        for ti in range(5):
-          print(5 - ti)
-          spinner.update("%d" % (scons_finished_progress * (i / TOTAL_SCONS_NODES)), "scons build failed, cleaning in {}...".format(5 - ti))
+        for i in range(5):
+          print(5 - i)
+          spinner.update("%d" % (scons_finished_progress * (p / TOTAL_SCONS_NODES)), "scons build failed, cleaning in {}...".format(5 - i))
           time.sleep(1)
 
-        spinner.update("%d" % (scons_finished_progress * (i / TOTAL_SCONS_NODES)), "scons build failed, cleaning...")
+        spinner.update("%d" % (scons_finished_progress * (p / TOTAL_SCONS_NODES)), "scons build failed, cleaning...")
         # subprocess.check_call(["scons", "-c"], cwd=BASEDIR, env=env)
         # shutil.rmtree("/tmp/scons_cache")
       else:
