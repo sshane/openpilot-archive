@@ -182,8 +182,8 @@ int spin(int argc, char** argv) {
       nvgTextAlign(vg, NVG_ALIGN_CENTER | NVG_ALIGN_TOP);
       nvgFontSize(vg, 96.0f);
       nvgText(vg, fb_w/2, (fb_h*2/3)+24, spintext, NULL);
-    } else if (has_extra) {  // error message
-      float fontsize = (strchr(spintext, "error: ") != NULL) ? 59.0f : 78.0f;
+    } else if (has_extra) {
+      float fontsize = strstr(spintext, "error: ") != NULL ? 59.0f : 78.0f;  // dictated by err msg or not
       nvgTextAlign(vg, NVG_ALIGN_CENTER | NVG_ALIGN_TOP);
       nvgFontSize(vg, fontsize);
       // nvgTextBox(s->vg, metric_x + 35, metric_y + (strlen(message_str) > 8 ? 40 : 50), metric_w - 50, message_str, NULL);
