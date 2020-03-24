@@ -121,9 +121,9 @@ if not prebuilt:
     if scons.returncode != 0 or build_error:
       if retry:
         print("scons build failed, cleaning in")
-        for i in range(5):
-          print(5 - i)
-          spinner.update("%d" % (scons_finished_progress * (i / TOTAL_SCONS_NODES)), "scons build failed, cleaning in {}...".format(5 - i))
+        for ti in range(5):
+          print(5 - ti)
+          spinner.update("%d" % (scons_finished_progress * (i / TOTAL_SCONS_NODES)), "scons build failed, cleaning in {}...".format(5 - ti))
           time.sleep(1)
 
         spinner.update("%d" % (scons_finished_progress * (i / TOTAL_SCONS_NODES)), "scons build failed, cleaning...")
