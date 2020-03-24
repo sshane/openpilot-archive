@@ -177,7 +177,7 @@ int spin(int argc, char** argv) {
       nvgFill(vg);
     }
 
-    if (!draw_progress) {
+    if (!draw_progress && !has_extra) {
       // message
       nvgTextAlign(vg, NVG_ALIGN_CENTER | NVG_ALIGN_TOP);
       nvgFontSize(vg, 96.0f);
