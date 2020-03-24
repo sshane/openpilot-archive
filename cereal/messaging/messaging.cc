@@ -53,7 +53,7 @@ SubSocket * SubSocket::create(Context * context, std::string endpoint, std::stri
   if (r == 0) {
     return s;
   } else {
-    delete s;
+    delete s;da
     return NULL;
   }
 }
