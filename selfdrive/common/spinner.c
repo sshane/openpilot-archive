@@ -177,7 +177,7 @@ int spin(int argc, char** argv) {
       nvgFill(vg);
     }
     //printf("spin status: %s\n", spinstatus);
-    printf("here\n";)
+    printf("here\n");
     bool err_msg = strstr(spinstatus, "error: ") != NULL;
 
     float fontsize = err_msg ? 59.0f : 78.0f;
