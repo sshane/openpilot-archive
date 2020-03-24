@@ -47,6 +47,7 @@ int spin(int argc, char** argv) {
 
   bool draw_progress = false;
   bool has_extra = false;
+  bool err_msg = false;
   float progress_val = 0.0;
 
   char *spinstatus;
@@ -91,6 +92,7 @@ int spin(int argc, char** argv) {
       if (has_extra) {
         spinstatus = strchr(spintext, ',');
         *spinstatus++ = '\0';  // split spintext and error message
+        err_msg = strstr(spinstatus, "error: ") != NULL;
       }
 
       // Check if number (update progress bar)
@@ -177,24 +179,18 @@ int spin(int argc, char** argv) {
       nvgFill(vg);
     }
 
-    if (has_extra){
-      printf("spin status: %s\n", spinstatus);
-      bool err_msg = strstr(spinstatus, "error: ") != NULL;
-
+    if (!draw_progress || has_extra) {
+      // message
       float fontsize = err_msg ? 59.0f : 78.0f;
+      nvgTextAlign(vg, NVG_ALIGN_CENTER | NVG_ALIGN_TOP);
+      nvgFontSize(vg, fontsize);
+      if (err_msg) {
+        int new_line_length = 1600;
+        nvgTextBox(vg, fb_w/2-new_line_length/2, (fb_h*2/3)+24+96, new_line_length, spinstatus, NULL);
+      } else {
+        nvgText(vg, fb_w/2, (fb_h*2/3)+24, spintext, NULL);
+      }
     }
-
-//    if (!draw_progress || has_extra) {
-//      // message
-//      nvgTextAlign(vg, NVG_ALIGN_CENTER | NVG_ALIGN_TOP);
-//      nvgFontSize(vg, fontsize);
-//      if (err_msg) {
-//        int new_line_length = 1600;
-//        nvgTextBox(vg, fb_w/2-new_line_length/2, (fb_h*2/3)+24+96, new_line_length, spinstatus, NULL);
-//      } else {
-//        nvgText(vg, fb_w/2, (fb_h*2/3)+24, spintext, NULL);
-//      }
-//    }
 
     nvgEndFrame(vg);
     framebuffer_swap(fb);
