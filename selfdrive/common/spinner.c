@@ -192,7 +192,7 @@ int spin(int argc, char** argv) {
         int new_line_length = 1500;
         nvgTextBox(vg, fb_w/2-new_line_length/2, (fb_h*2/3)+24+96, new_line_length, spinstatus, NULL);
       } else {
-        nvgText(vg, fb_w/2, (fb_h*2/3)+24, spinstatus, NULL);
+        nvgText(vg, fb_w/2, (fb_h*2/3)+24+96, spinstatus, NULL);
       }
     }
 
