@@ -142,7 +142,7 @@ void* frontview_thread(void *arg) {
 
   set_thread_name("frontview");
 
-  s->msg_context = Context::create();
+  s->msg_context = Context::create()
 
   // we subscribe to this for placement of the AE metering box
   // TODO: the loop is bad, ideally models shouldn't affect sensors
