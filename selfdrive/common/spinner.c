@@ -177,19 +177,19 @@ int spin(int argc, char** argv) {
       nvgFill(vg);
     }
 
-    if (!draw_progress && !has_extra) {
+    bool err_msg = strstr(spintext, "error: ") != NULL;
+    float fontsize = err_msg ? 59.0f : 78.0f;
+
+    if (!draw_progress || has_extra) {
       // message
       nvgTextAlign(vg, NVG_ALIGN_CENTER | NVG_ALIGN_TOP);
-      nvgFontSize(vg, 96.0f);
-      nvgText(vg, fb_w/2, (fb_h*2/3)+24, spintext, NULL);
-    } else if (has_extra) {
-      printf("has extra!\n");
-      float fontsize = strstr(spintext, "error: ") != NULL ? 59.0f : 78.0f;  // dictated by err msg or not
-      nvgTextAlign(vg, NVG_ALIGN_CENTER | NVG_ALIGN_TOP);
       nvgFontSize(vg, fontsize);
-      // nvgTextBox(s->vg, metric_x + 35, metric_y + (strlen(message_str) > 8 ? 40 : 50), metric_w - 50, message_str, NULL);
-      int new_line_length = 1600;
-      nvgTextBox(vg, fb_w/2 - (new_line_length / 2), (fb_h*2/3)+24+96, new_line_length, spinstatus, NULL);
+      if (err_msg) {
+        int new_line_length = 1600;
+        nvgTextBox(vg, fb_w/2-new_line_length/2, (fb_h*2/3)+24+96, new_line_length, spinstatus, NULL);
+      } else {
+        nvgText(vg, fb_w/2, (fb_h*2/3)+24, spintext, NULL);
+      }
     }
 
     nvgEndFrame(vg);
