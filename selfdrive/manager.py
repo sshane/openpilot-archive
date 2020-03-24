@@ -14,7 +14,7 @@ from common.android import ANDROID
 sys.path.append(os.path.join(BASEDIR, "pyextra"))
 os.environ['BASEDIR'] = BASEDIR
 
-TOTAL_SCONS_NODES = 1195
+TOTAL_SCONS_NODES = 1140
 prebuilt = os.path.exists(os.path.join(BASEDIR, 'prebuilt'))
 
 # Create folders needed for msgq
@@ -75,6 +75,8 @@ from multiprocessing import Process
 # Run scons
 spinner = Spinner()
 spinner.update("0")
+scons_build_failed = False
+scons_finished_progress = 70.0
 
 if not prebuilt:
   for retry in [True, False]:
@@ -88,6 +90,8 @@ if not prebuilt:
     scons = subprocess.Popen(["scons", j_flag], cwd=BASEDIR, env=env, stderr=subprocess.PIPE)
 
     # Read progress from stderr and update spinner
+    i = 0
+    build_error = False
     while scons.poll() is None:
       try:
         line = scons.stderr.readline()
@@ -99,18 +103,28 @@ if not prebuilt:
         if line.startswith(prefix):
           i = int(line[len(prefix):])
           if spinner is not None:
-            spinner.update("%d" % (50.0 * (i / TOTAL_SCONS_NODES)))
+            spinner.update("%d" % (scons_finished_progress * (i / TOTAL_SCONS_NODES)))
         elif len(line):
-          print(line.decode('utf8'))
+          if 'error: ' in line:
+            build_error = True
+            print('----\nerror line: {}\n----'.format(line))
+            # str_err = re.search('error: (.*)\n', line).span()
+            spinner.update("%d" % (scons_finished_progress * (i / TOTAL_SCONS_NODES)), line)
+            time.sleep(10)
+            break
+          else:
+            print(line.decode('utf8'))
       except Exception:
         pass
 
-    if scons.returncode != 0:
+    if scons.returncode != 0 or build_error:
       if retry:
         print("scons build failed, cleaning in")
-        for i in range(3,-1,-1):
-          print("....%d" % i)
+        for i in range(5):
+          print(5 - i)
+          spinner.update("%d" % (scons_finished_progress * (i / TOTAL_SCONS_NODES)), "scons build failed, cleaning in {}...".format(5 - i))
           time.sleep(1)
+
         subprocess.check_call(["scons", "-c"], cwd=BASEDIR, env=env)
         shutil.rmtree("/tmp/scons_cache")
       else:
@@ -478,7 +492,7 @@ def manager_prepare(spinner=None):
   os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
   # Spinner has to start from 70 here
-  total = 100.0 if prebuilt else 50.0
+  total = 100.0 if prebuilt else 100 - scons_finished_progress
 
   for i, p in enumerate(managed_processes):
     if spinner is not None:
