@@ -126,6 +126,7 @@ if not prebuilt:
           spinner.update("%d" % (scons_finished_progress * (i / TOTAL_SCONS_NODES)), "scons build failed, cleaning in {}...".format(5 - i))
           time.sleep(1)
 
+        spinner.update("%d" % (scons_finished_progress * (i / TOTAL_SCONS_NODES)), "scons build failed, cleaning...")
         # subprocess.check_call(["scons", "-c"], cwd=BASEDIR, env=env)
         # shutil.rmtree("/tmp/scons_cache")
       else:
