@@ -183,6 +183,7 @@ int spin(int argc, char** argv) {
       nvgFontSize(vg, 96.0f);
       nvgText(vg, fb_w/2, (fb_h*2/3)+24, spintext, NULL);
     } else if (has_extra) {
+      printf("has extra!\n");
       float fontsize = strstr(spintext, "error: ") != NULL ? 59.0f : 78.0f;  // dictated by err msg or not
       nvgTextAlign(vg, NVG_ALIGN_CENTER | NVG_ALIGN_TOP);
       nvgFontSize(vg, fontsize);
