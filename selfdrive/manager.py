@@ -105,6 +105,7 @@ if not prebuilt:
           if spinner is not None:
             spinner.update("%d" % (scons_finished_progress * (i / TOTAL_SCONS_NODES)))
         elif len(line):
+          line = line.decode('utf8')
           if 'error: ' in line:
             build_error = True
             print('----\nerror line: {}\n----'.format(line))
@@ -113,7 +114,7 @@ if not prebuilt:
             time.sleep(10)
             break
           # always print
-          print(line.decode('utf8'))
+          print(line)
       except Exception:
         pass
 
