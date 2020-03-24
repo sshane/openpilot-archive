@@ -177,7 +177,8 @@ int spin(int argc, char** argv) {
       nvgFill(vg);
     }
 
-    bool err_msg = strstr(spintext, "error: ") != NULL;
+    bool err_msg = strstr(spinstatus, "error: ") != NULL;
+    printf("spin status: %s\n", spinstatus);
     float fontsize = err_msg ? 59.0f : 78.0f;
 
     if (!draw_progress || has_extra) {
