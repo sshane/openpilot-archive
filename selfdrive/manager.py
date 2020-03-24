@@ -112,8 +112,8 @@ if not prebuilt:
             spinner.update("%d" % (scons_finished_progress * (i / TOTAL_SCONS_NODES)), line)
             time.sleep(10)
             break
-          else:
-            print(line.decode('utf8'))
+          # always print
+          print(line.decode('utf8'))
       except Exception:
         pass
 
