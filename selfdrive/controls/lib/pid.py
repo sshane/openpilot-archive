@@ -96,7 +96,7 @@ class PIDController:
     self._k_d = k_d  # derivative gain
     self.k_f = k_f  # feedforward gain
 
-    self.error_idx = -42  # todo: need to tune. 33 and 50 work nicely, so maybe 42?
+    self.error_idx = -33
     self.max_accel_d = 0.33528  # 0.75 mph/s
 
     self.pos_limit = pos_limit
