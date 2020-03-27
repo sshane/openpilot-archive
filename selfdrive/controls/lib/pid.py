@@ -137,7 +137,7 @@ class PIDController:
 
   def reset(self):
     self.p = 0.0
-    self.i = 0.0
+    self.id = 0.0
     self.f = 0.0
     self.sat_count = 0.0
     self.saturated = False
@@ -153,9 +153,9 @@ class PIDController:
     self.f = feedforward * self.k_f
 
     if override:
-      self.i -= self.i_unwind_rate * float(np.sign(self.i))
+      self.id -= self.i_unwind_rate * float(np.sign(self.id))
     else:
-      i = self.i + error * self.k_i * self.i_rate
+      i = self.id + error * self.k_i * self.i_rate
       control = self.p + self.f + i
 
       if self.convert is not None:
@@ -166,18 +166,18 @@ class PIDController:
       if ((error >= 0 and (control <= self.pos_limit or i < 0.0)) or \
           (error <= 0 and (control >= self.neg_limit or i > 0.0))) and \
          not freeze_integrator:
-        self.i = i
+        self.id = i
 
-    if len(self.errors) >= -self.error_idx:  # if there's enough history
-      if abs(setpoint - self.last_setpoint) / self.i_rate < self.max_accel_d:  # and if cruising with minimal setpoint change
-        last_error = self.errors[self.error_idx]
-        # only multiply i_rate if we're adding to self.i
-        d = self.k_d * ((error - last_error) / self.d_rate) * self.i_rate
-        if (self.i > 0 and self.i + d >= 0) or (self.i < 0 and self.i + d <= 0):  # and if adding d doesn't make i cross 0
-          # then add derivative to integral
-          self.i += d
+      if len(self.errors) >= -self.error_idx:  # if there's enough history
+        if abs(setpoint - self.last_setpoint) / self.i_rate < self.max_accel_d:  # and if cruising with minimal setpoint change
+          last_error = self.errors[self.error_idx]
+          # only multiply i_rate if we're adding to self.i
+          d = self.k_d * ((error - last_error) / self.d_rate) * self.i_rate
+          if (self.id > 0 and self.id + d >= 0) or (self.id < 0 and self.id + d <= 0):  # and if adding d doesn't make i cross 0
+            # then add derivative to integral
+            self.id += d
 
-    control = self.p + self.f + self.i
+    control = self.p + self.f + self.id
     if self.convert is not None:
       control = self.convert(control, speed=self.speed)
 
