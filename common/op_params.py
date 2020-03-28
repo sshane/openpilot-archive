@@ -70,6 +70,7 @@ class opParams:
                            'dynamic_gas': {'default': True, 'allowed_types': [bool], 'description': 'Whether to use dynamic gas if your car is supported'},
                            'enable_long_derivative': {'default': True, 'allowed_types': [bool], 'description': 'Whether to use derivative in the longcontrol loop', 'live': True},
                            'write_errors': {'default': False, 'allowed_types': [bool], 'description': 'Write errors for debugging', 'live': True},
+                           'restrict_sign_change': {'default': False, 'allowed_types': [bool], 'live': True},
 
                            'op_edit_live_mode': {'default': False, 'allowed_types': [bool], 'description': 'This parameter controls which mode opEdit starts in. It should be hidden from the user with the hide key', 'hide': True}}
 

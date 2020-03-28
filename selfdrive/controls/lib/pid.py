@@ -101,6 +101,7 @@ class PIDController:
 
     self.enable_derivative = self.op_params.get('enable_long_derivative', True)
     self.write_errors = self.op_params.get('write_errors', False)
+    self.restrict_sign_change = self.op_params.get('restrict_sign_change', False)
 
     self.error_idx = -33
     self.max_accel_d = 0.33528  # 0.75 mph/s
@@ -154,6 +155,7 @@ class PIDController:
   def update(self, setpoint, measurement, speed=0.0, check_saturation=True, override=False, feedforward=0., deadzone=0., freeze_integrator=False):
     self.enable_derivative = self.op_params.get('enable_long_derivative', True)
     self.write_errors = self.op_params.get('write_errors', False)
+    self.restrict_sign_change = self.op_params.get('restrict_sign_change', False)
     self.speed = speed
 
     error = float(apply_deadzone(setpoint - measurement, deadzone))
@@ -187,10 +189,12 @@ class PIDController:
           last_error = self.errors[self.error_idx]
           # only multiply i_rate if we're adding to self.i
           d = self.k_d * ((error - last_error) / self.d_rate) * self.i_rate
-          self.id += d
-          # if (self.id > 0 and self.id + d >= 0) or (self.id < 0 and self.id + d <= 0):  # and if adding d doesn't make i cross 0
-          #   # then add derivative to integral
-          #   self.id += d
+          # self.id += d
+          if (self.id > 0 and self.id + d >= 0) or (self.id < 0 and self.id + d <= 0):  # and if adding d doesn't make i cross 0
+            # then add derivative to integral
+            self.id += d
+          elif not self.restrict_sign_change:
+            self.id += d
 
     control = self.p + self.f + self.id
     if self.convert is not None:
