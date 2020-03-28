@@ -10,7 +10,7 @@ Highlight Features
 
 * [**Dynamic follow (now with profiles!)**](#dynamic-follow-3-profiles)
 * [**Dynamic gas**](#dynamic-gas)
-* [**PI > PID for longcontrol**](#longcontrol-pid)
+* [**PI > PID for longcontrol**](#Long-control-uses-a-PID-loop)
 * [**Customize this branch (opEdit Parameter class)**](#Customize-this-branch-opEdit-Parameter-class)
 * [**Live tuning support**](#Live-tuning-support)
 * [**Custom wheel offset to reduce lane hugging**](#Custom-wheel-offset-to-reduce-lane-hugging)
