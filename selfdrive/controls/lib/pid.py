@@ -102,6 +102,8 @@ class PIDController:
     self.enable_derivative = self.op_params.get('enable_long_derivative', True)
     self.write_errors = self.op_params.get('write_errors', False)
     self.restrict_sign_change = self.op_params.get('restrict_sign_change', False)
+    self.kd = self.op_params.get('kd', 1.2)
+    self.use_kd = self.op_params.get('use_kd', True)
 
     self.error_idx = -1
     self.max_accel_d = 0.33528  # 0.75 mph/s
@@ -128,7 +130,10 @@ class PIDController:
 
   @property
   def k_d(self):
-    return interp(self.speed, self._k_d[0], self._k_d[1])
+    if self.use_kd:
+      return self.kd
+    else:
+      return interp(self.speed, self._k_d[0], self._k_d[1])
 
   def _check_saturation(self, control, check_saturation, error):
     saturated = (control < self.neg_limit) or (control > self.pos_limit)
@@ -156,6 +161,8 @@ class PIDController:
     self.enable_derivative = self.op_params.get('enable_long_derivative', True)
     self.write_errors = self.op_params.get('write_errors', False)
     self.restrict_sign_change = self.op_params.get('restrict_sign_change', False)
+    self.kd = self.op_params.get('kd', 1.2)
+    self.use_kd = self.op_params.get('use_kd', True)
 
     self.speed = speed
 
