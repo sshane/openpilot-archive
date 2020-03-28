@@ -103,7 +103,7 @@ class PIDController:
     self.write_errors = self.op_params.get('write_errors', False)
     self.restrict_sign_change = self.op_params.get('restrict_sign_change', False)
 
-    self.error_idx = -33
+    self.error_idx = -1
     self.max_accel_d = 0.33528  # 0.75 mph/s
 
     self.pos_limit = pos_limit
