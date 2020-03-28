@@ -156,6 +156,7 @@ class PIDController:
     self.enable_derivative = self.op_params.get('enable_long_derivative', True)
     self.write_errors = self.op_params.get('write_errors', False)
     self.restrict_sign_change = self.op_params.get('restrict_sign_change', False)
+
     self.speed = speed
 
     error = float(apply_deadzone(setpoint - measurement, deadzone))
