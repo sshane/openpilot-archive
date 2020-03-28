@@ -1,5 +1,7 @@
 import numpy as np
 from common.numpy_fast import clip, interp
+from common.op_params import opParams
+import time
 
 def apply_deadzone(error, deadzone):
   if error > deadzone:
@@ -91,10 +93,14 @@ class PIController:
 
 class PIDController:
   def __init__(self, k_p, k_i, k_d, k_f=1., pos_limit=None, neg_limit=None, rate=100, sat_limit=0.8, convert=None):
+    self.op_params = opParams()
     self._k_p = k_p  # proportional gain
     self._k_i = k_i  # integral gain
     self._k_d = k_d  # derivative gain
     self.k_f = k_f  # feedforward gain
+
+    self.enable_derivative = self.op_params.get('enable_long_derivative', True)
+    self.write_errors = self.op_params.get('write_errors', False)
 
     self.error_idx = -33
     self.max_accel_d = 0.33528  # 0.75 mph/s
@@ -146,9 +152,17 @@ class PIDController:
     self.errors = []
 
   def update(self, setpoint, measurement, speed=0.0, check_saturation=True, override=False, feedforward=0., deadzone=0., freeze_integrator=False):
+    self.enable_derivative = self.op_params.get('enable_long_derivative', True)
+    self.write_errors = self.op_params.get('write_errors', False)
     self.speed = speed
 
     error = float(apply_deadzone(setpoint - measurement, deadzone))
+
+    if self.write_errors:
+      # keys: error, setpoint, measurement, enable_derivative, time
+      with open('/data/long_errors', 'a') as f:
+        f.write('{}\n'.format([error, setpoint, measurement, self.enable_derivative, time.time()]))
+
     self.p = error * self.k_p
     self.f = feedforward * self.k_f
 
@@ -168,7 +182,7 @@ class PIDController:
          not freeze_integrator:
         self.id = i
 
-      if len(self.errors) >= -self.error_idx:  # if there's enough history
+      if len(self.errors) >= -self.error_idx and self.enable_derivative:  # if there's enough history
         if abs(setpoint - self.last_setpoint) / self.i_rate < self.max_accel_d:  # and if cruising with minimal setpoint change
           last_error = self.errors[self.error_idx]
           # only multiply i_rate if we're adding to self.i
