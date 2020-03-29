@@ -18,7 +18,7 @@
 #include "framebuffer.h"
 #include "spinner.h"
 
-#define SPINTEXT_LENGTH 128
+#define SPINTEXT_LENGTH 192
 
 // external resources linked in
 extern const unsigned char _binary_opensans_semibold_ttf_start[];
