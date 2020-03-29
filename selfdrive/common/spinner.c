@@ -190,7 +190,8 @@ int spin(int argc, char** argv) {
       if (err_msg) {  // need smaller font for error msg
         printf("sizeof: %lu\n", strlen(spinstatus));
         int new_line_length = 1300;
-        nvgTextBox(vg, (fb_w/2)-(new_line_length/2), (fb_h*2/3)+24+80, new_line_length, spinstatus, NULL);
+        int y_offset = strlen(spinstatus) > 160 ? 76 : 96;
+        nvgTextBox(vg, (fb_w/2)-(new_line_length/2), (fb_h*2/3)+24+y_offset, new_line_length, spinstatus, NULL);
       } else {
         nvgText(vg, fb_w/2, (fb_h*2/3)+24+96, spinstatus, NULL);
       }
