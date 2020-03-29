@@ -112,10 +112,10 @@ if not prebuilt:
             build_error = True
             print('----\nerror line: {}\n----'.format(line))
             # str_err = re.search('error: (.*)\n', line).span()
-            error_txt = 'error: {} end'
-            line = error_txt.format(''.join([random.choice(string.ascii_lowercase + '           ') for i in range(260 + 2 - len(error_txt))]))
+            # error_txt = 'error: {} end'
+            # line = error_txt.format(''.join([random.choice(string.ascii_lowercase + '           ') for i in range(260 + 2 - len(error_txt))]))
             if len(line) > 240:
-              line = line[:240] + '...'
+              line = line[:240].strip() + '...'
             spinner.update("%d" % (scons_finished_progress * (p / TOTAL_SCONS_NODES)), line)
             time.sleep(60*60)
             break
