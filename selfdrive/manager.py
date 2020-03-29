@@ -8,6 +8,8 @@ import signal
 import shutil
 import subprocess
 import datetime
+import string
+import random
 
 from common.basedir import BASEDIR, PARAMS
 from common.android import ANDROID
@@ -111,7 +113,7 @@ if not prebuilt:
             print('----\nerror line: {}\n----'.format(line))
             # str_err = re.search('error: (.*)\n', line).span()
             error_txt = 'error: '
-            line = error_txt + ''.join([str(i) for i in range(103 - len(error_txt))])
+            line = error_txt + ''.join([random.choice(string.ascii_lowercase + '           ') for i in range(103)])
             spinner.update("%d" % (scons_finished_progress * (p / TOTAL_SCONS_NODES)), line)
             time.sleep(60*60)
             break
