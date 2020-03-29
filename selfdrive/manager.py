@@ -110,8 +110,9 @@ if not prebuilt:
             build_error = True
             print('----\nerror line: {}\n----'.format(line))
             # str_err = re.search('error: (.*)\n', line).span()
-            spinner.update("%d" % (scons_finished_progress * (p / TOTAL_SCONS_NODES)), line + ' ' + line)
-            time.sleep(10)
+            line = ''.join([i for i in range(103)])
+            spinner.update("%d" % (scons_finished_progress * (p / TOTAL_SCONS_NODES)), line)
+            time.sleep(50)
             break
           # always print
           print(line)
