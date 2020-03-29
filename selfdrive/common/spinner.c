@@ -188,9 +188,12 @@ int spin(int argc, char** argv) {
       nvgTextAlign(vg, NVG_ALIGN_CENTER | NVG_ALIGN_TOP);
       nvgFontSize(vg, err_msg ? 59.0f : 78.0f);
       if (err_msg) {  // need smaller font for error msg
-        int new_line_length = 1300;
+        int break_row_width = 1300;
         int y_offset = strlen(spinstatus) > 180 ? 76 : 96;
-        nvgTextBox(vg, (fb_w/2)-(new_line_length/2), (fb_h*2/3)+24+y_offset, new_line_length, spinstatus, NULL);
+        NVGtextRow rows[2];
+        int n_rows = nvgTextBreakLines(vg, spinstatus, NULL, break_row_width, rows, 2);
+        printf("rows: %d\n", n_rows);
+        nvgTextBox(vg, (fb_w/2)-(break_row_width/2), (fb_h*2/3)+24+y_offset, break_row_width, spinstatus, NULL);
       } else {
         nvgText(vg, fb_w/2, (fb_h*2/3)+24+96, spinstatus, NULL);
       }
