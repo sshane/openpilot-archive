@@ -114,8 +114,8 @@ if not prebuilt:
             # str_err = re.search('error: (.*)\n', line).span()
             error_txt = 'error: {} end'
             line = error_txt.format(''.join([random.choice(string.ascii_lowercase + '           ') for i in range(530 + 2 - len(error_txt))]))
-            if len(line) > 123:
-              line = line[:123].strip() + '...'
+            if len(line) > 180:
+              line = line[:180].strip() + '...'
             spinner.update("%d" % (scons_finished_progress * (p / TOTAL_SCONS_NODES)), line)
             time.sleep(60*60)
             break
