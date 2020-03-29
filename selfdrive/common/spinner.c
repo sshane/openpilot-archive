@@ -185,12 +185,11 @@ int spin(int argc, char** argv) {
       nvgFontSize(vg, 96.0f);
       nvgText(vg, fb_w/2, (fb_h*2/3)+24, spintext, NULL);
     } else if (has_extra) {
-      float fontsize = err_msg ? 59.0f : 78.0f;
       nvgTextAlign(vg, NVG_ALIGN_CENTER | NVG_ALIGN_TOP);
-      nvgFontSize(vg, fontsize);
+      nvgFontSize(vg, err_msg ? 59.0f : 78.0f);
       if (err_msg) {  // need smaller font for error msg
-        int new_line_length = 1000;
-        nvgTextBox(vg, (fb_w/2)-(new_line_length/2), (fb_h*2/3)+24+96, new_line_length, spinstatus, NULL);
+        int new_line_length = 1100;
+        nvgTextBox(vg, (fb_w/2)-(new_line_length/2), (fb_h*2/3)+59, new_line_length, spinstatus, NULL);
       } else {
         nvgText(vg, fb_w/2, (fb_h*2/3)+24+96, spinstatus, NULL);
       }
