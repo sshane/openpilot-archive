@@ -188,7 +188,7 @@ int spin(int argc, char** argv) {
       nvgTextAlign(vg, NVG_ALIGN_CENTER | NVG_ALIGN_TOP);
       nvgFontSize(vg, err_msg ? 59.0f : 78.0f);
       if (err_msg) {  // need smaller font for error msg
-        printf("sizeof: %s\n", sizeof(spinstatus) / sizeof(spinstatus[0]))
+        printf("sizeof: %s\n", sizeof(spinstatus) / sizeof(spinstatus[0]));
         int new_line_length = 1300;
         nvgTextBox(vg, (fb_w/2)-(new_line_length/2), (fb_h*2/3)+24+80, new_line_length, spinstatus, NULL);
       } else {
