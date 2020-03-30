@@ -197,7 +197,7 @@ int spin(int argc, char** argv) {
     } else if (has_extra) {
       nvgTextAlign(vg, NVG_ALIGN_CENTER | NVG_ALIGN_TOP);
       if (err_msg) {
-        print("IS ERR MSG!\n");
+        printf("IS ERR MSG!\n");
         int break_row_width = 1300;
         int y_offset = strlen(spinerr) > 160 ? 76 : 96;
         // need smaller font for longer error msg
