@@ -521,7 +521,6 @@ def manager_prepare(spinner=None):
           spinner.update("%d" % progress, format_spinner_error(str(e)))
           time.sleep(1)
         for i in range(5):
-          print(5 - i)
           spinner.update("%d" % progress, "preparation failed, hard resetting in {}...".format(5 - i))
           time.sleep(1)
         spinner.update("%d" % progress, "preparation failed, hard resetting...")
