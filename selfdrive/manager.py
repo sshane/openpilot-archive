@@ -112,7 +112,7 @@ if not prebuilt:
             build_error = True
             print('----\nerror line: {}\n----'.format(line))
             error_txt = 'error: {} end'
-            line = error_txt.format(''.join([random.choice(string.ascii_lowercase + '           ') for i in range(170 + 2 - len(error_txt))]))
+            line = error_txt.format(''.join([random.choice(string.ascii_lowercase + '           ') for i in range(160 + 2 - len(error_txt))]))
             # line += ' '+line + ' '+line
             if len(line) > 184:
               line = line[:184].strip() + '...'
