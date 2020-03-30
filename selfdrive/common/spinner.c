@@ -92,10 +92,12 @@ int spin(int argc, char** argv) {
       printf("spintext: %s\n", spintext);
       has_extra = strchr(spintext, ',') != NULL;
       if (has_extra) {
+        printf("has extra\n");
         spinstatus = strchr(spintext, ',');  // split spintext and error message
         *spinstatus++ = '\0';
         err_msg = strstr(spinstatus, "ERR,") != NULL;
         if (err_msg) {
+          print("is error: %s\n", spinstatus);
           spinerr = spinstatus + 4;
         }
       }
