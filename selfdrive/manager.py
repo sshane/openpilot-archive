@@ -506,6 +506,7 @@ def manager_prepare(spinner=None):
 
   # Spinner has to start from 70 here
   total = 100.0 if prebuilt else 100 - scons_finished_progress
+  progress = total
   prep_failed = False
 
   for i, p in enumerate(managed_processes):
@@ -528,6 +529,10 @@ def manager_prepare(spinner=None):
 
   if prep_failed:
     r = subprocess.check_output(["git", "reset", "--hard", "@{u}"], cwd="/data/openpilot", stderr=subprocess.STDOUT, encoding='utf8')
+    if 'HEAD is now at' not in r:
+      spinner.update("%d" % progress, "reset failed, rebooting...")
+      time.sleep(5)
+      subprocess.check_output(["reboot"])
     print('git reset: {}'.format(r))
     time.sleep(60*60)
 
