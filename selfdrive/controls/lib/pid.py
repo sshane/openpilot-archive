@@ -130,10 +130,10 @@ class PIDController:
 
   @property
   def k_d(self):
-    # if self.use_kd:
-    #   return self.kd
-    # else:
-    return interp(self.speed, self._k_d[0], self._k_d[1])
+    if self.use_kd:
+      return self.kd
+    else:
+      return interp(self.speed, self._k_d[0], self._k_d[1])
 
   def _check_saturation(self, control, check_saturation, error):
     saturated = (control < self.neg_limit) or (control > self.pos_limit)
