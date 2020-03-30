@@ -71,7 +71,7 @@ class opParams:
 
                            'enable_long_derivative': {'default': True, 'allowed_types': [bool], 'description': 'Whether to use derivative in the longcontrol loop', 'live': True},
                            'write_errors': {'default': False, 'allowed_types': [bool], 'description': 'Write errors for debugging', 'live': True},
-                           'restrict_sign_change': {'default': False, 'allowed_types': [bool], 'description': 'Unrestricted derivative modification of integral', 'live': True},
+                           'restrict_sign_change': {'default': True, 'allowed_types': [bool], 'description': 'Unrestricted derivative modification of integral', 'live': True},
                            'kd': {'default': 1.2, 'allowed_types': [float, int], 'description': 'Derivative gain', 'live': True},
                            'use_kd': {'default': True, 'allowed_types': [bool], 'description': 'To use the opParam `kd` instead of the defined gains in longcontrol.py', 'live': True},
 
