@@ -197,6 +197,7 @@ int spin(int argc, char** argv) {
         int break_row_width = 1300;
         int y_offset = strlen(spinerr) > 160 ? 76 : 96;
 
+
         int fontsize = strlen(spinerr) > 50 ? 68.0f : 72.0f;
         fontsize = strlen(spinerr) > 70 ? 62.0f : fontsize;
         fontsize = strlen(spinerr) > 120 ? 59.0f : fontsize;
