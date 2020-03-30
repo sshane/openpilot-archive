@@ -86,7 +86,8 @@ int spin(int argc, char** argv) {
     // Check stdin for new text
     if (stdin_input_available()){
       fgets(spintext, SPINTEXT_LENGTH, stdin);
-      //spintext[strcspn(spintext, "\n")] = 0;
+      printf("size of char array: %lu", sizeof(spintext) / sizeof(spintext[0]));
+      spintext[strcspn(spintext, "\n")] = 0;
 
       // Get current status
       has_extra = strchr(spintext, ',') != NULL;
