@@ -249,7 +249,7 @@ def locationd_thread(sm, pm, disabled_logs=[]):
         elif sock == "carState":
           localizer.handle_car_state(t, sm[sock])
         elif sock == "cameraOdometry":
-          localizer.handle_cam_odo(t, sm[sck])
+          localizer.handle_cam_odo(t, sm[sock])
         elif sock == "liveCalibration":
           localizer.handle_live_calib(t, sm[sock])
 
@@ -258,8 +258,7 @@ def locationd_thread(sm, pm, disabled_logs=[]):
       msg = messaging.new_message('liveLocationKalman')
       msg.logMonoTime = t
 
-      msg.liveLocationKalman = localizer.liveLocationMsg(t * 1e-9)
-      pm.send('liveLocationKalman', msg)
+      msg.liveLocatitionKalman', msg)
 
 
 def main(sm=None, pm=None):
