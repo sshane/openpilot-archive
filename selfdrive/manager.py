@@ -511,14 +511,14 @@ def manager_prepare(spinner=None):
 
   for i, p in enumerate(managed_processes):
     e = prepare_managed_process(p)
-    progress = ((100.0 - total) + total * (i + 1) / len(managed_processes),)
+    progress = (100.0 - total) + total * (i + 1) / len(managed_processes)
     if spinner is not None:
       if e is None:
         spinner.update("%d" % progress)
       else:
         prep_failed = True
         for _ in range(10):
-          spinner.update("%d" % ((100.0 - total) + total * (i + 1) / len(managed_processes),), format_spinner_error(str(e)))
+          spinner.update("%d" % progress, format_spinner_error(str(e)))
           time.sleep(1)
         for i in range(5):
           spinner.update("%d" % progress, "preparation failed, hard resetting in {}...".format(5 - i))
