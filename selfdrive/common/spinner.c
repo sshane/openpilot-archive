@@ -198,7 +198,7 @@ int spin(int argc, char** argv) {
         int y_offset = strlen(spinerr) > 160 ? 76 : 96;
 
         printf("str len: %lu\n", strlen(spinerr));
-        int fontsize = strlen(spinerr) > 70 ? 62.0f : 78.0f;
+        int fontsize = strlen(spinerr) > 70 ? 62.0f : 72.0f;
         fontsize = strlen(spinerr) > 120 ? 59.0f : fontsize;
 
         nvgFontSize(vg, fontsize);
