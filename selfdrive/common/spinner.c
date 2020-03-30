@@ -97,7 +97,7 @@ int spin(int argc, char** argv) {
         *spinstatus++ = '\0';
         err_msg = strstr(spinstatus, "ERR,") != NULL;
         if (err_msg) {
-          printf("is error: %s\n", spinstatus);
+          // printf("is error: %s\n", spinstatus);
           spinerr = spinstatus + 4;
         }
       }
@@ -193,12 +193,17 @@ int spin(int argc, char** argv) {
       nvgText(vg, fb_w/2, (fb_h*2/3)+24, spintext, NULL);
     } else if (has_extra) {
       nvgTextAlign(vg, NVG_ALIGN_CENTER | NVG_ALIGN_TOP);
-      nvgFontSize(vg, err_msg ? 59.0f : 78.0f);
       if (err_msg) {  // need smaller font for error msg
         int break_row_width = 1300;
         int y_offset = strlen(spinstatus) > 160 ? 76 : 96;
+
+        int fontsize = strlen(spinstatus) > 70 ? 68.0f : 78.0f;
+        fontsize = strlen(spinstatus) > 100 ? 59.0f : fontsize;
+
+        nvgFontSize(vg, fontsize);
         nvgTextBox(vg, (fb_w/2)-(break_row_width/2), (fb_h*2/3)+24+y_offset, break_row_width, spinerr, NULL);
       } else {
+        nvgFontSize(vg, 78.0f);
         nvgText(vg, fb_w/2, (fb_h*2/3)+24+96, spinstatus, NULL);
       }
     }
