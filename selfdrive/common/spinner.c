@@ -89,15 +89,12 @@ int spin(int argc, char** argv) {
       spintext[strcspn(spintext, "\n")] = 0;
 
       // Get current status
-      //printf("spintext: %s\n", spintext);
       has_extra = strchr(spintext, ',') != NULL;
       if (has_extra) {
-        //printf("has extra\n");
         spinstatus = strchr(spintext, ',');  // split spintext and error message
         *spinstatus++ = '\0';
         err_msg = strstr(spinstatus, "ERR,") != NULL;
         if (err_msg) {
-          // printf("is error: %s\n", spinstatus);
           spinerr = spinstatus + 4;
         }
       }
@@ -193,11 +190,10 @@ int spin(int argc, char** argv) {
       nvgText(vg, fb_w/2, (fb_h*2/3)+24, spintext, NULL);
     } else if (has_extra) {
       nvgTextAlign(vg, NVG_ALIGN_CENTER | NVG_ALIGN_TOP);
-      if (err_msg) {  // need smaller font for error msg
+      if (err_msg) {
         int break_row_width = 1300;
         int y_offset = strlen(spinerr) > 160 ? 76 : 96;
-
-
+        // need smaller font for longer error msg
         int fontsize = strlen(spinerr) > 50 ? 68.0f : 72.0f;
         fontsize = strlen(spinerr) > 70 ? 62.0f : fontsize;
         fontsize = strlen(spinerr) > 120 ? 59.0f : fontsize;
