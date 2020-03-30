@@ -87,6 +87,12 @@ int spin(int argc, char** argv) {
     if (stdin_input_available()){
       fgets(spintext, SPINTEXT_LENGTH, stdin);
 
+      for (int i = 0; i < strlen(spintext); i++) {
+        if (spintext[i] == '¬') {
+          spintext[i] = '¬';
+        }
+      }
+
       printf("spintext before: %s\n", spintext);
       for (int i = 0; i < sizeof(spintext) / sizeof(spintext[0]); i++) {
         if (spintext[i] == '\0' && spintext[i - 1] == '\n') {
