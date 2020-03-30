@@ -506,7 +506,7 @@ def manager_prepare(spinner=None):
     e = prepare_managed_process(p)
     print(p)
     print(((100.0 - total) + total * (i + 1) / len(managed_processes),))
-    spinner.update("%d" % ((100.0 - total) + total * (i + 1) / len(managed_processes),), 'ERR,' + str("test error"))
+    spinner.update("30", 'ERR,EOL while scanning string literal (locationd.py, line 251)')
     if spinner is not None:
       if e is None:
         spinner.update("%d" % ((100.0 - total) + total * (i + 1) / len(managed_processes),))
