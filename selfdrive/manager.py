@@ -535,7 +535,7 @@ def manager_prepare(spinner=None):
     if 'HEAD is now at' not in r:
       reset_msg = "reset failed, please reboot now"
     spinner.update("%d" % progress, reset_msg)
-    time.sleep(60 * 60)
+    input()  # wait indefinitely to avoid infinite bootloop if resetting doesn't work
     # subprocess.check_output(["reboot"])
 
 def uninstall():
