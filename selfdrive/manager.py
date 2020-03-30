@@ -112,6 +112,7 @@ if not prebuilt:
           if 'error: ' in line:
             build_error = True
             print('----\nerror line: {}\n----'.format(line))
+            line = 'ERR,' + line
             if len(line) > 184:
               line = line[:184].strip() + '...'
             spinner.update("%d" % (scons_finished_progress * (i / TOTAL_SCONS_NODES)), line)
@@ -508,8 +509,7 @@ def manager_prepare(spinner=None):
         spinner.update("%d" % ((100.0 - total) + total * (i + 1) / len(managed_processes),))
       else:
         print("Error: {}".format(str(e)))
-        spinner.update("%d" % ((100.0 - total) + total * (i + 1) / len(managed_processes),), str(e))
-        spinner.update("%d" % ((100.0 - total) + total * (i + 1) / len(managed_processes),), str(e))
+        spinner.update("%d" % ((100.0 - total) + total * (i + 1) / len(managed_processes),), 'ERR,' + str(e))
         time.sleep(60*60)
 
 

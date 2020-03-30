@@ -51,6 +51,7 @@ int spin(int argc, char** argv) {
   float progress_val = 0.0;
 
   char *spinstatus;
+  char *spinerr;
   char spintext[SPINTEXT_LENGTH];
   spintext[0] = 0;
 
@@ -83,7 +84,6 @@ int spin(int argc, char** argv) {
 
   for (int cnt = 0; ; cnt++) {
     // Check stdin for new text
-    char *spinerr;
     if (stdin_input_available()){
       fgets(spintext, SPINTEXT_LENGTH, stdin);
       spintext[strcspn(spintext, "\n")] = 0;
@@ -95,7 +95,7 @@ int spin(int argc, char** argv) {
         *spinstatus++ = '\0';
         err_msg = strstr(spinstatus, "ERR,") != NULL;
         if (err_msg) {
-          spinerr = spinstatus + 3;
+          spinerr = spinstatus + 4;
         }
       }
 
