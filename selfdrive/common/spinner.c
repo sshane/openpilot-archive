@@ -207,8 +207,8 @@ int spin(int argc, char** argv) {
         fontsize = strlen(spinerr) > 120 ? 59.0f : fontsize;
 
         nvgFontSize(vg, fontsize);
-        nvgTextBox(vg, (fb_w/2)-(break_row_width/2), (fb_h*2/3)+24+y_offset, break_row_width, "Test\nnewline!", NULL);
-        //nvgText(vg, fb_w/2, (fb_h*2/3)+24+y_offset, "Hey there \n pal!", NULL);
+        // nvgTextBox(vg, (fb_w/2)-(break_row_width/2), (fb_h*2/3)+24+y_offset, break_row_width, "Test\nnewline!", NULL);
+        nvgText(vg, fb_w/2, (fb_h*2/3)+24+y_offset, spinerr, NULL);
       } else {
         nvgFontSize(vg, 78.0f);
         nvgText(vg, fb_w/2, (fb_h*2/3)+24+96, spinstatus, NULL);
