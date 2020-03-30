@@ -529,12 +529,12 @@ def manager_prepare(spinner=None):
 
   if prep_failed:
     r = subprocess.check_output(["git", "reset", "--hard", "@{u}"], cwd="/data/openpilot", stderr=subprocess.STDOUT, encoding='utf8')
+    reset_msg = "reset success, rebooting..."
     if 'HEAD is now at' not in r:
-      spinner.update("%d" % progress, "reset failed, rebooting...")
-      time.sleep(5)
-      subprocess.check_output(["reboot"])
-    print('git reset: {}'.format(r))
-    time.sleep(60*60)
+      reset_msg = "reset failed, rebooting..."
+    spinner.update("%d" % progress, reset_msg)
+    time.sleep(5)
+    subprocess.check_output(["reboot"])
 
 def uninstall():
   cloudlog.warning("uninstalling")
