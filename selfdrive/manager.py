@@ -300,7 +300,10 @@ def prepare_managed_process(p):
   if isinstance(proc, str):
     # import this python
     cloudlog.info("preimporting %s" % proc)
-    importlib.import_module(proc)
+    try:
+      importlib.import_module(proc)
+    except Exception as e:
+      return e
   elif os.path.isfile(os.path.join(BASEDIR, proc[0], "Makefile")):
     # build this process
     cloudlog.info("building %s" % (proc,))
@@ -311,6 +314,7 @@ def prepare_managed_process(p):
       cloudlog.warning("building %s failed, make clean" % (proc, ))
       subprocess.check_call(["make", "clean"], cwd=os.path.join(BASEDIR, proc[0]))
       subprocess.check_call(["make", "-j4"], cwd=os.path.join(BASEDIR, proc[0]))
+  return None
 
 
 def join_process(process, timeout):
@@ -498,9 +502,12 @@ def manager_prepare(spinner=None):
   total = 100.0 if prebuilt else 100 - scons_finished_progress
 
   for i, p in enumerate(managed_processes):
+    e = prepare_managed_process(p)
     if spinner is not None:
-      spinner.update("%d" % ((100.0 - total) + total * (i + 1) / len(managed_processes),))
-    prepare_managed_process(p)
+      err = ''
+      if e is not None:
+        err = str(e)
+      spinner.update("%d" % ((100.0 - total) + total * (i + 1) / len(managed_processes),), err)
 
 def uninstall():
   cloudlog.warning("uninstalling")
