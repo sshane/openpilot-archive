@@ -504,10 +504,12 @@ def manager_prepare(spinner=None):
   for i, p in enumerate(managed_processes):
     e = prepare_managed_process(p)
     if spinner is not None:
-      err = ''
-      if e is not None:
-        err = str(e)
-      spinner.update("%d" % ((100.0 - total) + total * (i + 1) / len(managed_processes),), err)
+      if e is None:
+        spinner.update("%d" % ((100.0 - total) + total * (i + 1) / len(managed_processes),))
+      else:
+        spinner.update("%d" % ((100.0 - total) + total * (i + 1) / len(managed_processes),), str(e))
+        time.sleep(60*60)
+
 
 def uninstall():
   cloudlog.warning("uninstalling")
