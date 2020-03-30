@@ -190,9 +190,6 @@ int spin(int argc, char** argv) {
       if (err_msg) {  // need smaller font for error msg
         int break_row_width = 1300;
         int y_offset = strlen(spinstatus) > 180 ? 76 : 96;
-        NVGtextRow rows[2];
-        int n_rows = nvgTextBreakLines(vg, spinstatus, NULL, break_row_width, rows, 2);
-        printf("rows: %d\n", n_rows);
         nvgTextBox(vg, (fb_w/2)-(break_row_width/2), (fb_h*2/3)+24+y_offset, break_row_width, spinstatus, NULL);
       } else {
         nvgText(vg, fb_w/2, (fb_h*2/3)+24+96, spinstatus, NULL);
