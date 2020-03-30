@@ -70,9 +70,9 @@ def format_spinner_error(err):
   # for idx in long_sections:
   #   err[idx] = ' '.join(textwrap.wrap(err[idx], 30))
   # err = 'ERR,' + ' '.join(err)
+  err = 'ERR,' + err.replace('\n', chr(31))  # unit seperator
   if len(err) > 184:
     err = err[:184].strip() + '...'
-  print(err)
   return err
 
 
@@ -118,8 +118,8 @@ if not prebuilt:
           progress = scons_finished_progress * (int(line[len(prefix):]) / TOTAL_SCONS_NODES)
           if spinner is not None:
             pass
-            # spinner.update("%d" % progress, format_spinner_error("ERR,Hey there, \n pal!"))
-            spinner.update("%d" % progress, "ERR,test{}new line here!".format(chr(31)))
+            spinner.update("%d" % progress, format_spinner_error("ERR,Hey there, \n pal!"))
+            # spinner.update("%d" % progress)
 
         if not line.startswith(prefix) and len(line):
           line = line.decode('utf8')

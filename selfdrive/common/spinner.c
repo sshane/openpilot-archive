@@ -88,12 +88,11 @@ int spin(int argc, char** argv) {
       fgets(spintext, SPINTEXT_LENGTH, stdin);
 
       for (int i = 0; i < strlen(spintext); i++) {
-        if (spintext[i] == '\x1f') {
+        if (spintext[i] == '\x1f') {  // unit separator
           spintext[i] = '\n';
         }
       }
 
-      printf("spintext before: %s\n", spintext);
       for (int i = 0; i < sizeof(spintext) / sizeof(spintext[0]); i++) {
         if (spintext[i] == '\0' && spintext[i - 1] == '\n') {
           spintext[i - 1] = 0;
@@ -104,14 +103,11 @@ int spin(int argc, char** argv) {
       // Get current status
       has_extra = strchr(spintext, ',') != NULL;
       if (has_extra) {
-        printf("spintext after: %s\n", spintext);
         spinstatus = strchr(spintext, ',');  // split spintext and error message
         *spinstatus++ = '\0';
-        printf("spinstatus: %s\n", spinstatus);
         err_msg = strstr(spinstatus, "ERR,") != NULL;
         if (err_msg) {
           spinerr = spinstatus + 4;
-          printf("spinerr: %s\n", spinerr);
         }
       }
 
