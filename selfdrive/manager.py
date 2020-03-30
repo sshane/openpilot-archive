@@ -507,14 +507,15 @@ def manager_prepare(spinner=None):
     # print(p)
     # print(((100.0 - total) + total * (i + 1) / len(managed_processes),))
     spinner.update("30", 'ERR,EOL while scanning string literal (locationd.py, line 251)')
-    # if spinner is not None:
-    #   if e is None:
-    #     spinner.update("%d" % ((100.0 - total) + total * (i + 1) / len(managed_processes),))
-    #   else:
-    #     # e = 'EOL while scanning string literal (locationd.py, line 251)'
-    #     # spinner.update("%d" % ((100.0 - total) + total * (i + 1) / len(managed_processes),), 'ERR,' + str(e))
-    #     spinner.update("30", 'ERR,EOL while scanning string literal (locationd.py, line 251)')
-    #     time.sleep(60*60)
+    if spinner is not None:
+      if e is None:
+        pass
+        # spinner.update("%d" % ((100.0 - total) + total * (i + 1) / len(managed_processes),))
+      else:
+        # e = 'EOL while scanning string literal (locationd.py, line 251)'
+        # spinner.update("%d" % ((100.0 - total) + total * (i + 1) / len(managed_processes),), 'ERR,' + str(e))
+        spinner.update("30", 'ERR,EOL while scanning string literal (locationd.py, line 251)')
+        time.sleep(60*60)
 
 
 def uninstall():
