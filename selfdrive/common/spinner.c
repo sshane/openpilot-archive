@@ -93,12 +93,12 @@ int spin(int argc, char** argv) {
         }
       }
 
-      for (int i = 0; i < sizeof(spintext) / sizeof(spintext[0]); i++) {
-        if (spintext[i] == '\0' && spintext[i - 1] == '\n') {
-          spintext[i - 1] = 0;
-          break;
-        }
-      }
+//      for (int i = 0; i < sizeof(spintext) / sizeof(spintext[0]); i++) {
+//        if (spintext[i] == '\0' && spintext[i - 1] == '\n') {
+//          spintext[i - 1] = 0;
+//          break;
+//        }
+//      }
 
       // Get current status
       has_extra = strchr(spintext, ',') != NULL;
