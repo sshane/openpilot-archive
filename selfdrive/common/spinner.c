@@ -195,10 +195,11 @@ int spin(int argc, char** argv) {
       nvgTextAlign(vg, NVG_ALIGN_CENTER | NVG_ALIGN_TOP);
       if (err_msg) {  // need smaller font for error msg
         int break_row_width = 1300;
-        int y_offset = strlen(spinstatus) > 160 ? 76 : 96;
+        int y_offset = strlen(spinerr) > 160 ? 76 : 96;
 
-        int fontsize = strlen(spinstatus) > 70 ? 68.0f : 78.0f;
-        fontsize = strlen(spinstatus) > 100 ? 59.0f : fontsize;
+        printf("str len: %d\n", format(strlen(spinerr)))
+        int fontsize = strlen(spinerr) > 70 ? 68.0f : 78.0f;
+        fontsize = strlen(spinerr) > 100 ? 59.0f : fontsize;
 
         nvgFontSize(vg, fontsize);
         nvgTextBox(vg, (fb_w/2)-(break_row_width/2), (fb_h*2/3)+24+y_offset, break_row_width, spinerr, NULL);
