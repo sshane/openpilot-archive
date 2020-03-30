@@ -97,7 +97,7 @@ int spin(int argc, char** argv) {
         *spinstatus++ = '\0';
         err_msg = strstr(spinstatus, "ERR,") != NULL;
         if (err_msg) {
-          print("is error: %s\n", spinstatus);
+          printf("is error: %s\n", spinstatus);
           spinerr = spinstatus + 4;
         }
       }
