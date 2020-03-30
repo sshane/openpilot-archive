@@ -87,7 +87,7 @@ int spin(int argc, char** argv) {
     if (stdin_input_available()){
       fgets(spintext, SPINTEXT_LENGTH, stdin);
 
-      for (int i = 0; i < sizeof(spintext) / sizeof(spintext[0]); i++;) {
+      for (int i = 0; i < sizeof(spintext) / sizeof(spintext[0]); i++) {
         if (spintext[i] == '\0') {
           spintext[i - 1] = 0;
           printf("break idx: %d\n", i - 1);
