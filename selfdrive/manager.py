@@ -116,7 +116,7 @@ if not prebuilt:
         if not line.startswith(prefix) and len(line):
           line = line.decode('utf8')
           print(line)
-          if 'error: ' in line:
+          if any([err in line for err in ['error: ', 'not found, needed by target']]):
             build_error = True
             line = format_spinner_error(line)
             for _ in range(10):
