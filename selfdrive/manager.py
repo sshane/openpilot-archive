@@ -98,7 +98,7 @@ if not prebuilt:
     scons = subprocess.Popen(["scons", j_flag], cwd=BASEDIR, env=env, stderr=subprocess.PIPE)
 
     # Read progress from stderr and update spinner
-    i = 0
+    progress = 0
     build_error = False
     while scons.poll() is None:
       try:
@@ -109,18 +109,18 @@ if not prebuilt:
         line = line.rstrip()
         prefix = b'progress: '
         if line.startswith(prefix):
-          i = int(line[len(prefix):])
+          progress = scons_finished_progress * (int(line[len(prefix):]) / TOTAL_SCONS_NODES)
           if spinner is not None:
-            spinner.update("%d" % (scons_finished_progress * (i / TOTAL_SCONS_NODES)))
-        elif len(line):
+            spinner.update("%d" % progress)
+
+        if not line.startswith(prefix) and len(line):
           line = line.decode('utf8')
           print(line)
           if 'error: ' in line:
             build_error = True
-            # print('----\nerror line: {}\n----'.format(line))
             line = format_spinner_error(line)
             for _ in range(10):
-              spinner.update("%d" % (scons_finished_progress * (i / TOTAL_SCONS_NODES)), line)
+              spinner.update("%d" % progress, line)
               time.sleep(1)
             break
       except Exception:
@@ -129,11 +129,11 @@ if not prebuilt:
     if scons.returncode != 0 or build_error:
       if retry:
         print("scons build failed, cleaning in")
-        for sec in range(5):
-          print(5 - sec)
-          spinner.update("%d" % (scons_finished_progress * (i / TOTAL_SCONS_NODES)), "scons build failed, cleaning in {}...".format(5 - sec))
+        for i in range(5):
+          print(5 - i)
+          spinner.update("%d" % progress, "scons build failed, cleaning in {}...".format(5 - i))
           time.sleep(1)
-        spinner.update("%d" % (scons_finished_progress * (i / TOTAL_SCONS_NODES)), "scons build failed, cleaning...")
+        spinner.update("%d" % progress, "scons build failed, cleaning...")
         # subprocess.check_call(["scons", "-c"], cwd=BASEDIR, env=env)
         # shutil.rmtree("/tmp/scons_cache")
       else:
@@ -506,17 +506,30 @@ def manager_prepare(spinner=None):
 
   # Spinner has to start from 70 here
   total = 100.0 if prebuilt else 100 - scons_finished_progress
+  prep_failed = False
 
   for i, p in enumerate(managed_processes):
     e = prepare_managed_process(p)
+    progress = (100.0 - total) + total * (i + 1) / len(managed_processes)
     if spinner is not None:
       if e is None:
-        spinner.update("%d" % ((100.0 - total) + total * (i + 1) / len(managed_processes),))
+        spinner.update("%d" % progress)
       else:
+        prep_failed = True
         for _ in range(10):
-          spinner.update("%d" % ((100.0 - total) + total * (i + 1) / len(managed_processes),), format_spinner_error(str(e)))
+          spinner.update("%d" % progress, format_spinner_error(str(e)))
           time.sleep(1)
+        for i in range(5):
+          print(5 - i)
+          spinner.update("%d" % progress, "preparation failed, hard resetting in {}...".format(5 - i))
+          time.sleep(1)
+        spinner.update("%d" % progress, "preparation failed, hard resetting...")
+        break
 
+  if prep_failed:
+    r = subprocess.check_output(["git", "reset", "--hard", "@{u}"], cwd="/data/openpilot", stderr=subprocess.STDOUT, encoding='utf8')
+    print('git reset: {}'.format(r))
+    time.sleep(60*60)
 
 def uninstall():
   cloudlog.warning("uninstalling")
