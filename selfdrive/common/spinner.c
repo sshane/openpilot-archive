@@ -89,7 +89,7 @@ int spin(int argc, char** argv) {
 
       for (int i = 0; i < strlen(spintext); i++) {
         if (spintext[i] == '¬') {
-          spintext[i] = '¬';
+          spintext[i] = '\n';
         }
       }
 
