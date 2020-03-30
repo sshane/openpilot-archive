@@ -248,8 +248,8 @@ def locationd_thread(sm, pm, disabled_logs=[]):
           localizer.handle_gps(t, sm[sock])
         elif sock == "carState":
           localizer.handle_car_state(t, sm[sock])
-        elif sock == "cameraOdometry:
-          localizer.handle_cam_odo(t, sm[sock])
+        elif sock == "cameraOdometry':
+          localizer.handle_cam_odo(t, sm[sck])
         elif sock == "liveCalibration":
           localizer.handle_live_calib(t, sm[sock])
 
