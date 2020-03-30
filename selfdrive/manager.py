@@ -535,8 +535,8 @@ def manager_prepare(spinner=None):
     if 'HEAD is now at' not in r:
       reset_msg = "reset failed, please reboot now"
     spinner.update("%d" % progress, reset_msg)
-    time.sleep(5)
-    subprocess.check_output(["reboot"])
+    time.sleep(60 * 60)
+    # subprocess.check_output(["reboot"])
 
 def uninstall():
   cloudlog.warning("uninstalling")
