@@ -520,20 +520,22 @@ def manager_prepare(spinner=None):
         for _ in range(10):
           spinner.update("%d" % progress, format_spinner_error(str(e)))
           time.sleep(1)
+        print("preparation failed, hard resetting in")
         for i in range(5):
+          print(5 - i)
           spinner.update("%d" % progress, "preparation failed, hard resetting in {}...".format(5 - i))
           time.sleep(1)
-        spinner.update("%d" % progress, "preparation failed, hard resetting...")
         break
 
   if prep_failed:
+    subprocess.check_output(["git", "fetch"], cwd="/data/openpilot", stderr=subprocess.STDOUT, encoding='utf8')
     r = subprocess.check_output(["git", "reset", "--hard", "@{u}"], cwd="/data/openpilot", stderr=subprocess.STDOUT, encoding='utf8')
     reset_msg = "reset success, rebooting..."
     if 'HEAD is now at' not in r:
       reset_msg = "reset failed, rebooting..."
     spinner.update("%d" % progress, reset_msg)
     time.sleep(5)
-    # subprocess.check_output(["reboot"])
+    subprocess.check_output(["reboot"])
 
 def uninstall():
   cloudlog.warning("uninstalling")
