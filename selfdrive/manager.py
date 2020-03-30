@@ -511,7 +511,7 @@ def manager_prepare(spinner=None):
 
   for i, p in enumerate(managed_processes):
     e = prepare_managed_process(p)
-    progress = (100.0 - total) + total * (i + 1) / len(managed_processes)
+    progress = (100.0 - total) + total * (i + 1) / len(managed_processes),
     if spinner is not None:
       if e is None:
         spinner.update("%d" % progress)
