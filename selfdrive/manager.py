@@ -68,9 +68,7 @@ def format_spinner_error(err):
   long_sections = [idx for idx, i in enumerate(err) if len(i) > 30]
   for idx in long_sections:
     split_into = round(len(err[idx]) / (len(err[idx]) / 30))
-    print(split_into)
     err[idx] = ' '.join(list(map(''.join, zip(*[iter(err[idx])] * split_into))))
-    print(err[idx])
   err = 'ERR,' + ' '.join(err)
   if len(err) > 184:
     err = err[:184].strip() + '...'
