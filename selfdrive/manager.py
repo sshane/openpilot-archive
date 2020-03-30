@@ -514,6 +514,7 @@ def manager_prepare(spinner=None):
       else:
         print('ERROR')
         # e = 'EOL while scanning string literal (locationd.py, line 251)'
+        time.sleep(1)
         spinner.update("%d" % ((100.0 - total) + total * (i + 1) / len(managed_processes),), 'ERR,' + str(e))
         # spinner.update("30", 'ERR,EOL while scanning string literal (locationd.py, line 251)')
         time.sleep(60*60)
