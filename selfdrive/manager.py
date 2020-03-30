@@ -118,7 +118,7 @@ if not prebuilt:
           progress = scons_finished_progress * (int(line[len(prefix):]) / TOTAL_SCONS_NODES)
           if spinner is not None:
             pass
-            spinner.update("%d" % progress, format_spinner_error("ERR,Hey there, \n pal!"))
+            spinner.update("%d" % progress, format_spinner_error("'scons: *** [selfdrive/locationd/kalman/generated/car.cpp] Source \'selfdrive/locationd/kalmal/templates/compute_pos.c\' not found, needed by target /selfdrive/locationd/kalman/generated/car.cpp'"))
             # spinner.update("%d" % progress)
 
         if not line.startswith(prefix) and len(line):
