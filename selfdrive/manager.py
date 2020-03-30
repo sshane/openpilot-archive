@@ -510,35 +510,38 @@ def manager_prepare(spinner=None):
   progress = total
   prep_failed = False
 
-  for i, p in enumerate(managed_processes):
-    e = prepare_managed_process(p)
-    progress = (100.0 - total) + total * (i + 1) / len(managed_processes)
-    if spinner is not None:
-      if e is None:
-        spinner.update("%d" % progress)
-      else:
-        prep_failed = True
-        for _ in range(10):
-          spinner.update("%d" % progress, format_spinner_error(str(e)))
-          time.sleep(1)
+  for retry in [True, False]:
+    for i, p in enumerate(managed_processes):
+      e = prepare_managed_process(p)
+      progress = (100.0 - total) + total * (i + 1) / len(managed_processes)
+      if spinner is not None:
+        if e is None:
+          spinner.update("%d" % progress)
+        else:
+          prep_failed = True
+          for _ in range(10):
+            spinner.update("%d" % progress, format_spinner_error(str(e)))
+            time.sleep(1)
+          break
+
+    if prep_failed:
+      if retry:
         print("preparation failed, hard resetting in")
         for i in range(5):
           print(5 - i)
           spinner.update("%d" % progress, "preparation failed, hard resetting in {}...".format(5 - i))
           time.sleep(1)
-        break
 
-  if prep_failed:
-    subprocess.check_output(["git", "fetch"], cwd="/data/openpilot", stderr=subprocess.STDOUT, encoding='utf8')
-    r = subprocess.check_output(["git", "reset", "--hard", "@{u}"], cwd="/data/openpilot", stderr=subprocess.STDOUT,
-                                encoding='utf8')
-    reset_msg = "reset success, please reboot now"
-    if 'HEAD is now at' not in r:
-      reset_msg = "reset failed, please reboot now"
-    spinner.update("%d" % progress, reset_msg)
-    while 1:  # wait indefinitely to avoid infinite bootloop if resetting doesn't work
-      time.sleep(10)
-    # subprocess.check_output(["reboot"])
+        subprocess.check_output(["git", "fetch"], cwd="/data/openpilot", stderr=subprocess.STDOUT, encoding='utf8')
+        r = subprocess.check_output(["git", "reset", "--hard", "@{u}"], cwd="/data/openpilot", stderr=subprocess.STDOUT,
+                                    encoding='utf8')
+        reset_msg = "reset success"
+        if 'HEAD is now at' not in r:
+          reset_msg = "reset failed"
+        spinner.update("%d" % progress, reset_msg)
+        time.sleep(2)
+      else:
+        raise RuntimeError("preperation failed")
 
 def uninstall():
   cloudlog.warning("uninstalling")
