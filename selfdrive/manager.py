@@ -65,11 +65,11 @@ def unblock_stdout():
     os._exit(exit_status)
 
 def format_spinner_error(err):
-  err = err.split()
-  long_sections = [idx for idx, i in enumerate(err) if len(i) > 30]
-  for idx in long_sections:
-    err[idx] = ' '.join(textwrap.wrap(err[idx], 30))
-  err = 'ERR,' + ' '.join(err)
+  # err = err.split()
+  # long_sections = [idx for idx, i in enumerate(err) if len(i) > 30]
+  # for idx in long_sections:
+  #   err[idx] = ' '.join(textwrap.wrap(err[idx], 30))
+  # err = 'ERR,' + ' '.join(err)
   if len(err) > 184:
     err = err[:184].strip() + '...'
   print(err)
