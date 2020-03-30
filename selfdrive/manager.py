@@ -509,7 +509,7 @@ def manager_prepare(spinner=None):
       if e is None:
         spinner.update("%d" % ((100.0 - total) + total * (i + 1) / len(managed_processes),))
       else:
-        print("Error: {}".format(str(e)))
+        print('Into spinner: {}'.format('ERR,' + str(e)))
         spinner.update("%d" % ((100.0 - total) + total * (i + 1) / len(managed_processes),), 'ERR,' + str(e))
         time.sleep(60*60)
 
