@@ -117,7 +117,8 @@ if not prebuilt:
         if line.startswith(prefix):
           progress = scons_finished_progress * (int(line[len(prefix):]) / TOTAL_SCONS_NODES)
           if spinner is not None:
-            spinner.update("%d" % progress, format_spinner_error("ERR,Hey there, \n pal!"))
+            pass
+            # spinner.update("%d" % progress, format_spinner_error("ERR,Hey there, \n pal!"))
             # spinner.update("%d" % progress)
 
         if not line.startswith(prefix) and len(line):
