@@ -90,9 +90,12 @@ int spin(int argc, char** argv) {
       // Get current status
       has_extra = strchr(spintext, ',') != NULL;
       if (has_extra) {
-        spinstatus = strchr(spintext, ',');
-        *spinstatus++ = '\0';  // split spintext and error message
-        err_msg = strstr(spinstatus, "error: ") != NULL;
+        spinstatus = strchr(spintext, ',');  // split spintext and error message
+        *spinstatus++ = '\0';
+        err_msg = strstr(spinstatus, "ERR,") != NULL;
+        if (err_msg) {
+          *spinstatus += 4;
+        }
       }
 
       // Check if number (update progress bar)
