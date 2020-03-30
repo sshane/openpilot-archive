@@ -79,7 +79,7 @@ spinner = Spinner()
 spinner.update("0")
 scons_build_failed = False
 scons_finished_progress = 70.0
-
+prebuild = True
 if not prebuilt:
   for retry in [True, False]:
     # run scons
