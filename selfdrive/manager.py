@@ -528,8 +528,9 @@ def manager_prepare(spinner=None):
         break
 
   if prep_failed:
-    subprocess.check_output(["git", "fetch"], cwd="/data/openpilot", stderr=subprocess.STDOUT, encoding='utf8')
-    r = subprocess.check_output(["git", "reset", "--hard", "@{u}"], cwd="/data/openpilot", stderr=subprocess.STDOUT, encoding='utf8')
+    r = subprocess.check_output(["git", "fetch"], cwd="/data/openpilot", stderr=subprocess.STDOUT, encoding='utf8')
+    r = subprocess.check_output(["git", "reset", "--hard", "@{u}"], cwd="/data/openpilot", stderr=subprocess.STDOUT,
+                                encoding='utf8')
     reset_msg = "reset success, rebooting..."
     if 'HEAD is now at' not in r:
       reset_msg = "reset failed, rebooting..."
