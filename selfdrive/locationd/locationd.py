@@ -244,7 +244,8 @@ def locationd_thread(sm, pm, disabled_logs=[]):
         t = sm.logMonoTime[sock] * 1e-9
         if sock == "sensorEvents":
           localizer.handle_sensors(t, sm[sock])
-        elif sock == "gpsLoca, sm[sock])
+        elif sock == "gpsLocationExternal":
+          localizer.handle_gps(t, sm[sock])
         elif sock == "carState":
           localizer.handle_car_state(t, sm[sock])
         elif sock == "cameraOdometry":
