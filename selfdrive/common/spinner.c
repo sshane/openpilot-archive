@@ -93,7 +93,7 @@ int spin(int argc, char** argv) {
         }
       }
 
-      printf("strlen: %lu\n", strlen(spintext))
+      printf("strlen: %lu\n", strlen(spintext));
       for (int i = 0; i < sizeof(spintext) / sizeof(spintext[0]); i++) {
         if (spintext[i] == '\0' && spintext[i - 1] == '\n') {
           spintext[i - 1] = 0;
