@@ -20,7 +20,7 @@ class Spinner():
     if self.spinner_proc is not None:
       if spinner_error is not None:
         spinner_text += ",{}".format(spinner_error)
-      print('Into spinner: {}'.format(spinner_text))
+      # print('Into spinner: {}'.format(spinner_text))
       self.spinner_proc.stdin.write(spinner_text.encode('utf8') + b"\n")
       try:
         self.spinner_proc.stdin.flush()
