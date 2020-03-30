@@ -199,7 +199,7 @@ int spin(int argc, char** argv) {
 
         printf("str len: %lu\n", strlen(spinerr));
         int fontsize = strlen(spinerr) > 70 ? 68.0f : 78.0f;
-        fontsize = strlen(spinerr) > 100 ? 59.0f : fontsize;
+        fontsize = strlen(spinerr) > 120 ? 59.0f : fontsize;
 
         nvgFontSize(vg, fontsize);
         nvgTextBox(vg, (fb_w/2)-(break_row_width/2), (fb_h*2/3)+24+y_offset, break_row_width, spinerr, NULL);
