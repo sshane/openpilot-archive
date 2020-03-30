@@ -533,7 +533,7 @@ def manager_prepare(spinner=None):
       reset_msg = "reset failed, rebooting..."
     spinner.update("%d" % progress, reset_msg)
     time.sleep(5)
-    subprocess.check_output(["reboot"])
+    # subprocess.check_output(["reboot"])
 
 def uninstall():
   cloudlog.warning("uninstalling")
