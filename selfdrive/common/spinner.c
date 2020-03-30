@@ -86,8 +86,13 @@ int spin(int argc, char** argv) {
     // Check stdin for new text
     if (stdin_input_available()){
       fgets(spintext, SPINTEXT_LENGTH, stdin);
+      int break_idx = 0;
+      while (spintext[break_idx] != '\0') {
+        break_idx++;
+      }
       printf("size of char array: %lu\n", sizeof(spintext) / sizeof(spintext[0]));
       printf("first linebreak: %lu\n", strcspn(spintext, "\n"));
+      printf("break idx: %d", break_idx);
       spintext[strcspn(spintext, "\n")] = 0;
 
       // Get current status
