@@ -88,7 +88,7 @@ int spin(int argc, char** argv) {
       fgets(spintext, SPINTEXT_LENGTH, stdin);
 
       for (int i = 0; i++; i < sizeof(spintext) / sizeof(spintext[0])) {
-        if (spintext[break_idx] != '\0') {
+        if (spintext[i] != '\0') {
           spintext[i - 1] = 0;
           printf("break idx: %d\n", i - 1);
           break;
@@ -96,7 +96,6 @@ int spin(int argc, char** argv) {
       }
       printf("size of char array: %lu\n", sizeof(spintext) / sizeof(spintext[0]));
       printf("first linebreak: %lu\n", strcspn(spintext, "\n"));
-
 
       // Get current status
       has_extra = strchr(spintext, ',') != NULL;
