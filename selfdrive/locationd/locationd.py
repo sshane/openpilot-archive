@@ -258,7 +258,8 @@ def locationd_thread(sm, pm, disabled_logs=[]):
       msg = messaging.new_message('liveLocationKalman')
       msg.logMonoTime = t
 
-      msg.liveLocatitionKalman', msg)
+      msg.liveLocationKalman = localizer.liveLocationMsg(t * 1e-9)
+      pm.send('liveLocationKalman', msg)
 
 
 def main(sm=None, pm=None):
