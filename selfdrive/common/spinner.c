@@ -89,6 +89,7 @@ int spin(int argc, char** argv) {
       spintext[strcspn(spintext, "\n")] = 0;
 
       // Get current status
+      printf("spintext: %s\n", spintext);
       has_extra = strchr(spintext, ',') != NULL;
       if (has_extra) {
         spinstatus = strchr(spintext, ',');  // split spintext and error message
