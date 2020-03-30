@@ -531,9 +531,9 @@ def manager_prepare(spinner=None):
     r = subprocess.check_output(["git", "fetch"], cwd="/data/openpilot", stderr=subprocess.STDOUT, encoding='utf8')
     r = subprocess.check_output(["git", "reset", "--hard", "@{u}"], cwd="/data/openpilot", stderr=subprocess.STDOUT,
                                 encoding='utf8')
-    reset_msg = "reset success, rebooting..."
+    reset_msg = "reset success, please reboot now"
     if 'HEAD is now at' not in r:
-      reset_msg = "reset failed, rebooting..."
+      reset_msg = "reset failed, please reboot now"
     spinner.update("%d" % progress, reset_msg)
     time.sleep(5)
     subprocess.check_output(["reboot"])
