@@ -93,13 +93,8 @@ int spin(int argc, char** argv) {
         }
       }
 
-      printf("end: %cend\n", spintext[strlen(spintext)]);
-      printf("newline: %cend\n", spintext[strlen(spintext) - 1]);
-      for (int i = 0; i < sizeof(spintext) / sizeof(spintext[0]); i++) {
-        if (spintext[i] == '\0' && spintext[i - 1] == '\n') {
-          spintext[i - 1] = 0;
-          break;
-        }
+      if (spintext[strlen(spintext)] == '\0' && spintext[strlen(spintext) - 1] == '\n') {
+        spintext[strlen(spintext) - 1] = '0';
       }
 
       // Get current status
