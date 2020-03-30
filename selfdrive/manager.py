@@ -92,7 +92,7 @@ if not prebuilt:
     scons = subprocess.Popen(["scons", j_flag], cwd=BASEDIR, env=env, stderr=subprocess.PIPE)
 
     # Read progress from stderr and update spinner
-    p = 0
+    i = 0
     build_error = False
     while scons.poll() is None:
       try:
@@ -103,11 +103,12 @@ if not prebuilt:
         line = line.rstrip()
         prefix = b'progress: '
         if line.startswith(prefix):
-          p = int(line[len(prefix):])
+          i = int(line[len(prefix):])
           if spinner is not None:
-            spinner.update("%d" % (scons_finished_progress * (p / TOTAL_SCONS_NODES)))
+            spinner.update("%d" % (scons_finished_progress * (i / TOTAL_SCONS_NODES)))
         elif len(line):
           line = line.decode('utf8')
+          print(line)
           if 'error: ' in line:
             build_error = True
             print('----\nerror line: {}\n----'.format(line))
@@ -116,23 +117,20 @@ if not prebuilt:
             # line += ' '+line + ' '+line
             if len(line) > 184:
               line = line[:184].strip() + '...'
-            spinner.update("%d" % (scons_finished_progress * (p / TOTAL_SCONS_NODES)), line)
-            time.sleep(60*60)
+            spinner.update("%d" % (scons_finished_progress * (i / TOTAL_SCONS_NODES)), line)
+            time.sleep(10)
             break
-          # always print
-          print(line)
       except Exception:
         pass
 
     if scons.returncode != 0 or build_error:
       if retry:
         print("scons build failed, cleaning in")
-        for i in range(5):
-          print(5 - i)
-          spinner.update("%d" % (scons_finished_progress * (p / TOTAL_SCONS_NODES)), "scons build failed, cleaning in {}...".format(5 - i))
+        for sec in range(5):
+          print(5 - sec)
+          spinner.update("%d" % (scons_finished_progress * (i / TOTAL_SCONS_NODES)), "scons build failed, cleaning in {}...".format(5 - sec))
           time.sleep(1)
-
-        spinner.update("%d" % (scons_finished_progress * (p / TOTAL_SCONS_NODES)), "scons build failed, cleaning...")
+        spinner.update("%d" % (scons_finished_progress * (i / TOTAL_SCONS_NODES)), "scons build failed, cleaning...")
         # subprocess.check_call(["scons", "-c"], cwd=BASEDIR, env=env)
         # shutil.rmtree("/tmp/scons_cache")
       else:
