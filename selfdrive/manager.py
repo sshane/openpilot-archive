@@ -119,7 +119,7 @@ if not prebuilt:
           if spinner is not None:
             pass
             # spinner.update("%d" % progress, format_spinner_error("ERR,Hey there, \n pal!"))
-            spinner.update("%d" % progress, "ERR,test\nnew line here!")
+            spinner.update("%d" % progress, "ERR,testnew line here!")
 
         if not line.startswith(prefix) and len(line):
           line = line.decode('utf8')
