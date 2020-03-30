@@ -90,12 +90,9 @@ int spin(int argc, char** argv) {
       for (int i = 0; i < sizeof(spintext) / sizeof(spintext[0]); i++) {
         if (spintext[i] == '\0' && spintext[i - 1] == '\n') {
           spintext[i - 1] = 0;
-          printf("break idx: %d\n", i - 1);
           break;
         }
       }
-      printf("size of char array: %lu\n", sizeof(spintext) / sizeof(spintext[0]));
-      printf("first linebreak: %lu\n", strcspn(spintext, "\n"));
 
       // Get current status
       has_extra = strchr(spintext, ',') != NULL;
@@ -208,7 +205,8 @@ int spin(int argc, char** argv) {
         fontsize = strlen(spinerr) > 120 ? 59.0f : fontsize;
 
         nvgFontSize(vg, fontsize);
-        nvgTextBox(vg, (fb_w/2)-(break_row_width/2), (fb_h*2/3)+24+y_offset, break_row_width, spinerr, NULL);
+        // nvgTextBox(vg, (fb_w/2)-(break_row_width/2), (fb_h*2/3)+24+y_offset, break_row_width, spinerr, NULL);
+        nvgText(vg, fb_w/2, (fb_h*2/3)+24+y_offset, spinerr, NULL);
       } else {
         nvgFontSize(vg, 78.0f);
         nvgText(vg, fb_w/2, (fb_h*2/3)+24+96, spinstatus, NULL);
