@@ -92,7 +92,7 @@ int spin(int argc, char** argv) {
       }
       printf("size of char array: %lu\n", sizeof(spintext) / sizeof(spintext[0]));
       printf("first linebreak: %lu\n", strcspn(spintext, "\n"));
-      printf("break idx: %d", break_idx);
+      printf("break idx: %d\n", break_idx);
       spintext[strcspn(spintext, "\n")] = 0;
 
       // Get current status
