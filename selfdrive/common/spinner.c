@@ -94,7 +94,7 @@ int spin(int argc, char** argv) {
       }
 
       if (spintext[strlen(spintext)] == '\0' && spintext[strlen(spintext) - 1] == '\n') {
-        spintext[strlen(spintext) - 1] = '0';
+        spintext[strlen(spintext) - 1] = 0;
       }
 
       // Get current status
