@@ -89,9 +89,9 @@ int spin(int argc, char** argv) {
 
       for (int i = 0; i < strlen(spintext); i++) {
         if (spintext[i] == '\x1f') {  // unit separator
-          printf("before: %send\n", spintext[i]);
+          printf("before: %cend\n", spintext[i]);
           spintext[i] = '\n';
-          printf("after: %send\n", spintext[i]);
+          printf("after: %cend\n", spintext[i]);
         }
       }
       //printf("spintext: %s\n", spintext);
