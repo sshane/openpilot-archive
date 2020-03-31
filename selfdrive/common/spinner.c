@@ -54,7 +54,7 @@ int spin(int argc, char** argv) {
   char *spinerr;
   char *spintext;
   size_t SPINTEXT_LENGTH_SIZE = 256;
-  buffer = (char *)malloc(SPINTEXT_LENGTH_SIZE * sizeof(char));
+  spintext = (char *)malloc(SPINTEXT_LENGTH_SIZE * sizeof(char));
   spintext[0] = 0;
 
   const char* spintext_arg = NULL;
