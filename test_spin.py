@@ -6,8 +6,8 @@ spinner = Spinner()
 time.sleep(5)
 
 for i in range(5):
-  spinner.update("%d" % (i * 10))
   time.sleep(1)
+  spinner.update("%d" % (i * 10))
 spinner.update("ERR,Test error")
 print('shown error!', flush=True)
 time.sleep(10)
