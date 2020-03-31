@@ -17,6 +17,7 @@
 
 #include "framebuffer.h"
 #include "spinner.h"
+#include <time.h>    // time()
 
 #define SPINTEXT_LENGTH 256
 
