@@ -108,7 +108,7 @@ int spin(int argc, char** argv) {
 //          break;
 //        }
 //      }
-      printf("out of loop!\n");
+      //printf("out of loop!\n");
 
       for (int i = 0; i < strlen(spintext); i++) {
         if (spintext[i] == '\x1f') {  // unit separator
