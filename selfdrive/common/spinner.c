@@ -87,6 +87,7 @@ int spin(int argc, char** argv) {
     if (stdin_input_available()){
       fgets(spintext, SPINTEXT_LENGTH, stdin);
 
+      printf("spintext before: %s\n", spintext);
       for (int i = 0; i < strlen(spintext); i++) {
         if (spintext[i] == '\x1f') {  // unit separator
           printf("before: %cend\n", spintext[i]);
@@ -94,7 +95,7 @@ int spin(int argc, char** argv) {
           printf("after: %cend\n", spintext[i]);
         }
       }
-      //printf("spintext: %s\n", spintext);
+      printf("spintext after: %s\n", spintext);
       if (spintext[strlen(spintext)] == '\0' && spintext[strlen(spintext) - 1] == '\n') {
         spintext[strlen(spintext) - 1] = 0;
       }
