@@ -96,7 +96,7 @@ int spin(int argc, char** argv) {
         // fgets(spintext, SPINTEXT_LENGTH, stdin);
         //printf("spintext: %send\n", spintext);
       }
-      printf("spintext: %s\n", spintextnew);
+      printf("spintext: %s\n", spintext);
       // printf("\nsize_t: %d\n", s);
 
 //      while (true){
