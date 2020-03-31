@@ -106,7 +106,7 @@ class PIDController:
     self.use_kd = self.op_params.get('use_kd', True)
 
     self.error_idx = -1
-    self.max_accel_d = 0.268224  # 0.6 mph/s
+    self.max_accel_d = 0.44704  # 0.6 mph/s
 
     self.pos_limit = pos_limit
     self.neg_limit = neg_limit
