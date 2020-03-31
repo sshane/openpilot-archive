@@ -89,7 +89,7 @@ int spin(int argc, char** argv) {
 
       int ch;
       int s = 0;
-      while ((ch=getchar()) != '\0' ) {
+      while (!stdin.eof()) {
         s++;
         printf("%c", ch);
         // fgets(spintext, SPINTEXT_LENGTH, stdin);
