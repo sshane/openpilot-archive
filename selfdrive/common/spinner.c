@@ -17,7 +17,6 @@
 
 #include "framebuffer.h"
 #include "spinner.h"
-#include <time.h>    // time()
 
 #define SPINTEXT_LENGTH 256
 
@@ -86,12 +85,10 @@ int spin(int argc, char** argv) {
   for (int cnt = 0; ; cnt++) {
     // Check stdin for new text
     if (stdin_input_available()){
-      clock_t begin = clock();
-      fgets(spintext, SPINTEXT_LENGTH, stdin);
-      clock_t end = clock();
-      double time_spent = (double)(end - begin);
-
-      printf("fgets took %f ms to execute \n", time_spent);
+      printf("update:\n");
+      while (fgets(spintext, SPINTEXT_LENGTH, stdin)){
+        printf("spintext: %s\n", spintext);
+      }
 
       for (int i = 0; i < strlen(spintext); i++) {
         if (spintext[i] == '\x1f') {  // unit separator
