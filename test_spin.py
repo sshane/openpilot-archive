@@ -3,7 +3,6 @@ from common.spinner import Spinner
 
 spinner = Spinner()
 
-time.sleep(5)
 
 for i in range(5):
   time.sleep(1)
