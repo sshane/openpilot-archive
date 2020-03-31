@@ -89,7 +89,7 @@ int spin(int argc, char** argv) {
       clock_t begin = clock();
       fgets(spintext, SPINTEXT_LENGTH, stdin);
       clock_t end = clock();
-      double time_spent = (double)(end - begin) / CLOCKS_PER_SEC;
+      double time_spent = (double)(end - begin);
 
       printf("fgets took %f seconds to execute \n", time_spent);
 
