@@ -67,7 +67,7 @@ def unblock_stdout():
 def format_spinner_error(err):
   # err='scons: *** [selfdrive/locationd/kalman/generated/car.cpp] Source \'selfdrive/locationd/kalmal/templates/compute_pos.c\' not found, needed by target /selfdrive/locationd/kalman/generated/car.cpp'
   err_list = [[]]
-  max_line_length = 60
+  max_line_length = 50
   for ch in err:
     if len(err_list[-1]) > max_line_length and ch == ' ':
       err_list.append([])
