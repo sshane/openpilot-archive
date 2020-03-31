@@ -52,9 +52,7 @@ int spin(int argc, char** argv) {
 
   char *spinstatus;
   char *spinerr;
-  char *spintext;
-  size_t SPINTEXT_LENGTH_SIZE = 256;
-  spintext = (char *)malloc(SPINTEXT_LENGTH_SIZE * sizeof(char));
+  char spintext[SPINTEXT_LENGTH];
   spintext[0] = 0;
 
   const char* spintext_arg = NULL;
@@ -88,15 +86,9 @@ int spin(int argc, char** argv) {
     // Check stdin for new text
     if (stdin_input_available()){
       printf("update:\n");
-      while (spintext.size() != 0){
-        getline(&spintext, &SPINTEXT_LENGTH_SIZE, stdin)
+      while (fgets(spintext, SPINTEXT_LENGTH, stdin)){
         printf("spintext: %s\n", spintext);
       }
-      printf("spintext: %s\n", spintext);
-
-//      while (fgets(spintext, SPINTEXT_LENGTH, stdin)){
-//        printf("spintext: %s\n", spintext);
-//      }
 
       for (int i = 0; i < strlen(spintext); i++) {
         if (spintext[i] == '\x1f') {  // unit separator
