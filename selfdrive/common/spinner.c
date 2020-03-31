@@ -96,7 +96,7 @@ int spin(int argc, char** argv) {
 //        // fgets(spintext, SPINTEXT_LENGTH, stdin);
 //        //printf("spintext: %send\n", spintext);
 //      }
-      while (true) {
+      while (stdin_input_available()) {
         if ((fseek(stdin, 0, SEEK_END), ftell(stdin)) > 0) {
           break;
         }
