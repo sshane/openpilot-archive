@@ -8,8 +8,6 @@ import signal
 import shutil
 import subprocess
 import datetime
-import string
-import random
 import textwrap
 
 from common.basedir import BASEDIR, PARAMS
@@ -65,18 +63,10 @@ def unblock_stdout():
     os._exit(exit_status)
 
 def format_spinner_error(err):
-  err_list = [[]]
-  max_line_length = 50
-  for ch in err:
-    if len(err_list[-1]) > max_line_length and ch == ' ':
-      err_list.append([])
-    err_list[-1].append(ch)
-
-  err_list = [''.join(line).strip() for line in err_list]
+  err_list = textwrap.wrap(err, 65)
   err = 'ERR,' + chr(31).join(err_list[:4])  # unit seperator
   if len(err_list) > 4:
     err += '...'
-
   if len(err) > 256 - 8:
     err = err[:256 - 8].strip() + '...'
   return err
@@ -95,8 +85,6 @@ from multiprocessing import Process
 # Run scons
 spinner = Spinner()
 spinner.update("0")
-scons_build_failed = False
-scons_finished_progress = 70.0
 
 if not prebuilt:
   for retry in [True, False]:
@@ -108,10 +96,10 @@ if not prebuilt:
     nproc = os.cpu_count()
     j_flag = "" if nproc is None else "-j%d" % (nproc - 1)
     scons = subprocess.Popen(["scons", j_flag], cwd=BASEDIR, env=env, stderr=subprocess.PIPE)
-
-    # Read progress from stderr and update spinner
     progress = 0
     build_error = False
+
+    # Read progress from stderr and update spinner
     while scons.poll() is None:
       try:
         line = scons.stderr.readline()
@@ -121,23 +109,17 @@ if not prebuilt:
         line = line.rstrip()
         prefix = b'progress: '
         if line.startswith(prefix):
-          progress = scons_finished_progress * (int(line[len(prefix):]) / TOTAL_SCONS_NODES)
-          if spinner is not None:
-            pass
-            # spinner.update("%d" % progress, format_spinner_error("'scons: *** [selfdrive/locationd/kalman/generated/car.cpp] Source \'selfdrive/locationd/kalmal/templates/compute_pos.c\' not found, needed by target /selfdrive/locationd/kalman/generated/car.cpp'"))
+          progress = 70.0 * (int(line[len(prefix):]) / TOTAL_SCONS_NODES)
+          if spinner is not None and not build_error:
             spinner.update("%d" % progress)
 
-        if not line.startswith(prefix) and len(line):
+        if len(line) and not line.startswith(prefix):
           line = line.decode('utf8')
           print(line)
           if any([err in line for err in ['error: ', 'not found, needed by target']]):
-            print('error line: {}'.format(line))
             build_error = True
-            line = format_spinner_error(line)
-            for _ in range(10):
-              spinner.update("%d" % progress, line)
-              time.sleep(1)
-            break
+            spinner.update("%d" % progress, format_spinner_error(line))
+            time.sleep(10)
       except Exception:
         pass
 
@@ -520,41 +502,19 @@ def manager_prepare(spinner=None):
   os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
   # Spinner has to start from 70 here
-  total = 100.0 if prebuilt else 100 - scons_finished_progress
-  for retry in [True, False]:
-    progress = total
-    prep_failed = False
-    for i, p in enumerate(managed_processes):
-      e = prepare_managed_process(p)
-      progress = (100.0 - total) + total * (i + 1) / len(managed_processes)
+  total = 100.0 if prebuilt else 70.0
+  for i, p in enumerate(managed_processes):
+    e = prepare_managed_process(p)
+    progress = (100.0 - total) + total * (i + 1) / len(managed_processes)
+    if e is None:
       if spinner is not None:
-        if e is None:
-          spinner.update("%d" % progress)
-        else:
-          prep_failed = True
-          for _ in range(10):
-            spinner.update("%d" % progress, format_spinner_error(str(e)))
-            time.sleep(1)
-          break
-
-    if prep_failed:
-      if retry:
-        print("preparation failed, hard resetting in")
-        for i in range(5):
-          print(5 - i)
-          spinner.update("%d" % progress, "preparation failed, hard resetting in {}...".format(5 - i))
+        spinner.update("%d" % progress)
+    else:
+      if spinner is not None:
+        for _ in range(10):
+          spinner.update("%d" % progress, format_spinner_error(str(e)))
           time.sleep(1)
-
-        subprocess.check_output(["git", "fetch"], cwd="/data/openpilot", stderr=subprocess.STDOUT, encoding='utf8')
-        r = subprocess.check_output(["git", "reset", "--hard", "@{u}"], cwd="/data/openpilot", stderr=subprocess.STDOUT,
-                                    encoding='utf8')
-        reset_msg = "reset success"
-        if 'HEAD is now at' not in r:
-          reset_msg = "reset failed"
-        spinner.update("%d" % progress, reset_msg)
-        time.sleep(2)
-      else:
-        raise RuntimeError("preperation failed")
+      raise e
 
 def uninstall():
   cloudlog.warning("uninstalling")
