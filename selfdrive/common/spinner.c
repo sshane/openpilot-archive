@@ -203,7 +203,7 @@ int spin(int argc, char** argv) {
     } else if (has_extra) {
       nvgTextAlign(vg, NVG_ALIGN_CENTER | NVG_ALIGN_TOP);
       if (err_msg) {
-        int break_row_width = 1400;
+        int break_row_width = 9999;
         int y_offset = strlen(spinerr) > 160 ? 76 : 96;
         // need smaller font for longer error msg
         int fontsize = strlen(spinerr) > 50 ? 68.0f : 72.0f;

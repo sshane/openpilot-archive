@@ -65,11 +65,6 @@ def unblock_stdout():
     os._exit(exit_status)
 
 def format_spinner_error(err):
-  # err = err.split()
-  # long_sections = [idx for idx, i in enumerate(err) if len(i) > 30]
-  # for idx in long_sections:
-  #   err[idx] = ' '.join(textwrap.wrap(err[idx], 30))
-  # err = 'ERR,' + ' '.join(err)
   # err='scons: *** [selfdrive/locationd/kalman/generated/car.cpp] Source \'selfdrive/locationd/kalmal/templates/compute_pos.c\' not found, needed by target /selfdrive/locationd/kalman/generated/car.cpp'
   err_list = [[]]
   max_line_length = 40
@@ -77,11 +72,12 @@ def format_spinner_error(err):
     if len(err_list[-1]) > max_line_length and ch == ' ':
       err_list.append([])
     err_list[-1].append(ch)
-  for idx in range(len(err_list)):
-    err_list[idx] = ''.join(err_list[idx]).strip()
-  err = chr(31).join(err_list)  # unit seperator
 
-  err = 'ERR,' + err
+  err_list = [''.join(line).strip() for line in err_list]
+  err = 'ERR,' + chr(31).join(err_list[:4])  # unit seperator
+  if len(err_list) > 4:
+    err += '...'
+
   if len(err) > 184:
     err = err[:184].strip() + '...'
   print('Into spinner: {}'.format(err))
