@@ -87,19 +87,16 @@ int spin(int argc, char** argv) {
     if (stdin_input_available()){
       fgets(spintext, SPINTEXT_LENGTH, stdin);
 
-      printf("spintext 1: %s\n", spintext);
       for (int i = 0; i < strlen(spintext); i++) {
         if (spintext[i] == '\x1f') {  // unit separator
-          printf("before: %cend\n", spintext[i]);
           spintext[i] = '\n';
-          printf("after: %cend\n", spintext[i]);
         }
       }
-      printf("spintext 2: %s\n", spintext);
+
       if (spintext[strlen(spintext)] == '\0' && spintext[strlen(spintext) - 1] == '\n') {
-        spintext[strlen(spintext) - 1] = 0;
+        spintext[strlen(spintext) - 1] = 0;  // removes last \n
       }
-      printf("spintext 3: %s\n", spintext);
+
       // Get current status
       has_extra = strchr(spintext, ',') != NULL;
       if (has_extra) {
@@ -203,7 +200,7 @@ int spin(int argc, char** argv) {
     } else if (has_extra) {
       nvgTextAlign(vg, NVG_ALIGN_CENTER | NVG_ALIGN_TOP);
       if (err_msg) {
-        int break_row_width = 9999;
+        int break_row_width = 1600;  // generally unused
         int y_offset = strlen(spinerr) > 160 ? 76 : 96;
         // need smaller font for longer error msg
         int fontsize = strlen(spinerr) > 50 ? 68.0f : 72.0f;
@@ -212,7 +209,7 @@ int spin(int argc, char** argv) {
 
         nvgFontSize(vg, fontsize);
         nvgTextBox(vg, (fb_w/2)-(break_row_width/2), (fb_h*2/3)+24+y_offset, break_row_width, spinerr, NULL);
-        printf("spinerr: %s\n", spinerr);
+
       } else {
         nvgFontSize(vg, 78.0f);
         nvgText(vg, fb_w/2, (fb_h*2/3)+24+96, spinstatus, NULL);
