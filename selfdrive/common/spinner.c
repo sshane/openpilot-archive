@@ -89,8 +89,11 @@ int spin(int argc, char** argv) {
       while (true){
         fgets(spintext, SPINTEXT_LENGTH, stdin);
         printf("spintext: %s\n", spintext);
-        if ((fseek(stdin, 0, SEEK_END), ftell(stdin)) > 0) break;
+        if (getchar() == EOF){
+          break;
+        }
       }
+      printf("out of loop!\n");
 
       for (int i = 0; i < strlen(spintext); i++) {
         if (spintext[i] == '\x1f') {  // unit separator
