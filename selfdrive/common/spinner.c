@@ -85,7 +85,13 @@ int spin(int argc, char** argv) {
   for (int cnt = 0; ; cnt++) {
     // Check stdin for new text
     if (stdin_input_available()){
+      clock_t t;
+      t = clock();
       fgets(spintext, SPINTEXT_LENGTH, stdin);
+      t = clock() - t;
+      double time_taken = (double)t; // in seconds
+
+      printf("fun() took %f seconds to execute \n", time_taken);
 
       for (int i = 0; i < strlen(spintext); i++) {
         if (spintext[i] == '\x1f') {  // unit separator
