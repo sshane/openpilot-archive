@@ -106,7 +106,7 @@ class PIDController:
     self.use_kd = self.op_params.get('use_kd', True)
 
     self.error_idx = -1
-    self.max_accel_d = 0.33528  # 0.75 mph/s
+    self.max_accel_d = 0.268224  # 0.6 mph/s
 
     self.pos_limit = pos_limit
     self.neg_limit = neg_limit
@@ -155,6 +155,7 @@ class PIDController:
     self.saturated = False
     self.control = 0
     self.last_setpoint = 0.0
+    self.last_measurement = 0
     self.errors = []
 
   def update(self, setpoint, measurement, speed=0.0, check_saturation=True, override=False, feedforward=0., deadzone=0., freeze_integrator=False):
@@ -197,8 +198,8 @@ class PIDController:
         if abs(setpoint - self.last_setpoint) / self.i_rate < self.max_accel_d:  # and if cruising with minimal setpoint change
           last_error = self.errors[self.error_idx]
           # only multiply i_rate if we're adding to self.i
-          d = self.k_d * ((error - last_error) / self.d_rate) * self.i_rate
-          # self.id += d
+          # d = self.k_d * ((error - last_error) / self.d_rate) * self.i_rate
+          d = self.k_d * ((measurement - self.last_measurement) / self.d_rate) * self.i_rate
           if (self.id > 0 and self.id + d >= 0) or (self.id < 0 and self.id + d <= 0):  # and if adding d doesn't make i cross 0
             # then add derivative to integral
             self.id += d
@@ -214,6 +215,7 @@ class PIDController:
     self.errors.append(error)
     self.errors = self.errors[self.error_idx:]
     self.last_setpoint = setpoint
+    self.last_measurement = measurement
 
     self.control = clip(control, self.neg_limit, self.pos_limit)
     return self.control
