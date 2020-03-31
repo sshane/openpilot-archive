@@ -86,9 +86,12 @@ int spin(int argc, char** argv) {
     // Check stdin for new text
     if (stdin_input_available()){
       printf("update:\n");
-      while (fgets(spintext, SPINTEXT_LENGTH, stdin)){
+      while (getline(spintext, SPINTEXT_LENGTH, stdin)){
         printf("spintext: %s\n", spintext);
       }
+//      while (fgets(spintext, SPINTEXT_LENGTH, stdin)){
+//        printf("spintext: %s\n", spintext);
+//      }
 
       for (int i = 0; i < strlen(spintext); i++) {
         if (spintext[i] == '\x1f') {  // unit separator
