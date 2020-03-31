@@ -272,10 +272,10 @@ def state_control(frame, rcv_frame, plan, path_plan, CS, CP, state, events, v_cr
     params_loc['mpc_TR'] = sm_smiskol['smiskolData'].mpcTR
     params_loc['live_tracks'] = sm_smiskol['liveTracks']
     params_loc['has_lead'] = plan.hasLead
-    params_loc['car_state'] = CS
+    params_loc['CS'] = CS
 
   # Gas/Brake PID loop
-  actuators.gas, actuators.brake = LoC.update(active, CS.vEgo, CS.brakePressed, CS.standstill, CS.cruiseState.standstill,
+  actuators.gas, actuators.brake = LoC.update(active, CS.vEgo, CS.aEgo, CS.brakePressed, CS.standstill, CS.cruiseState.standstill,
                                               v_cruise_kph, v_acc_sol, plan.vTargetFuture, a_acc_sol, CP, params_loc)
   # Steering PID loop and lateral MPC
   actuators.steer, actuators.steerAngle, lac_log = LaC.update(active, CS.vEgo, CS.steeringAngle, CS.steeringRate, CS.steeringTorqueEps, CS.steeringPressed, CS.steeringRateLimited, CP, path_plan)
