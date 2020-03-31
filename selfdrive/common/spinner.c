@@ -88,6 +88,7 @@ int spin(int argc, char** argv) {
       printf("update:\n");
       while (fgets(spintext, SPINTEXT_LENGTH, stdin) != NULL){
         printf("spintext: %s\n", spintext);
+        if (feof(spintext)) break;
       }
 
       for (int i = 0; i < strlen(spintext); i++) {
