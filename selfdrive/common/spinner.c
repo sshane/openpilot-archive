@@ -85,11 +85,11 @@ int spin(int argc, char** argv) {
   for (int cnt = 0; ; cnt++) {
     // Check stdin for new text
     if (stdin_input_available()){
-      clock_t t;
-      t = clock();
+      time_t start, end;
+      time(&start);
       fgets(spintext, SPINTEXT_LENGTH, stdin);
-      t = clock() - t;
-      double time_taken = (double)t; // in seconds
+      time(&end);
+      double time_taken = double(end - start);
 
       printf("fun() took %f seconds to execute \n", time_taken);
 
