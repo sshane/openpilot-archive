@@ -86,17 +86,24 @@ int spin(int argc, char** argv) {
     // Check stdin for new text
     if (stdin_input_available()){
       printf("update:\n");
-      while (true){
-        printf("spintext: %send\n", spintext);
-        if (feof(stdin)){
-          break;
-        }
-        fgets(spintext, SPINTEXT_LENGTH, stdin);
 
-        if (feof(stdin)){
-          break;
-        }
+      int ch;
+      while ( ( ch=getchar() ) != EOF ) {
+        fgets(spintext, SPINTEXT_LENGTH, stdin);
+        printf("spintext: %send\n", spintext);
       }
+
+//      while (true){
+//        printf("spintext: %send\n", spintext);
+//        if (feof(stdin)){
+//          break;
+//        }
+//        fgets(spintext, SPINTEXT_LENGTH, stdin);
+//
+//        if (feof(stdin)){
+//          break;
+//        }
+//      }
       printf("out of loop!\n");
 
       for (int i = 0; i < strlen(spintext); i++) {
