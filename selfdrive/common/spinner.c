@@ -89,9 +89,9 @@ int spin(int argc, char** argv) {
 
       int ch;
       int s = 0;
-      char spintextnew[SPINTEXT_LENGTH];
+      // char spintextnew[SPINTEXT_LENGTH];
       while ((ch=getchar()) != '\n' ) {
-        spintextnew[s] = ch;
+        spintext[s] = ch;
         s++;
         // fgets(spintext, SPINTEXT_LENGTH, stdin);
         //printf("spintext: %send\n", spintext);
