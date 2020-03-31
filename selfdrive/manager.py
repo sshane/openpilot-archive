@@ -84,6 +84,7 @@ def format_spinner_error(err):
   err = 'ERR,' + err
   if len(err) > 184:
     err = err[:184].strip() + '...'
+  print('Into spinner: {}'.format(err))
   return err
 
 
