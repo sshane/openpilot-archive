@@ -84,7 +84,7 @@ int spin(int argc, char** argv) {
 
   for (int cnt = 0; ; cnt++) {
     // Check stdin for new text
-    if (true){
+    if (stdin_input_available()){
       printf("update:\n");
 
 //      int ch;
