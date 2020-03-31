@@ -86,57 +86,57 @@ from multiprocessing import Process
 spinner = Spinner()
 spinner.update("0")
 
-if not prebuilt:
-  for retry in [True, False]:
-    # run scons
-    env = os.environ.copy()
-    env['SCONS_PROGRESS'] = "1"
-    env['SCONS_CACHE'] = "1"
-
-    nproc = os.cpu_count()
-    j_flag = "" if nproc is None else "-j%d" % (nproc - 1)
-    scons = subprocess.Popen(["scons", j_flag], cwd=BASEDIR, env=env, stderr=subprocess.PIPE)
-    progress = 0
-    build_error = False
-
-    # Read progress from stderr and update spinner
-    while scons.poll() is None:
-      try:
-        line = scons.stderr.readline()
-        if line is None:
-          continue
-
-        line = line.rstrip()
-        prefix = b'progress: '
-        if line.startswith(prefix):
-          progress = 70.0 * (int(line[len(prefix):]) / TOTAL_SCONS_NODES)
-          if spinner is not None and not build_error:
-            spinner.update("%d" % progress)
-
-        if len(line) and not line.startswith(prefix):
-          line = line.decode('utf8')
-          print(line)
-          if any([err in line for err in ['error: ', 'not found, needed by target']]):
-            build_error = True
-            spinner.update("%d" % progress, format_spinner_error(line))
-            time.sleep(10)
-      except Exception:
-        pass
-
-    if scons.returncode != 0 or build_error:
-      if retry:
-        print("scons build failed, cleaning in")
-        for i in range(5):
-          print(5 - i)
-          spinner.update("%d" % progress, "scons build failed, cleaning in {}...".format(5 - i))
-          time.sleep(1)
-        spinner.update("%d" % progress, "scons build failed, cleaning...")
-        # subprocess.check_call(["scons", "-c"], cwd=BASEDIR, env=env)
-        # shutil.rmtree("/tmp/scons_cache")
-      else:
-        raise RuntimeError("scons build failed")
-    else:
-      break
+# if not prebuilt:
+#   for retry in [True, False]:
+#     # run scons
+#     env = os.environ.copy()
+#     env['SCONS_PROGRESS'] = "1"
+#     env['SCONS_CACHE'] = "1"
+#
+#     nproc = os.cpu_count()
+#     j_flag = "" if nproc is None else "-j%d" % (nproc - 1)
+#     scons = subprocess.Popen(["scons", j_flag], cwd=BASEDIR, env=env, stderr=subprocess.PIPE)
+#     progress = 0
+#     build_error = False
+#
+#     # Read progress from stderr and update spinner
+#     while scons.poll() is None:
+#       try:
+#         line = scons.stderr.readline()
+#         if line is None:
+#           continue
+#
+#         line = line.rstrip()
+#         prefix = b'progress: '
+#         if line.startswith(prefix):
+#           progress = 70.0 * (int(line[len(prefix):]) / TOTAL_SCONS_NODES)
+#           if spinner is not None and not build_error:
+#             spinner.update("%d" % progress)
+#
+#         if len(line) and not line.startswith(prefix):
+#           line = line.decode('utf8')
+#           print(line)
+#           if any([err in line for err in ['error: ', 'not found, needed by target']]):
+#             build_error = True
+#             spinner.update("%d" % progress, format_spinner_error(line))
+#             time.sleep(10)
+#       except Exception:
+#         pass
+#
+#     if scons.returncode != 0 or build_error:
+#       if retry:
+#         print("scons build failed, cleaning in")
+#         for i in range(5):
+#           print(5 - i)
+#           spinner.update("%d" % progress, "scons build failed, cleaning in {}...".format(5 - i))
+#           time.sleep(1)
+#         spinner.update("%d" % progress, "scons build failed, cleaning...")
+#         # subprocess.check_call(["scons", "-c"], cwd=BASEDIR, env=env)
+#         # shutil.rmtree("/tmp/scons_cache")
+#       else:
+#         raise RuntimeError("scons build failed")
+#     else:
+#       break
 
 import cereal
 import cereal.messaging as messaging
