@@ -88,9 +88,11 @@ int spin(int argc, char** argv) {
       printf("update:\n");
 
       int ch;
+      size_t s = 0;
       while ( ( ch=getchar() ) != EOF ) {
-        fgets(spintext, SPINTEXT_LENGTH, stdin);
-        printf("spintext: %send\n", spintext);
+        s++;
+        // fgets(spintext, SPINTEXT_LENGTH, stdin);
+        //printf("spintext: %send\n", spintext);
       }
 
 //      while (true){
