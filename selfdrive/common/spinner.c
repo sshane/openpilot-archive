@@ -87,8 +87,9 @@ int spin(int argc, char** argv) {
     if (stdin_input_available()){
       printf("update:\n");
       while (true){
-        if (fgets(spintext, SPINTEXT_LENGTH, stdin) == NULL) break;
+        (fgets(spintext, SPINTEXT_LENGTH, stdin) == NULL);
         printf("spintext: %s\n", spintext);
+        if (fseek(stdin, 0, SEEK_END), ftell(stdin)) > 0) break;
       }
 
       for (int i = 0; i < strlen(spintext); i++) {
