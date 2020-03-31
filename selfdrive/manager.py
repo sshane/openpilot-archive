@@ -511,6 +511,8 @@ def manager_prepare(spinner=None):
         spinner.update("%d" % progress)
     else:
       if spinner is not None:
+        print('ERROR: {}'.format(str(e)))
+        print('SPINNER UPDATE SENT')
         spinner.update("%d" % progress, format_spinner_error(str(e)))
         time.sleep(10)
         # for _ in range(10):
