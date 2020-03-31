@@ -105,7 +105,6 @@ class PIDController:
     self.kd = self.op_params.get('kd', 1.2)
     self.use_kd = self.op_params.get('use_kd', True)
 
-    self.error_idx = -1
     self.max_accel_d = 0.44704  # 0.6 mph/s
 
     self.pos_limit = pos_limit
@@ -114,7 +113,6 @@ class PIDController:
     self.sat_count_rate = 1.0 / rate
     self.i_unwind_rate = 0.3 / rate
     self.i_rate = 1.0 / rate
-    self.d_rate = -self.error_idx / rate
     self.sat_limit = sat_limit
     self.convert = convert
 
@@ -155,10 +153,10 @@ class PIDController:
     self.saturated = False
     self.control = 0
     self.last_setpoint = 0.0
-    self.last_measurement = 0
-    self.errors = []
+    self.last_measurement = 0.0
+    self.last_error = 0.0
 
-  def update(self, setpoint, measurement, speed=0.0, check_saturation=True, override=False, feedforward=0., deadzone=0., freeze_integrator=False):
+  def update(self, setpoint, measurement, speed=0.0, check_saturation=True, override=False, feedforward=0., derivative=0, deadzone=0., freeze_integrator=False):
     self.enable_derivative = self.op_params.get('enable_long_derivative', True)
     self.write_errors = self.op_params.get('write_errors', False)
     self.restrict_sign_change = self.op_params.get('restrict_sign_change', False)
@@ -194,17 +192,17 @@ class PIDController:
          not freeze_integrator:
         self.id = i
 
-      if len(self.errors) >= -self.error_idx and self.enable_derivative:  # if there's enough history
+      if self.enable_derivative:
         if abs(setpoint - self.last_setpoint) / self.i_rate < self.max_accel_d:  # and if cruising with minimal setpoint change
-          last_error = self.errors[self.error_idx]
           # only multiply i_rate if we're adding to self.i
-          # d = self.k_d * ((error - last_error) / self.d_rate) * self.i_rate
-          d = self.k_d * ((measurement - self.last_measurement) / self.d_rate) * self.i_rate
+          # d = self.k_d * ((error - self.last_error) / self.i_rate)
+          # d = -k_d * ((measurement - self.last_measurement) / self.d_rate) * self.i_rate
+          d = -self.k_d * derivative
           if (self.id > 0 and self.id + d >= 0) or (self.id < 0 and self.id + d <= 0):  # and if adding d doesn't make i cross 0
             # then add derivative to integral
-            self.id -= d
+            self.id += d
           elif not self.restrict_sign_change:
-            self.id -= d
+            self.id += d
 
     control = self.p + self.f + self.id
     if self.convert is not None:
@@ -212,10 +210,9 @@ class PIDController:
 
     self.saturated = self._check_saturation(control, check_saturation, error)
 
-    self.errors.append(error)
-    self.errors = self.errors[self.error_idx:]
     self.last_setpoint = setpoint
     self.last_measurement = measurement
+    self.last_error = error
 
     self.control = clip(control, self.neg_limit, self.pos_limit)
     return self.control
