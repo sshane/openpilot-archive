@@ -91,7 +91,7 @@ int spin(int argc, char** argv) {
       clock_t end = clock();
       double time_spent = (double)(end - begin) / CLOCKS_PER_SEC;
 
-      printf("fgets took %f seconds to execute \n", time_taken);
+      printf("fgets took %f seconds to execute \n", time_spent);
 
       for (int i = 0; i < strlen(spintext); i++) {
         if (spintext[i] == '\x1f') {  // unit separator
