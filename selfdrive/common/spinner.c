@@ -52,7 +52,7 @@ int spin(int argc, char** argv) {
 
   char *spinstatus;
   char *spinerr;
-  char spintext[SPINTEXT_LENGTH];
+  char *spintext;
   spintext[0] = 0;
 
   const char* spintext_arg = NULL;
