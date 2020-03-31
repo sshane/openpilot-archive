@@ -84,18 +84,19 @@ int spin(int argc, char** argv) {
 
   for (int cnt = 0; ; cnt++) {
     // Check stdin for new text
-    if (stdin_input_available()){
+    if (true){
       printf("update:\n");
 
-      int ch;
-      int s = 0;
-      // char spintextnew[SPINTEXT_LENGTH];
-      while ((ch=getchar()) != '\n' ) {
-        spintext[s] = ch;
-        s++;
-        // fgets(spintext, SPINTEXT_LENGTH, stdin);
-        //printf("spintext: %send\n", spintext);
-      }
+//      int ch;
+//      int s = 0;
+//      // char spintextnew[SPINTEXT_LENGTH];
+//      while ((ch=getchar()) != '\n' ) {
+//        spintext[s] = ch;
+//        s++;
+//        // fgets(spintext, SPINTEXT_LENGTH, stdin);
+//        //printf("spintext: %send\n", spintext);
+//      }
+      fgets(spintext, SPINTEXT_LENGTH, stdin);
       printf("spintext: %s\n", spintext);
       // printf("\nsize_t: %d\n", s);
 
