@@ -511,9 +511,11 @@ def manager_prepare(spinner=None):
         spinner.update("%d" % progress)
     else:
       if spinner is not None:
-        for _ in range(10):
-          spinner.update("%d" % progress, format_spinner_error(str(e)))
-          time.sleep(1)
+        spinner.update("%d" % progress, format_spinner_error(str(e)))
+        time.sleep(10)
+        # for _ in range(10):
+        #   spinner.update("%d" % progress, format_spinner_error(str(e)))
+        #   time.sleep(1)
       raise e
 
 def uninstall():
