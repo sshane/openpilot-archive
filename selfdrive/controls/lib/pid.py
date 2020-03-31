@@ -199,7 +199,7 @@ class PIDController:
           last_error = self.errors[self.error_idx]
           # only multiply i_rate if we're adding to self.i
           # d = self.k_d * ((error - last_error) / self.d_rate) * self.i_rate
-          d = self.k_d * ((measurement - self.last_measurement) / self.d_rate) * self.i_rate
+          d = -self.k_d * ((measurement - self.last_measurement) / self.d_rate) * self.i_rate
           if (self.id > 0 and self.id + d >= 0) or (self.id < 0 and self.id + d <= 0):  # and if adding d doesn't make i cross 0
             # then add derivative to integral
             self.id += d
