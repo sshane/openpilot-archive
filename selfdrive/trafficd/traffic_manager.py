@@ -12,7 +12,8 @@ class Traffic:
     self.pm = messaging.PubMaster(['trafficModelEvent'])
     self.sm = messaging.SubMaster(['trafficModelRaw'])
 
-    self.labels = ['RED', 'GREEN', 'YELLOW', 'NONE']
+    # self.labels = ['RED', 'GREEN', 'YELLOW', 'NONE']
+    self.labels = ['GO', 'SLOW']
 
     self.past_preds = []
     self.model_rate = 1 / 5.

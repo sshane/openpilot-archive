@@ -5,7 +5,9 @@ using namespace std;
 std::unique_ptr<zdl::SNPE::SNPE> snpe;
 volatile sig_atomic_t do_exit = 0;
 
-const std::vector<std::string> modelLabels = {"RED", "GREEN", "YELLOW", "NONE"};
+// const std::vector<std::string> modelLabels = {"RED", "GREEN", "YELLOW", "NONE"};
+const std::vector<std::string> modelLabels = {"GO", "SLOW"};
+const int numLabels = 2;
 const double modelRate = 1 / 5.;  // 5 Hz
 
 const int original_shape[3] = {874, 1164, 3};   // global constants
@@ -86,14 +88,14 @@ void initModel() {
 }
 
 void sendPrediction(std::vector<float> modelOutputVec, PubSocket* traffic_lights_sock) {
-    float modelOutput[4];
-    for (int i = 0; i < 4; i++){  // convert vector to array
+    float modelOutput[numLabels];
+    for (int i = 0; i < numLabels; i++){  // convert vector to array
         modelOutput[i] = modelOutputVec[i];
         // std::cout << modelOutput[i] << std::endl;
     }
     // std::cout << std::endl;
 
-    kj::ArrayPtr<const float> modelOutput_vs(&modelOutput[0], 4);
+    kj::ArrayPtr<const float> modelOutput_vs(&modelOutput[0], numLabels);
 
     capnp::MallocMessageBuilder msg;
     cereal::Event::Builder event = msg.initRoot<cereal::Event>();
