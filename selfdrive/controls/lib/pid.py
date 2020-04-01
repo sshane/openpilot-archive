@@ -112,7 +112,7 @@ class PIDController:
 
     self.sat_count_rate = 1.0 / rate
     self.i_unwind_rate = 0.3 / rate
-    self.i_rate = 1.0 / rate
+    self.rate = 1.0 / rate
     self.sat_limit = sat_limit
     self.convert = convert
 
@@ -179,7 +179,7 @@ class PIDController:
     if override:
       self.id -= self.i_unwind_rate * float(np.sign(self.id))
     else:
-      i = self.id + error * self.k_i * self.i_rate
+      i = self.id + error * self.k_i * self.rate
       control = self.p + self.f + i
 
       if self.convert is not None:
@@ -192,19 +192,20 @@ class PIDController:
          not freeze_integrator:
         self.id = i
 
-      if self.enable_derivative:
-        if abs(setpoint - self.last_setpoint) / self.i_rate < self.max_accel_d:  # and if cruising with minimal setpoint change
-          # only multiply i_rate if we're adding to self.i
-          # d = self.k_d * ((error - self.last_error) / self.i_rate)
-          # d = -k_d * ((measurement - self.last_measurement) / self.d_rate) * self.i_rate
-          d = -self.k_d * (derivative * (1/100.))
-          if (self.id > 0 and self.id + d >= 0) or (self.id < 0 and self.id + d <= 0):  # and if adding d doesn't make i cross 0
-            # then add derivative to integral
-            self.id += d
-          elif not self.restrict_sign_change:
-            self.id += d
+      # if self.enable_derivative:
+      #   if abs(setpoint - self.last_setpoint) / self.rate < self.max_accel_d:  # and if cruising with minimal setpoint change
+      #     # only multiply i_rate if we're adding to self.i
+      #     # d = self.k_d * ((error - self.last_error) / self.i_rate)
+      #     # d = -k_d * ((measurement - self.last_measurement) / self.d_rate) * self.i_rate
+      #     d = -self.k_d * derivative * self.rate
+      #     if (self.id > 0 and self.id + d >= 0) or (self.id < 0 and self.id + d <= 0):  # and if adding d doesn't make i cross 0
+      #       # then add derivative to integral
+      #       self.id += d
+      #     elif not self.restrict_sign_change:
+      #       self.id += d
 
-    control = self.p + self.f + self.id
+    d = -self.k_d * derivative * self.rate
+    control = self.p + self.f + self.id + d
     if self.convert is not None:
       control = self.convert(control, speed=self.speed)
 
