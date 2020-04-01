@@ -175,12 +175,12 @@ class PIDController:
     self.p = error * self.k_p
     self.f = feedforward * self.k_f
 
-    d = 0
+    d = -self.k_d * derivative * self.rate
     if override:
       self.id -= self.i_unwind_rate * float(np.sign(self.id))
     else:
       i = self.id + error * self.k_i * self.rate
-      control = self.p + self.f + i
+      control = self.p + self.f + i + d
 
       if self.convert is not None:
         control = self.convert(control, speed=self.speed)
@@ -204,7 +204,6 @@ class PIDController:
       #     elif not self.restrict_sign_change:
       #       self.id += d
 
-    d = -self.k_d * derivative * self.rate
     control = self.p + self.f + self.id + d
     if self.convert is not None:
       control = self.convert(control, speed=self.speed)
