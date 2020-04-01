@@ -151,12 +151,13 @@ def state_transition(frame, CS, CP, state, events, soft_disable_timer, v_cruise_
   #   f.write('{}\n'.format(traffic_sm['trafficModelEvent'].status))
   traffic_light_status = traffic_sm['trafficModelEvent'].status
   traffic_light_confidence = round(traffic_sm['trafficModelEvent'].confidence * 100, 2)
-  if traffic_light_status == 'SLOW':
-    AM.add(frame, 'redLight', enabled, extra_text_2=' ({}%)'.format(traffic_light_confidence))
-  elif traffic_light_status == 'GO':
-    AM.add(frame, 'greenLight', enabled, extra_text_2=' ({}%)'.format(traffic_light_confidence))
-  # elif traffic_light_status == 'YELLOW':
-  #   AM.add(frame, 'yellowLight', enabled, extra_text_2=' ({}%)'.format(traffic_light_confidence))
+  if traffic_light_confidence > 80:
+    if traffic_light_status == 'SLOW':
+      AM.add(frame, 'redLight', enabled, extra_text_2=' ({}%)'.format(traffic_light_confidence))
+    elif traffic_light_status == 'GO':
+      AM.add(frame, 'greenLight', enabled, extra_text_2=' ({}%)'.format(traffic_light_confidence))
+    # elif traffic_light_status == 'YELLOW':
+    #   AM.add(frame, 'yellowLight', enabled, extra_text_2=' ({}%)'.format(traffic_light_confidence))
 
   # DISABLED
   if state == State.disabled:
