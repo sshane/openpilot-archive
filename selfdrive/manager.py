@@ -429,7 +429,7 @@ def manager_thread():
     if msg.thermal.freeSpace < 0.05:
       logger_dead = True
 
-    run_all = False
+    run_all = True
 
     if msg.thermal.started or run_all:
       for p in car_started_processes:
