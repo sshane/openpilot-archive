@@ -28,9 +28,11 @@ class Traffic:
 
   def traffic_loop(self):
     while True:
-      while not self.is_new_msg() and not self.is_dead:  # uses rate keeper from traffic.cc, waits for new message
+      while not self.is_new_msg():  # uses rate keeper from traffic.cc, waits for new message
         time.sleep(self.model_rate)
         self.sm.update(0)
+        if self.is_dead:
+          break
 
       if not self.is_dead:
         self.shown_dead_warning = False
