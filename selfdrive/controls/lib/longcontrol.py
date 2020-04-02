@@ -70,7 +70,7 @@ class LongControl():
     # kdV = [0.05, 0.2, 0.8, 1.55]
     kdBP = [0., 16., 35.]
     # kdBP = [i * MS_TO_MPH for i in kdBP]
-    kdV = [0.05, 0.85, 2.2]
+    kdV = [1.8, 1.0, 0.1]
     self.pid = PIDController((CP.longitudinalTuning.kpBP, CP.longitudinalTuning.kpV),
                              (CP.longitudinalTuning.kiBP, CP.longitudinalTuning.kiV),
                              (kdBP, kdV),
