@@ -81,6 +81,10 @@ class Traffic:
     time.sleep(max(self.model_rate - loop_time, 0))
 
 
-if __name__ == "__main__":
+def main():
   traffic = Traffic()
   traffic.start()
+
+
+if __name__ == "__main__":
+  main()
