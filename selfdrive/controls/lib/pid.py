@@ -168,19 +168,18 @@ class PIDController:
     error = float(apply_deadzone(setpoint - measurement, deadzone))
 
     if self.write_errors:
-      # keys: error, setpoint, measurement, enable_derivative, time
+      # keys: [error, setpoint, measurement, enable_derivative, time]
       with open('/data/long_errors', 'a') as f:
         f.write('{}\n'.format([error, setpoint, measurement, self.enable_derivative, time.time()]))
 
     self.p = error * self.k_p
     self.f = feedforward * self.k_f
 
-    d = -self.k_d * derivative * self.rate
     if override:
       self.id -= self.i_unwind_rate * float(np.sign(self.id))
     else:
       i = self.id + error * self.k_i * self.rate
-      control = self.p + self.f + i + d
+      control = self.p + self.f + i
 
       if self.convert is not None:
         control = self.convert(control, speed=self.speed)
@@ -191,6 +190,14 @@ class PIDController:
           (error <= 0 and (control >= self.neg_limit or i > 0.0))) and \
          not freeze_integrator:
         self.id = i
+
+      if self.enable_derivative:
+        d = self.k_d * derivative * self.rate
+        if (self.id > 0 and self.id + d >= 0) or (self.id < 0 and self.id + d <= 0):  # if adding d doesn't make i cross 0
+          # then add derivative to integral
+          self.id -= d
+        elif not self.restrict_sign_change:
+          self.id -= d
 
       # if self.enable_derivative:
       #   if abs(setpoint - self.last_setpoint) / self.rate < self.max_accel_d:  # and if cruising with minimal setpoint change
@@ -204,7 +211,7 @@ class PIDController:
       #     elif not self.restrict_sign_change:
       #       self.id += d
 
-    control = self.p + self.f + self.id + d
+    control = self.p + self.f + self.id
     if self.convert is not None:
       control = self.convert(control, speed=self.speed)
 
