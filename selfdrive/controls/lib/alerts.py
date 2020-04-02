@@ -60,6 +60,27 @@ class Alert():
 ALERTS = [
   # Miscellaneous alerts
   Alert(
+      "trafficSlow",
+      "TRAFFIC LIGHT - SLOW DOWN",
+      "Red traffic light ahead",
+      AlertStatus.userPrompt, AlertSize.mid,
+      Priority.LOW, VisualAlert.steerRequired, AudibleAlert.chimeWarning1, 0.1, 2., 0.2),
+
+  Alert(
+      "trafficGo",
+      "TRAFFIC LIGHT - GO",
+      "No red lights ahead",
+      AlertStatus.normal, AlertSize.mid,
+      Priority.LOW, VisualAlert.none, AudibleAlert.none, 0., 0., 0.2),
+
+  Alert(
+      "trafficDead",
+      "TRAFFICD IS DEAD",
+      "trafficd has crashed!",
+      AlertStatus.critical, AlertSize.mid,
+      Priority.HIGHEST, VisualAlert.steerRequired, AudibleAlert.chimeWarningRepeat, 2., .2, 3.),
+
+  Alert(
       "enable",
       "",
       "",

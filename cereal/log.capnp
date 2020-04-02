@@ -1946,6 +1946,15 @@ struct Sentinel {
   type @0 :SentinelType;
 }
 
+struct TrafficModelRaw {
+  prediction @0 :List(Float32);
+}
+
+struct TrafficModelEvent {
+  status @0 :Text;
+  confidence @1 :Float32;
+}
+
 struct Event {
   # in nanoseconds?
   logMonoTime @0 :UInt64;
@@ -2024,5 +2033,8 @@ struct Event {
     dMonitoringState @71: DMonitoringState;
     liveLocationKalman @72 :LiveLocationKalman;
     sentinel @73 :Sentinel;
+
+    trafficModelRaw @74: TrafficModelRaw;
+    trafficModelEvent @75: TrafficModelEvent;
   }
 }
