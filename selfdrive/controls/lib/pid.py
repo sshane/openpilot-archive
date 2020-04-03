@@ -153,7 +153,6 @@ class PIDController:
     self.saturated = False
     self.control = 0
     self.last_setpoint = 0.0
-    self.last_measurement = 0.0
     self.last_error = 0.0
 
   def update(self, setpoint, measurement, speed=0.0, check_saturation=True, override=False, feedforward=0., derivative=0, deadzone=0., freeze_integrator=False):
@@ -218,7 +217,6 @@ class PIDController:
     self.saturated = self._check_saturation(control, check_saturation, error)
 
     self.last_setpoint = setpoint
-    self.last_measurement = measurement
     self.last_error = error
 
     self.control = clip(control, self.neg_limit, self.pos_limit)
