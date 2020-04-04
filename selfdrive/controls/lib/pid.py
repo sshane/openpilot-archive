@@ -155,7 +155,7 @@ class PIDController:
     self.last_setpoint = 0.0
     self.last_error = 0.0
 
-  def update(self, setpoint, measurement, speed=0.0, check_saturation=True, override=False, feedforward=0., derivative=0, deadzone=0., freeze_integrator=False):
+  def update(self, setpoint, measurement, speed=0.0, check_saturation=True, override=False, feedforward=0., deadzone=0., freeze_integrator=False):
     self.enable_derivative = self.op_params.get('enable_long_derivative', True)
     self.write_errors = self.op_params.get('write_errors', False)
     self.restrict_sign_change = self.op_params.get('restrict_sign_change', False)
@@ -198,17 +198,15 @@ class PIDController:
         elif not self.restrict_sign_change:
           self.id -= d
 
-      # if self.enable_derivative:
-      #   if abs(setpoint - self.last_setpoint) / self.rate < self.max_accel_d:  # and if cruising with minimal setpoint change
-      #     # only multiply i_rate if we're adding to self.i
-      #     # d = self.k_d * ((error - self.last_error) / self.i_rate)
-      #     # d = -k_d * ((measurement - self.last_measurement) / self.d_rate) * self.i_rate
-      #     d = -self.k_d * derivative * self.rate
-      #     if (self.id > 0 and self.id + d >= 0) or (self.id < 0 and self.id + d <= 0):  # and if adding d doesn't make i cross 0
-      #       # then add derivative to integral
-      #       self.id += d
-      #     elif not self.restrict_sign_change:
-      #       self.id += d
+      if self.enable_derivative:
+        if abs(setpoint - self.last_setpoint) / self.rate < self.max_accel_d:  # and if cruising with minimal setpoint change
+          # only multiply i_rate if we're adding to self.i
+          d = self.k_d * (error - self.last_error) * self.rate
+          if (self.id > 0 and self.id + d >= 0) or (self.id < 0 and self.id + d <= 0):  # and if adding d doesn't make i cross 0
+            # then add derivative to integral
+            self.id += d
+          elif not self.restrict_sign_change:
+            self.id += d
 
     control = self.p + self.f + self.id
     if self.convert is not None:
