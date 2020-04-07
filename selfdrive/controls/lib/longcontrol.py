@@ -70,7 +70,7 @@ class LongControl():
     # kdV = [0.05, 0.2, 0.8, 1.55]
     kdBP = [0., 16., 35.]
     # kdBP = [i * MS_TO_MPH for i in kdBP]
-    kdV = [0.05, 0.85, 1.5]
+    kdV = [0.01, 0.5, 1.0]
     self.pid = PIDController((CP.longitudinalTuning.kpBP, CP.longitudinalTuning.kpV),
                              (CP.longitudinalTuning.kiBP, CP.longitudinalTuning.kiV),
                              (kdBP, kdV),
@@ -90,7 +90,7 @@ class LongControl():
     self.pid.reset()
     self.v_pid = v_pid
 
-  def update(self, active, v_ego, brake_pressed, standstill, cruise_standstill, v_cruise, v_target, v_target_future, a_target, CP, extra_params):
+  def update(self, active, v_ego, a_ego, brake_pressed, standstill, cruise_standstill, v_cruise, v_target, v_target_future, a_target, CP, extra_params):
     """Update longitudinal control. This updates the state machine and runs a PID loop"""
     # Actuation limits
     gas_max = interp(v_ego, CP.gasMaxBP, CP.gasMaxV)
@@ -125,7 +125,7 @@ class LongControl():
       prevent_overshoot = not CP.stoppingControl and v_ego < 1.5 and v_target_future < 0.7
       deadzone = interp(v_ego_pid, CP.longitudinalTuning.deadzoneBP, CP.longitudinalTuning.deadzoneV)
 
-      output_gb = self.pid.update(self.v_pid, v_ego_pid, speed=v_ego_pid, deadzone=deadzone, feedforward=a_target, freeze_integrator=prevent_overshoot)
+      output_gb = self.pid.update(self.v_pid, v_ego_pid, speed=v_ego_pid, deadzone=deadzone, feedforward=a_target, derivative=a_ego, freeze_integrator=prevent_overshoot)
 
       if prevent_overshoot:
         output_gb = min(output_gb, 0.0)
