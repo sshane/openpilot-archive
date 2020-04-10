@@ -201,7 +201,7 @@ class PIDController:
       if self.enable_derivative:
         if abs(setpoint - self.last_setpoint) / self.rate < self.max_accel_d:  # and if cruising with minimal setpoint change
           # only multiply i_rate if we're adding to self.i
-          d = self.k_d * (error - self.last_error) * self.rate
+          d = self.k_d * (error - self.last_error)
           if (self.id > 0 and self.id + d >= 0) or (self.id < 0 and self.id + d <= 0):  # and if adding d doesn't make i cross 0
             # then add derivative to integral
             self.id += d
