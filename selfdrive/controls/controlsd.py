@@ -272,7 +272,7 @@ def state_control(frame, rcv_frame, plan, path_plan, CS, CP, state, events, v_cr
     params_loc['mpc_TR'] = sm_smiskol['smiskolData'].mpcTR
     params_loc['live_tracks'] = sm_smiskol['liveTracks']
     params_loc['has_lead'] = plan.hasLead
-    params_loc['car_state'] = CS
+    params_loc['CS'] = CS
 
   # Gas/Brake PID loop
   actuators.gas, actuators.brake = LoC.update(active, CS.vEgo, CS.brakePressed, CS.standstill, CS.cruiseState.standstill,
@@ -389,7 +389,7 @@ def data_send(sm, pm, CS, CI, CP, VM, state, events, actuators, v_cruise_kph, rk
     "vPid": float(LoC.v_pid),
     "vCruise": float(v_cruise_kph),
     "upAccelCmd": float(LoC.pid.p),
-    "uiAccelCmd": float(LoC.pid.i),
+    "uiAccelCmd": float(LoC.pid.id),
     "ufAccelCmd": float(LoC.pid.f),
     "angleSteersDes": float(LaC.angle_steers_des),
     "vTargetLead": float(v_acc),

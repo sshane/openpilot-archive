@@ -35,7 +35,7 @@ else:
     error_tags['origin'] = origin
     error_tags['branch'] = branch
 
-  client = Client('https://1f80722852fb4faa879c3cc26a750ba4:1ab8ecb658ec449d9107a068282bac77@sentry.io/1895841',
+  client = Client('https://ea22c9bf36bd443ab15c4d84c9ff99ae:449cbbab48d9420095e2c8da7e5647b5@o237581.ingest.sentry.io/5192553',
                   install_sys_hook=False, transport=HTTPTransport, release=version, tags=error_tags)
 
   def capture_exception(*args, **kwargs):

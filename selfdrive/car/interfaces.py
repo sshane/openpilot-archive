@@ -87,13 +87,9 @@ class CarInterfaceBase():
   def create_common_events(self, cs_out, extra_gears=[], gas_resume_speed=-1):
     events = []
 
-    should_disengage = False
-    if (cs_out.cruiseState.enabled and not self.cruise_enabled_prev) or travis:  # this lets us modularize which alerts we want to disable if op is engaged
-      should_disengage = True  # forex, don't disengage if the seatbelt is unlatched or door is opened which isn't safe
-
-    if cs_out.doorOpen and should_disengage:
+    if cs_out.doorOpen:
       events.append(create_event('doorOpen', [ET.NO_ENTRY, ET.SOFT_DISABLE]))
-    if cs_out.seatbeltUnlatched and should_disengage:
+    if cs_out.seatbeltUnlatched:
       events.append(create_event('seatbeltNotLatched', [ET.NO_ENTRY, ET.SOFT_DISABLE]))
     if cs_out.gearShifter != GearShifter.drive and cs_out.gearShifter not in extra_gears:
       events.append(create_event('wrongGear', [ET.NO_ENTRY, ET.SOFT_DISABLE]))
