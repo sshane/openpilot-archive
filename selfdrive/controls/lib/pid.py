@@ -190,23 +190,15 @@ class PIDController:
          not freeze_integrator:
         self.id = i
 
-      # if self.enable_derivative:
-      #   d = self.k_d * -derivative * self.rate
-      #   if (self.id > 0 and self.id + d >= 0) or (self.id < 0 and self.id + d <= 0):  # if adding d doesn't make i cross 0
-      #     # then add derivative to integral
-      #     self.id += d
-      #   elif not self.restrict_sign_change:
-      #     self.id += d
-
-      if self.enable_derivative:
-        if abs(setpoint - self.last_setpoint) / self.rate < self.max_accel_d:  # and if cruising with minimal setpoint change
-          # only multiply i_rate if we're adding to self.i
-          d = self.k_d * (error - self.last_error)
-          if (self.id > 0 and self.id + d >= 0) or (self.id < 0 and self.id + d <= 0):  # and if adding d doesn't make i cross 0
-            # then add derivative to integral
-            self.id += d
-          elif not self.restrict_sign_change:
-            self.id += d
+    if self.enable_derivative:
+      if abs(setpoint - self.last_setpoint) / self.rate < self.max_accel_d:  # and if cruising with minimal setpoint change
+        # only multiply i_rate if we're adding to self.i
+        d = self.k_d * (error - self.last_error)
+        if (self.id > 0 and self.id + d >= 0) or (self.id < 0 and self.id + d <= 0):  # and if adding d doesn't make i cross 0
+          # then add derivative to integral
+          self.id += d
+        elif not self.restrict_sign_change:
+          self.id += d
 
     control = self.p + self.f + self.id
     if self.convert is not None:
