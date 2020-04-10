@@ -2,6 +2,7 @@
 from common.op_params import opParams
 import time
 import ast
+import difflib
 
 
 class opEdit:  # use by running `python /data/openpilot/op_edit.py`
@@ -52,7 +53,7 @@ class opEdit:  # use by running `python /data/openpilot/op_edit.py`
       to_print += extras
 
       print('\n'.join(to_print))
-      print('\nChoose a parameter to explore (by identifier): ')
+      print('\nChoose a parameter to edit (by index or name):')
 
       choice = input('>> ').strip()
       parsed, choice = self.parse_choice(choice, len(to_print) - len(extras))
@@ -89,9 +90,18 @@ class opEdit:  # use by running `python /data/openpilot/op_edit.py`
       return 'delete', choice
     elif choice in ['l', 'live']:  # live tuning mode
       return 'live', choice
+    else:  # find most similar param to user's input
+      param_sims = [(idx, self.str_diff(choice, param)) for idx, param in enumerate(self.params)]
+      param_sims = [param for param in param_sims if param[1] > 0.5]
+      if len(param_sims) > 0:
+        chosen_param = sorted(param_sims, key=lambda param: param[1])[-1]
+        return 'change', chosen_param[0]  # return idx
 
     self.message('Invalid choice!')
     return 'continue', choice
+
+  def str_diff(self, a, b):
+    return difflib.SequenceMatcher(a=a, b=b).ratio()
 
   def change_parameter(self, choice):
     while True:
@@ -108,7 +118,7 @@ class opEdit:  # use by running `python /data/openpilot/op_edit.py`
         allowed_types = self.op_params.default_params[chosen_key]['allowed_types']
         to_print.append('>>  Allowed types: {}'.format(', '.join([str(i).split("'")[1] for i in allowed_types])))
       if key_info.live:
-        to_print.append('>>  This parameter supports live tuning! Updates should take affect within 5 seconds.\n')
+        to_print.append('>>  This parameter supports live tuning! Updates should take affect within 5 seconds')
 
       if to_print:
         print('\n{}\n'.format('\n'.join(to_print)))
@@ -119,7 +129,7 @@ class opEdit:  # use by running `python /data/openpilot/op_edit.py`
           print('Enter your new value:')
           new_value = input('>> ').strip()
           if new_value == '':
-            self.message('Exiting this parameter...')
+            self.message('Exiting this parameter...', 0.5)
             return
 
           new_value = self.parse_input(new_value)
@@ -133,7 +143,7 @@ class opEdit:  # use by running `python /data/openpilot/op_edit.py`
         print('Enter your new value:')
         new_value = input('>> ').strip()
         if new_value == '':
-          self.message('Exiting this parameter...')
+          self.message('Exiting this parameter...', 0.5)
           return
 
         new_value = self.parse_input(new_value)
