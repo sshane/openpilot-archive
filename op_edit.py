@@ -124,43 +124,32 @@ class opEdit:  # use by running `python /data/openpilot/op_edit.py`
         print('\n{}\n'.format('\n'.join(to_print)))
 
       print('Current value: {} (type: {})'.format(old_value, str(type(old_value)).split("'")[1]))
-      if key_info.live:  # enter live tuning interface
-        while True:
-          print('Enter your new value:')
-          new_value = input('>> ').strip()
-          if new_value == '':
-            self.message('Exiting this parameter...', 0.5)
-            return
-
-          new_value = self.parse_input(new_value)
-          if key_info.has_allowed_types and type(new_value) not in allowed_types:
-            self.message('The type of data you entered ({}) is not allowed with this parameter!'.format(str(type(new_value)).split("'")[1]))
-            continue
-
-          self.op_params.put(chosen_key, new_value)
-          print('Saved {} with value: {}! (type: {})\n'.format(chosen_key, new_value, str(type(new_value)).split("'")[1]))
-      else:
+      while True:
         print('Enter your new value:')
         new_value = input('>> ').strip()
         if new_value == '':
-          self.message('Exiting this parameter...', 0.5)
-          return
+            self.message('Exiting this parameter...', 0.5)
+            return
 
         new_value = self.parse_input(new_value)
         if key_info.has_allowed_types and type(new_value) not in allowed_types:
-          self.message('The type of data you entered ({}) is not allowed with this parameter!'.format(str(type(new_value)).split("'")[1]))
-          continue
+            self.message('The type of data you entered ({}) is not allowed with this parameter!'.format(str(type(new_value)).split("'")[1]))
+            continue
 
-        print('\nOld value: {} (type: {})'.format(old_value, str(type(old_value)).split("'")[1]))
-        print('New value: {} (type: {})'.format(new_value, str(type(new_value)).split("'")[1]))
-        print('Do you want to save this?')
-        choice = input('[Y/n]: ').lower().strip()
-        if choice == 'y':
+        if key_info.live:  # stay in live tuning interface
           self.op_params.put(chosen_key, new_value)
-          self.message('Saved!')
-        else:
-          self.message('Not saved!')
-        return
+          print('Saved {} with value: {}! (type: {})\n'.format(chosen_key, new_value, str(type(new_value)).split("'")[1]))
+        else:  # else ask to save and break
+          print('\nOld value: {} (type: {})'.format(old_value, str(type(old_value)).split("'")[1]))
+          print('New value: {} (type: {})'.format(new_value, str(type(new_value)).split("'")[1]))
+          print('Do you want to save this?')
+          choice = input('[Y/n]: ').lower().strip()
+          if choice == 'y':
+            self.op_params.put(chosen_key, new_value)
+            self.message('Saved!')
+          else:
+            self.message('Not saved!')
+          return
 
   def is_affirmative(self):
     return input('[Y/n]: ').lower().strip() in ['yes', 'ye', 'y']
