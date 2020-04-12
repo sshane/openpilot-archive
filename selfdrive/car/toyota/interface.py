@@ -33,7 +33,7 @@ class CarInterface(CarInterfaceBase):
       ret.gasMaxBP = [0., 9., 35]
       ret.gasMaxV = [0.2, 0.5, 0.7]
       ret.longitudinalTuning.kpV = [1.2, 0.8, 0.5]
-      ret.longitudinalTuning.kiV = [0.17, 0.108]
+      ret.longitudinalTuning.kiV = [0.18, 0.12]
     else:
       ret.gasMaxBP = [0.]
       ret.gasMaxV = [0.5]
@@ -85,8 +85,11 @@ class CarInterface(CarInterfaceBase):
       ret.steerRatio = 18.27
       tire_stiffness_factor = 0.444  # not optimized yet
       ret.mass = 2860. * CV.LB_TO_KG + STD_CARGO_KG  # mean between normal and hybrid
-      ret.lateralTuning.init('lqr')
+      if ret.enableGasInterceptor:
+        ret.longitudinalTuning.kpV = [1.2, 0.8 * 1.1, 0.5 * 1.3]
+        ret.longitudinalTuning.kiV = [0.18 * 0.9, 0.12 * 0.8]
 
+      ret.lateralTuning.init('lqr')
       ret.lateralTuning.lqr.scale = 1500.0
       ret.lateralTuning.lqr.ki = 0.05
 
