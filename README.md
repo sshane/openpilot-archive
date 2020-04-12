@@ -73,7 +73,7 @@ python op_edit.py
 Features:
 - You can misspell parameter names and opEdit should be able to figure out which parameter you want. Ex. `cmra off` would be parsed as: `camera_offset`
   - You can also still enter the corresponding parameter index while choose parameters to edit
-- Type `a` to add a parameter, `d` to delete a parameter, or `l` to switch to live tuning only mode
+- Type `a` to add a parameter, `d` to delete a parameter, or `l` to toggle live tuning only mode
 - Shows a detailed description for each parameter once you choose it
 - Parameter value type restriction. Ensures a user cannot save an unsupported value type for any parameters, breaking the fork
 - Remembers which mode you were last in and initializes opEdit with that mode (live tuning or not)
