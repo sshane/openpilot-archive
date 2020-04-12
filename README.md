@@ -60,7 +60,7 @@ If you have a car without a pedal, or you do have one but I haven't created a pr
 
 Long control uses a PID loop
 -----
-I'm added a custom implementation of derivative to the PI loop controlling the gas and brake output sent to your car. Derivative (change in error) is calculated based on the last 0.33 seconds and added to the class's integral variable. It's essentially winding down integral according to derivative. It helps fix overshoot on some cars with the comma pedal and increases responsiveness (like when going up and down hills) on all other cars! Still need to figure out the tuning, right now it's using the same derivative gain for all cars.
+I'm added a custom implementation of derivative to the PI loop controlling the gas and brake output sent to your car. Derivative (change in error) is calculated based on the current and last error and added to the class's integral variable. It's essentially winding down integral according to derivative. It helps fix overshoot on some cars with the comma pedal and increases responsiveness (like when going up and down hills) on all other cars! Still need to figure out the tuning, right now it's using the same derivative gain for all cars. Test it out and let me know what you think!
 
 Customize this branch (opEdit Parameter class)
 -----
@@ -70,16 +70,26 @@ cd /data/openpilot
 python op_edit.py
 ```
 
+Features:
+- You can misspell parameter names and opEdit should be able to figure out which parameter you want. Ex. `cmra off` would be parsed as: `camera_offset`
+  - You can also still enter the corresponding parameter index while choose parameters to edit
+- Type `a` to add a parameter, `d` to delete a parameter, or `l` to switch to live tuning only mode
+- Shows a detailed description for each parameter once you choose it
+- Parameter value type restriction. Ensures a user cannot save an unsupported value type for any parameters, breaking the fork
+- Remembers which mode you were last in and initializes opEdit with that mode (live tuning or not)
+- Case insensitive boolean entrance. Type `false` to save `False (bool)` and vice versa
+
 Some parameters you can use to customize this fork:
 - `camera_offset`: Your camera offset to use in lane_planner.py. Helps fix lane hugging
-- `awareness_factor`: The multiplier for driver monitoring
+- `awareness_factor`: The multiplier for driver monitoring, max is 3.5x (this is only in effect when driver monitoring isn't active)
 - `alca_nudge_required`: Whether to wait for applied torque to the wheel (nudge) before making lane changes
 - `alca_min_speed`: The minimum speed allowed for an automatic lane change
-- `steer_ratio`: The steering ratio you want to use with openpilot. If you enter None, it will use the learned steer ratio from openpilot instead.
-- `upload_on_hotspot`: Controls whether your EON will upload driving log data on your phone's hotspot
-- `reset_integral`: Resets integral gain whenever the longitudinal PID error crosses or is zero. Helps overshoot
+- `steer_ratio`: The steering ratio you want to use with openpilot. If you enter None, it will use the learned steer ratio from openpilot instead
+- `upload_on_hotspot`: Controls whether your EON will upload driving data on your phone's hotspot
+- `no_ota_updates`: Set this to True to disable all automatic updates. Reboot to take effect
+- `dynamic_gas`: Whether to use dynamic gas if your car is supported
 
-A list of parameters that you can modify are located [here](common/op_params.py#L42).
+A list of parameters that you can modify are [located here](common/op_params.py#L50).
 
 An archive of opParams [lives here.](https://github.com/ShaneSmiskol/op_params)
 
@@ -87,7 +97,7 @@ Parameters are stored at `/data/op_params.json`
 
 Live tuning support
 -----
-Currently only the `camera_offset`, `lane_hug_angle_offset`, `dynamic_follow`, and `steer_ratio` parameters are supported.
+Parameters supporting live updating: `camera_offset`, `lane_hug_angle_offset`, `dynamic_follow`, `steer_ratio`
 - Just start opEdit with the instructions above and pick a parameter. It will let you know if it supports live tuning, if so, updates will take affect within 5 seconds!
 
 <img src=".media/gifs/op_tune.gif?raw=true" width="600">
@@ -102,7 +112,7 @@ Custom wheel offset to reduce lane hugging
 -----
 ***Update**: The performance of this modification is iffy at best, but it definitely is more apparent than just tuning your camera offset value. Removing the immediate angle offset can have some weird oscillating effect when it's windy or on roads with camber (slant to one side). Will be left in, but disabled by default.*
 
-Stock openpilot doesn't seem to be able to identify your car's true angle offset. With the `LaneHugging` module you can specify a custom angle offset to be added to your desired steering angle. Simply find the angle your wheel is at when you're driving on a straight highway. By default, this is disabled, to enable you can:
+With the `LaneHugging` module you can specify a custom angle offset to be added to your desired steering angle. Simply find the angle your wheel is at when you're driving on a straight highway. By default, this is disabled, to enable you can:
 - Use the `opEdit` class in the root directory of openpilot. To use it, simply open an `ssh` shell and enter the commands below:
     ```python
     cd /data/openpilot
@@ -111,17 +121,11 @@ Stock openpilot doesn't seem to be able to identify your car's true angle offset
     You'll be greeted with a list of your parameters you can explore, enter the number corresponding to `lane_hug_direction`. Your options are to enter `'left'` or `'right'` for whichever direction your car has a tendency to hug toward. `None` will disable the feature.
     Finally you'll need to enter your absolute angle offset (negative will be converted to positive) with the `opParams` parameter: `lane_hug_angle_offset`.
     
-    The lane hugging mod is enabled only if `lane_hug_direction` is `'left'` or `'right'`.
-
-~~Two PID loops to control gas and brakes independently~~
------
-***Update**: Probably going to remove this addition, as tuning the current pedal parameters will be a more robust solution in the long run.*
-
-If you have a Toyota Corolla with a comma pedal, you'll love this addition. Two longitudinal PID loops are set up in `longcontrol.py` so that one is running with comma pedal tuning to control the gas, and the other is running stock non-pedal tuning for better braking control. In the car, this feels miles better than stock openpilot, and nearly as good as your stock Toyota cruise control before you pulled out your DSU! It won't accelerate up to stopped cars and brake at the last moment anymore.
+    The lane hugging mod is enabled only if `lane_hug_direction` is `'left'` or `'right'`. **Warning: the learned steering offset from openpilot will no longer be used if this mod is active.**
 
 Automatic updates
 -----
-When a new update is available on GitHub for the `stock_additions` branch, your EON will pull and reset your local branch to the remote. It then queues a reboot to occur when the following is true:
+When a new update is available on GitHub for this fork, your EON will pull and reset your local branch to the remote. It then queues a reboot to occur when the following is true:
 - your EON has been inactive or offroad for more than 5 minutes.
 
 Therefore, if the EON sees an update while you're driving it will reboot 5 minutes after you stop your drive, it resets the timer if you start driving again before the 5 minutes is up.
@@ -140,7 +144,7 @@ git clone -b stock_additions-release --single-branch https://github.com/shanesmi
 reboot
 ```
 
-This branch is only 70MB enabling fast cloning of this fork! It will contain the latest from `stock_additions` squashed down to one commit. See below for more branch information.
+This branch is only ~70MB enabling fast cloning of this fork! It will contain the latest from `stock_additions` squashed down to one commit. See below for more branch information.
 
 Branches
 -----

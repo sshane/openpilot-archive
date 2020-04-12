@@ -8,7 +8,7 @@ from common.op_params import opParams
 from common.travis_checker import travis
 
 if not travis:
-  awareness_factor = opParams().get('awareness_factor', default=2.0)
+  awareness_factor = min(opParams().get('awareness_factor', default=2.0), 3.5)
 else:
   awareness_factor = 1
 

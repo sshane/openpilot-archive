@@ -64,16 +64,10 @@ class opParams:
                            'use_dynamic_lane_speed': {'default': True, 'allowed_types': [bool], 'description': 'Whether you want openpilot to adjust your speed based on surrounding vehicles', 'live': False},
                            'min_dynamic_lane_speed': {'default': 20.0, 'allowed_types': [float, int], 'description': 'The minimum speed to allow dynamic lane speed to operate (in MPH)', 'live': False},
                            'upload_on_hotspot': {'default': False, 'allowed_types': [bool], 'description': 'If False, openpilot will not upload driving data while connected to your phone\'s hotspot', 'live': False},
-                           'reset_integral': {'default': False, 'allowed_types': [bool], 'description': 'This resets integral whenever the longitudinal PID error crosses or is zero.\nShould help it recover from overshoot quicker', 'live': False},
-                           'disengage_on_gas': {'default': True, 'allowed_types': [bool], 'description': 'Whether you want openpilot to be disengage on gas input or not. It can cause issues on specific cars'},
+                           # 'reset_integral': {'default': False, 'allowed_types': [bool], 'description': 'This resets integral whenever the longitudinal PID error crosses or is zero.\nShould help it recover from overshoot quicker', 'live': False},
+                           'disengage_on_gas': {'default': True, 'allowed_types': [bool], 'description': 'Whether you want openpilot to disengage on gas input or not. It can cause issues on specific cars'},
                            'no_ota_updates': {'default': False, 'allowed_types': [bool], 'description': 'Set this to True to disable all automatic updates. Reboot to take effect'},
                            'dynamic_gas': {'default': True, 'allowed_types': [bool], 'description': 'Whether to use dynamic gas if your car is supported'},
-
-                           'enable_long_derivative': {'default': True, 'allowed_types': [bool], 'description': 'Whether to use derivative in the longcontrol loop', 'live': True},
-                           'write_errors': {'default': False, 'allowed_types': [bool], 'description': 'Write errors for debugging', 'live': True},
-                           'restrict_sign_change': {'default': True, 'allowed_types': [bool], 'description': 'Unrestricted derivative modification of integral', 'live': True},
-                           'kd': {'default': 1.2, 'allowed_types': [float, int], 'description': 'Derivative gain', 'live': True},
-                           'use_kd': {'default': True, 'allowed_types': [bool], 'description': 'To use the opParam `kd` instead of the defined gains in longcontrol.py', 'live': True},
 
                            'op_edit_live_mode': {'default': False, 'allowed_types': [bool], 'description': 'This parameter controls which mode opEdit starts in. It should be hidden from the user with the hide key', 'hide': True}}
 
@@ -82,7 +76,7 @@ class opParams:
     self.last_read_time = time.time()
     self.read_frequency = 5.0  # max frequency to read with self.get(...) (sec)
     self.force_update = False  # replaces values with default params if True, not just add add missing key/value pairs
-    self.to_delete = ['dynamic_lane_speed', 'longkiV', 'following_distance', 'static_steer_ratio', 'uniqueID']  # a list of params you want to delete (unused)
+    self.to_delete = ['dynamic_lane_speed', 'longkiV', 'following_distance', 'static_steer_ratio', 'uniqueID', 'use_kd', 'kd', 'restrict_sign_change', 'write_errors', 'enable_long_derivative', 'reset_integral']  # a list of params you want to delete (unused)
     self.run_init()  # restores, reads, and updates params
 
   def add_default_params(self):
