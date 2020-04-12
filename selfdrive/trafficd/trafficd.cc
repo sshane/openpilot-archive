@@ -5,7 +5,7 @@ using namespace std;
 std::unique_ptr<zdl::SNPE::SNPE> snpe;
 volatile sig_atomic_t do_exit = 0;
 
-const std::vector<std::string> modelLabels = {"GO", "SLOW"};
+const std::vector<std::string> modelLabels = {"SLOW", "GREEN", "NONE"};
 const int numLabels = modelLabels.size();
 const double modelRate = 1 / 5.;  // 5 Hz
 

@@ -67,9 +67,9 @@ ALERTS = [
       Priority.LOW, VisualAlert.steerRequired, AudibleAlert.chimeWarning1, 0.1, 2., 0.2),
 
   Alert(
-      "trafficGo",
-      "TRAFFIC LIGHT - GO",
-      "No red lights ahead",
+      "trafficGreen",
+      "TRAFFIC LIGHT - GREEN",
+      "Green traffic light ahead",
       AlertStatus.normal, AlertSize.mid,
       Priority.LOW, VisualAlert.none, AudibleAlert.none, 0., 0., 0.2),
 
