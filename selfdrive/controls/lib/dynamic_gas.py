@@ -38,11 +38,14 @@ class DynamicGas:
   def update(self, v_ego, extra_params):
     self.handle_passable(extra_params)
 
+    # if not self.supported_car:
+    #   if self.CP.enableGasInterceptor:
+    #     self.gasMaxBP, self.gasMaxV = self.CP.gasMaxBP, self.CP.gasMaxV  # if no custom gas profile and pedal, use stock gas values
+    #   else:  # else if no gas profile and user doesn't have pedal, no dynamic gas
+    #     return interp(v_ego, self.CP.gasMaxBP, self.CP.gasMaxV)
+
     if not self.supported_car:
-      if self.CP.enableGasInterceptor:
-        self.gasMaxBP, self.gasMaxV = self.CP.gasMaxBP, self.CP.gasMaxV  # if no custom gas profile and pedal, use stock gas values
-      else:  # else if no gas profile and user doesn't have pedal, no dynamic gas
-        return interp(v_ego, self.CP.gasMaxBP, self.CP.gasMaxV)
+      self.gasMaxBP, self.gasMaxV = self.CP.gasMaxBP, self.CP.gasMaxV
 
     gas = interp(v_ego, self.gasMaxBP, self.gasMaxV)
     if self.lead_data['status']:  # if lead
