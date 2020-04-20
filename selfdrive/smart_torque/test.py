@@ -5,7 +5,7 @@ import numpy as np
 st_model = st_wrapper.get_wrapper()
 st_model.init_model()
 start = time.time()
-samples = np.random.rand(100, 103).tolist()
+samples = np.random.rand(10000, 103).tolist()
 for i in samples:
   model_output = st_model.run_model(i)
 
