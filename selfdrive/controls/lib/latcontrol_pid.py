@@ -16,7 +16,7 @@ class LatControlPID():
     self.smart_torque_file = '/data/smart_torque_data'
     if not os.path.exists(self.smart_torque_file):
       with open(self.smart_torque_file, 'w') as f:
-        f.write('{}'.format(['delta_desired',
+        f.write('{}\n'.format(['delta_desired',
                              'rate_desired',
                              'driver_torque',
                              'eps_torque',
@@ -42,7 +42,7 @@ class LatControlPID():
 
       if CS.cruiseState.enabled:
         with open(self.smart_torque_file, 'a') as f:
-          f.write('{}'.format([path_plan.deltaDesired,
+          f.write('{}\n'.format([path_plan.deltaDesired,
                                path_plan.rateDesired,
                                CS.steeringTorque,
                                CS.steeringTorqueEps,
