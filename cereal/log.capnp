@@ -778,6 +778,8 @@ struct PathPlan {
   desire @17 :Desire;
   laneChangeState @18 :LaneChangeState;
   laneChangeDirection @19 :LaneChangeDirection;
+  deltaDesired @20 :Float32;
+  rateDesired @20 :Float32;
 
   enum Desire {
     none @0;

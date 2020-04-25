@@ -176,6 +176,8 @@ class PathPlanner():
       delta_desired = math.radians(angle_steers - angle_offset) / VM.sR
       rate_desired = 0.0
 
+    raw_delta_desired = self.mpc_solution[0].delta[1]
+    raw_rate_desired = self.mpc_solution[0].rate[0]
     self.cur_state[0].delta = delta_desired
 
     self.angle_steers_des_mpc = float(math.degrees(delta_desired * VM.sR) + angle_offset)
@@ -213,6 +215,8 @@ class PathPlanner():
     plan_send.pathPlan.paramsValid = bool(sm['liveParameters'].valid)
     plan_send.pathPlan.sensorValid = bool(sm['liveParameters'].sensorValid)
     plan_send.pathPlan.posenetValid = bool(sm['liveParameters'].posenetValid)
+    plan_send.pathPlan.deltaDesired = float(raw_delta_desired)
+    plan_send.pathPlan.rateDesired = float(raw_rate_desired)
 
     plan_send.pathPlan.desire = desire
     plan_send.pathPlan.laneChangeState = self.lane_change_state
