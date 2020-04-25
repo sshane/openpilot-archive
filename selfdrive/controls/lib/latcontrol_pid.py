@@ -21,6 +21,7 @@ class LatControlPID():
                                'driver_torque',
                                'eps_torque',
                                'angle_steers',
+                               'angle_steers_rate',
                                'angle_offset'
                                'v_ego',
                                'time']))
@@ -47,6 +48,7 @@ class LatControlPID():
                                  CS.steeringTorque,
                                  CS.steeringTorqueEps,
                                  angle_steers,
+                                 angle_steers_rate,
                                  path_plan.angleOffsetLive,
                                  v_ego,
                                  time.time()]))
