@@ -46,7 +46,7 @@ class LatControlPID():
           f.write('{}\n'.format([path_plan.deltaDesired,
                                  path_plan.rateDesired,
                                  CS.steeringTorque,
-                                 CS.steeringTorqueEps,
+                                 eps_torque,
                                  angle_steers,
                                  angle_steers_rate,
                                  path_plan.angleOffsetLive,
