@@ -17,13 +17,13 @@ class LatControlPID():
     if not os.path.exists(self.smart_torque_file):
       with open(self.smart_torque_file, 'w') as f:
         f.write('{}\n'.format(['delta_desired',
-                             'rate_desired',
-                             'driver_torque',
-                             'eps_torque',
-                             'angle_steers',
-                             'angle_offset'
-                             'v_ego',
-                             'time']))
+                               'rate_desired',
+                               'driver_torque',
+                               'eps_torque',
+                               'angle_steers',
+                               'angle_offset'
+                               'v_ego',
+                               'time']))
 
   def reset(self):
     self.pid.reset()
@@ -43,13 +43,13 @@ class LatControlPID():
       if CS.cruiseState.enabled:
         with open(self.smart_torque_file, 'a') as f:
           f.write('{}\n'.format([path_plan.deltaDesired,
-                               path_plan.rateDesired,
-                               CS.steeringTorque,
-                               CS.steeringTorqueEps,
-                               angle_steers,
-                               path_plan.angleOffsetLive,
-                               v_ego,
-                               time.time()]))
+                                 path_plan.rateDesired,
+                                 CS.steeringTorque,
+                                 CS.steeringTorqueEps,
+                                 angle_steers,
+                                 path_plan.angleOffsetLive,
+                                 v_ego,
+                                 time.time()]))
 
       steers_max = get_steer_max(CP, v_ego)
       self.pid.pos_limit = steers_max
