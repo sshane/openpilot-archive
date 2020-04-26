@@ -59,7 +59,7 @@ class LatControlPID():
       if len(self.data) == 50:
         if time.time() - self.last_pred_time > 1 / 10:
           pred = predict(np.array(self.data, dtype=np.float32))[0]
-          pred = np.interp(np.interp(pred, [0, 1], self.scales['eps_torque']), [-1500, 1500], [-1, 1])
+          pred = np.interp(np.interp(pred, [0, 1], self.scales['eps_torque']), [-1500, 1500], [-1, 1]) * 2
           self.last_pred = float(pred)
         del self.data[0]
         return self.last_pred
