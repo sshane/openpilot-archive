@@ -3,10 +3,10 @@ import numpy as np
 import time
 
 t = time.time()
-samples = np.random.rand(1000, 50, 5)
+samples = np.random.rand(1000, 50, 5).astype(np.float32)
 for s in samples:
-  predict(np.array([s]))
+  predict(np.array(s))
 t = time.time() - t
 print('Time: {} sec'.format(round(t, 4)))
 print('Rate: {} Hz'.format(round(len(samples) / t, 4)))
-print('Average time: {} sec'.format(round(1 / len(samples), 6)))
+print('Average time: {} sec'.format(round(1 / len(samples), 7)))
