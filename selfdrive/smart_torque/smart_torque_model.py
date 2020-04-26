@@ -9,7 +9,7 @@ w, b = wb['wb']
 
 def simplernn(x, idx):
   states = [np.zeros(w[idx][0].shape[1], dtype=np.float32)]
-  for step in range(x.shape[0]):
+  for step in range(50):
     states.append(np.tanh(np.matmul(x[step], w[idx][0]) + np.matmul(states[-1], w[idx][1]) + b[idx]))
   return np.array(states[1:])
 

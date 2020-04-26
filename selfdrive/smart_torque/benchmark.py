@@ -9,4 +9,4 @@ for s in samples:
 t = time.time() - t
 print('Time: {} sec'.format(round(t, 4)))
 print('Rate: {} Hz'.format(round(len(samples) / t, 4)))
-print('Average time: {} sec'.format(round(1 / len(samples), 4)))
+print('Average time: {} sec'.format(round(1 / len(samples), 6)))
