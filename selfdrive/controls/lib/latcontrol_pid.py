@@ -5,6 +5,7 @@ from cereal import log
 import os
 import math
 import time
+import numpy as np
 from selfdrive.smart_torque.smart_torque_model import predict
 
 
@@ -26,7 +27,8 @@ class LatControlPID():
                                'angle_steers_rate',
                                'v_ego',
                                'time']))
-
+    self.last_pred_time = 0
+    self.last_pred = 0
     self.data = []
     self.scales = {'delta_desired': [-58.75222851843965, 38.45948040492657],
                    'rate_desired': [-0.07444784045219421, 0.032148655503988266], 'driver_torque': [-286.0, 277.0],
@@ -53,6 +55,14 @@ class LatControlPID():
                         angle_steers,
                         angle_steers_rate,
                         v_ego])
+
+      if len(self.data) == 50:
+        if time.time() - self.last_pred_time > 1 / 10:
+          pred = predict(np.array(self.data, dtype=np.float32))[0]
+          pred = np.interp(np.interp(pred, [0, 1], self.scales['eps_torque']), [-1500, 1500], [-1, 1])
+          self.last_pred = float(pred)
+        del self.data[0]
+        return self.last_pred
 
       # if CS.cruiseState.enabled:
       #   with open(self.smart_torque_file, 'a') as f:
