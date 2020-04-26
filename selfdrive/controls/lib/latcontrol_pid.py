@@ -62,7 +62,7 @@ class LatControlPID():
           pred = np.interp(np.interp(pred, [0, 1], self.scales['eps_torque']), [-1500, 1500], [-1, 1]) * 2
           self.last_pred = float(pred)
         del self.data[0]
-        return self.last_pred
+        return self.last_pred, self.angle_steers_des, pid_log
 
       # if CS.cruiseState.enabled:
       #   with open(self.smart_torque_file, 'a') as f:
