@@ -4,6 +4,7 @@ from cereal import car
 from cereal import log
 import os
 import time
+from selfdrive.smart_torque.smart_torque_model import predict
 
 
 class LatControlPID():
