@@ -3,6 +3,7 @@ from selfdrive.controls.lib.drive_helpers import get_steer_max
 from cereal import car
 from cereal import log
 import os
+import math
 import time
 from selfdrive.smart_torque.smart_torque_model import predict
 
@@ -23,9 +24,14 @@ class LatControlPID():
                                'eps_torque',
                                'angle_steers',
                                'angle_steers_rate',
-
                                'v_ego',
                                'time']))
+
+    self.data = []
+    self.scales = {'delta_desired': [-58.75222851843965, 38.45948040492657],
+                   'rate_desired': [-0.07444784045219421, 0.032148655503988266], 'driver_torque': [-286.0, 277.0],
+                   'eps_torque': [-487.0, 471.0], 'angle_steers': [-47.70000076293945, 37.599998474121094],
+                   'angle_steers_rate': [-41.0, 41.0], 'v_ego': [0.7249727845191956, 27.42662811279297]}
 
   def reset(self):
     self.pid.reset()
@@ -42,17 +48,23 @@ class LatControlPID():
     else:
       self.angle_steers_des = path_plan.angleSteers  # get from MPC/PathPlanner
 
-      if CS.cruiseState.enabled:
-        with open(self.smart_torque_file, 'a') as f:
-          f.write('{}\n'.format([path_plan.deltaDesired,
-                                 path_plan.rateDesired,
-                                 CS.steeringTorque,
-                                 eps_torque,
-                                 angle_steers,
-                                 angle_steers_rate,
+      self.data.append([math.degrees(path_plan.deltaDesired * 17.8),
+                        math.degrees(path_plan.rateDesired * 17.8),
+                        angle_steers,
+                        angle_steers_rate,
+                        v_ego])
 
-                                 v_ego,
-                                 time.time()]))
+      # if CS.cruiseState.enabled:
+      #   with open(self.smart_torque_file, 'a') as f:
+      #     f.write('{}\n'.format([path_plan.deltaDesired,
+      #                            path_plan.rateDesired,
+      #                            CS.steeringTorque,
+      #                            eps_torque,
+      #                            angle_steers,
+      #                            angle_steers_rate,
+      #
+      #                            v_ego,
+      #                            time.time()]))
 
       steers_max = get_steer_max(CP, v_ego)
       self.pid.pos_limit = steers_max
