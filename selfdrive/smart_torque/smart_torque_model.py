@@ -8,10 +8,8 @@ wb = np.load('/data/openpilot/selfdrive/smart_torque/smart_torque_model_weights.
 w, b = wb['wb']
 
 def simplernn(x, idx):
-  print(w[idx][0].shape[1])
-  print(x.shape[0])
-  states = [np.zeros(w[idx][0].shape[1], dtype=np.float32)]
-  for step in range(x.shape[0]):
+  states = [np.zeros(64, dtype=np.float32)]
+  for step in range(50):
     states.append(np.tanh(np.dot(x[step], w[idx][0]) + np.dot(states[-1], w[idx][1]) + b[idx]))
   return np.array(states[1:])
 
