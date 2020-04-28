@@ -24,11 +24,11 @@ def predict(x):
   l1 = gru(l0, 1, 64)
   l2 = gru(l1, 2, 64)
   l3 = gru(l2, 3, 64)[-1]
-  l4 = np.dot(l3, w[4]) + b[4]
+  l4 = np.matmul(l3, w[4]) + b[4]
   l4 = np.maximum(0, l4)
-  l5 = np.dot(l4, w[5]) + b[5]
+  l5 = np.matmul(l4, w[5]) + b[5]
   l5 = np.maximum(0, l5)
-  l6 = np.dot(l5, w[6]) + b[6]
+  l6 = np.matmul(l5, w[6]) + b[6]
   l6 = np.maximum(0, l6)
-  l7 = np.dot(l6, w[7]) + b[7]
+  l7 = np.matmul(l6, w[7]) + b[7]
   return l7
