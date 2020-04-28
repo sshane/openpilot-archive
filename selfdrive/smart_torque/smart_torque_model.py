@@ -6,20 +6,29 @@ import numpy as np
 
 wb = np.load('/data/openpilot/selfdrive/smart_torque/smart_torque_model_weights.npz', allow_pickle=True)
 w, b = wb['wb']
-ws = {0: 64, 1: 32}
 
-def simplernn(x, idx):
-  states = [np.zeros(ws[idx], dtype=np.float32)]
-  for step in range(50):
-    states.append(np.tanh(np.matmul(x[step], w[idx][0]) + np.matmul(states[-1], w[idx][1]) + b[idx]))
+def sigmoid(x):
+  return 1 / (1 + np.exp(-x))
+
+def gru(x, idx, units):
+  states = [np.zeros(units, dtype=np.float32)]
+  for step in range(100):
+    x_ = np.split(np.matmul(x[step], w[idx][0]) + b[idx][0], 3, axis=-1)
+    recurrent = np.split(np.matmul(states[-1], w[idx][1]) + b[idx][1], 3, axis=-1)
+    z = sigmoid(x_[0] + recurrent[0])
+    states.append(z * states[-1] + (1 - z) * np.tanh(x_[2] + sigmoid(x_[1] + recurrent[1]) * recurrent[2]))
   return np.array(states[1:])
 
 def predict(x):
-  l0 = simplernn(x, 0)
-  l1 = simplernn(l0, 1)[-1]
-  l2 = np.matmul(l1, w[2]) + b[2]
-  l2 = np.maximum(0, l2)
-  l3 = np.matmul(l2, w[3]) + b[3]
-  l3 = np.maximum(0, l3)
-  l4 = np.matmul(l3, w[4]) + b[4]
-  return l4
+  l0 = gru(x, 0, 64)
+  l1 = gru(l0, 1, 64)
+  l2 = gru(l1, 2, 64)
+  l3 = gru(l2, 3, 64)[-1]
+  l4 = np.dot(l3, w[4]) + b[4]
+  l4 = np.maximum(0, l4)
+  l5 = np.dot(l4, w[5]) + b[5]
+  l5 = np.maximum(0, l5)
+  l6 = np.dot(l5, w[6]) + b[6]
+  l6 = np.maximum(0, l6)
+  l7 = np.dot(l6, w[7]) + b[7]
+  return l7

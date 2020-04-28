@@ -4,7 +4,7 @@ from cereal import car
 from cereal import log
 import os
 import math
-import time
+from common.realtime import sec_since_boot
 import numpy as np
 from selfdrive.smart_torque.smart_torque_model import predict
 
@@ -27,16 +27,26 @@ class LatControlPID():
                                'angle_steers_rate',
                                'v_ego',
                                'time']))
-    self.last_pred_time = 0
-    self.last_pred = 0
     self.data = []
-    self.scales = {'delta_desired': [-58.75222851843965, 38.45948040492657],
-                   'rate_desired': [-0.07444784045219421, 0.032148655503988266], 'driver_torque': [-286.0, 277.0],
-                   'eps_torque': [-487.0, 471.0], 'angle_steers': [-47.70000076293945, 37.599998474121094],
-                   'angle_steers_rate': [-41.0, 41.0], 'v_ego': [0.7249727845191956, 27.42662811279297]}
+    self.last_pred = None
+
+    self.last_pred_time = 0
+    self.x_length = 1.00  # seconds
+    self.y_length = 0.25
+    # self.scales = {'delta_desired': [-58.75222851843965, 38.45948040492657],
+    #                'rate_desired': [-0.07444784045219421, 0.032148655503988266], 'driver_torque': [-286.0, 277.0],
+    #                'eps_torque': [-487.0, 471.0], 'angle_steers': [-47.70000076293945, 37.599998474121094],
+    #                'angle_steers_rate': [-41.0, 41.0], 'v_ego': [0.7249727845191956, 27.42662811279297]}
+    self.scales = {'delta_desired': [-0.09179363399744034, 0.12701308727264404], 'eps_torque': [-1199.0, 1234.0], 'angle_steers': [-74.0, 80.19999694824219]}
 
   def reset(self):
     self.pid.reset()
+
+  def norm(self, x, name):
+    return np.interp(x, self.scales[name], [0, 1])
+
+  def unnorm(self, x, name):
+    return np.interp(x, [0, 1], self.scales[name])
 
   def update(self, active, v_ego, angle_steers, angle_steers_rate, eps_torque, steer_override, rate_limited, CP, path_plan, CS):
     pid_log = log.ControlsState.LateralPIDState.new_message()
@@ -50,19 +60,22 @@ class LatControlPID():
     else:
       self.angle_steers_des = path_plan.angleSteers  # get from MPC/PathPlanner
 
-      self.data.append([math.degrees(path_plan.deltaDesired * 17.8),
-                        math.degrees(path_plan.rateDesired * 17.8),
-                        angle_steers,
-                        angle_steers_rate,
-                        v_ego])
+      self.data.append([self.norm(path_plan.deltaDesired, 'delta_desired'),
+                        self.norm(angle_steers, 'angle_steers')])
 
-      if len(self.data) == 50:
-        if time.time() - self.last_pred_time > 1 / 10:
-          pred = predict(np.array(self.data, dtype=np.float32))[0]
-          pred = -1.1 * np.interp(np.interp(pred, [0, 1], self.scales['eps_torque']), [-1700, 1500], [-1, 1])
-          self.last_pred = float(pred)
+      if len(self.data) == 100:
+        cur_time = sec_since_boot()
+        cur_torq_idx = round((cur_time - self.last_pred_time) * 100)
+        if cur_torq_idx >= self.y_length * 100:
+          self.last_pred_time = float(cur_time)
+          self.last_pred = predict(np.array(self.data, dtype=np.float32))
+          self.last_pred = np.interp(self.unnorm(self.last_pred, 'eps_torque'), [-1500, 1500], [-1, 1]).tolist()
+          cur_torq_idx = round((cur_time - self.last_pred_time) * 100)
+
+        output_steer = self.last_pred[cur_torq_idx]
         del self.data[0]
-        return self.last_pred, self.angle_steers_des, pid_log
+        # del self.last_pred[0]
+        return output_steer, self.angle_steers_des, pid_log
 
       # if CS.cruiseState.enabled:
       #   with open(self.smart_torque_file, 'a') as f:
@@ -74,7 +87,7 @@ class LatControlPID():
       #                            angle_steers_rate,
       #
       #                            v_ego,
-      #                            time.time()]))
+      #                            sec_since_boot()]))
 
       steers_max = get_steer_max(CP, v_ego)
       self.pid.pos_limit = steers_max

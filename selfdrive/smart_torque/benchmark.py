@@ -3,7 +3,7 @@ import numpy as np
 import time
 
 t = time.time()
-samples = np.random.rand(1000, 50, 5).astype(np.float32)
+samples = np.random.rand(1000, 100, 2).astype(np.float32)
 for s in samples:
   predict(np.array(s))
 t = time.time() - t
