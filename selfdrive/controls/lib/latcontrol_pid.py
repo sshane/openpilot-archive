@@ -29,6 +29,7 @@ class LatControlPID():
                                'time']))
     self.data = []
     self.last_pred = None
+    self.gather_data = False
 
     self.last_pred_time = 0
     self.x_length = 1.00  # seconds
@@ -60,34 +61,34 @@ class LatControlPID():
     else:
       self.angle_steers_des = path_plan.angleSteers  # get from MPC/PathPlanner
 
-      self.data.append([self.norm(path_plan.deltaDesired, 'delta_desired'),
-                        self.norm(angle_steers, 'angle_steers')])
+      if not self.gather_data:
+        self.data.append([self.norm(path_plan.deltaDesired, 'delta_desired'),
+                          self.norm(angle_steers, 'angle_steers')])
 
-      if len(self.data) == 100:
-        cur_time = sec_since_boot()
-        cur_torq_idx = round((cur_time - self.last_pred_time) * 100)
-        if cur_torq_idx >= self.y_length * 100:
-          self.last_pred_time = float(cur_time)
-          self.last_pred = predict(np.array(self.data, dtype=np.float32))
-          self.last_pred = np.interp(self.unnorm(self.last_pred, 'eps_torque'), [-1500, 1500], [-1, 1]).tolist()
+        if len(self.data) == 100:
+          cur_time = sec_since_boot()
           cur_torq_idx = round((cur_time - self.last_pred_time) * 100)
+          if cur_torq_idx >= self.y_length * 100:
+            self.last_pred_time = float(cur_time)
+            self.last_pred = predict(np.array(self.data, dtype=np.float32))
+            self.last_pred = np.interp(self.unnorm(self.last_pred, 'eps_torque'), [-1500, 1500], [-1, 1]).tolist()
+            cur_torq_idx = round((cur_time - self.last_pred_time) * 100)
 
-        output_steer = self.last_pred[cur_torq_idx]
-        del self.data[0]
-        # del self.last_pred[0]
-        return output_steer, self.angle_steers_des, pid_log
-
-      # if CS.cruiseState.enabled:
-      #   with open(self.smart_torque_file, 'a') as f:
-      #     f.write('{}\n'.format([path_plan.deltaDesired,
-      #                            path_plan.rateDesired,
-      #                            CS.steeringTorque,
-      #                            eps_torque,
-      #                            angle_steers,
-      #                            angle_steers_rate,
-      #
-      #                            v_ego,
-      #                            sec_since_boot()]))
+          output_steer = self.last_pred[cur_torq_idx]
+          del self.data[0]
+          # del self.last_pred[0]
+          return output_steer, self.angle_steers_des, pid_log
+      else:
+        if CS.cruiseState.enabled:
+          with open(self.smart_torque_file, 'a') as f:
+            f.write('{}\n'.format([path_plan.deltaDesired,
+                                   path_plan.rateDesired,
+                                   CS.steeringTorque,
+                                   eps_torque,
+                                   angle_steers,
+                                   angle_steers_rate,
+                                   v_ego,
+                                   sec_since_boot()]))
 
       steers_max = get_steer_max(CP, v_ego)
       self.pid.pos_limit = steers_max
