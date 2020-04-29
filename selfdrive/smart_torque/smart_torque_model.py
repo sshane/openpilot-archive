@@ -4,7 +4,7 @@
 
 import numpy as np
 
-wb = np.load('examples/all_dense_weights.npz', allow_pickle=True)
+wb = np.load('/data/openpilot/selfdrive/smart_torque/all_dense_weights.npz', allow_pickle=True)
 w, b = wb['wb']
 
 
