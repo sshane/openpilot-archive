@@ -29,7 +29,7 @@ class LatControlPID():
                                'time']))
     self.data = []
     self.last_pred = None
-    self.gather_data = False
+    self.gather_data = True
 
     self.last_pred_time = 0
     self.x_length = 1.  # seconds
