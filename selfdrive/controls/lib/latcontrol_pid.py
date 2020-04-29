@@ -70,7 +70,7 @@ class LatControlPID():
           cur_torq_idx = round((cur_time - self.last_pred_time) * 100)
           if cur_torq_idx >= self.y_length * 100:
             self.last_pred_time = float(cur_time)
-            self.last_pred = predict(np.array(self.data, dtype=np.float32))
+            self.last_pred = predict(np.array(self.data, dtype=np.float32).flatten())
             self.last_pred = np.interp(self.unnorm(self.last_pred, 'eps_torque'), [-1500, 1500], [-1, 1]).tolist()
             cur_torq_idx = round((cur_time - self.last_pred_time) * 100)
 
