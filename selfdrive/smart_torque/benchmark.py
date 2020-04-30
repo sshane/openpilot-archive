@@ -5,7 +5,7 @@ import time
 t = time.time()
 samples = np.random.rand(2000, 200*3).astype(np.float32)
 for s in samples:
-  predict(np.array(s))
+  predict(s)
 t = time.time() - t
 print('Time: {} sec'.format(round(t, 4)))
 print('Rate: {} Hz'.format(round(len(samples) / t, 4)))
