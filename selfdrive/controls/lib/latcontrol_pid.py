@@ -34,7 +34,7 @@ class LatControlPID():
 
     self.last_pred_time = 0
     self.x_length = 2.  # seconds
-    self.y_length = 0.5
+    self.y_length = 0.15
     # self.scales = {'delta_desired': [-58.75222851843965, 38.45948040492657],
     #                'rate_desired': [-0.07444784045219421, 0.032148655503988266], 'driver_torque': [-286.0, 277.0],
     #                'eps_torque': [-487.0, 471.0], 'angle_steers': [-47.70000076293945, 37.599998474121094],
