@@ -21,4 +21,6 @@ def predict(x):
   l4 = np.dot(l3, w[4]) + b[4]
   l4 = np.maximum(0, l4)
   l5 = np.dot(l4, w[5]) + b[5]
-  return l5
+  l5 = np.maximum(0, l5)
+  l6 = np.dot(l5, w[6]) + b[6]
+  return l6
