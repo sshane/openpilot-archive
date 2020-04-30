@@ -29,7 +29,7 @@ class LatControlPID():
                                'time']))
     self.data = []
     self.last_pred = None
-    self.gather_data = True
+    self.gather_data = False
 
     self.last_pred_time = 0
     self.x_length = 1.  # seconds
@@ -38,7 +38,7 @@ class LatControlPID():
     #                'rate_desired': [-0.07444784045219421, 0.032148655503988266], 'driver_torque': [-286.0, 277.0],
     #                'eps_torque': [-487.0, 471.0], 'angle_steers': [-47.70000076293945, 37.599998474121094],
     #                'angle_steers_rate': [-41.0, 41.0], 'v_ego': [0.7249727845191956, 27.42662811279297]}
-    self.scales = {'delta_desired': [-0.09179363399744034, 0.12701308727264404], 'eps_torque': [-1199.0, 1234.0], 'angle_steers': [-74.0, 80.19999694824219]}
+    self.scales = {'delta_desired': [-0.09179363399744034, 0.1185637041926384], 'eps_torque': [-938.0, 1150.0], 'angle_steers': [-59.099998474121094, 75.9000015258789], 'v_ego': [6.437766075134277, 32.0827522277832]}
 
   def reset(self):
     self.pid.reset()
@@ -63,9 +63,10 @@ class LatControlPID():
 
       if not self.gather_data:
         self.data.append([self.norm(path_plan.deltaDesired, 'delta_desired'),
-                          self.norm(angle_steers, 'angle_steers')])
+                          self.norm(angle_steers, 'angle_steers'),
+                          self.norm(v_ego, 'v_ego')])
 
-        if len(self.data) == 100:
+        if len(self.data) == 200:
           cur_time = sec_since_boot()
           cur_torq_idx = round((cur_time - self.last_pred_time) * 100)
           if cur_torq_idx >= self.y_length * 100:
