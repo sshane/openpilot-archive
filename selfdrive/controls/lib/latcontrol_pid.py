@@ -26,6 +26,7 @@ class LatControlPID():
                                'angle_steers',
                                'angle_steers_rate',
                                'v_ego',
+                               'output_steer',
                                'time']))
     self.data = []
     self.last_pred = None
@@ -79,17 +80,6 @@ class LatControlPID():
           del self.data[0]
           # del self.last_pred[0]
           return output_steer, self.angle_steers_des, pid_log
-      else:
-        if CS.cruiseState.enabled:
-          with open(self.smart_torque_file, 'a') as f:
-            f.write('{}\n'.format([path_plan.deltaDesired,
-                                   path_plan.rateDesired,
-                                   CS.steeringTorque,
-                                   eps_torque,
-                                   angle_steers,
-                                   angle_steers_rate,
-                                   v_ego,
-                                   sec_since_boot()]))
 
       steers_max = get_steer_max(CP, v_ego)
       self.pid.pos_limit = steers_max
@@ -110,5 +100,18 @@ class LatControlPID():
       pid_log.f = self.pid.f
       pid_log.output = output_steer
       pid_log.saturated = bool(self.pid.saturated)
+
+      if self.gather_data:
+        if CS.cruiseState.enabled:
+          with open(self.smart_torque_file, 'a') as f:
+            f.write('{}\n'.format([path_plan.deltaDesired,
+                                   path_plan.rateDesired,
+                                   CS.steeringTorque,
+                                   eps_torque,
+                                   angle_steers,
+                                   angle_steers_rate,
+                                   v_ego,
+                                   output_steer,
+                                   sec_since_boot()]))
 
     return output_steer, float(self.angle_steers_des), pid_log
