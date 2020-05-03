@@ -9,7 +9,7 @@ def to_ms(x):
 
 p_mod_x = [5., 30., 55., 80.]
 for v_ego in p_mod_x:
-  if v_ego != 80.:
+  if v_ego != 5.:
     continue
   # roadtrip
   x_vel = [0.0, 1.8627, 3.7253, 5.588, 7.4507, 9.3133, 11.5598, 13.645, 22.352, 31.2928, 33.528, 35.7632, 40.2336]
@@ -18,7 +18,7 @@ for v_ego in p_mod_x:
   TR_traffic = interp(v_ego, x_vel, y_dist)
 
   traffic_mod_pos = [0.98, 0.915, 0.83, 0.55]
-  traffic_mod_neg = [1.13, 1.18, 1.39, 1.825]
+  traffic_mod_neg = [1.02, 1.18, 1.39, 1.825]
 
   traffic_mod_pos = interp(v_ego, p_mod_x, traffic_mod_pos)
   traffic_mod_neg = interp(v_ego, p_mod_x, traffic_mod_neg)

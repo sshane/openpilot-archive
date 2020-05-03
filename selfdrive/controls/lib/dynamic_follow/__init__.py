@@ -137,7 +137,7 @@ class DynamicFollow:
     if self.df_profile == self.df_profiles.roadtrip:
       y_dist = [1.4109, 1.4196, 1.431, 1.4454, 1.4684, 1.4971, 1.5397, 1.56, 1.588, 1.624, 1.66, 1.694, 1.747]  # TRs
       profile_mod_pos = [0.98, 0.915, 0.83, 0.55]
-      profile_mod_neg = [1.13, 1.18, 1.39, 1.825]
+      profile_mod_neg = [1.02, 1.18, 1.39, 1.825]
     elif self.df_profile == self.df_profiles.traffic:  # for in congested traffic
       x_vel = [0.0, 1.892, 3.7432, 5.8632, 8.0727, 10.7301, 14.343, 17.6275, 22.4049, 28.6752, 34.8858, 40.35]
       y_dist = [1.3781, 1.3791, 1.3802, 1.3825, 1.3984, 1.4249, 1.4194, 1.3162, 1.1916, 1.0145, 0.9855, 0.9562]
