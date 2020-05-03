@@ -55,7 +55,7 @@ class opParams:
                                                                                                                     'Enter absolute value here, direction is determined by parameter \'lane_hug_direction\''), 'live': True},
                            'dynamic_follow': {'default': 'relaxed', 'allowed_types': [str], 'description': "Can be: ('traffic', 'relaxed', 'roadtrip'): Left to right increases in following distance.\n"
                                                                                                            "All profiles support dynamic follow so you'll get your preferred distance while\n"
-                                                                                                           "retaining the smoothness and safety of dynamic follow!", 'live': True},
+                                                                                                           "retaining the smoothness and safety of dynamic follow!", 'hide': True},
                            'alca_nudge_required': {'default': True, 'allowed_types': [bool], 'description': ('Whether to wait for applied torque to the wheel (nudge) before making lane changes. '
                                                                                                              'If False, lane change will occur IMMEDIATELY after signaling'), 'live': False},
                            'alca_min_speed': {'default': 25.0, 'allowed_types': [float, int], 'description': 'The minimum speed allowed for an automatic lane change (in MPH)', 'live': False},
@@ -65,6 +65,7 @@ class opParams:
                            'min_dynamic_lane_speed': {'default': 20.0, 'allowed_types': [float, int], 'description': 'The minimum speed to allow dynamic lane speed to operate (in MPH)', 'live': False},
                            'upload_on_hotspot': {'default': False, 'allowed_types': [bool], 'description': 'If False, openpilot will not upload driving data while connected to your phone\'s hotspot', 'live': False},
                            # 'reset_integral': {'default': False, 'allowed_types': [bool], 'description': 'This resets integral whenever the longitudinal PID error crosses or is zero.\nShould help it recover from overshoot quicker', 'live': False},
+                           'enable_long_derivative': {'default': False, 'allowed_types': [bool], 'description': 'This enables derivative-based integral wind-down to help overshooting within the PID loop'},
                            'disengage_on_gas': {'default': True, 'allowed_types': [bool], 'description': 'Whether you want openpilot to disengage on gas input or not. It can cause issues on specific cars'},
                            'no_ota_updates': {'default': False, 'allowed_types': [bool], 'description': 'Set this to True to disable all automatic updates. Reboot to take effect'},
                            'dynamic_gas': {'default': True, 'allowed_types': [bool], 'description': 'Whether to use dynamic gas if your car is supported'},
