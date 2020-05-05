@@ -9,7 +9,7 @@ class dfAlertManager:
     self.is_df = is_df
     self.df_profiles = dfProfiles()
     self.sm = messaging.SubMaster(['dynamicFollowButton', 'dynamicFollowData'])
-    self.current_profile = self.df_profiles.to_idx[self.op_params.get('dynamic_follow', default='relaxed').strip().lower()]
+    self.current_profile = self.df_profiles.to_idx[self.op_params.get('dynamic_follow', default=3).strip().lower()]
     self.prediction_profile = 0
     self.alert_duration = 2.0
 
