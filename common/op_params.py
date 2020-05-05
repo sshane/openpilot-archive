@@ -53,7 +53,7 @@ class opParams:
                            'lane_hug_angle_offset': {'default': 0.0, 'allowed_types': [float, int], 'description': ('This is the angle your wheel reads when driving straight at highway speeds.\n'
                                                                                                                     'Replaces both offsets from the calibration learner to help fix lane hugging.\n'
                                                                                                                     'Enter absolute value here, direction is determined by parameter \'lane_hug_direction\''), 'live': True},
-                           'dynamic_follow': {'default': 3, 'allowed_types': [str], 'description': "Can be: ('traffic', 'relaxed', 'roadtrip'): Left to right increases in following distance.\n"
+                           'dynamic_follow': {'default': 'auto', 'allowed_types': [str], 'description': "Can be: ('traffic', 'relaxed', 'roadtrip'): Left to right increases in following distance.\n"
                                                                                                            "All profiles support dynamic follow so you'll get your preferred distance while\n"
                                                                                                            "retaining the smoothness and safety of dynamic follow!", 'hide': True},
                            'alca_nudge_required': {'default': True, 'allowed_types': [bool], 'description': ('Whether to wait for applied torque to the wheel (nudge) before making lane changes. '
