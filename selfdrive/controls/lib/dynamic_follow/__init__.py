@@ -29,7 +29,9 @@ class DynamicFollow:
       self.pm = None
 
     self.scales = {'v_ego': [-0.06112159043550491, 33.70709991455078], 'a_lead': [-2.982128143310547, 3.3612186908721924], 'v_lead': [0.0, 30.952558517456055], 'x_lead': [2.4600000381469727, 139.52000427246094]}
-    self.input_len = 200
+    self.mpc_rate = 1 / 20.
+    self.split_every = 3
+    self.model_input_len = 200 * self.split_every
     self.setup_changing_variables()
 
   def setup_collector(self):
@@ -119,7 +121,7 @@ class DynamicFollow:
                             self._norm(self.lead_data.a_lead, 'a_lead'),
                             self._norm(self.lead_data.v_lead, 'v_lead'),
                             self._norm(self.lead_data.x_lead, 'x_lead')])
-    while len(self.model_data) > self.input_len:
+    while len(self.model_data) > self.model_input_len:
       del self.model_data[0]
 
   def _calculate_lead_accel(self):
@@ -146,8 +148,8 @@ class DynamicFollow:
   def _get_pred(self):
     cur_time = sec_since_boot()
     if cur_time - self.last_predict_time > self.predict_rate:
-      if len(self.model_data) == self.input_len:
-        pred = predict(np.array(self.model_data, dtype=np.float32).flatten())
+      if len(self.model_data) == self.model_input_len:
+        pred = predict(np.array(self.model_data[::self.split_every], dtype=np.float32).flatten())
         self.df_pred = int(np.argmax(pred))
         self.last_predict_time = cur_time
 
