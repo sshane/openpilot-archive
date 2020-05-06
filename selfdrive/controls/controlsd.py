@@ -39,6 +39,7 @@ LaneChangeDirection = log.PathPlan.LaneChangeDirection
 
 op_params = opParams()
 df_alert_manager = dfAlertManager(op_params)
+hide_auto_df_alerts = op_params.get('hide_auto_df_alerts', False)
 
 
 def add_lane_change_event(events, path_plan):
@@ -155,7 +156,7 @@ def state_transition(frame, CS, CP, state, events, soft_disable_timer, v_cruise_
   if df_changed:
     df_text = df_alert_manager.df_profiles.to_profile[df_profile]
     df_alert = 'dfButtonAlert'
-    if sec_since_boot() - change_time > df_alert_manager.alert_duration and df_alert_manager.is_auto:
+    if sec_since_boot() - change_time > df_alert_manager.alert_duration and df_alert_manager.is_auto and not hide_auto_df_alerts:
       df_alert += 'NoSound'
       AM.add(frame, df_alert, enabled, extra_text_1=df_text + ' (auto)', extra_text_2='Dynamic follow: {} profile active'.format(df_text))
     else:
@@ -314,7 +315,7 @@ def state_control(frame, rcv_frame, plan, path_plan, CS, CP, state, events, v_cr
 
 def data_send(sm, pm, CS, CI, CP, VM, state, events, actuators, v_cruise_kph, rk, AM,
               LaC, LoC, read_only, start_time, v_acc, a_acc, lac_log, events_prev,
-              last_blinker_frame, is_ldw_enabled, can_error_counter, op_params):
+              last_blinker_frame, is_ldw_enabled, can_error_counter):
   """Send actuators and hud commands to the car, send controlsstate and MPC logging"""
 
   CC = car.CarControl.new_message()
@@ -605,7 +606,7 @@ def controlsd_thread(sm=None, pm=None, can_sock=None, sm_smiskol=None,):
     # Publish data
     CC, events_prev = data_send(sm, pm, CS, CI, CP, VM, state, events, actuators, v_cruise_kph, rk, AM, LaC,
                                 LoC, read_only, start_time, v_acc, a_acc, lac_log, events_prev, last_blinker_frame,
-                                is_ldw_enabled, can_error_counter, op_params)
+                                is_ldw_enabled, can_error_counter)
     prof.checkpoint("Sent")
 
     rk.monitor_time()
