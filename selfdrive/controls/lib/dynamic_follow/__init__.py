@@ -148,7 +148,7 @@ class DynamicFollow:
       profile_mod_pos = [1.0] * 4
       profile_mod_neg = [1.0] * 4
 
-    sng_TR = 1.65  # reacceleration stop and go TR
+    sng_TR = 1.7  # reacceleration stop and go TR
     sng_speed = 15.0 * CV.MPH_TO_MS
 
     if self.car_data.v_ego > sng_speed:  # keep sng distance until we're above sng speed again
