@@ -1,14 +1,15 @@
 from common.travis_checker import travis
 from selfdrive.swaglog import cloudlog
-import threading
-import time
-import os
+from common.realtime import sec_since_boot
 from common.op_params import opParams
+import threading
+import os
 
 op_params = opParams()
 
+
 class DataCollector:
-  def __init__(self, file_path, keys, write_frequency=60, write_threshold=2):
+  def __init__(self, file_path, keys, write_frequency=120, write_threshold=2):
     """
     This class provides an easy way to set up your own custom data collector to gather custom data.
     Parameters:
@@ -27,17 +28,16 @@ class DataCollector:
     self.write_frequency = write_frequency
     self.write_threshold = write_threshold
     self.data = []
-    self.last_write_time = time.time()
+    self.last_write_time = sec_since_boot()
     self.thread_running = False
-    self.is_initialized = False
+    self._initialize()
 
-  def initialize(self):  # add keys to top of data file
+  def _initialize(self):  # add keys to top of data file
     if not os.path.exists(self.file_path) and not travis:
       with open(self.file_path, "w") as f:
         f.write('{}\n'.format(self.keys))
-    self.is_initialized = True
 
-  def append(self, sample):
+  def update(self, sample):
     """
     Appends your sample to a central self.data variable that gets written to your specified file path every n seconds.
     Parameters:
@@ -53,18 +53,16 @@ class DataCollector:
     if self.log_data:
       if len(sample) != len(self.keys):
         raise Exception("You need the same amount of data as you specified in your keys")
-      if not self.is_initialized:
-        self.initialize()
       self.data.append(sample)
-      self.check_if_can_write()
+      self._check_if_can_write()
 
-  def reset(self, reset_type=None):
+  def _reset(self, reset_type=None):
     if reset_type in ['data', 'all']:
       self.data = []
     if reset_type in ['time', 'all']:
-      self.last_write_time = time.time()
+      self.last_write_time = sec_since_boot()
 
-  def check_if_can_write(self):
+  def _check_if_can_write(self):
     """
     You shouldn't ever need to call this. It checks if we should write, then calls a thread to do so
     with a copy of the current gathered data. Then it clears the self.data variable so that new data
@@ -74,17 +72,17 @@ class DataCollector:
     something is wrong with writing.
     """
 
-    if (time.time() - self.last_write_time) >= self.write_frequency and len(self.data) >= self.write_threshold and not travis:
+    if (sec_since_boot() - self.last_write_time) >= self.write_frequency and len(self.data) >= self.write_threshold and not travis:
       if not self.thread_running:
-        write_thread = threading.Thread(target=self.write, args=(self.data,))
+        write_thread = threading.Thread(target=self._write, args=(self.data,))
         write_thread.daemon = True
         write_thread.start()
         # self.write(self.data)  # non threaded approach
-        self.reset(reset_type='all')
+        self._reset(reset_type='all')
       elif self.write_frequency > 30:
         cloudlog.warning('DataCollector write thread is taking a while to write data.')
 
-  def write(self, current_data):
+  def _write(self, current_data):
     """
     Only write data that has been added so far in background. self.data is still being appended to in
     foreground so in the next write event, new data will be written. This eliminates lag causing openpilot
@@ -94,5 +92,5 @@ class DataCollector:
     self.thread_running = True
     with open(self.file_path, "a") as f:
       f.write('{}\n'.format('\n'.join(map(str, current_data))))  # json takes twice as long to write
-    self.reset(reset_type='time')
+    self._reset(reset_type='time')
     self.thread_running = False

@@ -9,6 +9,8 @@ from selfdrive.config import Conversions as CV
 from selfdrive.controls.lib.dynamic_follow.auto_df import predict
 from selfdrive.controls.df_alert_manager import dfAlertManager
 from selfdrive.controls.lib.dynamic_follow.support import LeadData, CarData, dfData, dfProfiles
+from common.data_collector import DataCollector
+from cereal.messaging import SubMaster
 
 
 class DynamicFollow:
@@ -17,6 +19,7 @@ class DynamicFollow:
     self.op_params = opParams()
     self.df_profiles = dfProfiles()
     self.df_alert_manager = dfAlertManager(self.op_params)
+    self.setup_collector()
     self.default_TR = 1.8
     self.predict_rate = 1 / 5.
 
@@ -28,6 +31,10 @@ class DynamicFollow:
     self.scales = {'v_ego': [-0.06112159043550491, 33.70709991455078], 'a_lead': [-2.982128143310547, 3.3612186908721924], 'v_lead': [0.0, 30.952558517456055], 'x_lead': [2.4600000381469727, 139.52000427246094]}
     self.input_len = 200
     self.setup_changing_variables()
+
+  def setup_collector(self):
+    self.sm = SubMaster(['liveTracks'])
+    self.data_collector = DataCollector(file_path='/data/df_data', keys=['v_ego', 'a_lead', 'v_lead', 'x_lead', 'live_tracks', 'profile', 'time'])
 
   def setup_changing_variables(self):
     self.TR = self.default_TR
@@ -43,8 +50,22 @@ class DynamicFollow:
     self.last_predict_time = 0.0
     self.model_data = []
 
+  def gather_data(self):
+    self.sm.update(0)
+    live_tracks = [[i.dRel, i.vRel, i.aRel, i.yRel] for i in self.sm['liveTracks']]
+    if self.CS.cruiseState.enabled and self.mpc_id == 1:
+      self.data_collector.update([self.car_data.v_ego,
+                                  self.lead_data.a_lead,
+                                  self.lead_data.v_lead,
+                                  self.lead_data.x_lead,
+                                  live_tracks,
+                                  self.df_profile,
+                                  sec_since_boot()])
+
   def update(self, CS, libmpc):
-    self.update_car(CS)
+    self.CS = CS
+    self.gather_data()
+    self.update_car()
     if self.mpc_id == 1:
       self.df_profile, df_changed, change_time = self.df_alert_manager.update()  # could output profile from button or prediction if in auto
       if self.df_alert_manager.is_auto and self.lead_data.status:
@@ -54,7 +75,7 @@ class DynamicFollow:
       self.TR = self.default_TR
     else:
       self._store_df_data()
-      self.TR = self._get_TR(CS)
+      self.TR = self._get_TR()
 
     if not travis:
       self._change_cost(libmpc)
@@ -74,7 +95,7 @@ class DynamicFollow:
 
   def _change_cost(self, libmpc):
     TRs = [0.9, 1.8, 2.7]
-    costs = [1.0, 0.125, 0.05]
+    costs = [1.0, 0.13, 0.05]
     cost = interp(self.TR, TRs, costs)
     if self.last_cost != cost:
       libmpc.change_tr(MPC_COST_LONG.TTC, cost, MPC_COST_LONG.ACCELERATION, MPC_COST_LONG.JERK)
@@ -130,7 +151,7 @@ class DynamicFollow:
         self.df_pred = int(np.argmax(pred))
         self.last_predict_time = cur_time
 
-  def _get_TR(self, CS):
+  def _get_TR(self):
     x_vel = [0.0, 1.8627, 3.7253, 5.588, 7.4507, 9.3133, 11.5598, 13.645, 22.352, 31.2928, 33.528, 35.7632, 40.2336]  # velocities
     profile_mod_x = [2.2352, 13.4112, 24.5872, 35.7632]  # profile mod speeds, mph: [5., 30., 55., 80.]
 
@@ -184,7 +205,7 @@ class DynamicFollow:
     TR_mod = sum([mod * profile_mod_neg if mod < 0 else mod * profile_mod_pos for mod in TR_mod])  # alter TR modification according to profile
     TR += TR_mod
 
-    if CS.leftBlinker or CS.rightBlinker and self.df_profile != self.df_profiles.traffic:
+    if self.CS.leftBlinker or self.CS.rightBlinker and self.df_profile != self.df_profiles.traffic:
       x = [8.9408, 22.352, 31.2928]  # 20, 50, 70 mph
       y = [1.0, .75, .65]  # reduce TR when changing lanes
       TR *= interp(self.car_data.v_ego, x, y)
@@ -197,6 +218,6 @@ class DynamicFollow:
     self.lead_data.status = status
     self.lead_data.new_lead = new_lead
 
-  def update_car(self, CS):
-    self.car_data.v_ego = CS.vEgo
-    self.car_data.a_ego = CS.aEgo
+  def update_car(self):
+    self.car_data.v_ego = self.CS.vEgo
+    self.car_data.a_ego = self.CS.aEgo
