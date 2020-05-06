@@ -9,7 +9,7 @@ class dfAlertManager:
     self.is_df = is_df
     self.df_profiles = dfProfiles()
     self.sm = messaging.SubMaster(['dynamicFollowButton', 'dynamicFollowData'])
-    self.current_profile = self.df_profiles.to_idx[self.op_params.get('dynamic_follow', default='relaxed').strip().lower()]
+    self.current_profile = self.df_profiles.to_idx[self.op_params.get('dynamic_follow', default='auto').strip().lower()]
     self.prediction_profile = 0
     self.alert_duration = 2.0
 
@@ -34,7 +34,7 @@ class dfAlertManager:
       if self.last_button_status != status:
         self.change_time = sec_since_boot()
         changed = True
-        self.op_params.put('dynamic_follow', new_profile)  # save current profile for next drive
+        self.op_params.put('dynamic_follow', self.df_profiles.to_profile[new_profile])  # save current profile for next drive
         self.current_profile = new_profile
         self.last_button_status = status
       elif self.is_auto:
