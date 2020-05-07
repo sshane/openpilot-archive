@@ -19,7 +19,9 @@ class opEdit:  # use by running `python /data/openpilot/op_edit.py`
     if self.username is None:
       print('\nWelcome to the opParams command line editor!')
       print('Parameter \'username\' is missing! Would you like to add your Discord username for easier crash debugging?')
-      if self.is_affirmative():
+
+      username_choice = self.input_with_options(['Y', 'n', "don't ask again"])[0]
+      if username_choice == "Y":
         print('Please enter your Discord username so the developers can reach out if a crash occurs:')
         username = ''
         while username == '':
@@ -28,6 +30,9 @@ class opEdit:  # use by running `python /data/openpilot/op_edit.py`
                      'Edit the \'username\' parameter at any time to update', sleep_time=3.0)
         self.op_params.put('username', username)
         self.username = username
+      elif username_choice == "don't ask again":
+        self.op_params.put('username', False)
+        self.message('Got it, we won\t ask about it again', sleep_time=3.0)
     else:
       print('\nWelcome to the opParams command line editor, {}!'.format(self.username))
 
@@ -91,7 +96,7 @@ class opEdit:  # use by running `python /data/openpilot/op_edit.py`
     elif choice in ['l', 'live']:  # live tuning mode
       return 'live', choice
     else:  # find most similar param to user's input
-      param_sims = [(idx, self.str_diff(choice, param)) for idx, param in enumerate(self.params)]
+      param_sims = [(idx, self.str_sim(choice, param)) for idx, param in enumerate(self.params)]
       param_sims = [param for param in param_sims if param[1] > 0.5]
       if len(param_sims) > 0:
         chosen_param = sorted(param_sims, key=lambda param: param[1])[-1]
@@ -100,7 +105,7 @@ class opEdit:  # use by running `python /data/openpilot/op_edit.py`
     self.message('Invalid choice!')
     return 'continue', choice
 
-  def str_diff(self, a, b):
+  def str_sim(self, a, b):
     return difflib.SequenceMatcher(a=a, b=b).ratio()
 
   def change_parameter(self, choice):
@@ -150,8 +155,11 @@ class opEdit:  # use by running `python /data/openpilot/op_edit.py`
             self.message('Not saved!')
           return
 
-  def is_affirmative(self):
-    return input('[Y/n]: ').lower().strip() in ['yes', 'ye', 'y']
+  def input_with_options(self, options):
+    user_input = input('[{}]: '.format('/'.join(options))).lower().strip()
+    sims = [self.str_sim(i.lower().strip(), user_input) for i in options]
+    argmax = sims.index(max(sims))
+    return options[argmax], sims[argmax]
 
   def parse_input(self, dat):
     dat = dat.strip()
