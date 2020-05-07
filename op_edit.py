@@ -115,8 +115,7 @@ class opEdit:  # use by running `python /data/openpilot/op_edit.py`
       if key_info.has_description:
         to_print.append('>>  Description: {}'.format(self.op_params.default_params[chosen_key]['description'].replace('\n', '\n  > ')))
       if key_info.has_allowed_types:
-        allowed_types = self.op_params.default_params[chosen_key]['allowed_types']
-        to_print.append('>>  Allowed types: {}'.format(', '.join([str(i).split("'")[1] for i in allowed_types])))
+        to_print.append('>>  Allowed types: {}'.format(', '.join([str(i).split("'")[1] for i in key_info.allowed_types])))
       if key_info.live:
         to_print.append('>>  This parameter supports live tuning! Updates should take affect within 5 seconds')
 
@@ -132,7 +131,7 @@ class opEdit:  # use by running `python /data/openpilot/op_edit.py`
             return
 
         new_value = self.parse_input(new_value)
-        if key_info.has_allowed_types and type(new_value) not in allowed_types:
+        if key_info.has_allowed_types and type(new_value) not in key_info.allowed_types:
             self.message('The type of data you entered ({}) is not allowed with this parameter!'.format(str(type(new_value)).split("'")[1]))
             continue
 
