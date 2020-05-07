@@ -7,8 +7,9 @@ from common.travis_checker import travis
 
 
 class KeyInfo:
-  has_allowed_types = False
+  default = None
   allowed_types = []
+  has_allowed_types = False
   live = False
   has_default = False
   has_description = False
@@ -95,17 +96,16 @@ class opParams:
       key_info = self.key_info(key)
       if key_info.has_allowed_types:
         value = self.params[key]
-        if type(value) not in key_info.allowed_types:
-          cloudlog.warning('op_params: User\'s value is not valid!')
-          if key_info.has_default:  # invalid value type, try to use default value
-            default_value = self.default_params[key]['default']
-            if type(default_value) in key_info.allowed_types:  # actually check if the default is valid
-              # return default value because user's value of key is not in the allowed_types to avoid crashing openpilot
-              return default_value
-          else:  # else use a standard value based on type (last resort to keep openpilot running if user's value is of invalid type)
-            return self._value_from_types(key_info.allowed_types)
-        else:
+        if type(value) in key_info.allowed_types:
           return value  # all good, returning user's value
+
+        cloudlog.warning('op_params: User\'s value is not valid!')
+        if key_info.has_default:  # invalid value type, try to use default value
+          if type(key_info.default) in key_info.allowed_types:  # actually check if the default is valid
+            # return default value because user's value of key is not in the allowed_types to avoid crashing openpilot
+            return key_info.default
+
+        return self._value_from_types(key_info.allowed_types)  # else use a standard value based on type (last resort to keep openpilot running if user's value is of invalid type)
       else:
         return self.params[key]  # no defined allowed types, returning user's value
 
@@ -130,14 +130,19 @@ class opParams:
         if isinstance(allowed_types, list) and len(allowed_types) > 0:
           key_info.has_allowed_types = True
           key_info.allowed_types = allowed_types
+
       if 'live' in self.default_params[key]:
         key_info.live = self.default_params[key]['live']
+
       if 'default' in self.default_params[key]:
         key_info.has_default = True
-      if 'description' in self.default_params[key]:
-        key_info.has_description = True
+        key_info.default = self.default_params[key]['default']
+
+      key_info.has_description = 'description' in self.default_params[key]
+
       if 'hide' in self.default_params[key]:
         key_info.hidden = self.default_params[key]['hide']
+
     return key_info
 
   def _add_default_params(self):
