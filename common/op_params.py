@@ -95,6 +95,7 @@ class opParams:
     return {key: self.default_params[key]['default'] for key in self.default_params}
 
   def run_init(self):  # does first time initializing of default params
+    print('travis: {}'.format(travis))
     if travis:
       self.params = self.format_default_params()
       return
@@ -102,15 +103,20 @@ class opParams:
     to_write = False
     if os.path.isfile(self.params_file):
       self.params, read_status = read_params(self.params_file, self.format_default_params())
+      print('read status: {}'.format(read_status))
       if read_status:
         to_write = not self.add_default_params()  # if new default data has been added
+        print('added default params, writing: {}'.format(to_write))
         if self.delete_old():  # or if old params have been deleted
           to_write = True
+          print('deleted old! writing')
       else:  # don't overwrite corrupted params, just print to screen
         cloudlog.error("ERROR: Can't read op_params.json file")
     else:
+      print('first time running! writing defaults')
       to_write = True  # user's first time running a fork with op_params, write default params
     if to_write:
+      print('finally, writing...')
       write_params(self.params, self.params_file)
 
   def delete_old(self):
