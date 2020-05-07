@@ -20,8 +20,8 @@ class opEdit:  # use by running `python /data/openpilot/op_edit.py`
       print('\nWelcome to the opParams command line editor!')
       print('Parameter \'username\' is missing! Would you like to add your Discord username for easier crash debugging?')
 
-      username_choice = self.input_with_options(['Y', 'n', 'don\'t ask again'])[0]
-      if username_choice == 'Y':
+      username_choice = self.input_with_options(['Y', 'n', 'don\'t ask again'], default='n')[0]
+      if username_choice == 0:
         print('Please enter your Discord username so the developers can reach out if a crash occurs:')
         username = ''
         while username == '':
@@ -30,7 +30,7 @@ class opEdit:  # use by running `python /data/openpilot/op_edit.py`
                      'Edit the \'username\' parameter at any time to update', sleep_time=3.0)
         self.op_params.put('username', username)
         self.username = username
-      elif username_choice == 'don\'t ask again':
+      elif username_choice == 2:
         self.op_params.put('username', False)
         self.message('Got it, bringing you into opEdit', sleep_time=3.0)
     else:
@@ -155,11 +155,17 @@ class opEdit:  # use by running `python /data/openpilot/op_edit.py`
             self.message('Not saved!')
           return
 
-  def input_with_options(self, options):
+  def input_with_options(self, options, default=None):
+    """
+    Takes in a list of options and asks user to make a choice.
+    The most similar option list index is returned along with the similarity percentage from 0 to 1
+    """
     user_input = input('[{}]: '.format(' / '.join(options))).lower().strip()
+    if not user_input:
+      return default, 0.0
     sims = [self.str_sim(i.lower().strip(), user_input) for i in options]
     argmax = sims.index(max(sims))
-    return options[argmax], sims[argmax]
+    return argmax, sims[argmax]
 
   def parse_input(self, dat):
     dat = dat.strip()
