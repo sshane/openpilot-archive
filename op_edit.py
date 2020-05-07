@@ -129,7 +129,7 @@ class opEdit:  # use by running `python /data/openpilot/op_edit.py`
 
       print('Current value: {} (type: {})'.format(old_value, str(type(old_value)).split("'")[1]))
       while True:
-        print('Enter your new value:')
+        print('\nEnter your new value:')
         new_value = input('>> ').strip()
         if new_value == '':
             self.message('Exiting this parameter...', 0.5)
