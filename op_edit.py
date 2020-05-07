@@ -156,7 +156,7 @@ class opEdit:  # use by running `python /data/openpilot/op_edit.py`
           return
 
   def input_with_options(self, options):
-    user_input = input('[{}]: '.format('/'.join(options))).lower().strip()
+    user_input = input('[{}]: '.format(' / '.join(options))).lower().strip()
     sims = [self.str_sim(i.lower().strip(), user_input) for i in options]
     argmax = sims.index(max(sims))
     return options[argmax], sims[argmax]
