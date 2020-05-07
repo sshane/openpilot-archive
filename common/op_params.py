@@ -64,31 +64,19 @@ class opParams:
     self.to_delete = ['dynamic_lane_speed', 'longkiV', 'following_distance', 'static_steer_ratio', 'uniqueID', 'use_kd', 'kd', 'restrict_sign_change', 'write_errors', 'reset_integral']  # a list of params you want to delete (unused)
     self.run_init()  # restores, reads, and updates params
 
-  def add_default_params(self):
-    prev_params = dict(self.params)
-    for key in self.default_params:
-      if self.force_update:
-        self.params[key] = self.default_params[key]['default']
-      elif key not in self.params:
-        self.params[key] = self.default_params[key]['default']
-    return prev_params == self.params
-
-  def format_default_params(self):
-    return {key: self.default_params[key]['default'] for key in self.default_params}
-
   def run_init(self):  # does first time initializing of default params
     if travis:
-      self.params = self.format_default_params()
+      self.params = self._format_default_params()
       return
 
-    self.params = self.format_default_params()  # in case any file is corrupted
+    self.params = self._format_default_params()  # in case any file is corrupted
 
     to_write = False
     if os.path.isfile(self.params_file):
-      self.params, read_status = self.read_params()
+      self.params, read_status = self._read()
       if read_status:
-        to_write = not self.add_default_params()  # if new default data has been added
-        if self.delete_old():  # or if old params have been deleted
+        to_write = not self._add_default_params()  # if new default data has been added
+        if self._delete_old():  # or if old params have been deleted
           to_write = True
       else:  # don't overwrite corrupted params, just print
         cloudlog.error("ERROR: Can't read op_params.json file")
@@ -96,24 +84,12 @@ class opParams:
       to_write = True  # user's first time running a fork with op_params, write default params
 
     if to_write:
-      self.write_params()
-
-  def delete_old(self):
-    deleted = False
-    for i in self.to_delete:
-      if i in self.params:
-        del self.params[i]
-        deleted = True
-    return deleted
-
-  def put(self, key, value):
-    self.params.update({key: value})
-    self.write_params()
+      self._write()
 
   def get(self, key=None, default=None, force_update=False):  # can specify a default value if key doesn't exist
-    self.update_params(key, force_update)
+    self._update_params(key, force_update)
     if key is None:
-      return self.get_all()
+      return self._get_all()
 
     if key in self.params:
       key_info = self.key_info(key)
@@ -128,7 +104,7 @@ class opParams:
               # return default value because user's value of key is not in the allowed_types to avoid crashing openpilot
               return default_value
           else:  # else use a standard value based on type (last resort to keep openpilot running if user's value is of invalid type)
-            return self.value_from_types(allowed_types)
+            return self._value_from_types(allowed_types)
         else:
           return value  # all good, returning user's value
       else:
@@ -136,7 +112,31 @@ class opParams:
 
     return default  # not in params
 
-  def get_all(self):  # returns all non-hidden params
+  def put(self, key, value):
+    self.params.update({key: value})
+    self._write()
+
+  def _add_default_params(self):
+    prev_params = dict(self.params)
+    for key in self.default_params:
+      if self.force_update:
+        self.params[key] = self.default_params[key]['default']
+      elif key not in self.params:
+        self.params[key] = self.default_params[key]['default']
+    return prev_params == self.params
+
+  def _format_default_params(self):
+    return {key: self.default_params[key]['default'] for key in self.default_params}
+
+  def _delete_old(self):
+    deleted = False
+    for i in self.to_delete:
+      if i in self.params:
+        del self.params[i]
+        deleted = True
+    return deleted
+
+  def _get_all(self):  # returns all non-hidden params
     return {k: v for k, v in self.params.items() if not self.key_info(k).hidden}
 
   def key_info(self, key):
@@ -158,7 +158,7 @@ class opParams:
         key_info.hidden = self.default_params[key]['hide']
     return key_info
 
-  def value_from_types(self, allowed_types):
+  def _value_from_types(self, allowed_types):
     if list in allowed_types:
       return []
     elif float in allowed_types or int in allowed_types:
@@ -169,31 +169,31 @@ class opParams:
       return ''
     return None  # unknown type
 
-  def update_params(self, key, force_update):
+  def _update_params(self, key, force_update):
     if force_update or self.key_info(key).live:  # if is a live param, we want to get updates while openpilot is running
       if not travis and (time.time() - self.last_read_time >= self.read_frequency or force_update):  # make sure we aren't reading file too often
-        self.params, read_status = self.read_params()
+        self.params, read_status = self._read()
         if not read_status:
           time.sleep(1/100.)
-          self.params, _ = self.read_params()  # if the file was being written to, retry once
+          self.params, _ = self._read()  # if the file was being written to, retry once
         self.last_read_time = time.time()
 
   def delete(self, key):
     if key in self.params:
       del self.params[key]
-      self.write_params()
+      self._write()
 
-  def read_params(self):
+  def _read(self):
     try:
       with open(self.params_file, "r") as f:
         params = json.load(f)
       return params, True
     except Exception as e:
       cloudlog.error(e)
-      params = self.format_default_params()
+      params = self._format_default_params()
       return params, False
 
-  def write_params(self):
+  def _write(self):
     if not travis:
       with open(self.params_file, "w") as f:
         json.dump(self.params, f, indent=2, sort_keys=True)
