@@ -46,7 +46,7 @@ class opParams:
     self.last_read_time = time.time()
     self.read_frequency = 1.0  # max frequency to read with self.get(...) (sec)
     self.force_update = False  # replaces values with default params if True, not just add add missing key/value pairs
-    self.to_delete = ['dynamic_lane_speed', 'longkiV', 'following_distance', 'static_steer_ratio', 'uniqueID', 'use_kd', 'kd', 'restrict_sign_change', 'write_errors', 'reset_integral']  # a list of params you want to delete (unused)
+    self.to_delete = []  # a list of params you want to delete (unused)
     self.run_init()  # restores, reads, and updates params
 
   def run_init(self):  # does first time initializing of default params
