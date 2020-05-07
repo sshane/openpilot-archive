@@ -200,8 +200,7 @@ class opEdit:  # use by running `python /data/openpilot/op_edit.py`
       print('Parameter value: {} (type: {})'.format(value, str(type(value)).split("'")[1]))
       print('Do you want to delete this?')
 
-      choice = input('[Y/n]: ').lower().strip()
-      if choice == 'y':
+      if self.input_with_options(['Y', 'n'], default='n')[0] == 0:
         self.op_params.delete(key)
         self.message('Deleted!')
       else:
@@ -229,8 +228,7 @@ class opEdit:  # use by running `python /data/openpilot/op_edit.py`
       print('Parameter value: {} (type: {})'.format(value, str(type(value)).split("'")[1]))
       print('Do you want to save this?')
 
-      choice = input('[Y/n]: ').lower().strip()
-      if choice == 'y':
+      if self.input_with_options(['Y', 'n'], default='n')[0] == 0:
         self.op_params.put(key, value)
         self.message('Saved!')
       else:
