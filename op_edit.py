@@ -143,7 +143,7 @@ class opEdit:  # use by running `python /data/openpilot/op_edit.py`
 
         if key_info.live:  # stay in live tuning interface
           self.op_params.put(chosen_key, new_value)
-          print('Saved {} with value: {}! (type: {})\n'.format(chosen_key, new_value, str(type(new_value)).split("'")[1]))
+          print('Saved {} with value: {}! (type: {})'.format(chosen_key, new_value, str(type(new_value)).split("'")[1]))
         else:  # else ask to save and break
           print('\nOld value: {} (type: {})'.format(old_value, str(type(old_value)).split("'")[1]))
           print('New value: {} (type: {})'.format(new_value, str(type(new_value)).split("'")[1]))
