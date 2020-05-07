@@ -127,6 +127,7 @@ class opParams:
         del self.params[i]
     print(prev_params)
     print(self.params)
+    print(prev_params == self.params)
     return prev_params == self.params
 
   def put(self, key, value):
