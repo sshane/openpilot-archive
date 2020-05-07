@@ -123,6 +123,7 @@ class opParams:
     prev_params = dict(self.params)
     for i in self.to_delete:
       if i in self.params:
+        print('deleting: {}'.format(i))
         del self.params[i]
     return prev_params == self.params
 
