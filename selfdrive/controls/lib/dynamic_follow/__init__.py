@@ -187,8 +187,8 @@ class DynamicFollow:
 
     TR_mod = []
     # Dynamic follow modifications (the secret sauce)
-    x = [-20.0288, -15.6871, -11.1965, -7.8645, -4.9472, -3.0541, -1.5052, 0.0, 0.6845, 1.3682, 1.898, 2.7316]  # relative velocity values
-    y = [0.6492, 0.5155, 0.4235, 0.3357, 0.2491, 0.1278, 0.0622, 0.0, -0.0443, -0.066, -0.1425, -0.2218]  # modification values
+    x = [-20.0288, -15.6871, -11.1965, -7.8645, -4.9472, -3.0541, -2.2244, -1.4383, -0.6671, -0.3313, -0.1671, 0.0, 0.6845, 1.3682, 1.898, 2.7316]  # relative velocity values
+    y = [0.6492, 0.5155, 0.4235, 0.3357, 0.2491, 0.1278, 0.1092, 0.0841, 0.0509, 0.0209, 0.0051, 0, -0.0443, -0.066, -0.1425, -0.2218]  # modification values
     TR_mod.append(interp(self.lead_data.v_lead - self.car_data.v_ego, x, y))
 
     # if not self.sng:  # todo: test to see if limitting the accel mod when not in sng is better
