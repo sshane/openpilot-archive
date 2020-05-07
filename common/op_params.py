@@ -125,6 +125,8 @@ class opParams:
       if i in self.params:
         print('deleting: {}'.format(i))
         del self.params[i]
+    print(prev_params)
+    print(self.params)
     return prev_params == self.params
 
   def put(self, key, value):
