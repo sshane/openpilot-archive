@@ -120,15 +120,12 @@ class opParams:
       write_params(self.params, self.params_file)
 
   def delete_old(self):
-    prev_params = dict(self.params)
+    deleted = False
     for i in self.to_delete:
       if i in self.params:
-        print('deleting: {}'.format(i))
         del self.params[i]
-    print(prev_params)
-    print(self.params)
-    print(prev_params == self.params)
-    return prev_params == self.params
+        deleted = True
+    return deleted
 
   def put(self, key, value):
     self.params.update({key: value})
