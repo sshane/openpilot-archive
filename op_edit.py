@@ -20,8 +20,8 @@ class opEdit:  # use by running `python /data/openpilot/op_edit.py`
       print('\nWelcome to the opParams command line editor!')
       print('Parameter \'username\' is missing! Would you like to add your Discord username for easier crash debugging?')
 
-      username_choice = self.input_with_options(['Y', 'n', "don't ask again"])[0]
-      if username_choice == "Y":
+      username_choice = self.input_with_options(['Y', 'n', 'don\'t ask again'])[0]
+      if username_choice == 'Y':
         print('Please enter your Discord username so the developers can reach out if a crash occurs:')
         username = ''
         while username == '':
@@ -30,9 +30,9 @@ class opEdit:  # use by running `python /data/openpilot/op_edit.py`
                      'Edit the \'username\' parameter at any time to update', sleep_time=3.0)
         self.op_params.put('username', username)
         self.username = username
-      elif username_choice == "don't ask again":
+      elif username_choice == 'don\'t ask again':
         self.op_params.put('username', False)
-        self.message('Got it, we won\t ask about it again', sleep_time=3.0)
+        self.message('Got it, bringing you into opEdit', sleep_time=3.0)
     else:
       print('\nWelcome to the opParams command line editor, {}!'.format(self.username))
 
