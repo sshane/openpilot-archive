@@ -32,7 +32,7 @@ class opEdit:  # use by running `python /data/openpilot/op_edit.py`
         self.username = username
       elif username_choice == 2:
         self.op_params.put('username', False)
-        self.message('Got it, bringing you into opEdit', sleep_time=3.0)
+        self.message('Got it, bringing you into opEdit!', sleep_time=3.0)
     else:
       print('\nWelcome to the opParams command line editor, {}!'.format(self.username))
 
@@ -147,8 +147,7 @@ class opEdit:  # use by running `python /data/openpilot/op_edit.py`
           print('\nOld value: {} (type: {})'.format(old_value, str(type(old_value)).split("'")[1]))
           print('New value: {} (type: {})'.format(new_value, str(type(new_value)).split("'")[1]))
           print('Do you want to save this?')
-          choice = input('[Y/n]: ').lower().strip()
-          if choice == 'y':
+          if self.input_with_options(['Y', 'n'], 'n') == 'y':
             self.op_params.put(chosen_key, new_value)
             self.message('Saved!')
           else:
