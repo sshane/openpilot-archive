@@ -183,8 +183,7 @@ class opEdit:  # use by running `python /data/openpilot/op_edit.py`
   def delete_parameter(self):
     while True:
       print('Enter the name of the parameter to delete:')
-      key = input('>> ').lower()
-      key = self.parse_input(key)
+      key = self.parse_input(input('>> '))
 
       if key == '':
         return
