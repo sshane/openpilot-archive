@@ -6,24 +6,6 @@ from selfdrive.swaglog import cloudlog
 from common.travis_checker import travis
 
 
-def write_params(params, params_file):
-  if not travis:
-    with open(params_file, "w") as f:
-      json.dump(params, f, indent=2, sort_keys=True)
-    os.chmod(params_file, 0o764)
-
-
-def read_params(params_file, default_params):
-  try:
-    with open(params_file, "r") as f:
-      params = json.load(f)
-    return params, True
-  except Exception as e:
-    cloudlog.error(e)
-    params = default_params
-    return params, False
-
-
 class KeyInfo:
   has_allowed_types = False
   live = False
@@ -95,29 +77,26 @@ class opParams:
     return {key: self.default_params[key]['default'] for key in self.default_params}
 
   def run_init(self):  # does first time initializing of default params
-    print('travis: {}'.format(travis))
     if travis:
       self.params = self.format_default_params()
       return
+
     self.params = self.format_default_params()  # in case any file is corrupted
+
     to_write = False
     if os.path.isfile(self.params_file):
-      self.params, read_status = read_params(self.params_file, self.format_default_params())
-      print('read status: {}'.format(read_status))
+      self.params, read_status = self.read_params()
       if read_status:
         to_write = not self.add_default_params()  # if new default data has been added
-        print('added default params, writing: {}'.format(to_write))
         if self.delete_old():  # or if old params have been deleted
           to_write = True
-          print('deleted old! writing')
-      else:  # don't overwrite corrupted params, just print to screen
+      else:  # don't overwrite corrupted params, just print
         cloudlog.error("ERROR: Can't read op_params.json file")
     else:
-      print('first time running! writing defaults')
       to_write = True  # user's first time running a fork with op_params, write default params
+
     if to_write:
-      print('finally, writing...')
-      write_params(self.params, self.params_file)
+      self.write_params()
 
   def delete_old(self):
     deleted = False
@@ -129,7 +108,7 @@ class opParams:
 
   def put(self, key, value):
     self.params.update({key: value})
-    write_params(self.params, self.params_file)
+    self.write_params()
 
   def get(self, key=None, default=None, force_update=False):  # can specify a default value if key doesn't exist
     self.update_params(key, force_update)
@@ -193,13 +172,29 @@ class opParams:
   def update_params(self, key, force_update):
     if force_update or self.key_info(key).live:  # if is a live param, we want to get updates while openpilot is running
       if not travis and (time.time() - self.last_read_time >= self.read_frequency or force_update):  # make sure we aren't reading file too often
-        self.params, read_status = read_params(self.params_file, self.format_default_params())
+        self.params, read_status = self.read_params()
         if not read_status:
           time.sleep(1/100.)
-          self.params, _ = read_params(self.params_file, self.format_default_params())  # if the file was being written to, retry once
+          self.params, _ = self.read_params()  # if the file was being written to, retry once
         self.last_read_time = time.time()
 
   def delete(self, key):
     if key in self.params:
       del self.params[key]
-      write_params(self.params, self.params_file)
+      self.write_params()
+
+  def read_params(self):
+    try:
+      with open(self.params_file, "r") as f:
+        params = json.load(f)
+      return params, True
+    except Exception as e:
+      cloudlog.error(e)
+      params = self.format_default_params()
+      return params, False
+
+  def write_params(self):
+    if not travis:
+      with open(self.params_file, "w") as f:
+        json.dump(self.params, f, indent=2, sort_keys=True)
+      os.chmod(self.params_file, 0o764)
