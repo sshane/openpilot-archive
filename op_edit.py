@@ -209,12 +209,10 @@ class opEdit:  # use by running `python /data/openpilot/op_edit.py`
   def add_parameter(self):
     while True:
       print('Type the name of your new parameter:')
-      key = input('>> ').strip()
+      key = self.parse_input(input('>> '))
+
       if key == '':
         return
-
-      key = self.parse_input(key)
-
       if not isinstance(key, str):
         self.message('Input must be a string!')
         continue
