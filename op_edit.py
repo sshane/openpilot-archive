@@ -159,7 +159,7 @@ class opEdit:  # use by running `python /data/openpilot/op_edit.py`
     Takes in a list of options and asks user to make a choice.
     The most similar option list index is returned along with the similarity percentage from 0 to 1
     """
-    user_input = input('[{}]: '.format(' / '.join(options))).lower().strip()
+    user_input = input('[{}]: '.format('/'.join(options))).lower().strip()
     if not user_input:
       return default, 0.0
     sims = [self.str_sim(i.lower().strip(), user_input) for i in options]
