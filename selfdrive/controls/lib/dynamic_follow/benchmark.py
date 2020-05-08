@@ -8,6 +8,7 @@ t = time.time()
 for sample in samples:
   predict(sample)
 
-print('Time: {} s'.format((time.time() - t) / len(samples)))
+print('Total time: {} s'.format(time.time() - t))
+print('Seconds per prediction: {} s'.format((time.time() - t) / len(samples)))
 print('Rate: {} Hz'.format(len(samples) / (time.time() - t)))
 print(predict(samples[0]).dtype)
