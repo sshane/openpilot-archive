@@ -9,7 +9,7 @@ op_params = opParams()
 
 
 class DataCollector:
-  def __init__(self, file_path, keys, write_frequency=120, write_threshold=2):
+  def __init__(self, file_path, keys, write_frequency=60, write_threshold=2):
     """
     This class provides an easy way to set up your own custom data collector to gather custom data.
     Parameters:

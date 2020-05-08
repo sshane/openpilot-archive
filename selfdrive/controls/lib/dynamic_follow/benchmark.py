@@ -6,7 +6,8 @@ samples = np.random.rand(2000, 800).astype(np.float32)
 
 t = time.time()
 for sample in samples:
-  print(predict(sample))
+  predict(sample)
 
-print(time.time() - t)
+print('Time: {} s'.format((time.time() - t) / len(samples)))
+print('Rate: {} Hz'.format(len(samples) / (time.time() - t)))
 print(predict(samples[0]).dtype)
