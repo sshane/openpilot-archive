@@ -86,8 +86,8 @@ class CarInterface(CarInterfaceBase):
       tire_stiffness_factor = 0.444  # not optimized yet
       ret.mass = 2860. * CV.LB_TO_KG + STD_CARGO_KG  # mean between normal and hybrid
       if ret.enableGasInterceptor:
-        ret.longitudinalTuning.kpV = [1.2, 0.8 * 1.1, 0.5 * 1.3]
-        ret.longitudinalTuning.kiV = [0.18 * 0.9, 0.12 * 0.8]
+        ret.longitudinalTuning.kpV = [1.2, 0.8 * 1.05, 0.5 * 1.15]
+        ret.longitudinalTuning.kiV = [0.18 * 0.95, 0.12 * 0.6]
 
       ret.lateralTuning.init('lqr')
       ret.lateralTuning.lqr.scale = 1500.0
@@ -186,9 +186,9 @@ class CarInterface(CarInterfaceBase):
       ret.wheelbase = 2.68986
       ret.steerRatio = 14.3
       tire_stiffness_factor = 0.7933
-      ret.lateralTuning.pid.kpV, ret.lateralTuning.pid.kiV = [[0.6], [0.1]]
+      ret.lateralTuning.pid.kpV, ret.lateralTuning.pid.kiV = [[0.15], [0.05]]
       ret.mass = 3370. * CV.LB_TO_KG + STD_CARGO_KG
-      ret.lateralTuning.pid.kf = 0.00007818594
+      ret.lateralTuning.pid.kf = 0.00004
 
     elif candidate == CAR.RAV4H_TSS2:
       stop_and_go = True
@@ -196,9 +196,9 @@ class CarInterface(CarInterfaceBase):
       ret.wheelbase = 2.68986
       ret.steerRatio = 14.3
       tire_stiffness_factor = 0.7933
-      ret.lateralTuning.pid.kpV, ret.lateralTuning.pid.kiV = [[0.6], [0.1]]
+      ret.lateralTuning.pid.kpV, ret.lateralTuning.pid.kiV = [[0.15], [0.05]]
       ret.mass = 3800. * CV.LB_TO_KG + STD_CARGO_KG
-      ret.lateralTuning.pid.kf = 0.00007818594
+      ret.lateralTuning.pid.kf = 0.00004
 
     elif candidate in [CAR.COROLLA_TSS2, CAR.COROLLAH_TSS2]:
       stop_and_go = True
