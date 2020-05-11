@@ -9,6 +9,7 @@ from common.travis_checker import travis
 class KeyInfo:
   default = None
   allowed_types = []
+  is_list = False
   has_allowed_types = False
   live = False
   has_default = False
@@ -129,7 +130,11 @@ class opParams:
         allowed_types = self.default_params[key]['allowed_types']
         if isinstance(allowed_types, list) and len(allowed_types) > 0:
           key_info.has_allowed_types = True
-          key_info.allowed_types = allowed_types
+          key_info.allowed_types = list(allowed_types)
+          if list in [type(typ) for typ in allowed_types]:
+            key_info.is_list = True
+            key_info.allowed_types.remove(list)
+            key_info.allowed_types = key_info.allowed_types[0]
 
       if 'live' in self.default_params[key]:
         key_info.live = self.default_params[key]['live']
