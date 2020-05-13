@@ -100,7 +100,7 @@ class PIDController:
     self._k_d = k_d  # derivative gain
     self.k_f = k_f  # feedforward gain
 
-    self.max_accel_d = 0.268224  # 0.6 mph/s
+    self.max_accel_d = 0.22352  # 0.5 mph/s
 
     self.pos_limit = pos_limit
     self.neg_limit = neg_limit
