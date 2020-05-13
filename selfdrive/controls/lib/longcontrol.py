@@ -119,7 +119,7 @@ class LongControl():
         if len(self.model_out) == 0:
           lead_1 = radarState.leadOne
           model_data = [self.norm(lead_1.vLead, 'v_lead'),
-                        self.norm(lead_1.aLead, 'a_lead'),
+                        self.norm(lead_1.aLeadK, 'a_lead'),
                         self.norm(lead_1.dRel, 'x_lead'),
                         self.norm(v_ego, 'v_ego'),
                         self.norm(CS.aEgo, 'a_ego')]
