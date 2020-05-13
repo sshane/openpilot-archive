@@ -85,9 +85,9 @@ class CarInterface(CarInterfaceBase):
       ret.steerRatio = 18.27
       tire_stiffness_factor = 0.444  # not optimized yet
       ret.mass = 2860. * CV.LB_TO_KG + STD_CARGO_KG  # mean between normal and hybrid
-      if ret.enableGasInterceptor:
-        ret.longitudinalTuning.kpV = [1.2, 0.8 * 1.05, 0.5 * 1.15]
-        ret.longitudinalTuning.kiV = [0.18 * 0.95, 0.12 * 0.6]
+      # if ret.enableGasInterceptor:
+      #   ret.longitudinalTuning.kpV = [1.2, 0.8 * 1.05, 0.5 * 1.15]
+      #   ret.longitudinalTuning.kiV = [0.18 * 0.95, 0.12 * 0.6]
 
       ret.lateralTuning.init('lqr')
       ret.lateralTuning.lqr.scale = 1500.0
