@@ -1,6 +1,9 @@
 from cereal import log
 from common.numpy_fast import clip, interp
 from selfdrive.controls.lib.pid import PIController
+from selfdrive.controls.lib.df.dftf import predict
+import numpy as np
+from common.realtime import sec_since_boot
 
 LongCtrlState = log.ControlsState.LongControlState
 
@@ -66,12 +69,23 @@ class LongControl():
     self.v_pid = 0.0
     self.last_output_gb = 0.0
 
+    self.scales = {'v_lead': [0.0, 44.508262634277344], 'a_lead': [-5.9888763427734375, 5.99705696105957], 'x_lead': [0.0, 195.32000732421875], 'v_ego': [-0.111668661236763, 41.497596740722656], 'a_ego': [-5.99345588684082, 5.982954025268555]}
+    self.model_out = []
+    self.last_pred_time = 0
+    self.used_ts = 0
+
   def reset(self, v_pid):
     """Reset PID controller and change setpoint"""
     self.pid.reset()
     self.v_pid = v_pid
 
-  def update(self, active, v_ego, brake_pressed, standstill, cruise_standstill, v_cruise, v_target, v_target_future, a_target, CP):
+  def unnorm(self, x, name):
+    return np.interp(x, [0, 1], self.scales[name])
+
+  def norm(self, x, name):
+    return np.interp(x, self.scales[name], [0, 1])
+
+  def update(self, active, v_ego, brake_pressed, standstill, cruise_standstill, v_cruise, v_target, v_target_future, a_target, CP, CS, radarState, has_lead):
     """Update longitudinal control. This updates the state machine and runs a PID loop"""
     # Actuation limits
     gas_max = interp(v_ego, CP.gasMaxBP, CP.gasMaxV)
@@ -101,7 +115,29 @@ class LongControl():
       prevent_overshoot = not CP.stoppingControl and v_ego < 1.5 and v_target_future < 0.7
       deadzone = interp(v_ego_pid, CP.longitudinalTuning.deadzoneBP, CP.longitudinalTuning.deadzoneV)
 
-      output_gb = self.pid.update(self.v_pid, v_ego_pid, speed=v_ego_pid, deadzone=deadzone, feedforward=a_target, freeze_integrator=prevent_overshoot)
+      if has_lead:
+        if len(self.model_out) == 0:
+          lead_1 = radarState.leadOne
+          model_data = [self.norm(lead_1.vLead, 'v_lead'),
+                        self.norm(lead_1.aLead, 'a_lead'),
+                        self.norm(lead_1.dRel, 'x_lead'),
+                        self.norm(v_ego, 'v_ego'),
+                        self.norm(CS.aEgo, 'a_ego')]
+          self.model_out = predict(np.array(model_data, dtype=np.float32)).reshape(10, 2)
+          v_egos = self.unnorm(self.model_out.take(axis=1, indices=0), 'v_ego')
+          a_egos = self.unnorm(self.model_out.take(axis=1, indices=1), 'a_ego')
+          self.model_out = np.stack((v_egos, a_egos), axis=1).tolist()
+          self.used_ts = 0
+
+        output_gb = self.pid.update(self.model_out[0][0], v_ego_pid, speed=v_ego_pid, deadzone=deadzone, feedforward=self.model_out[0][1], freeze_integrator=prevent_overshoot)
+
+        if self.used_ts >= 5:
+          del self.model_out[0]
+          self.used_ts = 0
+        else:
+          self.used_ts += 1
+      else:
+        output_gb = self.pid.update(self.v_pid, v_ego_pid, speed=v_ego_pid, deadzone=deadzone, feedforward=a_target, freeze_integrator=prevent_overshoot)
 
       if prevent_overshoot:
         output_gb = min(output_gb, 0.0)
