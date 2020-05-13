@@ -116,7 +116,7 @@ class LongControl():
       deadzone = interp(v_ego_pid, CP.longitudinalTuning.deadzoneBP, CP.longitudinalTuning.deadzoneV)
 
       if has_lead:
-        if len(self.model_out) == 0:
+        if True or len(self.model_out) == 0:
           lead_1 = radarState.leadOne
           model_data = [self.norm(lead_1.vLead, 'v_lead'),
                         self.norm(lead_1.aLeadK, 'a_lead'),
@@ -129,7 +129,7 @@ class LongControl():
           self.model_out = np.stack((v_egos, a_egos), axis=1).tolist()
           self.used_ts = 0
 
-        output_gb = self.pid.update(self.model_out[0][0], v_ego_pid, speed=v_ego_pid, deadzone=deadzone, feedforward=self.model_out[0][1], freeze_integrator=prevent_overshoot)
+        output_gb = self.pid.update(self.model_out[8][0], v_ego_pid, speed=v_ego_pid, deadzone=deadzone, feedforward=self.model_out[8][1], freeze_integrator=prevent_overshoot)
 
         if self.used_ts >= 5:
           del self.model_out[0]
