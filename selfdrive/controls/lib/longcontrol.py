@@ -67,7 +67,7 @@ class LongControl():
     if CP.enableGasInterceptor:
       kdV = [0.05, 0.935, 1.65]
     else:
-      kdV = [0.08, 1.215, 2.67]
+      kdV = [0.08, 1.215, 2.51]
     self.pid = PIDController((CP.longitudinalTuning.kpBP, CP.longitudinalTuning.kpV),
                              (CP.longitudinalTuning.kiBP, CP.longitudinalTuning.kiV),
                              (kdBP, kdV),
