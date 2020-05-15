@@ -24,15 +24,16 @@ AWARENESS_DECEL = -0.2     # car smoothly decel at .2m/s^2 when user is distract
 # make sure these accelerations are smaller than mpc limits
 _A_CRUISE_MIN_V  = [-1.0, -.8, -.67, -.5, -.30]
 _A_CRUISE_MIN_BP = [   0., 5.,  10., 20.,  40.]
+# _A_CRUISE_MIN_V = [-1.3, -1.05, -0.765, -0.625, -0.36]  # TODO: TESTME!
 
 # need fast accel at very low speed for stop and go
 # make sure these accelerations are smaller than mpc limits
-_A_CRUISE_MAX_V = [1.2, 1.2, 0.65, .4]
-_A_CRUISE_MAX_V_FOLLOWING = [1.6, 1.6, 0.65, .4]
+_A_CRUISE_MAX_V = [1.45, 1.3, 0.675, .4]
+_A_CRUISE_MAX_V_FOLLOWING = [1.7, 1.65, 0.7, .5]
 _A_CRUISE_MAX_BP = [0.,  6.4, 22.5, 40.]
 
 # Lookup table for turns
-_A_TOTAL_MAX_V = [1.7, 3.2]
+_A_TOTAL_MAX_V = [2.04, 3.84]
 _A_TOTAL_MAX_BP = [20., 40.]
 
 # 75th percentile
@@ -141,7 +142,8 @@ class Planner():
       y_pp = 6 * path[0] * self.path_x + 2 * path[1]
       curv = y_pp / (1. + y_p**2)**1.5
 
-      a_y_max = 2.975 - v_ego * 0.0375  # ~1.85 @ 75mph, ~2.6 @ 25mph
+      # a_y_max = 2.975 - v_ego * 0.0375  # ~1.85 @ 75mph, ~2.6 @ 25mph
+      a_y_max = 3.05 - v_ego * 0.034  # TODO: testing
       v_curvature = np.sqrt(a_y_max / np.clip(np.abs(curv), 1e-4, None))
       model_speed = np.min(v_curvature)
       model_speed = max(20.0 * CV.MPH_TO_MS, model_speed) # Don't slow down below 20mph
