@@ -4,12 +4,15 @@ from common.realtime import DT_DMON
 from selfdrive.controls.lib.drive_helpers import create_event, EventTypes as ET
 from common.filter_simple import FirstOrderFilter
 from common.stat_live import RunningStatFilter
+# from common.op_params import opParams
 
 # ******************************************************************************************
 #  NOTE: To fork maintainers.
 #  Disabling or nerfing safety features may get you and your users banned from our servers.
 #  We recommend that you do not change these numbers from the defaults.
 # ******************************************************************************************
+
+# awareness_factor = min(opParams().get('awareness_factor', default=2.0), 3.5)  # todo: ask about slightly changing just _AWARENESS_TIME
 
 _AWARENESS_TIME = 70.  # one minute limit without user touching steering wheels make the car enter a terminal status
 _AWARENESS_PRE_TIME_TILL_TERMINAL = 15.  # a first alert is issued 25s before expiration

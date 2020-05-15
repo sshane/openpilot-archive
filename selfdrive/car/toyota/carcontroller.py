@@ -81,6 +81,11 @@ class CarController():
     else:
       apply_steer_req = 1
 
+    if abs(CS.out.steeringRate) > 100:
+      apply_steer = 0
+      apply_steer_req = 0
+      self.steer_rate_limited = True
+
     if not enabled and CS.pcm_acc_status:
       # send pcm acc cancel cmd if drive is disabled but pcm is still on, or if the system can't be activated
       pcm_cancel_cmd = 1
