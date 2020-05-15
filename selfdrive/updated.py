@@ -37,6 +37,7 @@ from cffi import FFI
 from common.basedir import BASEDIR
 from common.params import Params
 from selfdrive.swaglog import cloudlog
+from common.realtime import sec_since_boot
 
 STAGING_ROOT = "/data/safe_staging"
 
@@ -268,7 +269,7 @@ def finalize_from_ovfs_copy():
   cloudlog.info("done finalizing overlay")
 
 
-def attempt_update():
+def attempt_update(time_offroad, need_reboot):
   cloudlog.info("attempting git update inside staging overlay")
 
   setup_git_options(OVERLAY_MERGED)
@@ -310,6 +311,17 @@ def attempt_update():
     cloudlog.info("nothing new from git at this time")
 
   set_update_available_params(new_version=new_version)
+  return auto_update_reboot(time_offroad, need_reboot, new_version)
+
+
+def auto_update_reboot(time_offroad, need_reboot, new_version):
+  min_reboot_time = 5.
+  if new_version:
+    need_reboot = True
+
+  if sec_since_boot() - time_offroad > min_reboot_time * 60 and need_reboot:  # allow reboot x minutes after stopping openpilot or starting EON
+    os.system('reboot')
+  return need_reboot
 
 
 def main():
@@ -332,6 +344,8 @@ def main():
   except IOError:
     raise RuntimeError("couldn't get overlay lock; is another updated running?")
 
+  time_offroad = 0
+  need_reboot = False
   while True:
     update_failed_count += 1
     time_wrong = datetime.datetime.utcnow().year < 2019
@@ -356,9 +370,10 @@ def main():
           overlay_init_done = True
 
         if params.get("IsOffroad") == b"1":
-          attempt_update()
+          need_reboot = attempt_update(time_offroad, need_reboot)
           update_failed_count = 0
         else:
+          time_offroad = sec_since_boot()
           cloudlog.info("not running updater, openpilot running")
 
       except subprocess.CalledProcessError as e:
