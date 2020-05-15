@@ -32,6 +32,9 @@ class DynamicFollow:
     self.mpc_rate = 1 / 20.
     self.split_every = 3
     self.model_input_len = 200 * self.split_every
+
+    self.v_lead_retention = 2.0  # keep only last x seconds
+    self.v_ego_retention = 2.5
     self.setup_changing_variables()
 
   def setup_collector(self):
@@ -50,7 +53,7 @@ class DynamicFollow:
 
     self.last_cost = 0.0
     self.last_predict_time = 0.0
-    self.model_data = []
+    self.auto_df_model_data = []
 
   def gather_data(self):
     self.sm.update(0)
@@ -104,25 +107,27 @@ class DynamicFollow:
       self.last_cost = cost
 
   def _store_df_data(self):
-    v_lead_retention = 2.0  # keep only last x seconds
-    v_ego_retention = 2.5
-
     cur_time = sec_since_boot()
+
+    # Store lead velocity for better decision between cur lead accel and lead accel over time
     if self.lead_data.status:
-      self.df_data.v_leads = [sample for sample in self.df_data.v_leads if
-                              cur_time - sample['time'] <= v_lead_retention
-                              and not self.lead_data.new_lead]  # reset when new lead
+      if self.lead_data.new_lead:
+        self.df_data.v_leads = []  # reset when new lead
+      else:
+        self.df_data.v_leads = [sample for sample in self.df_data.v_leads if cur_time - sample['time'] <= self.v_lead_retention]
       self.df_data.v_leads.append({'v_lead': self.lead_data.v_lead, 'time': cur_time})
 
-    self.df_data.v_egos = [sample for sample in self.df_data.v_egos if cur_time - sample['time'] <= v_ego_retention]
+    # Store our velocity for better sng
+    self.df_data.v_egos = [sample for sample in self.df_data.v_egos if cur_time - sample['time'] <= self.v_ego_retention]
     self.df_data.v_egos.append({'v_ego': self.car_data.v_ego, 'time': cur_time})
 
-    self.model_data.append([self._norm(self.car_data.v_ego, 'v_ego'),
-                            self._norm(self.lead_data.a_lead, 'a_lead'),
-                            self._norm(self.lead_data.v_lead, 'v_lead'),
-                            self._norm(self.lead_data.x_lead, 'x_lead')])
-    while len(self.model_data) > self.model_input_len:
-      del self.model_data[0]
+    # Store data for auto-df model
+    self.auto_df_model_data.append([self._norm(self.car_data.v_ego, 'v_ego'),
+                                    self._norm(self.lead_data.a_lead, 'a_lead'),
+                                    self._norm(self.lead_data.v_lead, 'v_lead'),
+                                    self._norm(self.lead_data.x_lead, 'x_lead')])
+    while len(self.auto_df_model_data) > self.model_input_len:
+      del self.auto_df_model_data[0]
 
   def _calculate_lead_accel(self):
     min_consider_time = 1.0  # minimum amount of time required to consider calculation
@@ -148,8 +153,8 @@ class DynamicFollow:
   def _get_pred(self):
     cur_time = sec_since_boot()
     if cur_time - self.last_predict_time > self.predict_rate:
-      if len(self.model_data) == self.model_input_len:
-        pred = predict(np.array(self.model_data[::self.split_every], dtype=np.float32).flatten())
+      if len(self.auto_df_model_data) == self.model_input_len:
+        pred = predict(np.array(self.auto_df_model_data[::self.split_every], dtype=np.float32).flatten())
         self.df_pred = int(np.argmax(pred))
         self.last_predict_time = cur_time
 
