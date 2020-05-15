@@ -114,11 +114,11 @@ class DynamicFollow:
       if self.lead_data.new_lead:
         self.df_data.v_leads = []  # reset when new lead
       else:
-        self.df_data.v_leads = [sample for sample in self.df_data.v_leads if cur_time - sample['time'] <= self.v_lead_retention]
+        self.df_data.v_leads = self._remove_old_entries(self.df_data.v_leads, cur_time, self.v_lead_retention)
       self.df_data.v_leads.append({'v_lead': self.lead_data.v_lead, 'time': cur_time})
 
     # Store our velocity for better sng
-    self.df_data.v_egos = [sample for sample in self.df_data.v_egos if cur_time - sample['time'] <= self.v_ego_retention]
+    self.df_data.v_egos = self._remove_old_entries(self.df_data.v_egos, cur_time, self.v_ego_retention)
     self.df_data.v_egos.append({'v_ego': self.car_data.v_ego, 'time': cur_time})
 
     # Store data for auto-df model
@@ -128,6 +128,9 @@ class DynamicFollow:
                                     self._norm(self.lead_data.x_lead, 'x_lead')])
     while len(self.auto_df_model_data) > self.model_input_len:
       del self.auto_df_model_data[0]
+
+  def _remove_old_entries(self, lst, cur_time, retention):
+    return [sample for sample in lst if cur_time - sample['time'] <= retention]
 
   def _calculate_lead_accel(self):
     min_consider_time = 1.0  # minimum amount of time required to consider calculation
