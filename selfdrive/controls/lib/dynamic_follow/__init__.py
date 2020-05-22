@@ -316,7 +316,7 @@ class DynamicFollow:
       TR *= interp(self.car_data.v_ego, x, y)
 
     t2 = sec_since_boot() - t1
-    with open('dyn_fol_times', 'a') as f:
+    with open('/data/dyn_fol_times', 'a') as f:
       f.write('one_it: {}, mpc_id: {}\n'.format(t2, self.mpc_id))
     return clip(TR, 0.9, 2.7)
 
