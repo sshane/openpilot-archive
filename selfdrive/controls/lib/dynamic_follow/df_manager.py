@@ -54,7 +54,7 @@ class dfManager:
     df_out.user_profile = (button_status + self.offset) % len(self.df_profiles.to_profile)
     df_out.user_profile_text = self.df_profiles.to_profile[df_out.user_profile]
 
-    if self.cur_user_profile != df_out.user_profile:  # TODO: could replace this with self.cur_user_profile != df_out.user_profile
+    if self.cur_user_profile != df_out.user_profile:
       self.change_time = sec_since_boot()
       self.last_is_auto = False
       df_out.changed = True
