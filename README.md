@@ -100,7 +100,7 @@ Live tuning support
 Parameters supporting live updating: `camera_offset`, `lane_hug_angle_offset`, `dynamic_follow`, `steer_ratio`
 - Just start opEdit with the instructions above and pick a parameter. It will let you know if it supports live tuning, if so, updates will take affect within 5 seconds!
 
-<img src=".media/op_edit.gif?raw=true" width="800">
+<img src=".media/op_edit.gif?raw=true" width="1000">
 
 Dynamic lane speed
 -----
