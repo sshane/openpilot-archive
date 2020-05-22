@@ -144,7 +144,7 @@ git clone -b stock_additions --single-branch https://github.com/shanesmiskol/ope
 reboot
 ```
 
-The `--depth 1` flag shallow clones the fork, it ends up being about 90 Mb so you can get the fork up and running quick. [Once you install Stock Additions, automatic updating should always keep openpilot up to date with the latest from my fork!](#Automatic-updates)
+The `--depth 1` flag shallow clones the fork, it ends up being about 90 Mb so you can get the fork up and running quick. Once you install Stock Additions, [automatic updating](#Automatic-updates) should always keep openpilot up to date with the latest from my fork!
 
 Branches
 -----
