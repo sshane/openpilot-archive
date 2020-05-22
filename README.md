@@ -135,7 +135,7 @@ Documentation
 
 Quick Installation
 -----
-To install Stock Additions, just run the following on your EON/C2:
+To install Stock Additions, just run the following on your EON/C2 (make sure to press enter after each line):
 
 ```
 cd /data/
@@ -144,7 +144,7 @@ git clone -b stock_additions --single-branch https://github.com/shanesmiskol/ope
 reboot
 ```
 
-Once you install Stock Additions, you should need to do nothing when an update is available. When your EON is on but inactive it will automatically pull and reboot to update.
+The `--depth 1` flag shallow clones the fork, it ends up being about 90 Mb so you can get the fork up and running quick. [Once you install Stock Additions, automatic updating should always keep openpilot up to date with the latest from my fork!](#Automatic-updates)
 
 Branches
 -----
