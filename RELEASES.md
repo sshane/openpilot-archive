@@ -1,3 +1,10 @@
+Stock Additions 0.7.5
+========================
+ * Various opEdit improvements, colors, highlighting of last explored param, quicker messages
+ * New Dynamic Follow modification to help slow and accelerate sooner
+ * Live parameters update quicker
+ * dfManager reliability improvements
+
 Version 0.7.5 (2020-05-13)
 ========================
 * Right-Hand Drive support for both driving and driver monitoring!

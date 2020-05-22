@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
-from common.op_params import opParams
 import time
+from common.op_params import opParams
 import ast
 import difflib
 
@@ -30,9 +30,11 @@ class opEdit:  # use by running `python /data/openpilot/op_edit.py`
   def __init__(self):
     self.op_params = opParams()
     self.params = None
-    self.sleep_time = 1.0
+    self.sleep_time = 0.75
     self.live_tuning = self.op_params.get('op_edit_live_mode', False)
     self.username = self.op_params.get('username', None)
+
+    self.last_choice = None
 
     self.run_init()
 
@@ -73,7 +75,14 @@ class opEdit:  # use by running `python /data/openpilot/op_edit.py`
       values_list = [self.params[i] if len(str(self.params[i])) < 20 else '{} ... {}'.format(str(self.params[i])[:30], str(self.params[i])[-15:]) for i in self.params]
       live = ['(live!)' if self.op_params.key_info(i).live else '' for i in self.params]
 
-      to_print = ['{}. {}: {}  {}'.format(idx + 1, i, values_list[idx], live[idx]) for idx, i in enumerate(self.params)]
+      to_print = []
+      for idx, param in enumerate(self.params):
+        line = '{}. {}: {}  {}'.format(idx + 1, param, values_list[idx], live[idx])
+        if idx == self.last_choice and self.last_choice is not None:
+          line = STYLES.OKGREEN + line
+        else:
+          line = STYLES.CYAN + line
+        to_print.append(line)
 
       extras = {'a': 'Add new parameter',
                 'd': 'Delete parameter',
@@ -81,7 +90,6 @@ class opEdit:  # use by running `python /data/openpilot/op_edit.py`
                 'e': 'Exit opEdit'}
 
       to_print += ['---'] + ['{}. {}'.format(e, extras[e]) for e in extras]
-      to_print = [self.cyan(line) for line in to_print]
       print('\n'.join(to_print))
       self.prompt('\nChoose a parameter to edit (by index or name):')
 
@@ -92,10 +100,12 @@ class opEdit:  # use by running `python /data/openpilot/op_edit.py`
       elif parsed == 'add':
         self.add_parameter()
       elif parsed == 'change':
+        self.last_choice = choice
         self.change_parameter(choice)
       elif parsed == 'delete':
         self.delete_parameter()
       elif parsed == 'live':
+        self.last_choice = None
         self.live_tuning = not self.live_tuning
         self.op_params.put('op_edit_live_mode', self.live_tuning)  # for next opEdit startup
       elif parsed == 'exit':

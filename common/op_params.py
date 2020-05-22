@@ -1,8 +1,13 @@
 #!/usr/bin/env python3
 import os
 import json
-import time
-from selfdrive.swaglog import cloudlog
+try:
+  from common.realtime import sec_since_boot
+except ImportError:
+  import time
+  sec_since_boot = time.time
+  print("opParams WARNING: using python time.time() instead of faster sec_since_boot")
+
 travis = False
 
 
@@ -39,8 +44,8 @@ class opParams:
                                                                                                                     'Replaces both offsets from the calibration learner to help fix lane hugging.\n'
                                                                                                                     'Enter absolute value here, direction is determined by parameter \'lane_hug_direction\''), 'live': True},
                            'dynamic_follow': {'default': 'auto', 'allowed_types': [str], 'description': "Can be: ('traffic', 'relaxed', 'roadtrip'): Left to right increases in following distance.\n"
-                                                                                                           "All profiles support dynamic follow so you'll get your preferred distance while\n"
-                                                                                                           "retaining the smoothness and safety of dynamic follow!", 'hide': True},
+                                                                                                        "All profiles support dynamic follow so you'll get your preferred distance while\n"
+                                                                                                        "retaining the smoothness and safety of dynamic follow!"},
                            'alca_nudge_required': {'default': True, 'allowed_types': [bool], 'description': ('Whether to wait for applied torque to the wheel (nudge) before making lane changes. '
                                                                                                              'If False, lane change will occur IMMEDIATELY after signaling'), 'live': False},
                            'alca_min_speed': {'default': 25.0, 'allowed_types': [float, int], 'description': 'The minimum speed allowed for an automatic lane change (in MPH)', 'live': False},
@@ -49,22 +54,22 @@ class opParams:
                            'use_dynamic_lane_speed': {'default': True, 'allowed_types': [bool], 'description': 'Whether you want openpilot to adjust your speed based on surrounding vehicles', 'live': False},
                            'min_dynamic_lane_speed': {'default': 20.0, 'allowed_types': [float, int], 'description': 'The minimum speed to allow dynamic lane speed to operate (in MPH)', 'live': False},
                            'upload_on_hotspot': {'default': False, 'allowed_types': [bool], 'description': 'If False, openpilot will not upload driving data while connected to your phone\'s hotspot', 'live': False},
-                           # 'reset_integral': {'default': False, 'allowed_types': [bool], 'description': 'This resets integral whenever the longitudinal PID error crosses or is zero.\nShould help it recover from overshoot quicker', 'live': False},
                            'enable_long_derivative': {'default': False, 'allowed_types': [bool], 'description': 'This enables derivative-based integral wind-down to help overshooting within the PID loop'},
                            'disengage_on_gas': {'default': True, 'allowed_types': [bool], 'description': 'Whether you want openpilot to disengage on gas input or not. It can cause issues on specific cars'},
                            'no_ota_updates': {'default': False, 'allowed_types': [bool], 'description': 'Set this to True to disable all automatic updates. Reboot to take effect'},
                            'dynamic_gas': {'default': True, 'allowed_types': [bool], 'description': 'Whether to use dynamic gas if your car is supported'},
                            'hide_auto_df_alerts': {'default': False, 'allowed_types': [bool], 'description': 'Set to True to hide the alert that shows what profile the model has chosen'},
-                           'log_data': {'default': False, 'allowed_types': [bool]},
+                           'v_rel_acc_modifier': {'default': 1.0, 'allowed_types': [float, int], 'description': 'A float from 0 to 1, gets multiplied by the new relative velocity over time modification\n'
+                                                                                                                'for dynamic follow. Play around with it and let me know what\'s best for you!', 'live': True},
 
                            'op_edit_live_mode': {'default': False, 'allowed_types': [bool], 'description': 'This parameter controls which mode opEdit starts in. It should be hidden from the user with the hide key', 'hide': True}}
 
     self.params = {}
     self.params_file = "/data/op_params.json"
-    self.last_read_time = time.time()
-    self.read_frequency = 5.0  # max frequency to read with self.get(...) (sec)
+    self.last_read_time = sec_since_boot()
+    self.read_frequency = 2.5  # max frequency to read with self.get(...) (sec)
     self.force_update = False  # replaces values with default params if True, not just add add missing key/value pairs
-    self.to_delete = ['dynamic_lane_speed', 'longkiV', 'following_distance', 'static_steer_ratio', 'uniqueID', 'use_kd', 'kd', 'restrict_sign_change', 'write_errors', 'reset_integral']  # a list of params you want to delete (unused)
+    self.to_delete = ['dynamic_lane_speed', 'static_steer_ratio', 'write_errors', 'reset_integral']  # a list of params you want to delete (unused)
     self.run_init()  # restores, reads, and updates params
 
   def run_init(self):  # does first time initializing of default params
@@ -78,29 +83,29 @@ class opParams:
     if os.path.isfile(self.params_file):
       if self._read():
         to_write = not self._add_default_params()  # if new default data has been added
-        if self._delete_old:  # or if old params have been deleted
-          to_write = True
+        to_write = self._delete_old or to_write  # or if old params have been deleted
       else:  # don't overwrite corrupted params, just print
-        cloudlog.error("ERROR: Can't read op_params.json file")
+        print("opParams ERROR: Can't read op_params.json file")
     else:
       to_write = True  # user's first time running a fork with op_params, write default params
 
     if to_write:
       self._write()
+      os.chmod(self.params_file, 0o764)
 
   def get(self, key=None, default=None, force_update=False):  # can specify a default value if key doesn't exist
-    self._update_params(key, force_update)
     if key is None:
       return self._get_all()
 
+    key_info = self.key_info(key)
+    self._update_params(key_info, force_update)
     if key in self.params:
-      key_info = self.key_info(key)
       if key_info.has_allowed_types:
         value = self.params[key]
         if type(value) in key_info.allowed_types:
           return value  # all good, returning user's value
 
-        cloudlog.warning('op_params: User\'s value is not valid!')
+        print('opParams WARNING: User\'s value is not valid!')
         if key_info.has_default:  # invalid value type, try to use default value
           if type(key_info.default) in key_info.allowed_types:  # actually check if the default is valid
             # return default value because user's value of key is not in the allowed_types to avoid crashing openpilot
@@ -123,7 +128,7 @@ class opParams:
 
   def key_info(self, key):
     key_info = KeyInfo()
-    if key is None:
+    if key is None or key not in self.default_params:
       return key_info
     if key in self.default_params:
       if 'allowed_types' in self.default_params[key]:
@@ -165,9 +170,9 @@ class opParams:
   @property
   def _delete_old(self):
     deleted = False
-    for i in self.to_delete:
-      if i in self.params:
-        del self.params[i]
+    for param in self.to_delete:
+      if param in self.params:
+        del self.params[param]
         deleted = True
     return deleted
 
@@ -185,24 +190,23 @@ class opParams:
       return ''
     return None  # unknown type
 
-  def _update_params(self, key, force_update):
-    if force_update or self.key_info(key).live:  # if is a live param, we want to get updates while openpilot is running
-      if not travis and (time.time() - self.last_read_time >= self.read_frequency or force_update):  # make sure we aren't reading file too often
+  def _update_params(self, key_info, force_update):
+    if force_update or key_info.live:  # if is a live param, we want to get updates while openpilot is running
+      if not travis and (sec_since_boot() - self.last_read_time >= self.read_frequency or force_update):  # make sure we aren't reading file too often
         if self._read():
-          self.last_read_time = time.time()
+          self.last_read_time = sec_since_boot()
 
   def _read(self):
     try:
       with open(self.params_file, "r") as f:
-        self.params = json.load(f)
+        self.params = json.loads(f.read())
       return True
     except Exception as e:
-      cloudlog.error(e)
+      print('opParams ERROR: {}'.format(e))
       self.params = self._format_default_params()
       return False
 
   def _write(self):
     if not travis:
       with open(self.params_file, "w") as f:
-        json.dump(self.params, f, indent=2, sort_keys=True)
-      os.chmod(self.params_file, 0o764)
+        f.write(json.dumps(self.params, indent=2))  # can further speed it up by remove indentation but makes file hard to read

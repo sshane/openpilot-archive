@@ -8,7 +8,6 @@ from selfdrive.controls.lib.radar_helpers import _LEAD_ACCEL_TAU
 from selfdrive.controls.lib.longitudinal_mpc import libmpc_py
 from selfdrive.controls.lib.drive_helpers import MPC_COST_LONG
 from selfdrive.controls.lib.dynamic_follow import DynamicFollow
-from common.op_params import opParams
 
 LOG_MPC = os.environ.get('LOG_MPC', False)
 
@@ -17,8 +16,6 @@ class LongitudinalMpc():
   def __init__(self, mpc_id):
     self.mpc_id = mpc_id
     self.dynamic_follow = DynamicFollow(mpc_id)
-    self.op_params = opParams()
-
     self.setup_mpc()
     self.v_mpc = 0.0
     self.v_mpc_future = 0.0
@@ -97,8 +94,8 @@ class LongitudinalMpc():
 
     # Calculate mpc
     t = sec_since_boot()
-    self.dynamic_follow.update(CS, self.libmpc)  # update dynamic follow
-    n_its = self.libmpc.run_mpc(self.cur_state, self.mpc_solution, self.a_lead_tau, a_lead, self.dynamic_follow.TR)
+    TR = self.dynamic_follow.update(CS, self.libmpc)  # update dynamic follow
+    n_its = self.libmpc.run_mpc(self.cur_state, self.mpc_solution, self.a_lead_tau, a_lead, TR)
     duration = int((sec_since_boot() - t) * 1e9)
 
     if LOG_MPC:
