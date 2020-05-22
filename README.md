@@ -144,7 +144,7 @@ git clone -b stock_additions --single-branch https://github.com/shanesmiskol/ope
 reboot
 ```
 
-This branch is only ~70MB enabling fast cloning of this fork! It will contain the latest from `stock_additions` squashed down to one commit. See below for more branch information.
+Once you install Stock Additions, you should need to do nothing when an update is available. When your EON is on but inactive it will automatically pull and reboot to update.
 
 Branches
 -----
