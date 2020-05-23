@@ -28,10 +28,12 @@ class DynamicFollow:
       self.pm = None
 
     # Model variables
+    mpc_rate = 1 / 20.
     self.model_scales = {'v_ego': [-0.06112159043550491, 37.96522521972656], 'v_lead': [0.0, 35.27671432495117], 'x_lead': [2.4600000381469727, 139.52000427246094]}
     self.predict_rate = 1 / 4.
-    self.split_every = 3
-    self.model_input_len = 200 * self.split_every
+    self.skip_every = round(0.2 / mpc_rate)
+    model_in_time = 35
+    self.model_input_len = round((model_in_time * len(self.model_scales) * 20) / (0.2 / mpc_rate))
 
     # Dynamic follow variables
     self.default_TR = 1.8
@@ -145,7 +147,7 @@ class DynamicFollow:
     if self.car_data.cruise_enabled and self.lead_data.status:
       if cur_time - self.last_predict_time > self.predict_rate:
         if len(self.auto_df_model_data) == self.model_input_len:
-          pred = predict(np.array(self.auto_df_model_data[::self.split_every], dtype=np.float32).flatten())
+          pred = predict(np.array(self.auto_df_model_data[::self.skip_every], dtype=np.float32).flatten())
           self.last_predict_time = cur_time
           self.model_profile = int(np.argmax(pred))
 
