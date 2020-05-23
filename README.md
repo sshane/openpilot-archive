@@ -29,15 +29,19 @@ Documentation
 
 Dynamic follow (3 profiles)
 -----
-This is my dynamic follow from 0.5, where it changes your TR (following distance) dynamically based on multiple vehicle factors, as well as data from the lead vehicle. [Here's an old write up from a while ago explaining how it works exactly. Some of it might be out of date, but how it functions is the same.](https://github.com/ShaneSmiskol/openpilot/blob/dynamic-follow/README.md) The goal is to essentially make the driving experience more smooth and increase safety, braking and accelerating sooner.
+Dynamic follow aims to provide the stock (Toyota) experience of having three different distance settings. Dynamic follow works by dynamically changing the distance in seconds which is sent to the long MPC to predict a speed to travel at. Basically, if the lead is decelerating or might soon, increase distance to prepare. And if the lead is accelerating, reduce distance to get up to speed quicker.
 
-Now you can choose a profile based on traffic and your driving preference. There are three profiles currently:
-  * `traffic` - Meant to keep you a bit closer in traffic, hopefully reducing cut-ins. Use with caution, as you do with any fork adding custom functionality.
-  * `relaxed` - This is the current and now default dynamic follow profile just with a cool name. Also slight closer than previously at high speeds.
-  * `roadtrip` - This profile is for road trips mainly where you're on two lane highways and don't want to be following particularly closely; at night for example.
+Dynamic follow works if openpilot can control your vehicle's gas and brakes (longitudinal).
+
+Just use the button on the button right of the screen while driving to change between these profiles:
+  * `traffic` - Meant to keep you a bit closer in traffic, hopefully reducing cut-ins. Always be alert, as you are with any driving assistance software.
+  * `relaxed` - This is the default dynamic follow profile for casual driving.
+  * `roadtrip` - This profile is for road trips where you're mainly on two lane highways and don't want to be following particularly closely; at night for example.
+  * [`auto`](https://github.com/ShaneSmiskol/auto-df) - The auto dynamic follow model was trained on about an hour of me manually cycling through the different profiles based on driving conditions, this mode tries to replicate those decisions entire on its own.
+
 <img src=".media/df_profiles.jpg?raw=true" height="350">
 
-**How to choose a profile:** The easiest way is to use the new on-screen profile changing button! Once you're on a drive, you can simply tap the button on the bottom right of the screen to cycle between the profiles.
+**[Auto DF model](https://github.com/ShaneSmiskol/auto-df)**: The auto dynamic follow model was trained on about an hour of me manually cycling through the different profiles based on driving conditions, this mode tries to replicate those decisions entire on its own.
 
 Dynamic gas
 -----
