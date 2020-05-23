@@ -37,11 +37,9 @@ Just use the button on the button right of the screen while driving to change be
   * `traffic` - Meant to keep you a bit closer in traffic, hopefully reducing cut-ins. Always be alert, as you are with any driving assistance software.
   * `relaxed` - This is the default dynamic follow profile for casual driving.
   * `roadtrip` - This profile is for road trips where you're mainly on two lane highways and don't want to be following particularly closely; at night for example.
-  * [`auto`](https://github.com/ShaneSmiskol/auto-df) - The auto dynamic follow model was trained on about an hour of me manually cycling through the different profiles based on driving conditions, this mode tries to replicate those decisions entire on its own.
+  * [`auto`](https://github.com/ShaneSmiskol/auto-df) - The auto dynamic follow model was trained on about an hour of me manually cycling through the different profiles based on driving conditions, this mode tries to replicate those decisions entirely on its own.
 
 <img src=".media/df_profiles.jpg?raw=true" height="350">
-
-**[Auto DF model](https://github.com/ShaneSmiskol/auto-df)**: The auto dynamic follow model was trained on about an hour of me manually cycling through the different profiles based on driving conditions, this mode tries to replicate those decisions entire on its own.
 
 Dynamic gas
 -----
