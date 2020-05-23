@@ -18,7 +18,5 @@ def predict(x):
   l2 = np.dot(l1, w[2]) + b[2]
   l2 = np.maximum(0, l2)
   l3 = np.dot(l2, w[3]) + b[3]
-  l3 = np.maximum(0, l3)
-  l4 = np.dot(l3, w[4]) + b[4]
-  l4 = softmax(l4)
-  return l4
+  l3 = softmax(l3)
+  return l3
