@@ -32,8 +32,7 @@ class DynamicFollow:
     self.model_scales = {'v_ego': [-0.06112159043550491, 37.96522521972656], 'v_lead': [0.0, 35.27671432495117], 'x_lead': [2.4600000381469727, 139.52000427246094]}
     self.predict_rate = 1 / 4.
     self.skip_every = round(0.2 / mpc_rate)
-    model_in_time = 35
-    self.model_input_len = int(round(model_in_time * len(self.model_scales) * 20) * self.skip_every)
+    self.model_input_len = int(35 / mpc_rate / self.skip_every)  # model input time / mpc_rate / skip_every
 
     # Dynamic follow variables
     self.default_TR = 1.8
