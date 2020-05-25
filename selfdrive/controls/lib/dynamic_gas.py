@@ -27,8 +27,8 @@ class DynamicGas:
     if self.lead_data['status']:  # if lead
       if v_ego <= 8.9408:  # if under 20 mph
         x = [0.0, 0.24588812499999999, 0.432818589, 0.593044697, 0.730381365, 1.050833588, 1.3965, 1.714627481]  # relative velocity mod
-        y = [gas * 0.9901, gas * 0.905, gas * 0.8045, gas * 0.625, gas * 0.431, gas * 0.2083, gas * .0667, 0]
-        gas_mod = -interp(self.lead_data['v_rel'], x, y)
+        y = [0.9901, 0.905, 0.8045, 0.625, 0.431, 0.2083, .0667, 0]
+        gas_mod = -(gas * interp(self.lead_data['v_rel'], x, y))
 
         x = [0.44704, 1.1176, 1.34112]  # lead accel mod
         y = [1.0, 0.75, 0.625]  # maximum we can reduce gas_mod is 40 percent (never increases mod)
@@ -38,6 +38,8 @@ class DynamicGas:
         y = [1.0, 0.75, 0.0]
         gas_mod *= interp(self.lead_data['x_lead'], x, y)
 
+        if self.CP.enableGasInterceptor:  # this will hopefuly let TSS2 use dynamic gas, need to tune
+          gas_mod /= 2
         new_gas = gas + gas_mod
 
         x = [1.78816, 6.0, 8.9408]  # slowly ramp mods down as we approach 20 mph
@@ -81,7 +83,7 @@ class DynamicGas:
         self.supported_car = True
     else:
       y = [0.35, 0.47, 0.43, 0.35, 0.3, 0.3, 0.3229, 0.34784, 0.36765, 0.38, 0.396, 0.409, 0.425, 0.478, 0.55, 0.621, 0.7]
-      self.supported_car = False
+      self.supported_car = True
 
     self.gasMaxBP, self.gasMaxV = x, y
 
