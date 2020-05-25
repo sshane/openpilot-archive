@@ -104,7 +104,7 @@ An archive of opParams [lives here.](https://github.com/ShaneSmiskol/op_params)
 
 Parameters are stored at `/data/op_params.json`
 
-## Demo
+## opEdit Demo
 <img src=".media/op_edit.gif?raw=true" width="1000">
 
 Dynamic lane speed
