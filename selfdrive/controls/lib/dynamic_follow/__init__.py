@@ -297,7 +297,7 @@ class DynamicFollow:
     if rel_accel_mod is not None:  # if available
       deadzone = 2 * CV.MPH_TO_MS
       if self.lead_data.v_lead - deadzone > self.car_data.v_ego:
-       TR_mods.append(rel_accel_mod * self.op_params.get('v_rel_acc_modifier', 1.0))
+       TR_mods.append(rel_accel_mod)
 
     # Profile modifications - Designed so that each profile reacts similarly to changing lead dynamics
     profile_mod_pos = interp(self.car_data.v_ego, profile_mod_x, profile_mod_pos)
