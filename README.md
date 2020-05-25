@@ -15,8 +15,7 @@ Highlight Features
 * [**Dynamic follow (now with profiles!)**](#dynamic-follow-3-profiles)
 * [**Dynamic gas**](#dynamic-gas)
 * [**PI > PID for longcontrol**](#Long-control-uses-a-PID-loop)
-* [**Customize this branch (opEdit Parameter class)**](#Customize-this-branch-opEdit-Parameter-class)
-* [**Live tuning support**](#Live-tuning-support)
+* [**Customize this fork (opEdit with live tuning)**](#Customize-this-fork-opEdit)
 * [**Custom wheel offset to reduce lane hugging**](#Custom-wheel-offset-to-reduce-lane-hugging)
 * [**Automatic updates**](#Automatic-updates)
 
@@ -64,12 +63,12 @@ Long control uses a PID loop
 -----
 I've added a custom implementation of derivative to the PI loop controlling the gas and brake output sent to your car. Derivative (change in error) is calculated based on the current and last error and added to the class's integral variable. It's essentially winding down integral according to derivative. It helps fix overshoot on some cars with the comma pedal and increases responsiveness (like when going up and down hills) on all other cars! Still need to figure out the tuning, right now it's using the same derivative gain for all cars. Test it out and let me know what you think!
 
-Customize this branch (opEdit Parameter class)
+Customize this fork (opEdit)
 -----
 This is a handy tool to change your `opParams` parameters without diving into any json files or code. You can specify parameters to be used in any fork's operation that supports `opParams`. First, ssh in to your EON and make sure you're in `/data/openpilot`, then start `opEdit`:
 ```python
 cd /data/openpilot
-python op_edit.py
+python op_edit.py  # or ./op_edit.py
 ```
 
 Features:
@@ -79,28 +78,31 @@ Features:
 - Shows a detailed description for each parameter once you choose it
 - Parameter value type restriction. Ensures a user cannot save an unsupported value type for any parameters, breaking the fork
 - Remembers which mode you were last in and initializes opEdit with that mode (live tuning or not)
-- Case insensitive boolean entrance. Type `false` to save `False (bool)` and vice versa
+- Case insensitive boolean and NoneType entrance. Type `faLsE` to save `False (bool)`, etc
+- **Parameters marked with `(live!)` will have updates take affect within 3 seconds while driving!**
 
-Some parameters you can use to customize this fork:
-- `camera_offset`: Your camera offset to use in lane_planner.py. Helps fix lane hugging
-- `awareness_factor`: The multiplier for driver monitoring, max is 3.5x (this is only in effect when driver monitoring isn't active)
-- `alca_nudge_required`: Whether to wait for applied torque to the wheel (nudge) before making lane changes
-- `alca_min_speed`: The minimum speed allowed for an automatic lane change
-- `steer_ratio`: The steering ratio you want to use with openpilot. If you enter None, it will use the learned steer ratio from openpilot instead
-- `upload_on_hotspot`: Controls whether your EON will upload driving data on your phone's hotspot
-- `no_ota_updates`: Set this to True to disable all automatic updates. Reboot to take effect
-- `dynamic_gas`: Whether to use dynamic gas if your car is supported
+Here are the main parameters you can change with this fork:
+- Tuning params:
+  - `camera_offset` (live!): Your camera offset to use in lane_planner.py. Helps fix lane hugging
+  - `steer_ratio` (live!): The steering ratio you want to use with openpilot. If you enter None, it will use the learned steer ratio from openpilot instead
+  - `enable_long_derivative`: This enables derivative-based integral wind-down to help overshooting within the PID loop. Useful for Toyotas with pedals
+- General fork params:
+  - `alca_nudge_required`: Whether to wait for applied torque to the wheel (nudge) before making lane changes
+  - `alca_min_speed`: The minimum speed allowed for an automatic lane change
+  - `upload_on_hotspot`: Controls whether your EON will upload driving data on your phone's hotspot
+  - `no_ota_updates`: Set this to True to disable all automatic updates. Reboot to take effect
+  - `disengage_on_gas`: Whether you want openpilot to disengage on gas input or not
+- Dyanmic params:
+  - `dynamic_gas`: Whether to use [dynamic gas](#dynamic-gas) if your car is supported
+  - `global_df_mod` (live!): The modifer for the current distance used by dynamic follow. The range is limited from 0.9 to 1.1. Smaller values will get you closer, larger will get you farther
+  - `hide_auto_df_alerts`: Hides the alert that shows what profile the model has chosen
+  - `dynamic_follow`: *Deprecated, use the on-screen button to change profiles*
 
-A list of parameters that you can modify are [located here](common/op_params.py#L50).
+A list of parameters that you can modify are [located here](common/op_params.py#L40).
 
 An archive of opParams [lives here.](https://github.com/ShaneSmiskol/op_params)
 
 Parameters are stored at `/data/op_params.json`
-
-Live tuning support
------
-Parameters supporting live updating: `camera_offset`, `lane_hug_angle_offset`, `dynamic_follow`, `steer_ratio`
-- Just start opEdit with the instructions above and pick a parameter. It will let you know if it supports live tuning, if so, updates will take affect within 5 seconds!
 
 <img src=".media/op_edit.gif?raw=true" width="1000">
 
