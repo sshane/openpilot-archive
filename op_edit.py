@@ -93,7 +93,7 @@ class opEdit:  # use by running `python /data/openpilot/op_edit.py`
       print('\n'.join(to_print))
       self.prompt('\nChoose a parameter to edit (by index or name):')
 
-      choice = input('>> ').strip()
+      choice = input('>> ').strip().lower()
       parsed, choice = self.parse_choice(choice, len(to_print) - len(extras))
       if parsed == 'continue':
         continue
@@ -130,7 +130,7 @@ class opEdit:  # use by running `python /data/openpilot/op_edit.py`
       self.error('Exiting opEdit!', sleep_time=0)
       return 'exit', choice
     else:  # find most similar param to user's input
-      param_sims = [(idx, self.str_sim(choice, param)) for idx, param in enumerate(self.params)]
+      param_sims = [(idx, self.str_sim(choice, param.lower())) for idx, param in enumerate(self.params)]
       param_sims = [param for param in param_sims if param[1] > 0.5]
       if len(param_sims) > 0:
         chosen_param = sorted(param_sims, key=lambda param: param[1], reverse=True)[0]
