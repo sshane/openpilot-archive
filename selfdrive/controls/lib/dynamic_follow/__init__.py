@@ -221,7 +221,6 @@ class DynamicFollow:
           v_rel_mod = np.interp(v_lead_end - v_ego_end, x, y)
           calc_mod *= v_rel_mod
         return calc_mod
-
     return None
 
   def global_profile_mod(self, TR, profile_mod_pos, profile_mod_neg):
@@ -232,7 +231,6 @@ class DynamicFollow:
     return TR, profile_mod_pos, profile_mod_neg
 
   def _get_TR(self):
-    t1 = sec_since_boot()
     x_vel = [0.0, 1.8627, 3.7253, 5.588, 7.4507, 9.3133, 11.5598, 13.645, 22.352, 31.2928, 33.528, 35.7632, 40.2336]  # velocities
     profile_mod_x = [2.2352, 13.4112, 24.5872, 35.7632]  # profile mod speeds, mph: [5., 30., 55., 80.]
 
@@ -306,12 +304,6 @@ class DynamicFollow:
       x = [8.9408, 22.352, 31.2928]  # 20, 50, 70 mph
       y = [1.0, .75, .65]  # reduce TR when changing lanes
       TR *= interp(self.car_data.v_ego, x, y)
-
-    t2 = sec_since_boot() - t1
-    if self.op_params.get('username') == 'ShaneSmiskol':
-      with open('/data/dyn_fol_times', 'a') as f:
-        f.write('one_it: {}, mpc_id: {}\n'.format(t2, self.mpc_id))
-
     return clip(TR, 0.9, 2.7)
 
   def update_lead(self, v_lead=None, a_lead=None, x_lead=None, status=False, new_lead=False):
