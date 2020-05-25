@@ -83,7 +83,7 @@ Features:
 
 Here are the main parameters you can change with this fork:
 - Tuning params:
-  - `camera_offset` (live!): Your camera offset to use in lane_planner.py. Helps fix lane hugging
+  - `camera_offset` **`(live!)`**: Your camera offset to use in lane_planner.py. Helps fix lane hugging
   - `steer_ratio` (live!): The steering ratio you want to use with openpilot. If you enter None, it will use the learned steer ratio from openpilot instead
   - `enable_long_derivative`: This enables derivative-based integral wind-down to help overshooting within the PID loop. Useful for Toyotas with pedals
 - General fork params:
