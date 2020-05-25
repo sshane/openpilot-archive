@@ -8,7 +8,7 @@ import difflib
 class STYLES:
   # HEADER = '\033[95m'
   # OKBLUE = '\033[94m'
-  CBLUE = '\33[44m'
+  # CBLUE = '\33[44m'
   # BOLD = '\033[1m'
   OKGREEN = '\033[92m'
   CWHITE = '\33[37m'
@@ -154,7 +154,7 @@ class opEdit:  # use by running `python /data/openpilot/op_edit.py`
       if key_info.has_description:
         to_print.append(STYLES.OKGREEN + '>>  Description: {}'.format(self.op_params.default_params[chosen_key]['description'].replace('\n', '\n  > ')) + STYLES.ENDC)
       if key_info.has_allowed_types:
-        to_print.append(STYLES.CBLUE + '>>  Allowed types: {}'.format(', '.join([i.__name__ for i in key_info.allowed_types])) + STYLES.ENDC)
+        to_print.append(STYLES.RED + '>>  Allowed types: {}'.format(', '.join([i.__name__ for i in key_info.allowed_types])) + STYLES.ENDC)
       if key_info.live:
         to_print.append('>>  This parameter supports live tuning! Updates should take affect within 5 seconds')
 
