@@ -63,7 +63,8 @@ class DynamicFollow:
     self.auto_df_model_data = []
 
   def update(self, CS, libmpc):
-    self.update_car(CS)
+    self._get_live_params()
+    self._update_car(CS)
     self._get_profiles()
 
     if self.mpc_id == 1:
@@ -153,23 +154,6 @@ class DynamicFollow:
   def _remove_old_entries(self, lst, cur_time, retention):
     return [sample for sample in lst if cur_time - sample['time'] <= retention]
 
-  # def _calculate_relative_accel(self):
-  #   """
-  #   Moving window returning the following: (final relative velocity - initial relative velocity) / dT
-  #   Output properties:
-  #     When the lead is starting to decelerate, and our car remains the same speed, the output decreases (and vice versa)
-  #     However when our car finally starts to decelerate at the same rate as the lead car, the output will move to near 0
-  #       >>> a = [(15 - 18), (14 - 17)]
-  #       >>> (a[-1] - a[0]) / 1
-  #       > 0.0
-  #   """
-  #   min_consider_time = 0.5  # minimum amount of time required to consider calculation
-  #   if len(self.df_data.v_rels) > 0:  # if not empty
-  #     dT = self.df_data.v_rels[-1]['time'] - self.df_data.v_rels[0]['time']
-  #     if dT > min_consider_time:
-  #       return (self.df_data.v_rels[-1]['v_rel'] - self.df_data.v_rels[0]['v_rel']) / dT  # delta speed / delta time
-  #   return None
-
   def _calculate_relative_accel_new(self):
     #   """
     #   Moving window returning the following: (final relative velocity - initial relative velocity) / dT with a few extra mods
@@ -240,6 +224,13 @@ class DynamicFollow:
 
     return None
 
+  def global_profile_mod(self, TR, profile_mod_pos, profile_mod_neg):
+    if self.global_df_mod is not None:  # only apply when not in sng
+      TR *= self.global_df_mod
+      profile_mod_pos *= (1 - self.global_df_mod) + 1
+      profile_mod_neg *= self.global_df_mod
+    return TR, profile_mod_pos, profile_mod_neg
+
   def _get_TR(self):
     t1 = sec_since_boot()
     x_vel = [0.0, 1.8627, 3.7253, 5.588, 7.4507, 9.3133, 11.5598, 13.645, 22.352, 31.2928, 33.528, 35.7632, 40.2336]  # velocities
@@ -268,6 +259,10 @@ class DynamicFollow:
     else:
       raise Exception('Unknown profile type: {}'.format(df_profile))
 
+    # Profile modifications - Designed so that each profile reacts similarly to changing lead dynamics
+    profile_mod_pos = interp(self.car_data.v_ego, profile_mod_x, profile_mod_pos)
+    profile_mod_neg = interp(self.car_data.v_ego, profile_mod_x, profile_mod_neg)
+
     sng_TR = 1.8  # reacceleration stop and go TR
     sng_speed = 18.0 * CV.MPH_TO_MS
 
@@ -277,6 +272,7 @@ class DynamicFollow:
     if (self.car_data.v_ego >= sng_speed or self.df_data.v_egos[0]['v_ego'] >= self.car_data.v_ego) and not self.sng:
       # if above 15 mph OR we're decelerating to a stop, keep shorter TR. when we reaccelerate, use sng_TR and slowly decrease
       TR = interp(self.car_data.v_ego, x_vel, y_dist)
+      TR, profile_mod_pos, profile_mod_neg = self.global_profile_mod(TR, profile_mod_pos, profile_mod_neg)  # only within normal driving conditions
     else:  # this allows us to get closer to the lead car when stopping, while being able to have smooth stop and go when reaccelerating
       self.sng = True
       x = [sng_speed * 0.7, sng_speed]  # decrease TR between 12.6 and 18 mph from 1.8s to defined TR above at 18mph while accelerating
@@ -299,10 +295,6 @@ class DynamicFollow:
       if self.lead_data.v_lead - deadzone > self.car_data.v_ego:
        TR_mods.append(rel_accel_mod)
 
-    # Profile modifications - Designed so that each profile reacts similarly to changing lead dynamics
-    profile_mod_pos = interp(self.car_data.v_ego, profile_mod_x, profile_mod_pos)
-    profile_mod_neg = interp(self.car_data.v_ego, profile_mod_x, profile_mod_neg)
-
     x = [sng_speed / 5.0, sng_speed]  # as we approach 0, apply x% more distance
     y = [1.05, 1.0]
     profile_mod_pos *= interp(self.car_data.v_ego, x, y)  # but only for currently positive mods
@@ -319,6 +311,7 @@ class DynamicFollow:
     if self.op_params.get('username') == 'ShaneSmiskol':
       with open('/data/dyn_fol_times', 'a') as f:
         f.write('one_it: {}, mpc_id: {}\n'.format(t2, self.mpc_id))
+
     return clip(TR, 0.9, 2.7)
 
   def update_lead(self, v_lead=None, a_lead=None, x_lead=None, status=False, new_lead=False):
@@ -329,10 +322,15 @@ class DynamicFollow:
     self.lead_data.status = status
     self.lead_data.new_lead = new_lead
 
-  def update_car(self, CS):
+  def _update_car(self, CS):
     self.car_data.v_ego = CS.vEgo
     self.car_data.a_ego = CS.aEgo
 
     self.car_data.left_blinker = CS.leftBlinker
     self.car_data.right_blinker = CS.rightBlinker
     self.car_data.cruise_enabled = CS.cruiseState.enabled
+
+  def _get_live_params(self):
+    self.global_df_mod = self.op_params.get('global_df_mod', None)
+    if self.global_df_mod is not None:
+      self.global_df_mod = np.clip(self.global_df_mod, 0.9, 1.1)

@@ -31,7 +31,7 @@ else:
     error_tags['username'] = username
 
   if 'github.com/ShaneSmiskol' in origin:  # only send errors if my fork
-    sentry_uri = 'https://ea22c9bf36bd443ab15c4d84c9ff99ae:449cbbab48d9420095e2c8da7e5647b5@o237581.ingest.sentry.io/5192553'
+    sentry_uri = 'https://7f66878806a948f9a8b52b0fe7781201@o237581.ingest.sentry.io/5252098'
   else:  # else use stock
     sentry_uri = 'https://1994756b5e6f41cf939a4c65de45f4f2:cefebaf3a8aa40d182609785f7189bd7@app.getsentry.com/77924'
 
