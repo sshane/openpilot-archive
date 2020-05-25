@@ -92,7 +92,7 @@ Here are the main parameters you can change with this fork:
   - `upload_on_hotspot`: Controls whether your EON will upload driving data on your phone's hotspot
   - `no_ota_updates`: Set this to True to disable all automatic updates. Reboot to take effect
   - `disengage_on_gas`: Whether you want openpilot to disengage on gas input or not
-- Dyanmic params:
+- Dynamic params:
   - `dynamic_gas`: Whether to use [dynamic gas](#dynamic-gas) if your car is supported
   - `global_df_mod` (live!): The modifer for the current distance used by dynamic follow. The range is limited from 0.9 to 1.1. Smaller values will get you closer, larger will get you farther
   - `hide_auto_df_alerts`: Hides the alert that shows what profile the model has chosen
