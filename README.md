@@ -84,7 +84,7 @@ Features:
 Here are the main parameters you can change with this fork:
 - Tuning params:
   - `camera_offset` **`(live!)`**: Your camera offset to use in lane_planner.py. Helps fix lane hugging
-  - `steer_ratio` (live!): The steering ratio you want to use with openpilot. If you enter None, it will use the learned steer ratio from openpilot instead
+  - `steer_ratio` **`(live!)`**: The steering ratio you want to use with openpilot. If you enter None, it will use the learned steer ratio from openpilot instead
   - `enable_long_derivative`: This enables derivative-based integral wind-down to help overshooting within the PID loop. Useful for Toyotas with pedals
 - General fork params:
   - `alca_nudge_required`: Whether to wait for applied torque to the wheel (nudge) before making lane changes
@@ -94,7 +94,7 @@ Here are the main parameters you can change with this fork:
   - `disengage_on_gas`: Whether you want openpilot to disengage on gas input or not
 - Dynamic params:
   - `dynamic_gas`: Whether to use [dynamic gas](#dynamic-gas) if your car is supported
-  - `global_df_mod` (live!): The modifer for the current distance used by dynamic follow. The range is limited from 0.9 to 1.1. Smaller values will get you closer, larger will get you farther
+  - `global_df_mod` **`(live!)`**: The modifer for the current distance used by dynamic follow. The range is limited from 0.9 to 1.1. Smaller values will get you closer, larger will get you farther
   - `hide_auto_df_alerts`: Hides the alert that shows what profile the model has chosen
   - `dynamic_follow`: *Deprecated, use the on-screen button to change profiles*
 
