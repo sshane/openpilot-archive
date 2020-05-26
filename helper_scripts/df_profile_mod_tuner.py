@@ -13,15 +13,15 @@ p_mod_x = [5., 30., 55., 80.]
 for v_ego in p_mod_x:
   if v_ego != 80.:
     continue
-  # traffic
-  x_vel = [0.0, 1.892, 3.7432, 5.8632, 8.0727, 10.7301, 14.343, 17.6275, 22.4049, 28.6752, 34.8858, 40.35]
+  # roadtrip
+  x_vel = [0.0, 1.8627, 3.7253, 5.588, 7.4507, 9.3133, 11.5598, 13.645, 22.352, 31.2928, 33.528, 35.7632, 40.2336]
   x_vel = to_mph(x_vel)
-  y_dist = [1.3781, 1.3791, 1.3457, 1.3134, 1.3145, 1.318, 1.3485, 1.257, 1.144, 0.979, 0.9461, 0.9156]  # avg. 7.3 ft closer from 18 to 90 mph
+  y_dist = [1.3978, 1.4132, 1.4318, 1.4536, 1.485, 1.5229, 1.5819, 1.6203, 1.7238, 1.8231, 1.8379, 1.8495, 1.8535]  # avg. 7.3 ft closer from 18 to 90 mph
 
   TR_traffic = interp(v_ego, x_vel, y_dist)
 
-  traffic_mod_pos = [1.07, 1.55, 2.6, 3.75]
-  traffic_mod_neg = [0.84, .275, 0.1, 0.05]
+  traffic_mod_pos = [0.92, 0.7, 0.25, 0.15]
+  traffic_mod_neg = [1.1, 1.3, 2.0, 2.3]
 
   traffic_mod_pos = interp(v_ego, p_mod_x, traffic_mod_pos)
   traffic_mod_neg = interp(v_ego, p_mod_x, traffic_mod_neg)
