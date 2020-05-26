@@ -1,6 +1,7 @@
 from selfdrive.car.toyota.values import CAR as CAR_TOYOTA
 from selfdrive.car.honda.values import CAR as CAR_HONDA
 from common.numpy_fast import clip, interp
+import numpy as np
 
 
 class DynamicGas:
@@ -78,6 +79,7 @@ class DynamicGas:
         y = [0.3, 0.304, 0.315, 0.342, 0.365, 0.386, 0.429, 0.454, 0.472, 0.48, 0.489, 0.421, 0.432, 0.480, 0.55, 0.621, 0.7]
         self.supported_car = True
       elif self.candidate == CAR_TOYOTA.RAV4:
+        y = np.array(y) * 1.1
         self.supported_car = True
       elif self.candidate in [CAR_HONDA.PILOT_2019, CAR_HONDA.CIVIC]:
         self.supported_car = True
