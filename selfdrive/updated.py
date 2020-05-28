@@ -315,12 +315,15 @@ def attempt_update(time_offroad, need_reboot):
 
 
 def auto_update_reboot(time_offroad, need_reboot, new_version):
-  min_reboot_time = 5.
+  min_reboot_time = 5. * 60
   if new_version:
     need_reboot = True
 
-  if sec_since_boot() - time_offroad > min_reboot_time * 60 and need_reboot:  # allow reboot x minutes after stopping openpilot or starting EON
-    os.system('reboot')
+  if sec_since_boot() - time_offroad > min_reboot_time and need_reboot:  # allow reboot x minutes after stopping openpilot or starting EON
+    cloudlog.info("AUTO UPDATE: REBOOTING")
+    run(["am", "start", "-a", "android.intent.action.REBOOT"])
+  elif need_reboot:
+    cloudlog.info("update found, waiting {} sec. until reboot".format(min_reboot_time - (sec_since_boot() - time_offroad)))
   return need_reboot
 
 
