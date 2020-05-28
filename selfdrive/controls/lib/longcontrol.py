@@ -145,4 +145,4 @@ class LongControl():
     final_gas = clip(output_gb, 0., gas_max)
     final_brake = -clip(output_gb, -brake_max, 0.)
 
-    return round(final_gas, 6), final_brake
+    return final_gas, final_brake
