@@ -92,8 +92,8 @@ class LongControl():
     gas_max = interp(v_ego, CP.gasMaxBP, CP.gasMaxV)
     brake_max = interp(v_ego, CP.brakeMaxBP, CP.brakeMaxV)
 
-    # if self.enable_dg:
-    #   gas_max = self.dynamic_gas.update(v_ego, extras)
+    if self.enable_dg:
+      gas_max = self.dynamic_gas.update(v_ego, extras)
 
     # Update state machine
     output_gb = self.last_output_gb
@@ -145,4 +145,4 @@ class LongControl():
     final_gas = clip(output_gb, 0., gas_max)
     final_brake = -clip(output_gb, -brake_max, 0.)
 
-    return final_gas, final_brake
+    return float(final_gas), float(final_brake)
