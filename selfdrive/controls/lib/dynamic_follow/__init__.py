@@ -232,18 +232,18 @@ class DynamicFollow:
     return TR, profile_mod_pos, profile_mod_neg
 
   def _get_TR(self):
-    profile_mod_x = [2.2352, 13.4112, 24.5872, 35.7632]  # profile mod speeds, mph: [5., 30., 55., 80.]
+    # profile_mod_x = [2.2352, 13.4112, 24.5872, 35.7632]  # profile mod speeds, mph: [5., 30., 55., 80.]
 
 
     x_vel = [0.0, 1.892, 3.7432, 5.8632, 8.0727, 10.7301, 14.343, 17.6275, 22.4049, 28.6752, 34.8858, 40.35]
     y_dist = [1.3781, 1.3791, 1.3457, 1.3134, 1.3145, 1.318, 1.3485, 1.257, 1.144, 0.979, 0.9461, 0.9156]
-    profile_mod_pos = [1.05, 1.55, 2.6, 3.75]
-    profile_mod_neg = [0.84, .275, 0.1, 0.05]
+    # profile_mod_pos = [1.05, 1.55, 2.6, 3.75]
+    # profile_mod_neg = [0.84, .275, 0.1, 0.05]
 
 
     # Profile modifications - Designed so that each profile reacts similarly to changing lead dynamics
-    profile_mod_pos = interp(self.car_data.v_ego, profile_mod_x, profile_mod_pos)
-    profile_mod_neg = interp(self.car_data.v_ego, profile_mod_x, profile_mod_neg)
+    # profile_mod_pos = interp(self.car_data.v_ego, profile_mod_x, profile_mod_pos)
+    # profile_mod_neg = interp(self.car_data.v_ego, profile_mod_x, profile_mod_neg)
 
     TR = interp(self.car_data.v_ego, x_vel, y_dist)
 
@@ -254,8 +254,6 @@ class DynamicFollow:
     TR_mod = interp(self.lead_data.v_lead - self.car_data.v_ego, x, y) * (1 / 10)
     self.TR_mod += TR_mod
     TR += self.TR_mod
-
-
 
     return clip(TR, 0.9, 2.7)
 
