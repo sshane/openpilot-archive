@@ -5,8 +5,6 @@ This branch is simply stock openpilot with some additions to help it drive as sm
 
 Want to request a feature or create a bug report? [Open an issue here!](https://github.com/ShaneSmiskol/openpilot/issues/new/choose)
 
-Need to contact me for any other reason? My Discord username is: `Shane Smiskol#6175`
-
 If you'd like to support my development of Stock Additions with a [dollar for a RaceTrac ICEE](https://paypal.me/ssmiskol) (my PayPal link). Thanks! 🥰
 
 -----
