@@ -26,6 +26,9 @@ Documentation
 =====
 * [**Quick Installation**](#Quick-installation)
 * [**Branches**](#Branches)
+
+Extras
+=====
 * [**Videos**](#Videos)
 
 -----
