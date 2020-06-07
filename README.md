@@ -41,18 +41,18 @@ Just use the button on the button right of the screen while driving to change be
 
 <img src=".media/df_profiles.jpg?raw=true" height="350">
 
-  Automatic DF profile switching
-  -----
-  I've trained a custom model with Keras that takes in the past 35 seconds of your speed, the lead's speed and the lead's distance. With these inputs, it tries to correctly predict which profile is the best for your current situation.
+Automatic DF profile switching
+-----
+I've trained a custom model with Keras that takes in the past 35 seconds of your speed, the lead's speed and the lead's distance. With these inputs, it tries to correctly predict which profile is the best for your current situation.
 
-  It's only been trained on about an hour of data, so it's not perfect yet, but it's great for users who just want to set it and forget it. **To enable the `auto` profile, simply tap the profile changing button for dynamic follow until it reaches the `auto` profile!**
+It's only been trained on about an hour of data, so it's not perfect yet, but it's great for users who just want to set it and forget it. **To enable the `auto` profile, simply tap the profile changing button for dynamic follow until it reaches the `auto` profile!**
 
-  If you're annoyed by the silent alerts that show when the model has changed the profile automatically, just use [opEdit](#Customize-this-fork-opEdit) and set `hide_auto_df_alerts` to `False`. Auto profile and model will remain functional but will not show alerts.
+If you're annoyed by the silent alerts that show when the model has changed the profile automatically, just use [opEdit](#Customize-this-fork-opEdit) and set `hide_auto_df_alerts` to `False`. Auto profile and model will remain functional but will not show alerts.
 
-  Resources:
-  - [The auto-df repo.](https://github.com/ShaneSmiskol/auto-df)
-  - [The model file.](https://github.com/ShaneSmiskol/openpilot/blob/stock_additions/selfdrive/controls/lib/dynamic_follow/auto_df.py)
-  - I converted the Keras model to be able to run with pure NumPy using [Konverter](https://github.com/ShaneSmiskol/Konverter).
+Resources:
+- [The auto-df repo.](https://github.com/ShaneSmiskol/auto-df)
+- [The model file.](https://github.com/ShaneSmiskol/openpilot/blob/stock_additions/selfdrive/controls/lib/dynamic_follow/auto_df.py)
+- I converted the Keras model to be able to run with pure NumPy using [Konverter](https://github.com/ShaneSmiskol/Konverter).
 
 Dynamic gas
 -----
