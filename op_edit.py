@@ -157,7 +157,10 @@ class opEdit:  # use by running `python /data/openpilot/op_edit.py`
       if key_info.has_allowed_types:
         to_print.append(STYLES.RED + '>>  Allowed types: {}'.format(', '.join([i.__name__ for i in key_info.allowed_types])) + STYLES.ENDC)
       if key_info.live:
-        to_print.append(STYLES.YELLOW + '>>  This parameter supports live tuning! Updates should take effect within {} seconds'.format(self.op_params.read_frequency) + STYLES.ENDC)
+        live_msg = '>>  This parameter supports live tuning!'
+        if not self.live_tuning:
+          live_msg += ' Updates should take effect within {} seconds'.format(self.op_params.read_frequency)
+        to_print.append(STYLES.YELLOW + live_msg + STYLES.ENDC)
 
       if to_print:
         print('\n{}\n'.format('\n'.join(to_print)))
