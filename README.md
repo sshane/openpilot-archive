@@ -75,6 +75,8 @@ Long control uses a PID loop
 -----
 I've added a custom implementation of derivative to the PI loop controlling the gas and brake output sent to your car. Derivative (change in error) is calculated based on the current and last error and added to the class's integral variable. It's essentially winding down integral according to derivative. It helps fix overshoot on some cars with the comma pedal and increases responsiveness (like when going up and down hills) on all other cars! Still need to figure out the tuning, right now it's using the same derivative gain for all cars. Test it out and let me know what you think!
 
+Derivative is disabled by default due to only one tune for all cars, but can be enabled by using [opEdit](#Customize-this-fork-opEdit) and setting the `enable_long_derivative` parameter to `True`. It works well on my '17 Corolla with pedal.
+
 Customize this fork (opEdit)
 -----
 This is a handy tool to change your `opParams` parameters without diving into any json files or code. You can specify parameters to be used in any fork's operation that supports `opParams`. First, ssh in to your EON and make sure you're in `/data/openpilot`, then start `opEdit`:
@@ -91,26 +93,26 @@ Features:
 - Parameter value type restriction. Ensures a user cannot save an unsupported value type for any parameters, breaking the fork
 - Remembers which mode you were last in and initializes opEdit with that mode (live tuning or not)
 - Case insensitive boolean and NoneType entrance. Type `faLsE` to save `False (bool)`, etc
-- **Parameters marked with `(live!)` will have updates take affect within 3 seconds while driving!**
+- **Parameters marked with `(live!)` will have updates take affect within 3 seconds while driving! All other params will require a reboot of your EON/C2 to take effect.**
 
 Here are the main parameters you can change with this fork:
-- Tuning params:
+- **Tuning params**:
   - `camera_offset` **`(live!)`**: Your camera offset to use in lane_planner.py. Helps fix lane hugging
   - `steer_ratio` **`(live!)`**: The steering ratio you want to use with openpilot. If you enter None, it will use the learned steer ratio from openpilot instead
   - `enable_long_derivative`: This enables derivative-based integral wind-down to help overshooting within the PID loop. Useful for Toyotas with pedals or cars with bad long tuning
-- General fork params:
+- **General fork params**:
   - `alca_nudge_required`: Whether to wait for applied torque to the wheel (nudge) before making lane changes
   - `alca_min_speed`: The minimum speed allowed for an automatic lane change
   - `upload_on_hotspot`: Controls whether your EON will upload driving data on your phone's hotspot
   - `no_ota_updates`: Set this to True to disable all automatic updates. Reboot to take effect
   - `disengage_on_gas`: Whether you want openpilot to disengage on gas input or not
-- Dynamic params:
+- **Dynamic params**:
   - `dynamic_gas`: Whether to use [dynamic gas](#dynamic-gas) if your car is supported
   - `global_df_mod` **`(live!)`**: The modifer for the current distance used by dynamic follow. The range is limited from 0.7 to 1.1. Smaller values will get you closer, larger will get you farther. This is applied to ALL profiles!
   - `hide_auto_df_alerts`: Hides the alert that shows what profile the model has chosen
   - `dynamic_follow`: *Deprecated, use the on-screen button to change profiles*
 
-A list of parameters that you can modify are [located here](common/op_params.py#L40).
+A full list of parameters that you can modify are [located here](common/op_params.py#L40).
 
 An archive of opParams [lives here.](https://github.com/ShaneSmiskol/op_params)
 
@@ -119,33 +121,12 @@ Parameters are stored at `/data/op_params.json`
 ## opEdit Demo
 <img src=".media/op_edit.gif?raw=true" width="1000">
 
-Dynamic lane speed
------
-*This feature is disabled until I can figure out how to improve it. Probably going to be replaced by comma's upcoming end 2 end long model.*
-
-This is a feature that reduces your cruising speed if many vehicles around you are significantly slower than you. This works with and without an openpilot-identified lead. Ex.: It will slow you down if traveling in an open lane with cars in adjacent lanes that are slower than you. Or if the lead in front of the lead is slowing down, as well as cars in other lanes far ahead. The most it will slow you down is some average of: (the set speed and the average of the surrounding cars) The more the radar points, the more weight goes to the speeds of surrounding vehicles.
-
-Custom wheel offset to reduce lane hugging
------
-***Update**: The performance of this modification is iffy at best, but it definitely is more apparent than just tuning your camera offset value. Removing the immediate angle offset can have some weird oscillating effect when it's windy or on roads with camber (slant to one side). Will be left in, but disabled by default.*
-
-With the `LaneHugging` module you can specify a custom angle offset to be added to your desired steering angle. Simply find the angle your wheel is at when you're driving on a straight highway. By default, this is disabled, to enable you can:
-- Use the `opEdit` class in the root directory of openpilot. To use it, simply open an `ssh` shell and enter the commands below:
-    ```python
-    cd /data/openpilot
-    python op_edit.py
-    ```
-    You'll be greeted with a list of your parameters you can explore, enter the number corresponding to `lane_hug_direction`. Your options are to enter `'left'` or `'right'` for whichever direction your car has a tendency to hug toward. `None` will disable the feature.
-    Finally you'll need to enter your absolute angle offset (negative will be converted to positive) with the `opParams` parameter: `lane_hug_angle_offset`.
-    
-    The lane hugging mod is enabled only if `lane_hug_direction` is `'left'` or `'right'`. **Warning: the learned steering offset from openpilot will no longer be used if this mod is active.**
-
 Automatic updates
 -----
-When a new update is available on GitHub for this fork, your EON will pull and reset your local branch to the remote. It then queues a reboot to occur when the following is true:
+When a new update is available on GitHub for Stock Additions, your EON/C2 will pull and reset your local branch to the remote. It then queues a reboot to occur when the following is true:
 - your EON has been inactive or offroad for more than 5 minutes.
 
-Therefore, if the EON sees an update while you're driving it will reboot 5 minutes after you stop your drive, it resets the timer if you start driving again before the 5 minutes is up.
+Therefore, if your device sees an update while you're driving it will reboot approximately 5 to 10 minutes after you finish your drive, it resets the timer if you start driving again before the time is up.
 
 Documentation
 =====
