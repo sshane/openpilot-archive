@@ -13,6 +13,7 @@ Highlight Features
 =====
 
 * [**Dynamic follow (now with profiles!)**](#dynamic-follow-3-profiles)
+  * [**`auto-df` model for automatic distance profile switching**](#Automatic-DF-profile-switching)
 * [**Dynamic gas**](#dynamic-gas)
 * [**PI > PID for longcontrol**](#Long-control-uses-a-PID-loop)
 * [**Customize this fork (opEdit with live tuning)**](#Customize-this-fork-opEdit)
@@ -36,9 +37,21 @@ Just use the button on the button right of the screen while driving to change be
   * `traffic` - Meant to keep you a bit closer in traffic, hopefully reducing cut-ins. Always be alert, as you are with any driving assistance software.
   * `relaxed` - This is the default dynamic follow profile for casual driving.
   * `roadtrip` - This profile is for road trips where you're mainly on two lane highways and don't want to be following particularly closely; at night for example.
-  * [`auto`](https://github.com/ShaneSmiskol/auto-df) - The auto dynamic follow model was trained on about an hour of me manually cycling through the different profiles based on driving conditions, this mode tries to replicate those decisions entirely on its own.
+  * [`auto`](#Automatic-DF-profile-switching) - The auto dynamic follow model was trained on about an hour of me manually cycling through the different profiles based on driving conditions, this mode tries to replicate those decisions entirely on its own.
 
 <img src=".media/df_profiles.jpg?raw=true" height="350">
+
+Automatic DF profile switching
+-----
+I've trained a custom model with Keras that takes in the past 35 seconds of your speed, the lead's speed and the lead's distance. With these inputs, it tries to correctly predict which profile is the best for your current situation.
+
+It's only been trained on about an hour of data, so it's not perfect yet, but it's great for users who just want to set it and forget it. **To enable the `auto` profile, simply tap the profile changing button for dynamic follow until it reaches the `auto` profile!**
+
+If you're annoyed by the silent alerts that show when the model has changed the profile automatically, just use [opEdit](#Customize-this-fork-opEdit) and set `hide_auto_df_alerts` to `False`. Auto profile and model will remain functional but will not show alerts.
+
+- [The auto-df repo](https://github.com/ShaneSmiskol/auto-df)
+- [The model file.](https://github.com/ShaneSmiskol/openpilot/blob/stock_additions/selfdrive/controls/lib/dynamic_follow/auto_df.py)
+- I converted the Keras model to be able to run with pure NumPy using [Konverter](https://github.com/ShaneSmiskol/Konverter).
 
 Dynamic gas
 -----
@@ -56,8 +69,6 @@ non-pedal cars:
   * None yet
 
 If you have a car without a pedal, or you do have one but I haven't created a profile for you yet, please let me know and we can develop one for your car to test.
-
-~~*TODO: Need to factor in distance, as it will not accelerate to get closer to the stopped lead if you engage at ~0mph far back from the lead.*~~ Update: Added lead distance into dynamic gas, now just need to tune and test.
 
 Long control uses a PID loop
 -----
