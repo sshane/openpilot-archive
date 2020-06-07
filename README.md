@@ -14,13 +14,12 @@ If you'd like to support my development of Stock Additions with a [dollar for a 
 Highlight Features
 =====
 
-* [**Dynamic follow (now with profiles!)**](#dynamic-follow-3-profiles)
+* [**Dynamic follow (now with profiles!)**](#dynamic-follow-3-profiles) - 3 + auto profiles to control distance
   * [**`auto-df` model for automatic distance profile switching**](#Automatic-DF-profile-switching)
-* [**Dynamic gas**](#dynamic-gas)
-* [**PI > PID for longcontrol**](#Long-control-uses-a-PID-loop)
+* [**Dynamic gas**](#dynamic-gas) - smoother gas control
+* [**PI > PID for longcontrol**](#Long-control-uses-a-PID-loop) - fix for pedal overshoot
 * [**Customize this fork (opEdit with live tuning)**](#Customize-this-fork-opEdit)
-* [**Custom wheel offset to reduce lane hugging**](#Custom-wheel-offset-to-reduce-lane-hugging)
-* [**Automatic updates**](#Automatic-updates)
+* [**Automatic updates**](#Automatic-updates) - keeps you up to date
 
 Documentation
 =====
