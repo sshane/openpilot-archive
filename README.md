@@ -161,4 +161,5 @@ The branches which have a version number appended to them are past archive versi
 Videos
 -----
 Here's a short video showing how close the traffic profile was in `0.7.4`. In `0.7.5`, it's a bit closer. Video thanks to [@rolo01](https://github.com/rolo01)!
+
 [![](https://img.youtube.com/vi/sGsODeP_G_c/0.jpg)](https://www.youtube.com/watch?v=sGsODeP_G_c)
