@@ -19,7 +19,7 @@ Highlight Features
 * [**Dynamic gas**](#dynamic-gas) - smoother gas control
 * [**PI > PID for longcontrol**](#Long-control-uses-a-PID-loop) - fix for pedal overshoot
 * [**Customize this fork (opEdit with live tuning)**](#Customize-this-fork-opEdit)
-* [**Automatic updates**](#Automatic-updates) - keeps you up to date
+* [**Automatic updates**](#Automatic-updates)
 
 Documentation
 =====
