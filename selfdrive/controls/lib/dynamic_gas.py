@@ -83,6 +83,9 @@ class DynamicGas:
         self.supported_car = True
       elif self.candidate in [CAR_HONDA.PILOT_2019, CAR_HONDA.CIVIC]:
         self.supported_car = True
+      else:  # all other pedal cars are supported
+        # x, y = self.CP.gasMaxBP, self.CP.gasMaxV  # probably better to use custom maxGas above
+        self.supported_car = True
     else:
       y = [0.35, 0.47, 0.43, 0.35, 0.3, 0.3, 0.3229, 0.34784, 0.36765, 0.38, 0.396, 0.409, 0.425, 0.478, 0.55, 0.621, 0.7]
       y = [np.interp(i, [.35, 0.7], [1.15, 1.0]) * i for i in y]
