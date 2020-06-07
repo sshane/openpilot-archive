@@ -67,7 +67,7 @@ class opEdit:  # use by running `python /data/openpilot/op_edit.py`
       if not self.live_tuning:
         self.info('Here are your parameters:', end='\n', sleep_time=0)
       else:
-        self.info('Here are your live parameters:', end='\n', sleep_time=0)
+        self.info('Here are your live parameters:', sleep_time=0)
         self.info('(changes take effect within {} seconds)'.format(self.op_params.read_frequency), end='\n', sleep_time=0)
       self.params = self.op_params.get(force_update=True)
       if self.live_tuning:  # only display live tunable params
