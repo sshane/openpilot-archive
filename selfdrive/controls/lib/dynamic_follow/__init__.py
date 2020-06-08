@@ -277,6 +277,9 @@ class DynamicFollow:
       y = [sng_TR, interp(sng_speed, x_vel, y_dist)]
       TR = interp(self.car_data.v_ego, x, y)
 
+    with open('/data/mpc_{}.txt'.format(self.mpc_id), 'a') as f:
+      f.write({'profile': df_profile, 'TR': TR, 'v_ego': self.car_data.v_ego})
+
     TR_mods = []
     # Dynamic follow modifications (the secret sauce)
     x = [-26.8224, -20.0288, -15.6871, -11.1965, -7.8645, -4.9472, -3.0541, -2.2244, -1.5045, -0.7908, -0.3196, 0.0, 0.5588, 1.3682, 1.898, 2.7316, 4.4704]  # relative velocity values
