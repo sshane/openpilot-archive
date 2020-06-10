@@ -308,7 +308,8 @@ class DynamicFollow:
       y = [1.0, .75, .65]  # reduce TR when changing lanes
       TR *= interp(self.car_data.v_ego, x, y)
     min_TR_clip = 0.9
-    if self.op_params.get('username').lower() in ['mmmkaay', 'ShaneSmiskol'.lower()]:
+    username = self.op_params.get('username', None)
+    if isinstance(username, str) and username.lower() in ['mmmkaay', 'ShaneSmiskol'.lower()]:
       min_TR_clip = 0.75
     return clip(TR, min_TR_clip, 2.7)
 
