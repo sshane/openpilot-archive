@@ -277,8 +277,8 @@ class DynamicFollow:
       y = [sng_TR, interp(sng_speed, x_vel, y_dist)]
       TR = interp(self.car_data.v_ego, x, y)
 
-    with open('/data/mpc_debug_{}.txt'.format(self.mpc_id), 'a') as f:
-      f.write('{}\n'.format({'profile': df_profile, 'TR': TR, 'v_ego': self.car_data.v_ego}))
+    # with open('/data/mpc_debug_{}.txt'.format(self.mpc_id), 'a') as f:
+    #   f.write('{}\n'.format({'profile': df_profile, 'TR': TR, 'v_ego': self.car_data.v_ego}))
 
     TR_mods = []
     # Dynamic follow modifications (the secret sauce)
