@@ -307,7 +307,10 @@ class DynamicFollow:
       x = [8.9408, 22.352, 31.2928]  # 20, 50, 70 mph
       y = [1.0, .75, .65]  # reduce TR when changing lanes
       TR *= interp(self.car_data.v_ego, x, y)
-    return clip(TR, 0.9, 2.7)
+    min_TR_clip = 0.9
+    if self.op_params.get('username').lower() in ['mmmkaay', 'ShaneSmiskol'.lower()]:
+      min_TR_clip = 0.75
+    return clip(TR, min_TR_clip, 2.7)
 
   def update_lead(self, v_lead=None, a_lead=None, x_lead=None, status=False, new_lead=False):
     self.lead_data.v_lead = v_lead
@@ -328,4 +331,4 @@ class DynamicFollow:
   def _get_live_params(self):
     self.global_df_mod = self.op_params.get('global_df_mod', None)
     if self.global_df_mod is not None:
-      self.global_df_mod = np.clip(self.global_df_mod, 0.7, 1.1)
+      self.global_df_mod = clip(self.global_df_mod, 0.7, 1.1)
