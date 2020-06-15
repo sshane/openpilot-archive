@@ -9,7 +9,7 @@ op_params = opParams()
 
 
 class DataCollector:
-  def __init__(self, file_path, keys, write_frequency=60, write_threshold=2):
+  def __init__(self, file_path, keys, write_frequency=60, write_threshold=2, log_data=True):
     """
     This class provides an easy way to set up your own custom data collector to gather custom data.
     Parameters:
@@ -22,7 +22,7 @@ class DataCollector:
       data_collector = DataCollector('/data/openpilot/custom_data', ['v_ego', 'a_ego', 'custom_dict'], write_frequency=120)
     """
 
-    self.log_data = op_params.get('log_data', False)
+    self.log_data = log_data
     self.file_path = file_path
     self.keys = keys
     self.write_frequency = write_frequency

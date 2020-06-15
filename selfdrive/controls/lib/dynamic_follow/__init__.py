@@ -45,8 +45,11 @@ class DynamicFollow:
     self._setup_changing_variables()
 
   def _setup_collector(self):
-    self.sm = SubMaster(['liveTracks'])
-    self.data_collector = DataCollector(file_path='/data/df_data', keys=['v_ego', 'a_lead', 'v_lead', 'x_lead', 'live_tracks', 'profile', 'time'])
+    self.sm_collector = SubMaster(['liveTracks'])
+    self.log_auto_df = self.op_params.get('log_auto_df', False)
+    if not isinstance(self.log_auto_df, bool):
+      self.log_auto_df = False
+    self.data_collector = DataCollector(file_path='/data/df_data', keys=['v_ego', 'a_ego', 'a_lead', 'v_lead', 'x_lead', 'live_tracks', 'profile', 'time'], log_data=self.log_auto_df)
 
   def _setup_changing_variables(self):
     self.TR = self.default_TR
@@ -67,7 +70,7 @@ class DynamicFollow:
     self._update_car(CS)
     self._get_profiles()
 
-    if self.mpc_id == 1:
+    if self.mpc_id == 1 and self.log_auto_df:
       self._gather_data()
 
     if not self.lead_data.status:
@@ -90,10 +93,11 @@ class DynamicFollow:
       self._get_pred()  # sets self.model_profile, all other checks are inside function
 
   def _gather_data(self):
-    self.sm.update(0)
-    live_tracks = [[i.dRel, i.vRel, i.aRel, i.yRel] for i in self.sm['liveTracks']]
+    self.sm_collector.update(0)
+    live_tracks = [[i.dRel, i.vRel, i.aRel, i.yRel] for i in self.sm_collector['liveTracks']]
     if self.car_data.cruise_enabled:
       self.data_collector.update([self.car_data.v_ego,
+                                  self.car_data.a_ego,
                                   self.lead_data.a_lead,
                                   self.lead_data.v_lead,
                                   self.lead_data.x_lead,

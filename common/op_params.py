@@ -62,6 +62,7 @@ class opParams:
                            'no_ota_updates': {'default': False, 'allowed_types': [bool], 'description': 'Set this to True to disable all automatic updates. Reboot to take effect'},
                            'dynamic_gas': {'default': True, 'allowed_types': [bool], 'description': 'Whether to use dynamic gas if your car is supported'},
                            'hide_auto_df_alerts': {'default': False, 'allowed_types': [bool], 'description': 'Hides the alert that shows what profile the model has chosen'},
+                           'log_auto_df': {'default': False, 'allowed_types': [bool], 'description': 'Logs dynamic follow data for auto-df'},
 
                            'op_edit_live_mode': {'default': False, 'allowed_types': [bool], 'description': 'This parameter controls which mode opEdit starts in. It should be hidden from the user with the hide key', 'hide': True}}
 
@@ -70,7 +71,7 @@ class opParams:
     self.last_read_time = sec_since_boot()
     self.read_frequency = 2.5  # max frequency to read with self.get(...) (sec)
     self.force_update = False  # replaces values with default params if True, not just add add missing key/value pairs
-    self.to_delete = ['reset_integral', 'log_data']  # a list of params you want to delete (unused)
+    self.to_delete = ['reset_integral']  # a list of params you want to delete (unused)
     self.run_init()  # restores, reads, and updates params
 
   def run_init(self):  # does first time initializing of default params
