@@ -196,13 +196,31 @@ ALERTS = [
         "Using profile: ",
         "",
         AlertStatus.normal, AlertSize.mid,
-        Priority.LOWER, VisualAlert.none, AudibleAlert.chimeWarning1, 0.2, 0., 2.),
+        Priority.LOW, VisualAlert.none, AudibleAlert.chimeWarning1, 0.2, 0., 2.),
 
-  Alert("dfButtonAlertNoSound",
-        "Using profile: ",
+  Alert("lsButtonAlert",
+        "Lane Speed set to: ",
+        "",
+        AlertStatus.normal, AlertSize.small,
+        Priority.LOW, VisualAlert.none, AudibleAlert.chimeWarning1, 0.2, 0., 2.),
+
+  Alert("dfButtonAlertSilent",
+        "Dynamic follow: ",
+        "",
+        AlertStatus.normal, AlertSize.small,
+        Priority.LOWER, VisualAlert.none, AudibleAlert.none, 0.2, 0., 2.),
+
+  Alert("laneSpeedAlert",
+        "",
         "",
         AlertStatus.normal, AlertSize.mid,
-        Priority.LOWER, VisualAlert.none, AudibleAlert.none, 0.2, 0., 2.),
+        Priority.LOW, VisualAlert.none, AudibleAlert.chimeWarning1, 0.2, 0., 0.1),
+
+  Alert("laneSpeedAlertSilent",
+        "",
+        "",
+        AlertStatus.normal, AlertSize.mid,
+        Priority.LOW, VisualAlert.none, AudibleAlert.none, 0.2, 0., 0.1),
 
   Alert(
       "ethicalDilemma",

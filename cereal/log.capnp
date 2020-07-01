@@ -1978,6 +1978,24 @@ struct DynamicFollowButton {
   status @0 :UInt16;
 }
 
+struct LaneSpeed {
+  fastestLane @0 :Text;
+  state @1 :Text;
+  new @2 :Bool;
+
+  leftLaneSpeeds @3 :List(Float32);
+  middleLaneSpeeds @4 :List(Float32);
+  rightLaneSpeeds @5 :List(Float32);
+
+  leftLaneDistances @6 :List(Float32);
+  middleLaneDistances @7 :List(Float32);
+  rightLaneDistances @8 :List(Float32);
+}
+
+struct LaneSpeedButton {
+  status @0 :UInt16;
+}
+
 struct Event {
   # in nanoseconds?
   logMonoTime @0 :UInt64;
@@ -2059,5 +2077,7 @@ struct Event {
 
     dynamicFollowData @74 :DynamicFollowData;
     dynamicFollowButton @75 :DynamicFollowButton;
+    laneSpeed @76 :LaneSpeed;
+    laneSpeedButton @77 :LaneSpeedButton;
   }
 }

@@ -140,7 +140,7 @@ def data_sample(CI, CC, sm, can_sock, state, mismatch_counter, can_error_counter
   return CS, events, cal_perc, mismatch_counter, can_error_counter
 
 
-def state_transition(frame, CS, CP, state, events, soft_disable_timer, v_cruise_kph, AM):
+def state_transition(frame, CS, CP, state, events, soft_disable_timer, v_cruise_kph, AM, sm_smiskol):
   """Compute conditional state transitions and execute actions on state transitions"""
   enabled = isEnabled(state)
 
@@ -156,13 +156,27 @@ def state_transition(frame, CS, CP, state, events, soft_disable_timer, v_cruise_
   # entrance in SOFT_DISABLING state
   soft_disable_timer = max(0, soft_disable_timer - 1)
 
+  ls_state = sm_smiskol['laneSpeed'].state
+  if ls_state != '':
+    AM.add(frame, 'lsButtonAlert', enabled, extra_text_1=ls_state)
+
+  faster_lane = sm_smiskol['laneSpeed'].fastestLane
+  ls_alert_shown = False
+  if faster_lane in ['left', 'right']:
+    ls_alert = 'laneSpeedAlert'
+    if not sm_smiskol['laneSpeed'].new:
+      ls_alert += 'Silent'
+    AM.add(frame, ls_alert, enabled, extra_text_1='{} lane faster'.format(faster_lane).upper(), extra_text_2='Change lanes to faster {} lane'.format(faster_lane))
+    ls_alert_shown = True
+
   df_out = df_manager.update()
   if df_out.changed:
     df_alert = 'dfButtonAlert'
     if df_out.is_auto and df_out.last_is_auto:
-      if CS.cruiseState.enabled and not hide_auto_df_alerts:
-        df_alert += 'NoSound'
-        AM.add(frame, df_alert, enabled, extra_text_1=df_out.model_profile_text + ' (auto)', extra_text_2='Dynamic follow: {} profile active'.format(df_out.model_profile_text))
+      # only show auto alert if engaged, not hiding auto, and time since lane speed alert not showing
+      if CS.cruiseState.enabled and not hide_auto_df_alerts and not ls_alert_shown:
+        df_alert += 'Silent'
+        AM.add(frame, df_alert, enabled, extra_text_1=df_out.model_profile_text + ' (auto)')
     else:
       AM.add(frame, df_alert, enabled, extra_text_1=df_out.user_profile_text, extra_text_2='Dynamic follow: {} profile active'.format(df_out.user_profile_text))
 
@@ -486,7 +500,7 @@ def controlsd_thread(sm=None, pm=None, can_sock=None, sm_smiskol=None):
                               'model'])
 
   if sm_smiskol is None:
-    sm_smiskol = messaging.SubMaster(['radarState', 'dynamicFollowData', 'liveTracks', 'dynamicFollowButton'])
+    sm_smiskol = messaging.SubMaster(['radarState', 'dynamicFollowData', 'liveTracks', 'dynamicFollowButton', 'laneSpeed'])
 
   if can_sock is None:
     can_timeout = None if os.environ.get('NO_CAN_TIMEOUT', False) else 100
@@ -604,7 +618,7 @@ def controlsd_thread(sm=None, pm=None, can_sock=None, sm_smiskol=None):
     if not read_only:
       # update control state
       state, soft_disable_timer, v_cruise_kph, v_cruise_kph_last = \
-        state_transition(sm.frame, CS, CP, state, events, soft_disable_timer, v_cruise_kph, AM)
+        state_transition(sm.frame, CS, CP, state, events, soft_disable_timer, v_cruise_kph, AM, sm_smiskol)
       prof.checkpoint("State transition")
 
     # Compute actuators (runs PID loops and lateral MPC)

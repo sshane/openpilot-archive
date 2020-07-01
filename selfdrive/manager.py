@@ -192,6 +192,8 @@ managed_processes = {
   "dmonitoringmodeld": ("selfdrive/modeld", ["./dmonitoringmodeld"]),
   "modeld": ("selfdrive/modeld", ["./modeld"]),
   "driverview": "selfdrive.controls.lib.driverview",
+
+  "lanespeedd": "selfdrive.controls.lib.lane_speed",
 }
 
 daemon_processes = {
@@ -242,6 +244,7 @@ car_started_processes = [
   'proclogd',
   'ubloxd',
   #'locationd',
+  'lanespeedd',
 ]
 
 if WEBCAM:
@@ -477,7 +480,8 @@ def manager_thread():
     if msg.thermal.freeSpace < 0.05:
       logger_dead = True
 
-    if msg.thermal.started and "driverview" not in running:
+    run_all = False
+    if (msg.thermal.started and "driverview" not in running) or run_all:
       for p in car_started_processes:
         if p == "loggerd" and logger_dead:
           kill_managed_process(p)
