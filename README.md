@@ -15,6 +15,7 @@ Highlight Features
 * [**Dynamic follow (now with profiles!)**](#dynamic-follow-3-profiles) - 3 + auto profiles to control distance
   * [**`auto-df` model for automatic distance profile switching**](#Automatic-DF-profile-switching)
 * [**Dynamic gas**](#dynamic-gas) - smoother gas control
+* [**Lane Speed alerts**](#Lane-Speed-alerts) - alerts for when an adjacent lane is faster
 * [**PI > PID for longcontrol**](#Long-control-uses-a-PID-loop) - fix for pedal overshoot
 * [**Customize this fork (opEdit with live tuning)**](#Customize-this-fork-opEdit)
 * [**Automatic updates**](#Automatic-updates)
@@ -70,6 +71,15 @@ non-pedal cars:
   * None yet
 
 If you have a car without a pedal, or you do have one but I haven't created a profile for you yet, please let me know and we can develop one for your car to test.
+
+Lane Speed alerts
+-----
+This feature alerts you of faster-travelling adjacent lanes and can be configured using the on-screen *LS* button on the bottom right to either be disabled, audible, or silent.
+
+The idea behind this feature is since we often become very relaxed behind the wheel when being driven by openpilot, we don't always notice it when we've become stuck behind a slower-moving vehicle. When either the left or right adjacent lane is moving faster than your current lane, a solution would be to alert the user that a faster lane is available so that they could make the lane change, overtaking the slower lane. Thus saving time in the long run on long roadtrips or general highway driving!
+
+The original idea is thanks to [Greengree#5537](https://github.com/greengree) on Discord.
+
 
 Long control uses a PID loop
 -----
