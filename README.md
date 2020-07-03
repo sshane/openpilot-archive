@@ -76,7 +76,7 @@ Lane Speed alerts
 -----
 This feature alerts you of faster-travelling adjacent lanes and can be configured using the on-screen *LS* button on the bottom right to either be disabled, audible, or silent.
 
-The idea behind this feature is since we often become very relaxed behind the wheel when being driven by openpilot, we don't always notice it when we've become stuck behind a slower-moving vehicle. When either the left or right adjacent lane is moving faster than your current lane, a solution would be to alert the user that a faster lane is available so that they could make the lane change, overtaking the slower lane. Thus saving time in the long run on long roadtrips or general highway driving!
+The idea behind this feature is since we often become very relaxed behind the wheel when being driven by openpilot, we don't always notice when we've become stuck behind a slower-moving vehicle. When either the left or right adjacent lane is moving faster than your current lane, LaneSpeed alerts the user that a faster lane is available so that they can make a lane change, overtaking the slower current lane. Thus saving time in the long run on long roadtrips or in general highway driving!
 
 The original idea is thanks to [Greengree#5537](https://github.com/greengree) on Discord.
 
