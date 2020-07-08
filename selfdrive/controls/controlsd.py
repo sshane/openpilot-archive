@@ -156,25 +156,33 @@ def state_transition(frame, CS, CP, state, events, soft_disable_timer, v_cruise_
   # entrance in SOFT_DISABLING state
   soft_disable_timer = max(0, soft_disable_timer - 1)
 
+  can_show_alerts = True  # alert priority is defined by code location, keeping is highest, then lane speed alert, then auto-df alert
+  if sm_smiskol['dynamicCameraOffset'].keepingLeft:
+    can_show_alerts = False
+    AM.add(frame, 'laneSpeedKeeping', enabled, extra_text_1='LEFT', extra_text_2='Oncoming traffic in right lane')
+  elif sm_smiskol['dynamicCameraOffset'].keepingRight:
+    can_show_alerts = False
+    AM.add(frame, 'laneSpeedKeeping', enabled, extra_text_1='RIGHT', extra_text_2='Oncoming traffic in left lane')
+
   ls_state = sm_smiskol['laneSpeed'].state
   if ls_state != '':
     AM.add(frame, 'lsButtonAlert', enabled, extra_text_1=ls_state)
 
   faster_lane = sm_smiskol['laneSpeed'].fastestLane
-  ls_alert_shown = False
   if faster_lane in ['left', 'right']:
     ls_alert = 'laneSpeedAlert'
     if not sm_smiskol['laneSpeed'].new:
       ls_alert += 'Silent'
-    AM.add(frame, ls_alert, enabled, extra_text_1='{} lane faster'.format(faster_lane).upper(), extra_text_2='Change lanes to faster {} lane'.format(faster_lane))
-    ls_alert_shown = True
+    if can_show_alerts:
+      AM.add(frame, ls_alert, enabled, extra_text_1='{} lane faster'.format(faster_lane).upper(), extra_text_2='Change lanes to faster {} lane'.format(faster_lane))
+      can_show_alerts = False
 
   df_out = df_manager.update()
   if df_out.changed:
     df_alert = 'dfButtonAlert'
     if df_out.is_auto and df_out.last_is_auto:
       # only show auto alert if engaged, not hiding auto, and time since lane speed alert not showing
-      if CS.cruiseState.enabled and not hide_auto_df_alerts and not ls_alert_shown:
+      if CS.cruiseState.enabled and not hide_auto_df_alerts and can_show_alerts:
         df_alert += 'Silent'
         AM.add(frame, df_alert, enabled, extra_text_1=df_out.model_profile_text + ' (auto)')
     else:
@@ -500,7 +508,7 @@ def controlsd_thread(sm=None, pm=None, can_sock=None, sm_smiskol=None):
                               'model'])
 
   if sm_smiskol is None:
-    sm_smiskol = messaging.SubMaster(['radarState', 'dynamicFollowData', 'liveTracks', 'dynamicFollowButton', 'laneSpeed'])
+    sm_smiskol = messaging.SubMaster(['radarState', 'dynamicFollowData', 'liveTracks', 'dynamicFollowButton', 'laneSpeed', 'dynamicCameraOffset'])
 
   if can_sock is None:
     can_timeout = None if os.environ.get('NO_CAN_TIMEOUT', False) else 100

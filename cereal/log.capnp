@@ -1990,10 +1990,18 @@ struct LaneSpeed {
   leftLaneDistances @6 :List(Float32);
   middleLaneDistances @7 :List(Float32);
   rightLaneDistances @8 :List(Float32);
+
+  leftLaneOncoming @9 :Bool;
+  rightLaneOncoming @10 :Bool;
 }
 
 struct LaneSpeedButton {
   status @0 :UInt16;
+}
+
+struct DynamicCameraOffset {
+  keepingLeft @0 :Bool;
+  keepingRight @1 :Bool;
 }
 
 struct Event {
@@ -2079,5 +2087,6 @@ struct Event {
     dynamicFollowButton @75 :DynamicFollowButton;
     laneSpeed @76 :LaneSpeed;
     laneSpeedButton @77 :LaneSpeedButton;
+    dynamicCameraOffset @78 :DynamicCameraOffset;
   }
 }

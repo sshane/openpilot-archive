@@ -86,6 +86,8 @@ class LaneSpeed:
     lane_names = ['left', 'middle', 'right']
     self.lanes = {name: Lane(name, lane_positions[name]) for name in lane_names}
 
+    self.oncoming_lanes = {'left': False, 'right': False}
+
     self.last_alert_end_time = 0
 
   def start(self):
@@ -113,12 +115,12 @@ class LaneSpeed:
     self.ls_state = (self.sm['laneSpeedButton'].status + self.offset) % len(LaneSpeedState.to_state)
 
     # checks that we have dPoly, dPoly is not NaNs, and steer angle is less than max allowed
-    if len(self.d_poly) and not np.isnan(self.d_poly[0]) and abs(self.steer_angle) < self._max_steer_angle:
-      if self.v_ego > self._min_enable_speed:
-        # self.filter_tracks()  # todo: will remove tracks very close to other tracks to make averaging more robust
-        self.group_tracks()
-        self.get_fastest_lane()
-    else:  # should we reset state when not enabled?
+    if len(self.d_poly) and not np.isnan(self.d_poly[0]) and abs(self.steer_angle) < self._max_steer_angle and self.v_ego > self._min_enable_speed:
+      # self.filter_tracks()  # todo: will remove tracks very close to other tracks to make averaging more robust
+      self.group_tracks()
+      self.find_oncoming_lanes()
+      self.get_fastest_lane()
+    else:
       self.reset(reset_fastest=True)
 
   def update_lane_bounds(self):
@@ -134,7 +136,7 @@ class LaneSpeed:
     self.lanes['middle'].bounds = np.array([self.lanes['left'].pos / 2, self.lanes['right'].pos / 2])
     self.lanes['right'].bounds = np.array([self.lanes['right'].pos / 2, self.lanes['right'].pos * 1.5])
 
-  # def filter_tracks(self):  # fixme: make cluster() return indexes of live_tracks instead
+  # def filter_tracks(self):  # todo: make cluster() return indexes of live_tracks instead
   #   print(type(self.live_tracks))
   #   clustered = cluster(self.live_tracks, 0.048)  # clusters tracks based on dRel
   #   clustered = [clstr for clstr in clustered if len(clstr) > 1]
@@ -150,8 +152,18 @@ class LaneSpeed:
       for lane_name in self.lanes:
         lane_bounds = self.lanes[lane_name].bounds + y_offset  # offset lane bounds based on our future lateral position (dPoly) and track's distance
         if lane_bounds[0] >= track.yRel >= lane_bounds[1]:  # track is in a lane
-          self.lanes[lane_name].tracks.append(track)
+          if track.vRel + self.v_ego >= 1:
+            self.lanes[lane_name].tracks.append(track)
+          elif track.vRel + self.v_ego <= -1:  # make sure we don't add stopped tracks at high speeds
+            self.lanes[lane_name].oncoming_tracks.append(track)
           break  # skip to next track
+
+  def find_oncoming_lanes(self):
+    """If number of oncoming tracks is greater than tracks going our direction, set lane to oncoming"""
+    for lane in self.oncoming_lanes:
+      self.oncoming_lanes[lane] = False
+      if len(self.lanes[lane].oncoming_tracks) > len(self.lanes[lane].tracks):  # 0 can't be > 0 so 0 oncoming tracks will be handled correctly
+        self.oncoming_lanes[lane] = True
 
   def lanes_with_avg_speeds(self):
     """Returns a dict of lane objects where avg_speed not None"""
@@ -166,7 +178,7 @@ class LaneSpeed:
       lane = self.lanes[lane_name]
       track_speeds = [track.vRel + self.v_ego for track in lane.tracks]
       track_speeds = [speed for speed in track_speeds if speed > self.v_ego * self._track_speed_margin]
-      if len(track_speeds):  # filters out oncoming tracks and very slow tracks
+      if len(track_speeds):  # filters out very slow tracks
         lane.avg_speed = np.mean(track_speeds)  # todo: something with std?
 
     lanes_with_avg_speeds = self.lanes_with_avg_speeds()
@@ -200,21 +212,40 @@ class LaneSpeed:
     # if here, we've found a lane faster than our lane by a margin and it's been faster for long enough
     self.fastest_lane = fastest_lane.name
 
+  # def log_data(self):  # DON'T USE AGAIN until I fix live tracks formatting
+  #   log_file = '/data/lane_speed_log'
+  #   lanes_tracks = {}
+  #   lanes_oncoming_tracks = {}
+  #   bounds = {}
+  #   for lane in self.lanes:
+  #     bounds[lane] = self.lanes[lane].bounds
+  #     lanes_tracks[lane] = [{'vRel': trk.vRel, 'dRel': trk.dRel, 'yRel': trk.yRel} for trk in self.lanes[lane].tracks]
+  #     lanes_oncoming_tracks[lane] = [{'vRel': trk.vRel, 'dRel': trk.dRel, 'yRel': trk.yRel} for trk in self.lanes[lane].oncoming_tracks]
+  #
+  #   log_data = {'v_ego': self.v_ego, 'd_poly': self.d_poly, 'lane_tracks': lanes_tracks, 'lane_oncoming_tracks': lanes_oncoming_tracks,
+  #               'live_tracks': self.live_tracks, 'oncoming_lanes': self.oncoming_lanes, 'bounds': bounds}
+  #   with open(log_file, 'a') as f:
+  #     f.write('{}\n'.format(log_data))
+
   def send_status(self):
     new_fastest = self.fastest_lane in ['left', 'right'] and self.last_fastest_lane not in ['left', 'right']
     if self.ls_state == LaneSpeedState.silent:
       new_fastest = False  # be silent
 
     ls_send = messaging.new_message('laneSpeed')
+    ls_send.laneSpeed.fastestLane = self.fastest_lane
+    ls_send.laneSpeed.new = new_fastest  # only send audible alert once when a lane becomes fastest, then continue to show silent alert
+
     ls_send.laneSpeed.leftLaneSpeeds = [trk.vRel + self.v_ego for trk in self.lanes['left'].tracks]
     ls_send.laneSpeed.middleLaneSpeeds = [trk.vRel + self.v_ego for trk in self.lanes['middle'].tracks]
     ls_send.laneSpeed.rightLaneSpeeds = [trk.vRel + self.v_ego for trk in self.lanes['right'].tracks]
+
     ls_send.laneSpeed.leftLaneDistances = [trk.dRel for trk in self.lanes['left'].tracks]
     ls_send.laneSpeed.middleLaneDistances = [trk.dRel for trk in self.lanes['middle'].tracks]
     ls_send.laneSpeed.rightLaneDistances = [trk.dRel for trk in self.lanes['right'].tracks]
 
-    ls_send.laneSpeed.fastestLane = self.fastest_lane
-    ls_send.laneSpeed.new = new_fastest  # only send audible alert once when a lane becomes fastest, then continue to show silent alert
+    ls_send.laneSpeed.leftLaneOncoming = self.oncoming_lanes['left']
+    ls_send.laneSpeed.rightLaneOncoming = self.oncoming_lanes['right']
 
     if self.last_ls_state != self.ls_state:  # show alert if button tapped and write to opParams
       self.op_params.put('lane_speed_alerts', LaneSpeedState.to_state[self.ls_state])
@@ -246,11 +277,6 @@ class LaneSpeed:
       if reset_fastest:
         self.lanes[lane].fastest_count = 0
 
-  # def log_data(self):
-  #   live_tracks = [{'vRel': trk.vRel, 'yRel': trk.yRel, 'dRel': trk.dRel} for trk in self.live_tracks]
-  #   with open('/data/lane_speed', 'a') as f:
-  #     f.write('{}\n'.format({'v_ego': self.v_ego, 'd_poly': self.d_poly, 'steer_angle': self.steer_angle, 'live_tracks': live_tracks}))
-
 
 # class Track:
 #   def __init__(self, vRel, yRel, dRel):
@@ -267,55 +293,3 @@ def main():
 
 if __name__ == '__main__':
   main()
-
-
-# DEBUG = False
-#
-# if DEBUG:
-#   def circle_y(_x, _angle):  # fixme: not sure if this is correct
-#     return -(_x * _angle) ** 2 / (1000 * (_angle * 2))
-#
-#   ls = LaneSpeed()
-#
-#   class Track:
-#     def __init__(self, vRel, yRel, dRel):
-#       self.vRel = vRel
-#       self.yRel = yRel
-#       self.dRel = dRel
-#
-#   d_poly = [3.2945357553160193e-10, -0.0009911218658089638, -0.009723401628434658, 0.14891201257705688]
-#
-#   keys = ['v_ego', 'a_ego', 'v_lead', 'lead_status', 'x_lead', 'y_lead', 'a_lead', 'a_rel', 'v_lat', 'steer_angle', 'steer_rate', 'track_data', 'time', 'gas', 'brake', 'car_gas', 'left_blinker', 'right_blinker', 'set_speed', 'new_accel', 'gyro']
-#
-#   sample = [8.013258934020996, 0.14726917445659637, 8.45051383972168, True, 12.680000305175781, 0.19999998807907104, 0.7618321180343628, 0.0, 0.0, -0.30000001192092896, 0.0, {'tracks': [{'trackID': 13482, 'yRel': 0.1599999964237213, 'dRel': 12.680000305175781, 'vRel': 0.4000000059604645, 'stationary': False, 'oncoming': False, 'status': 0.0}, {'trackID': 13652, 'yRel': -0.03999999910593033, 'dRel': 19.360000610351562, 'vRel': 0.5249999761581421, 'stationary': False, 'oncoming': False, 'status': 0.0}, {'trackID': 13690, 'yRel': -0.20000000298023224, 'dRel': 22.639999389648438, 'vRel': 0.25, 'stationary': False, 'oncoming': False, 'status': 0.0}, {'trackID': 13691, 'yRel': 4.440000057220459, 'dRel': 27.520000457763672, 'vRel': 8.824999809265137, 'stationary': False, 'oncoming': False, 'status': 0.0}, {'trackID': 13692, 'yRel': 2.8399999141693115, 'dRel': 36.68000030517578, 'vRel': -5.099999904632568, 'stationary': False, 'oncoming': False, 'status': 0.0}, {'trackID': 13694, 'yRel': 2.9600000381469727, 'dRel': 36.68000030517578, 'vRel': -5.074999809265137, 'stationary': False, 'oncoming': False, 'status': 0.0}, {'trackID': 13698, 'yRel': -1.1200000047683716, 'dRel': 17.040000915527344, 'vRel': 0.32499998807907104, 'stationary': False, 'oncoming': False, 'status': 0.0}, {'trackID': 13700, 'yRel': -0.20000000298023224, 'dRel': 25.31999969482422, 'vRel': 0.699999988079071, 'stationary': False, 'oncoming': False, 'status': 0.0}, {'trackID': 13703, 'yRel': -0.11999999731779099, 'dRel': 19.84000015258789, 'vRel': 0.20000000298023224, 'stationary': False, 'oncoming': False, 'status': 0.0}, {'trackID': 13704, 'yRel': 0.23999999463558197, 'dRel': 12.680000305175781, 'vRel': 0.4749999940395355, 'stationary': False, 'oncoming': False, 'status': 0.0}, {'trackID': 13705, 'yRel': 0.03999999910593033, 'dRel': 25.360000610351562, 'vRel': 0.3499999940395355, 'stationary': False, 'oncoming': False, 'status': 0.0}, {'trackID': 13706, 'yRel': -5.599999904632568, 'dRel': 116.4800033569336, 'vRel': 8.675000190734863, 'stationary': False, 'oncoming': False, 'status': 0.0}], 'live': True}, 1571441322.0375044, 26.91699981689453, 0.0, 0.07500000298023224, False, False, 21.94444465637207, 0.06090415226828825, [0.0047149658203125, -0.039764404296875, 0.029388427734375]]
-#   sample = dict(zip(keys, sample))
-#   trks = sample['track_data']['tracks']
-#   trks = [Track(trk['vRel'], trk['yRel'], trk['dRel']) for trk in trks]
-#   trks.append(Track(4, -12.8, 103))
-#   trks.append(Track(12, -11, 115))
-#   trks.append(Track(32, -11, 115))
-#
-#   dRel = [t.dRel for t in trks]
-#   yRel = [t.yRel for t in trks]
-#   steerangle = sample['steer_angle']
-#   plt.scatter(dRel, yRel, label='tracks')
-#   x_path = np.linspace(0, 130, 100)
-#   # y_path = circle_y(x_path, steerangle)
-#   y_path = np.polyval(d_poly, x_path)
-#   plt.plot([0, 130], [0, 0])
-#   # plt.plot(x_path, y_path, label='dPoly')
-#   plt.plot(x_path, y_path + 3.7 / 2, 'r--', label='left line')
-#   plt.plot(x_path, y_path - 3.7 / 2, 'r--', label='right line')
-#
-#   plt.plot(x_path, y_path + 3.7 / 2 + 3.7, 'g--')
-#   plt.plot(x_path, y_path - 3.7 / 2 - 3.7, 'g--')
-#
-#
-#   plt.legend()
-#   plt.show()
-#
-#   for _ in range(1):
-#     out = ls.update(10, None, steerangle, d_poly, trks)  # v_ego, lead, steer_angle, d_poly, live_tracks
-#   print([(lane.name, lane.fastest_count) for lane in ls.lanes.values()])
-#   print('out: {}'.format(out))
-#   print([len(ls.lanes[l].tracks) for l in ls.lanes])

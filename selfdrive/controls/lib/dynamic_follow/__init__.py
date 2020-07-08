@@ -39,7 +39,7 @@ class DynamicFollow:
     self.TR = 1.8
     # self.v_lead_retention = 2.0  # keep only last x seconds
     self.v_ego_retention = 2.5
-    self.v_rel_retention = 1.5
+    self.v_rel_retention = 1.75
 
     self.sng_TR = 1.8  # reacceleration stop and go TR
     self.sng_speed = 18.0 * CV.MPH_TO_MS
@@ -137,9 +137,12 @@ class DynamicFollow:
 
     change_time = sec_since_boot() - self.profile_change_time
     change_time_x = [0, 0.5, 4]  # for three seconds after effective profile has changed
-    change_mod_y = [2, 8, 1]  # multiply cost by multiplier to quickly change distance
+    change_mod_y = [3, 6, 1]  # multiply cost by multiplier to quickly change distance
     if change_time < change_time_x[-1]:  # if profile changed in last 3 seconds
-      cost *= interp(change_time, change_time_x, change_mod_y)
+      cost_mod = interp(change_time, change_time_x, change_mod_y)
+      cost_mod_speeds = [0, 20 * CV.MPH_TO_MS]  # don't change cost too much under 20 mph
+      cost_mods = [cost_mod * 0.01, cost_mod]
+      cost *= np.interp(cost_mod, cost_mod_speeds, cost_mods)
 
     if self.last_cost != cost:
       libmpc.change_tr(MPC_COST_LONG.TTC, cost, MPC_COST_LONG.ACCELERATION, MPC_COST_LONG.JERK)

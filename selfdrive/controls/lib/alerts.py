@@ -222,6 +222,12 @@ ALERTS = [
         AlertStatus.normal, AlertSize.mid,
         Priority.LOW, VisualAlert.none, AudibleAlert.none, 0.2, 0., 0.1),
 
+  Alert("laneSpeedKeeping",  # for dynamic camera offset
+        "KEEPING ",
+        "",
+        AlertStatus.normal, AlertSize.mid,
+        Priority.LOW, VisualAlert.none, AudibleAlert.none, 0.2, 0., 0.1),
+
   Alert(
       "ethicalDilemma",
       "TAKE CONTROL IMMEDIATELY",

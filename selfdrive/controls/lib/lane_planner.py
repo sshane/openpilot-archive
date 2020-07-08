@@ -1,9 +1,10 @@
+import numpy as np
 from common.op_params import opParams
 from common.numpy_fast import interp
-import numpy as np
 from cereal import log
-
-op_params = opParams()
+from cereal import messaging
+from cereal.messaging import SubMaster, PubMaster
+from selfdrive.config import Conversions as CV
 
 
 def compute_path_pinv(l=50):
@@ -46,6 +47,63 @@ def calc_d_poly(l_poly, r_poly, p_poly, l_prob, r_prob, lane_width, v_ego):
   return lr_prob * d_poly_lane + (1.0 - lr_prob) * p_poly
 
 
+class DynamicCameraOffset:
+  def __init__(self):
+    self.sm = SubMaster(['laneSpeed'])
+    self.pm = PubMaster(['dynamicCameraOffset'])
+    self.op_params = opParams()
+    self.camera_offset = self.op_params.get('camera_offset', 0.06)
+    self.leftLaneOncoming = False
+    self.rightLaneOncoming = False
+    self.min_enable_speed = 90 * CV.MPH_TO_MS  # 20
+
+    standard_lane_width = 3.7
+    self.lane_widths = [2.8, standard_lane_width, 4.6]
+    self.uncertain_lane_width = (self.lane_widths[0] + standard_lane_width) / 2  # if uncertain, apply less offset
+    self.offsets = [0.033, 0.375, 0.45]  # needs to be tested and/or tuned
+
+    self.poly_prob_speeds = [0, 25 * CV.MPH_TO_MS, 35 * CV.MPH_TO_MS, 60 * CV.MPH_TO_MS]
+    self.poly_probs = [0.2, 0.25, 0.55, 0.65]  # lane line must exist in direction we're offsetting towards
+
+  def update(self, v_ego, lane_width_estimate, lane_width_certainty, l_prob, r_prob):
+    self.sm.update(0)
+    self.camera_offset = self.op_params.get('camera_offset', 0.06)
+    self.leftLaneOncoming = self.sm['laneSpeed'].leftLaneOncoming
+    self.rightLaneOncoming = self.sm['laneSpeed'].rightLaneOncoming
+
+    dynamic_offset = self._get_camera_offset(v_ego, lane_width_estimate, lane_width_certainty, l_prob, r_prob)
+    self._send_state()  # for alerts, before speed check so alerts don't get stuck on
+    if dynamic_offset is not None:
+      return dynamic_offset
+    return self.camera_offset  # don't offset if no lane line in direction we're going to hug
+
+  def _send_state(self):
+    dco_send = messaging.new_message('dynamicCameraOffset')
+    dco_send.dynamicCameraOffset.keepingLeft = self.keeping_left
+    dco_send.dynamicCameraOffset.keepingRight = self.keeping_right
+    self.pm.send('dynamicCameraOffset', dco_send)
+
+  def _get_camera_offset(self, v_ego, lane_width_estimate, lane_width_certainty, l_prob, r_prob):
+    self.keeping_left, self.keeping_right = False, False  # reset keeping
+    if self.leftLaneOncoming == self.rightLaneOncoming:  # if both false or both true do nothing
+      return
+    if v_ego < self.min_enable_speed:
+      return
+    # calculate lane width from certainty and standard lane width for offset
+    # if not certain, err to smaller lane width to avoid too much offset
+    lane_width = (lane_width_estimate * lane_width_certainty) + (self.uncertain_lane_width * (1 - lane_width_certainty))
+    offset = np.interp(lane_width, self.lane_widths, self.offsets)
+    min_poly_prob = np.interp(v_ego, self.poly_prob_speeds, self.poly_probs)
+    if self.leftLaneOncoming:
+      if r_prob >= min_poly_prob:  # make sure there's a lane line on the side we're going to hug
+        self.keeping_right = True
+        return self.camera_offset - offset
+    else:  # right lane oncoming
+      if l_prob >= min_poly_prob:  # don't want to offset if there's no left/right lane line and we go off the road for ex.
+        self.keeping_left = True
+        return self.camera_offset + offset
+
+
 class LanePlanner():
   def __init__(self):
     self.l_poly = [0., 0., 0., 0.]
@@ -65,6 +123,7 @@ class LanePlanner():
 
     self._path_pinv = compute_path_pinv()
     self.x_points = np.arange(50)
+    self.dynamic_camera_offset = DynamicCameraOffset()
 
   def parse_model(self, md):
     if len(md.leftLane.poly):
@@ -83,10 +142,11 @@ class LanePlanner():
       self.r_lane_change_prob = md.meta.desireState[log.PathPlan.Desire.laneChangeRight - 1]
 
   def update_d_poly(self, v_ego):
-    # only offset left and right lane lines; offsetting p_poly does not make sense
-    CAMERA_OFFSET = op_params.get('camera_offset', 0.06)
+    # only offset left and right lane lines; offsetting p_poly does not make sense (or does it?)
+    CAMERA_OFFSET = self.dynamic_camera_offset.update(v_ego, self.lane_width, self.lane_width_certainty, self.l_prob, self.r_prob)
     self.l_poly[3] += CAMERA_OFFSET
     self.r_poly[3] += CAMERA_OFFSET
+    # self.p_poly[3] += CAMERA_OFFSET
 
     # Find current lanewidth
     self.lane_width_certainty += 0.05 * (self.l_prob * self.r_prob - self.lane_width_certainty)

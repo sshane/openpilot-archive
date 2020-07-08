@@ -14,8 +14,10 @@ Highlight Features
 
 * [**Dynamic follow (now with profiles!)**](#dynamic-follow-3-profiles) - 3 + auto profiles to control distance
   * [**`auto-df` model for automatic distance profile switching**](#Automatic-DF-profile-switching)
+* **Lane Speed**
+  * [**Lane Speed Alerts**](#Lane-Speed-alerts) - alerts for when an adjacent lane is faster
+  * [**Dynamic camera offsetting**](#Dynamic-camera-offset-based-on-oncoming-traffic) - automatically moves you over if adjacent lane has oncoming traffic
 * [**Dynamic gas**](#dynamic-gas) - smoother gas control
-* [**Lane Speed alerts**](#Lane-Speed-alerts) - alerts for when an adjacent lane is faster
 * [**PI > PID for longcontrol**](#Long-control-uses-a-PID-loop) - fix for pedal overshoot
 * [**Customize this fork (opEdit with live tuning)**](#Customize-this-fork-opEdit)
 * [**Automatic updates**](#Automatic-updates)
@@ -55,6 +57,20 @@ Resources:
 - [The model file.](https://github.com/ShaneSmiskol/openpilot/blob/stock_additions/selfdrive/controls/lib/dynamic_follow/auto_df.py)
 - I converted the Keras model to be able to run with pure NumPy using [Konverter](https://github.com/ShaneSmiskol/Konverter).
 
+Lane Speed alerts
+-----
+This feature alerts you of faster-travelling adjacent lanes and can be configured using the on-screen *LS* button on the bottom right to either be disabled, audible, or silent.
+
+The idea behind this feature is since we often become very relaxed behind the wheel when being driven by openpilot, we don't always notice when we've become stuck behind a slower-moving vehicle. When either the left or right adjacent lane is moving faster than your current lane, LaneSpeed alerts the user that a faster lane is available so that they can make a lane change, overtaking the slower current lane. Thus saving time in the long run on long roadtrips or in general highway driving!
+
+The original idea is thanks to [Greengree#5537](https://github.com/greengree) on Discord.
+
+Dynamic camera offset (based on oncoming traffic)
+-----
+This feature automatically adjusts your position in the lane if an adjacent lane has oncoming traffic. For example, if you're on a two-lane highway and the left adjacent lane has oncoming cars, LaneSpeed recognizes those cars and applies an offset to your `CAMERA_OFFSET` to move you over in the lane, keeping you farther from oncoming cars.
+
+**Note that this feature only works reliably under 60 to 65 mph or so. Due to a radar limitation with Toyota, oncoming cars are not picked up at ~70 mph.**
+
 Dynamic gas
 -----
 Dynamic gas aims to provide a smoother driving experience in stop and go traffic (under 20 mph) by reducing the maximum gas that can be applied based on your current velocity, the relative velocity of the lead, the acceleration of the lead, and the distance of the lead. This usually results in quicker and smoother acceleration from a standstill without the jerking you get in stock openpilot with comma pedal (ex. taking off from a traffic light). It tries to coast if the lead is just inching up, it doesn’t use maximum gas as soon as the lead inches forward. When you are above 20 mph, relative velocity and the current following distance in seconds is taken into consideration.
@@ -71,15 +87,6 @@ non-pedal cars:
   * None yet
 
 If you have a car without a pedal, or you do have one but I haven't created a profile for you yet, please let me know and we can develop one for your car to test.
-
-Lane Speed alerts
------
-This feature alerts you of faster-travelling adjacent lanes and can be configured using the on-screen *LS* button on the bottom right to either be disabled, audible, or silent.
-
-The idea behind this feature is since we often become very relaxed behind the wheel when being driven by openpilot, we don't always notice when we've become stuck behind a slower-moving vehicle. When either the left or right adjacent lane is moving faster than your current lane, LaneSpeed alerts the user that a faster lane is available so that they can make a lane change, overtaking the slower current lane. Thus saving time in the long run on long roadtrips or in general highway driving!
-
-The original idea is thanks to [Greengree#5537](https://github.com/greengree) on Discord.
-
 
 Long control uses a PID loop
 -----
