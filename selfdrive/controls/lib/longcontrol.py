@@ -67,6 +67,7 @@ class LongControl():
       kdV = [0.05, 1.0285 * 1.45, 1.8975 * 1.35]
     else:
       kdV = [0.08, 1.215, 2.51]
+      print()
 
     self.pid = PIDController((CP.longitudinalTuning.kpBP, CP.longitudinalTuning.kpV),
                              (CP.longitudinalTuning.kiBP, CP.longitudinalTuning.kiV),
