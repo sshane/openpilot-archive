@@ -183,6 +183,17 @@ class DynamicFollow:
     return [sample for sample in lst if cur_time - sample['time'] <= retention]
 
   def _calculate_relative_accel_new(self):
+    mods_x = [0, .75, 1.5]
+    mods_y = [3, 1.5, 1]
+
+    a_lead = self.lead_data.a_lead
+    if a_lead < 0:  # more weight to slight lead decel
+      a_lead *= np.interp(abs(self.lead_data.a_lead), mods_x, mods_y)
+    rel_x = [-2.6822, -1.7882, -0.8941, -0.447, -0.2235, 0.0, 0.2235, 0.447, 0.8941, 1.7882, 2.6822]
+    mod_y = [0.3245 * 1.5, 0.277 * 1.45, 0.11075 * 1.35, 0.08106 * 1.25, 0.06325 * 1.15, 0.0, -0.09, -0.09375, -0.125, -0.3, -0.35]
+    return np.interp(a_lead - self.car_data.a_ego, rel_x, mod_y)
+
+
     #   """
     #   Moving window returning the following: (final relative velocity - initial relative velocity) / dT with a few extra mods
     #   Output properties:
@@ -196,8 +207,8 @@ class DynamicFollow:
     if len(self.df_data.v_rels) > 0:  # if not empty
       elapsed_time = self.df_data.v_rels[-1]['time'] - self.df_data.v_rels[0]['time']
       if elapsed_time > min_consider_time:
-        x = [-2.6822, -1.7882, -0.8941, -0.447, -0.2235, 0.0, 0.2235, 0.447, 0.8941, 1.7882, 2.6822]
-        y = [0.3245, 0.277, 0.11075, 0.08106, 0.06325, 0.0, -0.09, -0.09375, -0.125, -0.3, -0.35]
+        rel_x = [-2.6822, -1.7882, -0.8941, -0.447, -0.2235, 0.0, 0.2235, 0.447, 0.8941, 1.7882, 2.6822]
+        mod_y = [0.3245 * 1.5, 0.277 * 1.45, 0.11075 * 1.35, 0.08106 * 1.25, 0.06325 * 1.15, 0.0, -0.09, -0.09375, -0.125, -0.3, -0.35]
 
         v_lead_start = self.df_data.v_rels[0]['v_lead']  # setup common variables
         v_ego_start = self.df_data.v_rels[0]['v_ego']
@@ -240,7 +251,7 @@ class DynamicFollow:
         else:
           rel_vel_mod = math.copysign(delta_v_rel, v_lead_change - v_ego_change) * lead_factor
 
-        calc_mod = np.interp(rel_vel_mod, x, y)
+        calc_mod = np.interp(rel_vel_mod, rel_x, mod_y)
         if v_lead_end > v_ego_end and calc_mod >= 0:
           # if we're accelerating quicker than lead but lead is still faster, reduce mod
           # todo: could remove this since we restrict this mod where called
@@ -326,7 +337,7 @@ class DynamicFollow:
     TR_mods = []
     # Dynamic follow modifications (the secret sauce)
     x = [-26.8224, -20.0288, -15.6871, -11.1965, -7.8645, -4.9472, -3.0541, -2.2244, -1.5045, -0.7908, -0.3196, 0.0, 0.5588, 1.3682, 1.898, 2.7316, 4.4704]  # relative velocity values
-    y = [.76, 0.62323, 0.49488, 0.40656, 0.32227, 0.23914, 0.12269, 0.10483, 0.08074, 0.04886, 0.0072, 0.0, -0.05648, -0.0792, -0.15675, -0.23289, -0.315]  # modification values
+    y = [.76, 0.62323, 0.49488, 0.40656, 0.32227, 0.23914*1.05, 0.12269*1.15, 0.10483*1.25, 0.08074*1.35, 0.04886*1.45, 0.0072*1.25, 0.0, -0.05648, -0.0792, -0.15675, -0.23289, -0.315]  # modification values
     TR_mods.append(interp(self.lead_data.v_lead - self.car_data.v_ego, x, y))
 
     x = [-4.4795, -2.8122, -1.5727, -1.1129, -0.6611, -0.2692, 0.0, 0.1466, 0.5144, 0.6903, 0.9302]  # lead acceleration values
@@ -337,7 +348,7 @@ class DynamicFollow:
     if rel_accel_mod is not None:  # if available
       deadzone = 2 * CV.MPH_TO_MS
       if self.lead_data.v_lead - deadzone > self.car_data.v_ego:
-       TR_mods.append(rel_accel_mod)
+        TR_mods.append(rel_accel_mod)
 
     x = [self.sng_speed / 5.0, self.sng_speed]  # as we approach 0, apply x% more distance
     y = [1.05, 1.0]

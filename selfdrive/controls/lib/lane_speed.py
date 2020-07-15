@@ -79,7 +79,7 @@ class LaneSpeed:
     self.offset = self.ls_state
 
     self.lane_width = 3.7  # in meters, just a starting point
-    self.sm = messaging.SubMaster(['carState', 'liveTracks', 'pathPlan', 'laneSpeedButton'])
+    self.sm = messaging.SubMaster(['carState', 'liveTracks', 'pathPlan', 'laneSpeedButton', 'controlsState'])
     self.pm = messaging.PubMaster(['laneSpeed'])
 
     lane_positions = {'left': self.lane_width, 'middle': 0, 'right': -self.lane_width}  # lateral position in meters from center of car to center of lane
@@ -115,7 +115,7 @@ class LaneSpeed:
     self.ls_state = (self.sm['laneSpeedButton'].status + self.offset) % len(LaneSpeedState.to_state)
 
     # checks that we have dPoly, dPoly is not NaNs, and steer angle is less than max allowed
-    if len(self.d_poly) and not np.isnan(self.d_poly[0]) and abs(self.steer_angle) < self._max_steer_angle and self.v_ego > self._min_enable_speed:
+    if len(self.d_poly) and not np.isnan(self.d_poly[0]):
       # self.filter_tracks()  # todo: will remove tracks very close to other tracks to make averaging more robust
       self.group_tracks()
       self.find_oncoming_lanes()
@@ -152,9 +152,9 @@ class LaneSpeed:
       for lane_name in self.lanes:
         lane_bounds = self.lanes[lane_name].bounds + y_offset  # offset lane bounds based on our future lateral position (dPoly) and track's distance
         if lane_bounds[0] >= track.yRel >= lane_bounds[1]:  # track is in a lane
-          if track.vRel + self.v_ego >= 1:
+          if track.vRel + self.v_ego >= 2.24:
             self.lanes[lane_name].tracks.append(track)
-          elif track.vRel + self.v_ego <= -1:  # make sure we don't add stopped tracks at high speeds
+          elif track.vRel + self.v_ego <= -2.24:  # make sure we don't add stopped tracks at high speeds
             self.lanes[lane_name].oncoming_tracks.append(track)
           break  # skip to next track
 
@@ -174,10 +174,11 @@ class LaneSpeed:
     if self.ls_state == LaneSpeedState.off:
       return
 
+    v_cruise_setpoint = self.sm['controlsState'].vCruise * CV.KPH_TO_MS
     for lane_name in self.lanes:
       lane = self.lanes[lane_name]
       track_speeds = [track.vRel + self.v_ego for track in lane.tracks]
-      track_speeds = [speed for speed in track_speeds if speed > self.v_ego * self._track_speed_margin]
+      track_speeds = [speed for speed in track_speeds if self.v_ego * self._track_speed_margin < speed <= v_cruise_setpoint]
       if len(track_speeds):  # filters out very slow tracks
         lane.avg_speed = np.mean(track_speeds)  # todo: something with std?
 
@@ -229,11 +230,14 @@ class LaneSpeed:
 
   def send_status(self):
     new_fastest = self.fastest_lane in ['left', 'right'] and self.last_fastest_lane not in ['left', 'right']
+    fastest_lane = self.fastest_lane
     if self.ls_state == LaneSpeedState.silent:
       new_fastest = False  # be silent
+    if self.v_ego < self._min_enable_speed or abs(self.steer_angle) > self._max_steer_angle:  # keep sending updates, but not fastestLane
+      fastest_lane = 'none'
 
     ls_send = messaging.new_message('laneSpeed')
-    ls_send.laneSpeed.fastestLane = self.fastest_lane
+    ls_send.laneSpeed.fastestLane = fastest_lane
     ls_send.laneSpeed.new = new_fastest  # only send audible alert once when a lane becomes fastest, then continue to show silent alert
 
     ls_send.laneSpeed.leftLaneSpeeds = [trk.vRel + self.v_ego for trk in self.lanes['left'].tracks]
