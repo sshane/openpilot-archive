@@ -64,7 +64,7 @@ class LongControl():
 
     kdBP = [0., 16., 35.]
     if CP.enableGasInterceptor:
-      kdV = [0.05, 1.0285 * 1.45, 1.8975 * 1.35]
+      kdV = [0.05, 1.0285 * 1.45, 1.8975 * 0.8]
     else:
       kdV = [0.08, 1.215, 2.51]
 
