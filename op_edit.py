@@ -5,7 +5,7 @@ import ast
 import difflib
 
 
-class STYLES:
+class STYLES:  # todo: use common.colors
   # HEADER = '\033[95m'
   # OKBLUE = '\033[94m'
   # CBLUE = '\33[44m'
