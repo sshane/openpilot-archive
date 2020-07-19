@@ -21,9 +21,11 @@ class AlertManager():
     for a in alerts:
       self.add(frame, a, enabled=enabled)
 
-  def add(self, frame, alert, enabled=True):
+  def add(self, frame, alert, enabled=True, extra_text_1='', extra_text_2=''):
     added_alert = copy.copy(alert)
     added_alert.start_time = frame * DT_CTRL
+    added_alert.alert_text_1 += extra_text_1
+    added_alert.alert_text_2 += extra_text_2
 
     # if new alert is higher priority, log it
     if not self.alert_present() or added_alert.alert_priority > self.activealerts[0].alert_priority:

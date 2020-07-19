@@ -11,7 +11,6 @@ import cereal.messaging as messaging
 from selfdrive.config import Conversions as CV
 from selfdrive.boardd.boardd import can_list_to_can_capnp
 from selfdrive.car.car_helpers import get_car, get_startup_event
-from selfdrive.controls.lib.lane_planner import CAMERA_OFFSET
 from selfdrive.controls.lib.drive_helpers import update_v_cruise, initialize_v_cruise
 from selfdrive.controls.lib.longcontrol import LongControl, STARTING_TARGET_SPEED
 from selfdrive.controls.lib.latcontrol_pid import LatControlPID
@@ -22,6 +21,8 @@ from selfdrive.controls.lib.alertmanager import AlertManager
 from selfdrive.controls.lib.vehicle_model import VehicleModel
 from selfdrive.controls.lib.planner import LON_MPC_STEP
 from selfdrive.locationd.calibration_helpers import Calibration
+from selfdrive.controls.lib.dynamic_follow.df_manager import dfManager
+from common.op_params import opParams
 
 LDW_MIN_SPEED = 31 * CV.MPH_TO_MS
 LANE_DEPARTURE_THRESHOLD = 0.1
@@ -54,6 +55,7 @@ class Controls:
     if self.sm is None:
       self.sm = messaging.SubMaster(['thermal', 'health', 'frame', 'model', 'liveCalibration',
                                      'dMonitoringState', 'plan', 'pathPlan', 'liveLocationKalman'])
+    self.sm_smiskol = messaging.SubMaster(['radarState', 'dynamicFollowData', 'liveTracks', 'dynamicFollowButton', 'laneSpeed', 'dynamicCameraOffset'])
 
     self.can_sock = can_sock
     if can_sock is None:
@@ -147,6 +149,10 @@ class Controls:
     # controlsd is driven by can recv, expected at 100Hz
     self.rk = Ratekeeper(100, print_delay_threshold=None)
     self.prof = Profiler(False)  # off by default
+
+    self.op_params = opParams()
+    self.df_manager = dfManager(self.op_params)
+    self.hide_auto_df_alerts = self.op_params.get('hide_auto_df_alerts', False)
 
   def update_events(self, CS):
     """Compute carEvents from carState"""
@@ -264,6 +270,40 @@ class Controls:
     self.distance_traveled += CS.vEgo * DT_CTRL
 
     return CS
+
+  def add_stock_additions_alerts(self, CS):
+    frame = self.sm.frame
+    can_show_alerts = True  # alert priority is defined by code location, keeping is highest, then lane speed alert, then auto-df alert
+    if self.sm_smiskol['dynamicCameraOffset'].keepingLeft:
+      can_show_alerts = False
+      self.AM.add(frame, 'laneSpeedKeeping', self.enabled, extra_text_1='LEFT', extra_text_2='Oncoming traffic in right lane')
+    elif self.sm_smiskol['dynamicCameraOffset'].keepingRight:
+      can_show_alerts = False
+      self.AM.add(frame, 'laneSpeedKeeping', self.enabled, extra_text_1='RIGHT', extra_text_2='Oncoming traffic in left lane')
+
+    ls_state = self.sm_smiskol['laneSpeed'].state
+    if ls_state != '':
+      self.AM.add(frame, 'lsButtonAlert', self.enabled, extra_text_1=ls_state)
+
+    faster_lane = self.sm_smiskol['laneSpeed'].fastestLane
+    if faster_lane in ['left', 'right']:
+      ls_alert = 'laneSpeedAlert'
+      if not self.sm_smiskol['laneSpeed'].new:
+        ls_alert += 'Silent'
+      if can_show_alerts:
+        self.AM.add(frame, ls_alert, self.enabled, extra_text_1='{} lane faster'.format(faster_lane).upper(), extra_text_2='Change lanes to faster {} lane'.format(faster_lane))
+        can_show_alerts = False
+
+    df_out = self.df_manager.update()
+    if df_out.changed:
+      df_alert = 'dfButtonAlert'
+      if df_out.is_auto and df_out.last_is_auto:
+        # only show auto alert if engaged, not hiding auto, and time since lane speed alert not showing
+        if CS.cruiseState.enabled and not self.hide_auto_df_alerts and can_show_alerts:
+          df_alert += 'Silent'
+          self.AM.add(frame, df_alert, self.enabled, extra_text_1=df_out.model_profile_text + ' (auto)')
+      else:
+        self.AM.add(frame, df_alert, self.enabled, extra_text_1=df_out.user_profile_text, extra_text_2='Dynamic follow: {} profile active'.format(df_out.user_profile_text))
 
   def state_transition(self, CS):
     """Compute conditional state transitions and execute actions on state transitions"""
@@ -427,6 +467,7 @@ class Controls:
     if len(meta.desirePrediction) and ldw_allowed:
       l_lane_change_prob = meta.desirePrediction[Desire.laneChangeLeft - 1]
       r_lane_change_prob = meta.desirePrediction[Desire.laneChangeRight - 1]
+      CAMERA_OFFSET = 0.06
       l_lane_close = left_lane_visible and (self.sm['pathPlan'].lPoly[3] < (1.08 - CAMERA_OFFSET))
       r_lane_close = right_lane_visible and (self.sm['pathPlan'].rPoly[3] > -(1.08 + CAMERA_OFFSET))
 
@@ -438,6 +479,7 @@ class Controls:
 
     alerts = self.events.create_alerts(self.current_alert_types, [self.CP, self.sm, self.is_metric])
     self.AM.add_many(self.sm.frame, alerts, self.enabled)
+    self.add_stock_additions_alerts(CS)
     self.AM.process_alerts(self.sm.frame)
     CC.hudControl.visualAlert = self.AM.visual_alert
 
@@ -479,7 +521,7 @@ class Controls:
     controlsState.vPid = float(self.LoC.v_pid)
     controlsState.vCruise = float(self.v_cruise_kph)
     controlsState.upAccelCmd = float(self.LoC.pid.p)
-    controlsState.uiAccelCmd = float(self.LoC.pid.i)
+    controlsState.uiAccelCmd = float(self.LoC.pid.id)
     controlsState.ufAccelCmd = float(self.LoC.pid.f)
     controlsState.angleSteersDes = float(self.LaC.angle_steers_des)
     controlsState.vTargetLead = float(v_acc)
