@@ -8,6 +8,7 @@ from selfdrive.car.fw_versions import get_fw_versions, match_fw_to_car
 from selfdrive.swaglog import cloudlog
 import cereal.messaging as messaging
 from selfdrive.car import gen_empty_fingerprint
+from selfdrive.crash import client
 
 from cereal import car, log
 EventName = car.CarEvent.EventName
@@ -159,6 +160,7 @@ def fingerprint(logcan, sendcan, has_relay):
     source = car.CarParams.FingerprintSource.fixed
 
   cloudlog.warning("fingerprinted %s", car_fingerprint)
+  client.captureMessage("fingerprinted {}".format(car_fingerprint), level='info')
   return car_fingerprint, finger, vin, car_fw, source
 
 
@@ -175,4 +177,4 @@ def get_car(logcan, sendcan, has_relay=False):
   car_params.carFw = car_fw
   car_params.fingerprintSource = source
 
-  return CarInterface(car_params, CarController, CarState), car_params
+  return CarInterface(car_params, CarController, CarState), car_params, candidate
