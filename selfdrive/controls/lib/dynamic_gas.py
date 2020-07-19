@@ -18,8 +18,9 @@ class DynamicGas:
     self.blinker_status = False
     self.gas_pressed = False
 
-  def update(self, v_ego, extra_params):
-    self.handle_passable(extra_params)
+  def update(self, CS, extra_params):
+    v_ego = CS.vEgo
+    self.handle_passable(CS, extra_params)
 
     if not self.supported_car:  # disable dynamic gas if car not supported
       return float(interp(v_ego, self.CP.gasMaxBP, self.CP.gasMaxV))
@@ -93,8 +94,7 @@ class DynamicGas:
 
     self.gasMaxBP, self.gasMaxV = x, y
 
-  def handle_passable(self, passable):
-    CS = passable['CS']
+  def handle_passable(self, CS, passable):
     self.blinker_status = CS.leftBlinker or CS.rightBlinker
     self.gas_pressed = CS.gasPressed
     self.lead_data['v_rel'] = passable['lead_one'].vRel

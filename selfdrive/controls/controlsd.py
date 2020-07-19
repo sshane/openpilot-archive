@@ -16,7 +16,7 @@ from selfdrive.controls.lib.longcontrol import LongControl, STARTING_TARGET_SPEE
 from selfdrive.controls.lib.latcontrol_pid import LatControlPID
 from selfdrive.controls.lib.latcontrol_indi import LatControlINDI
 from selfdrive.controls.lib.latcontrol_lqr import LatControlLQR
-from selfdrive.controls.lib.events import Events, ET
+from selfdrive.controls.lib.events import Events, ET, EVENTS
 from selfdrive.controls.lib.alertmanager import AlertManager
 from selfdrive.controls.lib.vehicle_model import VehicleModel
 from selfdrive.controls.lib.planner import LON_MPC_STEP
@@ -68,7 +68,7 @@ class Controls:
     print("Waiting for CAN messages...")
     messaging.get_one_can(self.can_sock)
 
-    self.CI, self.CP = get_car(self.can_sock, self.pm.sock['sendcan'], has_relay)
+    self.CI, self.CP, candidate = get_car(self.can_sock, self.pm.sock['sendcan'], has_relay)
 
     # read params
     params = Params()
@@ -102,7 +102,7 @@ class Controls:
     self.AM = AlertManager()
     self.events = Events()
 
-    self.LoC = LongControl(self.CP, self.CI.compute_gb)
+    self.LoC = LongControl(self.CP, self.CI.compute_gb, candidate)
     self.VM = VehicleModel(self.CP)
 
     if self.CP.lateralTuning.which() == 'pid':
@@ -249,6 +249,7 @@ class Controls:
     CS = self.CI.update(self.CC, can_strs)
 
     self.sm.update(0)
+    self.sm_smiskol.update(0)
 
     # Check for CAN timeout
     if not can_strs:
@@ -273,37 +274,39 @@ class Controls:
 
   def add_stock_additions_alerts(self, CS):
     frame = self.sm.frame
-    can_show_alerts = True  # alert priority is defined by code location, keeping is highest, then lane speed alert, then auto-df alert
+    # alert priority is defined by code location, keeping is highest, then lane speed alert, then auto-df alert
     if self.sm_smiskol['dynamicCameraOffset'].keepingLeft:
-      can_show_alerts = False
-      self.AM.add(frame, 'laneSpeedKeeping', self.enabled, extra_text_1='LEFT', extra_text_2='Oncoming traffic in right lane')
+      self.AM.add(frame, EVENTS['laneSpeedKeeping'], self.enabled, extra_text_1='LEFT', extra_text_2='Oncoming traffic in right lane')
+      return
     elif self.sm_smiskol['dynamicCameraOffset'].keepingRight:
-      can_show_alerts = False
-      self.AM.add(frame, 'laneSpeedKeeping', self.enabled, extra_text_1='RIGHT', extra_text_2='Oncoming traffic in left lane')
+      self.AM.add(frame, EVENTS['laneSpeedKeeping'], self.enabled, extra_text_1='RIGHT', extra_text_2='Oncoming traffic in left lane')
+      return
 
     ls_state = self.sm_smiskol['laneSpeed'].state
     if ls_state != '':
-      self.AM.add(frame, 'lsButtonAlert', self.enabled, extra_text_1=ls_state)
+      self.AM.add(frame, EVENTS['lsButtonAlert'], self.enabled, extra_text_1=ls_state)
+      return
 
     faster_lane = self.sm_smiskol['laneSpeed'].fastestLane
     if faster_lane in ['left', 'right']:
       ls_alert = 'laneSpeedAlert'
       if not self.sm_smiskol['laneSpeed'].new:
         ls_alert += 'Silent'
-      if can_show_alerts:
-        self.AM.add(frame, ls_alert, self.enabled, extra_text_1='{} lane faster'.format(faster_lane).upper(), extra_text_2='Change lanes to faster {} lane'.format(faster_lane))
-        can_show_alerts = False
+      self.AM.add(frame, EVENTS[ls_alert], self.enabled, extra_text_1='{} lane faster'.format(faster_lane).upper(), extra_text_2='Change lanes to faster {} lane'.format(faster_lane))
+      return
 
     df_out = self.df_manager.update()
     if df_out.changed:
       df_alert = 'dfButtonAlert'
       if df_out.is_auto and df_out.last_is_auto:
         # only show auto alert if engaged, not hiding auto, and time since lane speed alert not showing
-        if CS.cruiseState.enabled and not self.hide_auto_df_alerts and can_show_alerts:
+        if CS.cruiseState.enabled and not self.hide_auto_df_alerts:
           df_alert += 'Silent'
-          self.AM.add(frame, df_alert, self.enabled, extra_text_1=df_out.model_profile_text + ' (auto)')
+          self.AM.add(frame, EVENTS[df_alert], self.enabled, extra_text_1=df_out.model_profile_text + ' (auto)')
+          return
       else:
-        self.AM.add(frame, df_alert, self.enabled, extra_text_1=df_out.user_profile_text, extra_text_2='Dynamic follow: {} profile active'.format(df_out.user_profile_text))
+        self.AM.add(frame, EVENTS[df_alert], self.enabled, extra_text_1=df_out.user_profile_text, extra_text_2='Dynamic follow: {} profile active'.format(df_out.user_profile_text))
+        return
 
   def state_transition(self, CS):
     """Compute conditional state transitions and execute actions on state transitions"""
@@ -397,7 +400,7 @@ class Controls:
 
     if not self.active:
       self.LaC.reset()
-      self.LoC.reset(v_pid=CS.vEgo)
+      self.LoC.reset(v_pid=plan.vTargetFuture)
 
     plan_age = DT_CTRL * (self.sm.frame - self.sm.rcv_frame['plan'])
     # no greater than dt mpc + dt, to prevent too high extraps
@@ -406,8 +409,10 @@ class Controls:
     a_acc_sol = plan.aStart + (dt / LON_MPC_STEP) * (plan.aTarget - plan.aStart)
     v_acc_sol = plan.vStart + dt * (a_acc_sol + plan.aStart) / 2.0
 
+    extras_loc = {'lead_one': self.sm_smiskol['radarState'].leadOne, 'mpc_TR': self.sm_smiskol['dynamicFollowData'].mpcTR,
+                  'live_tracks': self.sm_smiskol['liveTracks'], 'has_lead': plan.hasLead}
     # Gas/Brake PID loop
-    actuators.gas, actuators.brake = self.LoC.update(self.active, CS, v_acc_sol, plan.vTargetFuture, a_acc_sol, self.CP)
+    actuators.gas, actuators.brake = self.LoC.update(self.active, CS, v_acc_sol, plan.vTargetFuture, a_acc_sol, self.CP, extras_loc)
     # Steering PID loop and lateral MPC
     actuators.steer, actuators.steerAngle, lac_log = self.LaC.update(self.active, CS, self.CP, path_plan)
 
@@ -467,7 +472,7 @@ class Controls:
     if len(meta.desirePrediction) and ldw_allowed:
       l_lane_change_prob = meta.desirePrediction[Desire.laneChangeLeft - 1]
       r_lane_change_prob = meta.desirePrediction[Desire.laneChangeRight - 1]
-      CAMERA_OFFSET = 0.06
+      CAMERA_OFFSET = self.op_params.get('camera_offset', 0.06)
       l_lane_close = left_lane_visible and (self.sm['pathPlan'].lPoly[3] < (1.08 - CAMERA_OFFSET))
       r_lane_close = right_lane_visible and (self.sm['pathPlan'].rPoly[3] > -(1.08 + CAMERA_OFFSET))
 

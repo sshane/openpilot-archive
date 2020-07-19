@@ -92,7 +92,7 @@ class LongControl():
     brake_max = interp(CS.vEgo, CP.brakeMaxBP, CP.brakeMaxV)
 
     if self.enable_dg:
-      gas_max = self.dynamic_gas.update(CS.vEgo, extras)
+      gas_max = self.dynamic_gas.update(CS, extras)
 
     # Update state machine
     output_gb = self.last_output_gb
@@ -102,7 +102,7 @@ class LongControl():
 
     v_ego_pid = max(CS.vEgo, MIN_CAN_SPEED)  # Without this we get jumps, CAN bus reports 0 when speed < 0.3
 
-    if self.long_control_state == LongCtrlState.off or extras['CS'].gasPressed:
+    if self.long_control_state == LongCtrlState.off or CS.gasPressed:
       self.v_pid = v_ego_pid
       self.pid.reset()
       output_gb = 0.
