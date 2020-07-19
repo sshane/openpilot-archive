@@ -124,6 +124,9 @@ typedef struct UIScene {
   // Used to show gps planner status
   bool gps_planner_active;
 
+  int dfButtonStatus;
+  int lsButtonStatus;
+
   cereal::HealthData::HwType hwType;
   int satelliteCount;
   uint8_t athenaStatus;

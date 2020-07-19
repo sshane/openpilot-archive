@@ -88,6 +88,60 @@ static void update_offroad_layout_state(UIState *s) {
 #endif
 }
 
+static void send_ls(UIState *s, int status) {
+  capnp::MallocMessageBuilder msg;
+  auto event = msg.initRoot<cereal::Event>();
+  event.setLogMonoTime(nanos_since_boot());
+  auto lsStatus = event.initLaneSpeedButton();
+  lsStatus.setStatus(status);
+  s->pm->send("laneSpeedButton", msg);
+}
+
+static bool handle_ls_touch(UIState *s, int touch_x, int touch_y) {
+  //lsButton manager
+  if (s->awake && s->vision_connected && s->status != STATUS_STOPPED) {
+    int padding = 40;
+    int btn_x_1 = 1660 - 200;
+    int btn_x_2 = 1660 - 50;
+    if ((btn_x_1 - padding <= touch_x) && (touch_x <= btn_x_2 + padding) && (855 - padding <= touch_y)) {
+      s->scene.uilayout_sidebarcollapsed = true;  // collapse sidebar when tapping ls button
+      s->scene.lsButtonStatus++;
+      if (s->scene.lsButtonStatus > 2) {
+        s->scene.lsButtonStatus = 0;
+      }
+      send_ls(s, s->scene.lsButtonStatus);
+      return true;
+    }
+  }
+  return false;
+}
+
+static void send_df(UIState *s, int status) {
+  capnp::MallocMessageBuilder msg;
+  auto event = msg.initRoot<cereal::Event>();
+  event.setLogMonoTime(nanos_since_boot());
+  auto dfStatus = event.initDynamicFollowButton();
+  dfStatus.setStatus(status);
+  s->pm->send("dynamicFollowButton", msg);
+}
+
+static bool handle_df_touch(UIState *s, int touch_x, int touch_y) {
+  //dfButton manager
+  if (s->awake && s->vision_connected && s->status != STATUS_STOPPED) {
+    int padding = 40;
+    if ((1660 - padding <= touch_x) && (855 - padding <= touch_y)) {
+      s->scene.uilayout_sidebarcollapsed = true;  // collapse sidebar when tapping df button
+      s->scene.dfButtonStatus++;
+      if (s->scene.dfButtonStatus > 3) {
+        s->scene.dfButtonStatus = 0;
+      }
+      send_df(s, s->scene.dfButtonStatus);
+      return true;
+    }
+  }
+  return false;
+}
+
 static void handle_sidebar_touch(UIState *s, int touch_x, int touch_y) {
   if (!s->scene.uilayout_sidebarcollapsed && touch_x <= sbr_w) {
     if (touch_x >= settings_btn_x && touch_x < (settings_btn_x + settings_btn_w)
@@ -168,12 +222,12 @@ static void ui_init(UIState *s) {
 
   pthread_mutex_init(&s->lock, NULL);
   s->sm = new SubMaster({"model", "controlsState", "uiLayoutState", "liveCalibration", "radarState", "thermal",
-                         "health", "ubloxGnss", "driverState", "dMonitoringState", "dynamicFollowButton", "laneSpeedButton"
+                         "health", "ubloxGnss", "driverState", "dMonitoringState"
 #ifdef SHOW_SPEEDLIMIT
                                     , "liveMapData"
 #endif
   });
-  s->pm = new PubMaster({"offroadLayout"});
+  s->pm = new PubMaster({"offroadLayout", "laneSpeedButton", "dynamicFollowButton"});
 
   s->ipc_fd = -1;
   s->scene.satelliteCount = -1;
@@ -214,6 +268,10 @@ static void ui_init_vision(UIState *s, const VisionStreamBufs back_bufs,
   s->scene.front_box_height = ui_info.front_box_height;
   s->scene.world_objects_visible = false;  // Invisible until we receive a calibration message.
   s->scene.gps_planner_active = false;
+
+  s->scene.dfButtonStatus = 0;
+  s->scene.lsButtonStatus = 0;
+
 
   s->rgb_width = back_bufs.width;
   s->rgb_height = back_bufs.height;
@@ -778,7 +836,10 @@ int main(int argc, char* argv[]) {
     if (touched == 1) {
       set_awake(s, true);
       handle_sidebar_touch(s, touch_x, touch_y);
-      handle_vision_touch(s, touch_x, touch_y);
+
+      if (!handle_df_touch(s, touch_x, touch_y) && !handle_ls_touch(s, touch_x, touch_y)) {  // disables sidebar from popping out when tapping df or ls button
+        handle_vision_touch(s, touch_x, touch_y);
+      }
     }
 
     if (!s->started) {
