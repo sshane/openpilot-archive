@@ -38,10 +38,6 @@ class opParams:
     """
 
     self.default_params = {'camera_offset': {'default': 0.06, 'allowed_types': [float, int], 'description': 'Your camera offset to use in lane_planner.py', 'live': True},
-                           'lane_hug_direction': {'default': None, 'allowed_types': [type(None), str], 'description': "(None, 'left', 'right'): Direction of your lane hugging, if present. None will disable this modification"},
-                           'lane_hug_angle_offset': {'default': 0.0, 'allowed_types': [float, int], 'description': ('This is the angle your wheel reads when driving straight at highway speeds.\n'
-                                                                                                                    'Replaces both offsets from the calibration learner to help fix lane hugging.\n'
-                                                                                                                    'Enter absolute value here, direction is determined by parameter \'lane_hug_direction\''), 'live': True},
                            'dynamic_follow': {'default': 'auto', 'allowed_types': [str], 'description': "Can be: ('traffic', 'relaxed', 'roadtrip'): Left to right increases in following distance.\n"
                                                                                                         "All profiles support dynamic follow so you'll get your preferred distance while\n"
                                                                                                         "retaining the smoothness and safety of dynamic follow!"},
@@ -74,7 +70,7 @@ class opParams:
     self.last_read_time = sec_since_boot()
     self.read_frequency = 2.5  # max frequency to read with self.get(...) (sec)
     self.force_update = False  # replaces values with default params if True, not just add add missing key/value pairs
-    self.to_delete = ['reset_integral', 'dyn_camera_offset_i', 'dyn_camera_offset_p']  # a list of params you want to delete (unused)
+    self.to_delete = ['reset_integral', 'dyn_camera_offset_i', 'dyn_camera_offset_p', 'lane_hug_direction', 'lane_hug_angle_offset']  # a list of params you want to delete (unused)
     self.run_init()  # restores, reads, and updates params
 
   def run_init(self):  # does first time initializing of default params
