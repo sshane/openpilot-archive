@@ -59,10 +59,11 @@ try:
     pass
 
   if (origin is not None) and (branch is not None):
+    origin = origin.lower()
     comma_remote = origin.startswith('git@github.com:commaai') or origin.startswith('https://github.com/commaai')
     smiskol_remote = origin.startswith('git@github.com:shanesmiskol') or origin.startswith('https://github.com/shanesmiskol')
-    tested_branch = branch.lower() in ['devel', 'release2-staging', 'dashcam-staging', 'release2', 'dashcam',
-                                       'stock_additions', 'shanesmiskol_stock_additions', 'shanesmiskol/stock_additions']
+    tested_branch = get_git_branch().lower() in ['devel', 'release2-staging', 'dashcam-staging', 'release2', 'dashcam',
+                                                 'stock_additions', 'shanesmiskol_stock_additions']
 
     dirty = not comma_remote
     dirty = dirty or ('master' in branch)
