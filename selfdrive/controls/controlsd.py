@@ -57,6 +57,10 @@ class Controls:
                                      'dMonitoringState', 'plan', 'pathPlan', 'liveLocationKalman'])
     self.sm_smiskol = messaging.SubMaster(['radarState', 'dynamicFollowData', 'liveTracks', 'dynamicFollowButton', 'laneSpeed', 'dynamicCameraOffset'])
 
+    self.op_params = opParams()
+    self.df_manager = dfManager(self.op_params)
+    self.hide_auto_df_alerts = self.op_params.get('hide_auto_df_alerts', False) 
+
     self.can_sock = can_sock
     if can_sock is None:
       can_timeout = None if os.environ.get('NO_CAN_TIMEOUT', False) else 100
@@ -150,10 +154,6 @@ class Controls:
     # controlsd is driven by can recv, expected at 100Hz
     self.rk = Ratekeeper(100, print_delay_threshold=None)
     self.prof = Profiler(False)  # off by default
-
-    self.op_params = opParams()
-    self.df_manager = dfManager(self.op_params)
-    self.hide_auto_df_alerts = self.op_params.get('hide_auto_df_alerts', False)
 
   def update_events(self, CS):
     """Compute carEvents from carState"""
