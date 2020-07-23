@@ -50,7 +50,7 @@ I've trained a custom model with Keras that takes in the past 35 seconds of your
 
 It's only been trained on about an hour of data, so it's not perfect yet, but it's great for users who just want to set it and forget it. **To enable the `auto` profile, simply tap the profile changing button for dynamic follow until it reaches the `auto` profile!**
 
-If you're annoyed by the silent alerts that show when the model has changed the profile automatically, just use [opEdit](#Customize-this-fork-opEdit) and set `hide_auto_df_alerts` to `False`. Auto profile and model will remain functional but will not show alerts.
+If you're annoyed by the silent alerts that show when the model has changed the profile automatically, just use [opEdit](#Customize-this-fork-opEdit) and set `hide_auto_df_alerts` to `True`. Auto profile and model will remain functional but will not show alerts.
 
 Resources:
 - [The auto-df repo.](https://github.com/ShaneSmiskol/auto-df)
@@ -102,15 +102,7 @@ cd /data/openpilot
 python op_edit.py  # or ./op_edit.py
 ```
 
-Features:
-- You can misspell parameter names and opEdit should be able to figure out which parameter you want. Ex. `cmra off` would be parsed as: `camera_offset`
-  - You can also still enter the corresponding parameter index while choosing parameters to edit
-- Type `a` to add a parameter, `d` to delete a parameter, or `l` to toggle live tuning only mode
-- Shows a detailed description for each parameter once you choose it
-- Parameter value type restriction. Ensures a user cannot save an unsupported value type for any parameters, breaking the fork
-- Remembers which mode you were last in and initializes opEdit with that mode (live tuning or not)
-- Case insensitive boolean and NoneType entrance. Type `faLsE` to save `False (bool)`, etc
-- **Parameters marked with `(live!)` will have updates take affect within 3 seconds while driving! All other params will require a reboot of your EON/C2 to take effect.**
+[To see what features opEdit has, click me!](/OPEDIT_FEATURES.md)
 
 Here are the main parameters you can change with this fork:
 - **Tuning params**:
@@ -130,6 +122,8 @@ Here are the main parameters you can change with this fork:
   - `hide_auto_df_alerts`: Hides the alert that shows what profile the model has chosen
   - [`dynamic_camera_offset`](#Dynamic-camera-offset-based-on-oncoming-traffic): Whether to automatically keep away from oncoming traffic. Works from 35 to ~60 mph
   - `dynamic_follow`: *Deprecated, use the on-screen button to change profiles*
+- **Experimental params**:
+  - `support_white_panda`: This allows users with the original white panda to use openpilot above 0.7.7. The high precision localizer's performance may be reduced due to a lack of GPS
 
 A full list of parameters that you can modify are [located here](common/op_params.py#L40).
 
