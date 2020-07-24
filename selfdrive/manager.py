@@ -20,7 +20,7 @@ WEBCAM = os.getenv("WEBCAM") is not None
 sys.path.append(os.path.join(BASEDIR, "pyextra"))
 os.environ['BASEDIR'] = BASEDIR
 
-TOTAL_SCONS_NODES = 1140
+TOTAL_SCONS_NODES = 1020
 prebuilt = os.path.exists(os.path.join(BASEDIR, 'prebuilt'))
 
 op_params = opParams()
@@ -98,7 +98,7 @@ if not prebuilt:
 
     nproc = os.cpu_count()
     j_flag = "" if nproc is None else "-j%d" % (nproc - 1)
-    scons = subprocess.Popen(["scons", j_flag], cwd=BASEDIR, env=env, stderr=subprocess.PIPE)
+    scons = subprocess.Popen(["scons", "-j8"], cwd=BASEDIR, env=env, stderr=subprocess.PIPE)
 
     compile_output = []
 
