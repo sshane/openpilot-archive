@@ -72,7 +72,7 @@ class DynamicCameraOffset:
     self._hug_right_ratio = 0.625
     self._center_ratio = 0.5
 
-    self._keep_offset_for = 2.5  # seconds after losing oncoming lane
+    self._keep_offset_for = self.op_params.get('dynamic_camera_offset_time', 2.5)  # seconds after losing oncoming lane
     self._ramp_angles = [0, 12.5, 25]
     self._ramp_angle_mods = [1, 0.85, 0.1]  # multiply offset by this based on angle
 
