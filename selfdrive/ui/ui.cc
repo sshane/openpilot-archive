@@ -97,14 +97,31 @@ static void send_ls(UIState *s, int status) {
   s->pm->send("laneSpeedButton", msg);
 }
 
+static void send_df(UIState *s, int status) {
+  capnp::MallocMessageBuilder msg;
+  auto event = msg.initRoot<cereal::Event>();
+  event.setLogMonoTime(nanos_since_boot());
+  auto dfStatus = event.initDynamicFollowButton();
+  dfStatus.setStatus(status);
+  s->pm->send("dynamicFollowButton", msg);
+}
+
+static void send_ml(UIState *s, bool enabled) {
+  capnp::MallocMessageBuilder msg;
+  auto event = msg.initRoot<cereal::Event>();
+  event.setLogMonoTime(nanos_since_boot());
+  auto mlStatus = event.initModelLongButton();
+  mlStatus.setEnabled(enabled);
+  s->pm->send("modelLongButton", msg);
+}
+
 static bool handle_ls_touch(UIState *s, int touch_x, int touch_y) {
   //lsButton manager
-  if (s->awake && s->vision_connected && s->status != STATUS_STOPPED) {
+  if ((s->awake && s->vision_connected && s->status != STATUS_STOPPED) || s->ui_debug) {
     int padding = 40;
     int btn_x_1 = 1660 - 200;
     int btn_x_2 = 1660 - 50;
     if ((btn_x_1 - padding <= touch_x) && (touch_x <= btn_x_2 + padding) && (855 - padding <= touch_y)) {
-      s->scene.uilayout_sidebarcollapsed = true;  // collapse sidebar when tapping ls button
       s->scene.lsButtonStatus++;
       if (s->scene.lsButtonStatus > 2) {
         s->scene.lsButtonStatus = 0;
@@ -116,21 +133,11 @@ static bool handle_ls_touch(UIState *s, int touch_x, int touch_y) {
   return false;
 }
 
-static void send_df(UIState *s, int status) {
-  capnp::MallocMessageBuilder msg;
-  auto event = msg.initRoot<cereal::Event>();
-  event.setLogMonoTime(nanos_since_boot());
-  auto dfStatus = event.initDynamicFollowButton();
-  dfStatus.setStatus(status);
-  s->pm->send("dynamicFollowButton", msg);
-}
-
 static bool handle_df_touch(UIState *s, int touch_x, int touch_y) {
   //dfButton manager
-  if (s->awake && s->vision_connected && s->status != STATUS_STOPPED) {
+  if ((s->awake && s->vision_connected && s->status != STATUS_STOPPED) || s->ui_debug) {
     int padding = 40;
     if ((1660 - padding <= touch_x) && (855 - padding <= touch_y)) {
-      s->scene.uilayout_sidebarcollapsed = true;  // collapse sidebar when tapping df button
       s->scene.dfButtonStatus++;
       if (s->scene.dfButtonStatus > 3) {
         s->scene.dfButtonStatus = 0;
@@ -140,6 +147,23 @@ static bool handle_df_touch(UIState *s, int touch_x, int touch_y) {
     }
   }
   return false;
+}
+
+static bool handle_ml_touch(UIState *s, int touch_x, int touch_y) {
+  //mlButton manager
+  if ((s->awake && s->vision_connected && s->status != STATUS_STOPPED) || s->ui_debug) {
+    int padding = 40;
+    int btn_w = 500;
+    int btn_h = 138;
+    int xs[2] = {1920 / 2 - btn_w / 2, 1920 / 2 + btn_w / 2};
+    int y_top = 915 - btn_h / 2;
+    if (xs[0] <= touch_x + padding && touch_x - padding <= xs[1] && y_top - padding <= touch_y) {
+      s->scene.mlButtonEnabled = !s->scene.mlButtonEnabled;
+      send_ml(s, s->scene.mlButtonEnabled);
+      return true;
+    }
+  }
+    return false;
 }
 
 static void handle_sidebar_touch(UIState *s, int touch_x, int touch_y) {
@@ -227,12 +251,13 @@ static void ui_init(UIState *s) {
                                     , "liveMapData"
 #endif
   });
-  s->pm = new PubMaster({"offroadLayout", "laneSpeedButton", "dynamicFollowButton"});
+  s->pm = new PubMaster({"offroadLayout", "laneSpeedButton", "dynamicFollowButton", "modelLongButton"});
 
   s->ipc_fd = -1;
   s->scene.satelliteCount = -1;
   s->started = false;
   s->vision_seen = false;
+  s->ui_debug = false;  // change to true while debugging
 
   // init display
   s->fb = framebuffer_init("ui", 0, true, &s->fb_w, &s->fb_h);
@@ -271,7 +296,7 @@ static void ui_init_vision(UIState *s, const VisionStreamBufs back_bufs,
 
   s->scene.dfButtonStatus = 0;
   s->scene.lsButtonStatus = 0;
-
+  s->scene.mlButtonEnabled = false;
 
   s->rgb_width = back_bufs.width;
   s->rgb_height = back_bufs.height;
@@ -834,11 +859,16 @@ int main(int argc, char* argv[]) {
     int touch_x = -1, touch_y = -1;
     int touched = touch_poll(&touch, &touch_x, &touch_y, 0);
     if (touched == 1) {
+      if (s->ui_debug) {
+        printf("touched x: %d, y: %d\n", touch_x, touch_y);
+      }
       set_awake(s, true);
       handle_sidebar_touch(s, touch_x, touch_y);
 
-      if (!handle_df_touch(s, touch_x, touch_y) && !handle_ls_touch(s, touch_x, touch_y)) {  // disables sidebar from popping out when tapping df or ls button
+      if (!handle_df_touch(s, touch_x, touch_y) && !handle_ls_touch(s, touch_x, touch_y) && !handle_ml_touch(s, touch_x, touch_y)) {  // disables sidebar from popping out when tapping df or ls button
         handle_vision_touch(s, touch_x, touch_y);
+      } else {
+        s->scene.uilayout_sidebarcollapsed = true;  // collapse sidebar when tapping any SA button
       }
     }
 

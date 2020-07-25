@@ -126,6 +126,7 @@ typedef struct UIScene {
 
   int dfButtonStatus;
   int lsButtonStatus;
+  bool mlButtonEnabled;
 
   cereal::HealthData::HwType hwType;
   int satelliteCount;
@@ -238,6 +239,7 @@ typedef struct UIState {
   bool started;
   bool preview_started;
   bool vision_seen;
+  bool ui_debug;
 
   std::atomic<float> light_sensor;
 

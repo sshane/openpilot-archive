@@ -55,11 +55,13 @@ class Controls:
     if self.sm is None:
       self.sm = messaging.SubMaster(['thermal', 'health', 'frame', 'model', 'liveCalibration',
                                      'dMonitoringState', 'plan', 'pathPlan', 'liveLocationKalman'])
-    self.sm_smiskol = messaging.SubMaster(['radarState', 'dynamicFollowData', 'liveTracks', 'dynamicFollowButton', 'laneSpeed', 'dynamicCameraOffset'])
+    self.sm_smiskol = messaging.SubMaster(['radarState', 'dynamicFollowData', 'liveTracks', 'dynamicFollowButton',
+                                           'laneSpeed', 'dynamicCameraOffset', 'modelLongButton'])
 
     self.op_params = opParams()
     self.df_manager = dfManager(self.op_params)
-    self.hide_auto_df_alerts = self.op_params.get('hide_auto_df_alerts', False) 
+    self.hide_auto_df_alerts = self.op_params.get('hide_auto_df_alerts', False)
+    self.last_model_long = False
 
     self.can_sock = can_sock
     if can_sock is None:
@@ -276,16 +278,21 @@ class Controls:
   def add_stock_additions_alerts(self, CS):
     frame = self.sm.frame
     # alert priority is defined by code location, keeping is highest, then lane speed alert, then auto-df alert
+    if self.sm_smiskol['modelLongButton'].enabled != self.last_model_long:
+      extra_text_1 = 'disabled!' if self.last_model_long else 'enabled!'
+      self.AM.add_custom(frame, 'modelLongAlert', ET.WARNING, self.enabled, extra_text_1=extra_text_1)
+      return
+
     if self.sm_smiskol['dynamicCameraOffset'].keepingLeft:
-      self.AM.add_custom(frame, 'laneSpeedKeeping', self.enabled, extra_text_1='LEFT', extra_text_2='Oncoming traffic in right lane')
+      self.AM.add_custom(frame, 'laneSpeedKeeping', ET.WARNING, self.enabled, extra_text_1='LEFT', extra_text_2='Oncoming traffic in right lane')
       return
     elif self.sm_smiskol['dynamicCameraOffset'].keepingRight:
-      self.AM.add_custom(frame, 'laneSpeedKeeping', self.enabled, extra_text_1='RIGHT', extra_text_2='Oncoming traffic in left lane')
+      self.AM.add_custom(frame, 'laneSpeedKeeping', ET.WARNING, self.enabled, extra_text_1='RIGHT', extra_text_2='Oncoming traffic in left lane')
       return
 
     ls_state = self.sm_smiskol['laneSpeed'].state
     if ls_state != '':
-      self.AM.add_custom(frame, 'lsButtonAlert', self.enabled, extra_text_1=ls_state)
+      self.AM.add_custom(frame, 'lsButtonAlert', ET.WARNING, self.enabled, extra_text_1=ls_state)
       return
 
     faster_lane = self.sm_smiskol['laneSpeed'].fastestLane
@@ -293,7 +300,7 @@ class Controls:
       ls_alert = 'laneSpeedAlert'
       if not self.sm_smiskol['laneSpeed'].new:
         ls_alert += 'Silent'
-      self.AM.add_custom(frame, ls_alert, self.enabled, extra_text_1='{} lane faster'.format(faster_lane).upper(), extra_text_2='Change lanes to faster {} lane'.format(faster_lane))
+      self.AM.add_custom(frame, ls_alert, ET.WARNING, self.enabled, extra_text_1='{} lane faster'.format(faster_lane).upper(), extra_text_2='Change lanes to faster {} lane'.format(faster_lane))
       return
 
     df_out = self.df_manager.update()
@@ -303,10 +310,10 @@ class Controls:
         # only show auto alert if engaged, not hiding auto, and time since lane speed alert not showing
         if CS.cruiseState.enabled and not self.hide_auto_df_alerts:
           df_alert += 'Silent'
-          self.AM.add_custom(frame, df_alert, self.enabled, extra_text_1=df_out.model_profile_text + ' (auto)')
+          self.AM.add_custom(frame, df_alert, ET.WARNING, self.enabled, extra_text_1=df_out.model_profile_text + ' (auto)')
           return
       else:
-        self.AM.add_custom(frame, df_alert, self.enabled, extra_text_1=df_out.user_profile_text, extra_text_2='Dynamic follow: {} profile active'.format(df_out.user_profile_text))
+        self.AM.add_custom(frame, df_alert, ET.WARNING, self.enabled, extra_text_1=df_out.user_profile_text, extra_text_2='Dynamic follow: {} profile active'.format(df_out.user_profile_text))
         return
 
   def state_transition(self, CS):
@@ -486,6 +493,7 @@ class Controls:
     alerts = self.events.create_alerts(self.current_alert_types, [self.CP, self.sm, self.is_metric])
     self.AM.add_many(self.sm.frame, alerts, self.enabled)
     self.add_stock_additions_alerts(CS)
+    self.last_model_long = self.sm_smiskol['modelLongButton'].enabled
     self.AM.process_alerts(self.sm.frame)
     CC.hudControl.visualAlert = self.AM.visual_alert
 
