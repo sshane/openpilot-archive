@@ -258,7 +258,7 @@ static void ui_init(UIState *s) {
   s->scene.satelliteCount = -1;
   s->started = false;
   s->vision_seen = false;
-  s->ui_debug = false;  // change to true while debugging
+  s->ui_debug = true;  // change to true while debugging
 
   // init display
   s->fb = framebuffer_init("ui", 0, true, &s->fb_w, &s->fb_h);
@@ -868,9 +868,7 @@ int main(int argc, char* argv[]) {
 
       if (!handle_SA_touched(s, touch_x, touch_y)) {  // if SA button not touched
         handle_vision_touch(s, touch_x, touch_y);
-        printf("SA button NOT touched!\n");
       } else {
-        printf("SA button TOUCHED!\n");
         s->scene.uilayout_sidebarcollapsed = true;  // collapse sidebar when tapping any SA button
       }
     }
