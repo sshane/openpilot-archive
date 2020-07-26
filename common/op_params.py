@@ -65,6 +65,7 @@ class opParams:
                            'dynamic_camera_offset_time': {'default': 2.5, 'allowed_types': [int, float], 'description': 'How long to keep away from oncoming traffic in seconds after losing lead'},
                            'support_white_panda': {'default': False, 'allowed_types': [bool], 'description': 'Enable this to allow engagement with the deprecated white panda.\n'
                                                                                                              'localizer might not work correctly'},
+                           'prius_use_lqr': {'default': False, 'allowed_types': [bool], 'description': 'If you have a newer Prius with a good angle sensor, you can try enabling this to use LQR'},
 
 
                            'op_edit_live_mode': {'default': False, 'allowed_types': [bool], 'description': 'This parameter controls which mode opEdit starts in. It should be hidden from the user with the hide key', 'hide': True}}
