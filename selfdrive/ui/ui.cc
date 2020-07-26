@@ -117,53 +117,54 @@ static void send_ml(UIState *s, bool enabled) {
 
 static bool handle_ls_touch(UIState *s, int touch_x, int touch_y) {
   //lsButton manager
-  if ((s->awake && s->vision_connected && s->status != STATUS_STOPPED) || s->ui_debug) {
-    int padding = 40;
-    int btn_x_1 = 1660 - 200;
-    int btn_x_2 = 1660 - 50;
-    if ((btn_x_1 - padding <= touch_x) && (touch_x <= btn_x_2 + padding) && (855 - padding <= touch_y)) {
-      s->scene.lsButtonStatus++;
-      if (s->scene.lsButtonStatus > 2) {
-        s->scene.lsButtonStatus = 0;
-      }
-      send_ls(s, s->scene.lsButtonStatus);
-      return true;
-    }
+  int padding = 40;
+  int btn_x_1 = 1660 - 200;
+  int btn_x_2 = 1660 - 50;
+  if ((btn_x_1 - padding <= touch_x) && (touch_x <= btn_x_2 + padding) && (855 - padding <= touch_y)) {
+    s->scene.lsButtonStatus++;
+    if (s->scene.lsButtonStatus > 2) { s->scene.lsButtonStatus = 0; }
+    send_ls(s, s->scene.lsButtonStatus);
+    return true;
   }
   return false;
 }
 
 static bool handle_df_touch(UIState *s, int touch_x, int touch_y) {
   //dfButton manager
-  if ((s->awake && s->vision_connected && s->status != STATUS_STOPPED) || s->ui_debug) {
-    int padding = 40;
-    if ((1660 - padding <= touch_x) && (855 - padding <= touch_y)) {
-      s->scene.dfButtonStatus++;
-      if (s->scene.dfButtonStatus > 3) {
-        s->scene.dfButtonStatus = 0;
-      }
-      send_df(s, s->scene.dfButtonStatus);
-      return true;
-    }
+  int padding = 40;
+  if ((1660 - padding <= touch_x) && (855 - padding <= touch_y)) {
+    s->scene.dfButtonStatus++;
+    if (s->scene.dfButtonStatus > 3) { s->scene.dfButtonStatus = 0; }
+    send_df(s, s->scene.dfButtonStatus);
+    return true;
   }
   return false;
 }
 
 static bool handle_ml_touch(UIState *s, int touch_x, int touch_y) {
   //mlButton manager
-  if ((s->awake && s->vision_connected && s->status != STATUS_STOPPED) || s->ui_debug) {
-    int padding = 40;
-    int btn_w = 500;
-    int btn_h = 138;
-    int xs[2] = {1920 / 2 - btn_w / 2, 1920 / 2 + btn_w / 2};
-    int y_top = 915 - btn_h / 2;
-    if (xs[0] <= touch_x + padding && touch_x - padding <= xs[1] && y_top - padding <= touch_y) {
-      s->scene.mlButtonEnabled = !s->scene.mlButtonEnabled;
-      send_ml(s, s->scene.mlButtonEnabled);
-      return true;
+  int padding = 40;
+  int btn_w = 500;
+  int btn_h = 138;
+  int xs[2] = {1920 / 2 - btn_w / 2, 1920 / 2 + btn_w / 2};
+  int y_top = 915 - btn_h / 2;
+  if (xs[0] <= touch_x + padding && touch_x - padding <= xs[1] && y_top - padding <= touch_y) {
+    s->scene.mlButtonEnabled = !s->scene.mlButtonEnabled;
+    send_ml(s, s->scene.mlButtonEnabled);
+    return true;
+  }
+  return false;
+}
+
+static bool handle_SA_touched(UIState *s, int touch_x, int touch_y) {
+  if (s->active_app != cereal::UiLayoutState::App::SETTINGS) {  // if not settings
+    if ((s->awake && s->vision_connected && s->status != STATUS_STOPPED) || s->ui_debug) {  // if car started or debug mode
+      if (handle_df_touch(s, touch_x, touch_y)) { return true; }  // only allow one button to be pressed at a time
+      if (handle_ls_touch(s, touch_x, touch_y)) { return true; }
+      if (handle_ml_touch(s, touch_x, touch_y)) { return true; }
     }
   }
-    return false;
+  return false;
 }
 
 static void handle_sidebar_touch(UIState *s, int touch_x, int touch_y) {
@@ -865,9 +866,11 @@ int main(int argc, char* argv[]) {
       set_awake(s, true);
       handle_sidebar_touch(s, touch_x, touch_y);
 
-      if (s->active_app != cereal::UiLayoutState::App::SETTINGS && !handle_df_touch(s, touch_x, touch_y) && !handle_ls_touch(s, touch_x, touch_y) && !handle_ml_touch(s, touch_x, touch_y)) {  // disables sidebar from popping out when tapping df or ls button
+      if (!handle_SA_touched(s, touch_x, touch_y)) {  // if SA button not touched
         handle_vision_touch(s, touch_x, touch_y);
+        printf("SA button NOT touched!\n");
       } else {
+        printf("SA button TOUCHED!\n");
         s->scene.uilayout_sidebarcollapsed = true;  // collapse sidebar when tapping any SA button
       }
     }
