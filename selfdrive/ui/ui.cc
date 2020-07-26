@@ -117,7 +117,7 @@ static void send_ml(UIState *s, bool enabled) {
 
 static bool handle_ls_touch(UIState *s, int touch_x, int touch_y) {
   //lsButton manager
-  if ((s->awake && s->vision_connected && s->status != STATUS_STOPPED && s->active_app != cereal::UiLayoutState::App::SETTINGS) || s->ui_debug) {
+  if ((s->awake && s->vision_connected && s->status != STATUS_STOPPED) || s->ui_debug) {
     int padding = 40;
     int btn_x_1 = 1660 - 200;
     int btn_x_2 = 1660 - 50;
@@ -135,7 +135,7 @@ static bool handle_ls_touch(UIState *s, int touch_x, int touch_y) {
 
 static bool handle_df_touch(UIState *s, int touch_x, int touch_y) {
   //dfButton manager
-  if ((s->awake && s->vision_connected && s->status != STATUS_STOPPED && s->active_app != cereal::UiLayoutState::App::SETTINGS) || s->ui_debug) {
+  if ((s->awake && s->vision_connected && s->status != STATUS_STOPPED) || s->ui_debug) {
     int padding = 40;
     if ((1660 - padding <= touch_x) && (855 - padding <= touch_y)) {
       s->scene.dfButtonStatus++;
@@ -151,7 +151,7 @@ static bool handle_df_touch(UIState *s, int touch_x, int touch_y) {
 
 static bool handle_ml_touch(UIState *s, int touch_x, int touch_y) {
   //mlButton manager
-  if ((s->awake && s->vision_connected && s->status != STATUS_STOPPED && s->active_app != cereal::UiLayoutState::App::SETTINGS) || s->ui_debug) {
+  if ((s->awake && s->vision_connected && s->status != STATUS_STOPPED) || s->ui_debug) {
     int padding = 40;
     int btn_w = 500;
     int btn_h = 138;
@@ -865,7 +865,7 @@ int main(int argc, char* argv[]) {
       set_awake(s, true);
       handle_sidebar_touch(s, touch_x, touch_y);
 
-      if (!handle_df_touch(s, touch_x, touch_y) && !handle_ls_touch(s, touch_x, touch_y) && !handle_ml_touch(s, touch_x, touch_y)) {  // disables sidebar from popping out when tapping df or ls button
+      if (s->active_app != cereal::UiLayoutState::App::SETTINGS && !handle_df_touch(s, touch_x, touch_y) && !handle_ls_touch(s, touch_x, touch_y) && !handle_ml_touch(s, touch_x, touch_y)) {  // disables sidebar from popping out when tapping df or ls button
         handle_vision_touch(s, touch_x, touch_y);
       } else {
         s->scene.uilayout_sidebarcollapsed = true;  // collapse sidebar when tapping any SA button
