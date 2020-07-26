@@ -121,6 +121,7 @@ static bool handle_ls_touch(UIState *s, int touch_x, int touch_y) {
   int btn_x_1 = 1660 - 200;
   int btn_x_2 = 1660 - 50;
   if ((btn_x_1 - padding <= touch_x) && (touch_x <= btn_x_2 + padding) && (855 - padding <= touch_y)) {
+    printf("df button touched!");
     s->scene.lsButtonStatus++;
     if (s->scene.lsButtonStatus > 2) { s->scene.lsButtonStatus = 0; }
     send_ls(s, s->scene.lsButtonStatus);
@@ -133,6 +134,7 @@ static bool handle_df_touch(UIState *s, int touch_x, int touch_y) {
   //dfButton manager
   int padding = 40;
   if ((1660 - padding <= touch_x) && (855 - padding <= touch_y)) {
+    printf("df button touched!");
     s->scene.dfButtonStatus++;
     if (s->scene.dfButtonStatus > 3) { s->scene.dfButtonStatus = 0; }
     send_df(s, s->scene.dfButtonStatus);
@@ -149,6 +151,7 @@ static bool handle_ml_touch(UIState *s, int touch_x, int touch_y) {
   int xs[2] = {1920 / 2 - btn_w / 2, 1920 / 2 + btn_w / 2};
   int y_top = 915 - btn_h / 2;
   if (xs[0] <= touch_x + padding && touch_x - padding <= xs[1] && y_top - padding <= touch_y) {
+    printf("df button touched!");
     s->scene.mlButtonEnabled = !s->scene.mlButtonEnabled;
     send_ml(s, s->scene.mlButtonEnabled);
     return true;
