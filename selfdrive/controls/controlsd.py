@@ -150,7 +150,7 @@ class Controls:
       self.events.add(EventName.communityFeatureDisallowed, static=True)
     if self.read_only and not passive:
       self.events.add(EventName.carUnrecognized, static=True)
-    if not self.op_params.get('support_white_panda', False):
+    if not self.support_white_panda:
       if hw_type == HwType.whitePanda:
         self.events.add(EventName.whitePandaUnsupported, static=True)
 
