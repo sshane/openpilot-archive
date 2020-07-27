@@ -61,6 +61,7 @@ class Controls:
     self.op_params = opParams()
     self.df_manager = dfManager(self.op_params)
     self.hide_auto_df_alerts = self.op_params.get('hide_auto_df_alerts', False)
+    self.support_white_panda = self.op_params.get('support_white_panda', False)
     self.last_model_long = False
 
     self.can_sock = can_sock
@@ -218,7 +219,7 @@ class Controls:
     if not self.sm['liveLocationKalman'].sensorsOK and os.getenv("NOSENSOR") is None:
       if self.sm.frame > 5 / DT_CTRL:  # Give locationd some time to receive all the inputs
         self.events.add(EventName.sensorDataInvalid)
-    if not self.sm['liveLocationKalman'].gpsOK and (self.distance_traveled > 1000) and os.getenv("NOSENSOR") is None:
+    if not self.sm['liveLocationKalman'].gpsOK and (self.distance_traveled > 1000) and os.getenv("NOSENSOR") is None and not self.support_white_panda:
       # Not show in first 1 km to allow for driving out of garage. This event shows after 5 minutes
       self.events.add(EventName.noGps)
     if not self.sm['pathPlan'].paramsValid:
