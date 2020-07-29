@@ -159,7 +159,7 @@ reboot
 
 The `--depth 1` flag shallow clones the fork, it ends up being about 90 Mb so you can get the fork up and running quickly. Once you install Stock Additions, [automatic updating](#Automatic-updates) should always keep openpilot up to date with the latest from my fork!
 
-**NEW❗** Or use the [emu command](https://github.com/emu-sh/.oh-my-comma) to easy switch to this fork's default branch: `emu fork switch ShaneSmiskol`. This should get you up and running even quicker.
+**NEW❗** Or use the [emu CLI](https://github.com/emu-sh/.oh-my-comma) to easily switch to this fork's default branch: `emu fork switch ShaneSmiskol`. This should get you up and running even quicker.
 
 Branches
 -----
