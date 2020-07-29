@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <iostream>
 #include <stdlib.h>
 #include <stdbool.h>
 #include <unistd.h>
@@ -8,6 +9,8 @@
 #include <sstream>
 #include <sys/resource.h>
 #include <czmq.h>
+#include "json11.hpp"
+#include <fstream>
 #include "common/util.h"
 #include "common/timing.h"
 #include "common/swaglog.h"
@@ -16,6 +19,9 @@
 #include "common/params.h"
 #include "common/utilpp.h"
 #include "ui.hpp"
+
+std::map<std::string, int> LS_TO_IDX = {{"off", 0}, {"audible", 1}, {"silent", 2}};
+std::map<std::string, int> DF_TO_IDX = {{"traffic", 0}, {"relaxed", 1}, {"roadtrip", 2}, {"auto", 3}};
 
 static void ui_set_brightness(UIState *s, int brightness) {
   static int last_brightness = -1;
@@ -160,7 +166,7 @@ static bool handle_ml_touch(UIState *s, int touch_x, int touch_y) {
 }
 
 static bool handle_SA_touched(UIState *s, int touch_x, int touch_y) {
-  if (s->active_app != cereal::UiLayoutState::App::SETTINGS) {  // if not settings
+  if (s->active_app == cereal::UiLayoutState::App::NONE) {  // if onroad (not settings or home)
     if ((s->awake && s->vision_connected && s->status != STATUS_STOPPED) || s->ui_debug) {  // if car started or debug mode
       if (handle_df_touch(s, touch_x, touch_y)) { return true; }  // only allow one button to be pressed at a time
       if (handle_ls_touch(s, touch_x, touch_y)) { return true; }
@@ -261,7 +267,7 @@ static void ui_init(UIState *s) {
   s->scene.satelliteCount = -1;
   s->started = false;
   s->vision_seen = false;
-  s->ui_debug = true;  // change to true while debugging
+  s->ui_debug = false;  // change to true while debugging
 
   // init display
   s->fb = framebuffer_init("ui", 0, true, &s->fb_w, &s->fb_h);
@@ -298,9 +304,25 @@ static void ui_init_vision(UIState *s, const VisionStreamBufs back_bufs,
   s->scene.world_objects_visible = false;  // Invisible until we receive a calibration message.
   s->scene.gps_planner_active = false;
 
-  s->scene.dfButtonStatus = 0;
-  s->scene.lsButtonStatus = 0;
-  s->scene.mlButtonEnabled = false;
+  // stock additions todo: run opparams first (in main()?) to ensure json values exist
+  std::ifstream op_params_file("/data/op_params.json");
+  std::string op_params_content((std::istreambuf_iterator<char>(op_params_file)),
+                                (std::istreambuf_iterator<char>()));
+
+  std::string err;
+  auto json = json11::Json::parse(op_params_content, err);
+  if (!json.is_null() && err.empty()) {
+    printf("successfully parsed opParams json\n");
+    s->scene.dfButtonStatus = DF_TO_IDX[json["dynamic_follow"].string_value()];
+    s->scene.lsButtonStatus = LS_TO_IDX[json["lane_speed_alerts"].string_value()];
+//    printf("dfButtonStatus: %d\n", s->scene.dfButtonStatus);
+//    printf("lsButtonStatus: %d\n", s->scene.lsButtonStatus);
+  } else {  // error parsing json
+    printf("ERROR PARSING OPPARAMS JSON!\n");
+    s->scene.dfButtonStatus = 0;
+    s->scene.lsButtonStatus = 0;
+  }
+  s->scene.mlButtonEnabled = false;  // state isn't saved yet
 
   s->rgb_width = back_bufs.width;
   s->rgb_height = back_bufs.height;
