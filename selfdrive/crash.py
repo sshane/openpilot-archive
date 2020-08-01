@@ -41,7 +41,6 @@ else:
 
   COMMUNITY_DIR = '/data/community'
   CRASHES_DIR = '{}/crashes'.format(COMMUNITY_DIR)
-
   if not os.path.exists(COMMUNITY_DIR):
     os.mkdir(COMMUNITY_DIR)
   if not os.path.exists(CRASHES_DIR):
