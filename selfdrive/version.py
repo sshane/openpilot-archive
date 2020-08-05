@@ -66,7 +66,7 @@ try:
     tested_SA_branches += ['shanesmiskol_' + _b for _b in tested_SA_branches]
 
     tested_branches += tested_SA_branches
-    tested_branch = get_git_branch().lower() in tested_branch
+    tested_branch = get_git_branch().lower() in tested_branches
 
     dirty = not comma_remote
     dirty = dirty or ('master' in branch)
