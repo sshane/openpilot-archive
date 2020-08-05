@@ -21,6 +21,7 @@ Highlight Features
 * [**PI > PID for longcontrol**](#Long-control-uses-a-PID-loop) - fix for pedal overshoot
 * [**Customize this fork (opEdit with live tuning)**](#Customize-this-fork-opEdit)
 * [**Automatic updates**](#Automatic-updates)
+* [**Offline crash logging**](#Offline-crash-logging)
 
 Documentation
 =====
@@ -142,6 +143,10 @@ When a new update is available on GitHub for Stock Additions, your EON/C2 will p
 - your EON has been inactive or offroad for more than 5 minutes.
 
 Therefore, if your device sees an update while you're driving it will reboot approximately 5 to 10 minutes after you finish your drive, it resets the timer if you start driving again before the time is up.
+
+Offline crash logging
+-----
+If you experience a crash or exception while driving with this fork and you're not on internet for the error to be uploaded to Sentry, you should be able to check out the directory `/data/community/crashes` to see any and all logs of exceptions caught in `manager.py`. Simply `cat` the log file you wish to view. This does not catch all errors, for example scons compilation errors or Python syntax errors will not be caught, `tmux a` is usually best to view these (if openpilot didn't start).
 
 Documentation
 =====
