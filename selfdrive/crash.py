@@ -5,20 +5,10 @@ import capnp
 import threading
 import traceback
 from selfdrive.version import version, dirty
+from datetime import datetime
 
 from selfdrive.swaglog import cloudlog
 from common.android import ANDROID
-
-def save_exception(exc_text):
-  i = 0
-  log_file = '{}/{}'.format(CRASHES_DIR, datetime.now().strftime('%d-%m-%Y--%I:%M%p.log'))
-  if os.path.exists(log_file):
-    while os.path.exists(log_file + str(i)):
-      i += 1
-    log_file += str(i)
-  with open(log_file, 'w') as f:
-    f.write(exc_text)
-  print('Logged current crash to {}'.format(log_file))
 
 if os.getenv("NOLOG") or os.getenv("NOCRASH") or not ANDROID:
   def capture_exception(*args, **kwargs):
@@ -37,7 +27,6 @@ else:
   from raven.transport.http import HTTPTransport
   from selfdrive.version import origin, branch, commit
   from common.op_params import opParams
-  from datetime import datetime
 
   COMMUNITY_DIR = '/data/community'
   CRASHES_DIR = '{}/crashes'.format(COMMUNITY_DIR)
@@ -55,8 +44,13 @@ else:
   sentry_uri = 'https://1994756b5e6f41cf939a4c65de45f4f2:cefebaf3a8aa40d182609785f7189bd7@app.getsentry.com/77924'  # stock
   if 'github.com/shanesmiskol' in origin.lower():  # CHANGE TO YOUR remote and sentry key to receive errors if you fork this fork
     sentry_uri = 'https://7f66878806a948f9a8b52b0fe7781201@o237581.ingest.sentry.io/5252098'
-  client = Client(sentry_uri,
-                  install_sys_hook=False, transport=HTTPTransport, release=version, tags=error_tags)
+  client = Client(sentry_uri, install_sys_hook=False, transport=HTTPTransport, release=version, tags=error_tags)
+
+  def save_exception(exc_text):
+    log_file = '{}/{}'.format(CRASHES_DIR, datetime.now().strftime('%d-%m-%Y--%I:%M.%S-%p.log'))
+    with open(log_file, 'w') as f:
+      f.write(exc_text)
+    print('Logged current crash to {}'.format(log_file))
 
   def capture_exception(*args, **kwargs):
     save_exception(traceback.format_exc())
