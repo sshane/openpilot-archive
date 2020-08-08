@@ -14,34 +14,37 @@ FT_TO_M = 0.3048
 # version 5 due to json incompatibilities
 
 
-class CurvatureLearner:  # todo: disable when dynamic camera offset is working
+class CurvatureLearner:
   def __init__(self):
     self.curvature_file = '/data/curvature_offsets.json'
     rate = 1 / 20.  # pathplanner is 20 hz
-    self.learning_rate = 2.8e-3 * rate  # equivalent to x/12000
+    self.learning_rate = 2.5e-3 * rate  # equivalent to x/12000
     self.write_frequency = 60 * 2  # in seconds
     self.min_lr_prob = .75
     self.min_speed = 15 * CV.MPH_TO_MS
 
     self.directions = ['left', 'right']
     self.speed_bands = {'slow': 35 * CV.MPH_TO_MS, 'medium': 55 * CV.MPH_TO_MS, 'fast': float('inf')}
-    self.curvature_bands = {'center': 5, 'inner': 5, 'outer': 5, 'sharp': float('inf')}
+    self.curvature_bands = {'center': 0.131, 'inner': 0.29618, 'outer': 0.67579, 'sharp': float('inf')}
+    self.min_curvature = 0.05275
     self._load_curvature()
 
   def pick_curvature_band(self, v_ego, d_poly):
     TR = 0.9
     dist = v_ego * TR
-    lat_pos = eval_poly(d_poly, dist)  # lateral position in meters at 1.8 seconds
+    lat_pos = eval_poly(d_poly, dist)  # lateral position in meters at TR seconds
 
-    if abs(lat_pos) >= 0.05275:  # todo: WIP, tuning
-      if abs(lat_pos) < 0.131:  # between +=[.1, 2)
-        return 'center', lat_pos
-      if abs(lat_pos) < 0.29618:  # between +=[2, 5)
-        return 'inner', lat_pos
-      if abs(lat_pos) < 0.67579:
-        return 'outer', lat_pos  # between +=[5, inf)
-      return 'sharp'
-    return None, lat_pos  # return none when below +-0.1, removes possibility of returning offset in this case
+    curv_band = None
+    if abs(lat_pos) >= self.min_curvature:  # todo: WIP, tuning all vals
+      if abs(lat_pos) < self.curvature_bands['center']:
+        curv_band = 'center'
+      elif abs(lat_pos) < self.curvature_bands['inner']:
+        curv_band = 'inner'
+      elif abs(lat_pos) < self.curvature_bands['outer']:
+        curv_band = 'outer'
+      else:  # don't need to check against inf
+        curv_band = 'sharp'
+    return curv_band, lat_pos
 
   def _gather_data(self, v_ego, d_poly, angle_steers):
     with open('/data/curv_learner_data', 'a') as f:
@@ -53,12 +56,11 @@ class CurvatureLearner:  # todo: disable when dynamic camera offset is working
     if v_ego < self.min_speed or math.isnan(d_poly[0]) or len(d_poly) != 4:
       return offset
 
-    lr_prob = lane_probs[0] + lane_probs[1] - lane_probs[0] * lane_probs[1]
     curvature_band, lat_pos = self.pick_curvature_band(v_ego, d_poly)
-
     if curvature_band is not None:  # don't learn/return an offset if not in a band
       direction = 'left' if lat_pos > 0 else 'right'
       speed_band = self.pick_speed_band(v_ego)  # will never be none
+      lr_prob = lane_probs[0] + lane_probs[1] - lane_probs[0] * lane_probs[1]
       if lr_prob >= self.min_lr_prob:  # only learn when lane lines are present; still use existing offset
         learning_sign = 1 if lat_pos >= 0 else -1
         self.learned_offsets[direction][speed_band][curvature_band] -= d_poly[3] * self.learning_rate * learning_sign  # the learning
@@ -69,9 +71,9 @@ class CurvatureLearner:  # todo: disable when dynamic camera offset is working
     return clip(offset, -0.3, 0.3)
 
   def pick_speed_band(self, v_ego):
-    if v_ego <= 35 * CV.MPH_TO_MS:
+    if v_ego <= self.speed_bands['slow']:
       return 'slow'
-    if v_ego <= 55 * CV.MPH_TO_MS:
+    if v_ego <= self.speed_bands['medium']:
       return 'medium'
     return 'fast'
 

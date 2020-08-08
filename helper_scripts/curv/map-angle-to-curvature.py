@@ -8,6 +8,7 @@ os.chdir(os.getcwd())
 
 data = []
 for fi in os.listdir():
+  print(fi)
   if not fi.endswith('.py'):
     with open(fi) as f:
       for line in f.read().split('\n')[:-1]:
