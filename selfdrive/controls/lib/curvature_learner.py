@@ -19,7 +19,7 @@ class CurvatureLearner:
     self.curvature_file = '/data/curvature_offsets.json'
     rate = 1 / 20.  # pathplanner is 20 hz
     self.learning_rate = 2.5e-3 * rate  # equivalent to x/12000
-    self.write_frequency = 60 * 2  # in seconds
+    self.write_frequency = 5  # in seconds
     self.min_lr_prob = .75
     self.min_speed = 15 * CV.MPH_TO_MS
 
