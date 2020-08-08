@@ -62,27 +62,39 @@ for band in data_banded:
   print('MA {} angle: {} ({})'.format(band, round(avg_angle_bands[band], round_to), max_angle_text[band]))
 print()
 
-TR = 0.9
-curvature_dict = {'center': [], 'inner': [], 'outer': [], 'sharp': []}
-for band in data_banded:
-  for line in data_banded[band]:
-    dist = line['v_ego'] * TR
-    lat_pos = np.polyval(line['d_poly'], dist)  # lateral position in meters at 1.8 seconds
-    curvature_dict[band].append(lat_pos)
+# TR = 1.8
+TRs = np.linspace(0.4, 2.7, 24*2)
+TRs = [0.9]
+stds = {}
+for TR in TRs:
+  curvature_dict = {'center': [], 'inner': [], 'outer': [], 'sharp': []}
+  for band in data_banded:
+    for line in data_banded[band]:
+      dist = line['v_ego'] * TR
+      lat_pos = np.polyval(line['d_poly'], dist)  # lateral position in meters at 1.8 seconds
+      curvature_dict[band].append(lat_pos)
 
-avg_curvatures = {band: np.mean(np.abs(curvature_dict[band])) for band in curvature_dict}
-std_curvatures = {band: np.std(np.abs(curvature_dict[band])) for band in curvature_dict}
+  avg_curvatures = {band: np.mean(np.abs(curvature_dict[band])) for band in curvature_dict}
+  std_curvatures = {band: np.std(np.abs(curvature_dict[band])) for band in curvature_dict}
 
-modifiers = {}
-modifiers['center'] = center_max / avg_angle_bands['center']  # just since average angle doesn't equal the exact max limit
-modifiers['inner'] = inner_max / avg_angle_bands['inner']
-modifiers['outer'] = outer_max / avg_angle_bands['outer']
-modifiers['sharp'] = 1  # we don't even use this
+  modifiers = {}
+  modifiers['center'] = center_max / avg_angle_bands['center']  # just since average angle doesn't equal the exact max limit
+  modifiers['inner'] = inner_max / avg_angle_bands['inner']
+  modifiers['outer'] = outer_max / avg_angle_bands['outer']
+  modifiers['sharp'] = 1  # we don't even use this
+  stds[TR] = np.mean([std_curvatures['inner'], std_curvatures['outer']])
 
-for band in avg_curvatures:
-  print('MA {} curvature: {}, std: {} (ADJUSTED: {})'.format(band, round(avg_curvatures[band], round_to),
-                                                             round(std_curvatures[band], round_to),
-                                                             round(avg_curvatures[band] * modifiers[band], round_to)))
+  for band in avg_curvatures:
+    print('MA {} curvature: {}, std: {} (ADJUSTED: {})'.format(band, round(avg_curvatures[band], round_to),
+                                                               round(std_curvatures[band], round_to),
+                                                               round(avg_curvatures[band] * modifiers[band], round_to)))
 
-min_curv_from_angle = (min_angle * avg_curvatures['center']) / avg_angle_bands['center']  # calcs 0.1 deg min equivelent
-print('max. calc. curvature for CL: {} (ADJUSTED: {})'.format(round(min_curv_from_angle, round_to), round(min_curv_from_angle * modifiers['center'], round_to)))
+  min_curv_from_angle = (min_angle * avg_curvatures['center']) / avg_angle_bands['center']  # calcs 0.1 deg min equivelent
+  print('max. calc. curvature for CL: {} (ADJUSTED: {})'.format(round(min_curv_from_angle, round_to), round(min_curv_from_angle * modifiers['center'], round_to)))
+  print('TR: {}'.format(TR))
+
+print()
+stds_sorted = sorted(stds, reverse=False, key=stds.get)
+for std in stds_sorted:
+  print('TR: {}, std: {}'.format(std, stds[std]))
+# print(sorted(stds, reverse=True, key=stds.get))

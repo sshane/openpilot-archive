@@ -25,8 +25,8 @@ class CurvatureLearner:
 
     self.directions = ['left', 'right']
     self.speed_bands = {'slow': 35 * CV.MPH_TO_MS, 'medium': 55 * CV.MPH_TO_MS, 'fast': float('inf')}
-    self.curvature_bands = {'center': 0.131, 'inner': 0.29618, 'outer': 0.67579, 'sharp': float('inf')}
-    self.min_curvature = 0.05275
+    self.curvature_bands = {'center': 0.13075, 'inner': 0.313549, 'outer': 0.670938, 'sharp': float('inf')}
+    self.min_curvature = 0.052467
     self._load_curvature()
 
   def pick_curvature_band(self, v_ego, d_poly):
