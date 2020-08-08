@@ -29,27 +29,6 @@ class CurvatureLearner:
     self.min_curvature = 0.052467
     self._load_curvature()
 
-  def pick_curvature_band(self, v_ego, d_poly):
-    TR = 0.9
-    dist = v_ego * TR
-    lat_pos = eval_poly(d_poly, dist)  # lateral position in meters at TR seconds
-
-    curv_band = None
-    if abs(lat_pos) >= self.min_curvature:  # todo: WIP, tuning all vals
-      if abs(lat_pos) < self.curvature_bands['center']:
-        curv_band = 'center'
-      elif abs(lat_pos) < self.curvature_bands['inner']:
-        curv_band = 'inner'
-      elif abs(lat_pos) < self.curvature_bands['outer']:
-        curv_band = 'outer'
-      else:  # don't need to check against inf
-        curv_band = 'sharp'
-    return curv_band, lat_pos
-
-  def _gather_data(self, v_ego, d_poly, angle_steers):
-    with open('/data/curv_learner_data', 'a') as f:
-      f.write('{}\n'.format({'v_ego': v_ego, 'd_poly': d_poly, 'angle_steers': angle_steers}))
-
   def update(self, v_ego, d_poly, lane_probs, angle_steers):
     self._gather_data(v_ego, d_poly, angle_steers)
     offset = 0
@@ -70,12 +49,33 @@ class CurvatureLearner:
       self._write_curvature()
     return clip(offset, -0.3, 0.3)
 
+  def pick_curvature_band(self, v_ego, d_poly):
+    TR = 0.9
+    dist = v_ego * TR
+    lat_pos = eval_poly(d_poly, dist)  # lateral position in meters at TR seconds
+
+    curv_band = None
+    if abs(lat_pos) >= self.min_curvature:  # todo: WIP, tuning all vals
+      if abs(lat_pos) < self.curvature_bands['center']:
+        curv_band = 'center'
+      elif abs(lat_pos) < self.curvature_bands['inner']:
+        curv_band = 'inner'
+      elif abs(lat_pos) < self.curvature_bands['outer']:
+        curv_band = 'outer'
+      else:  # don't need to check against inf
+        curv_band = 'sharp'
+    return curv_band, lat_pos
+
   def pick_speed_band(self, v_ego):
     if v_ego <= self.speed_bands['slow']:
       return 'slow'
     if v_ego <= self.speed_bands['medium']:
       return 'medium'
     return 'fast'
+
+  def _gather_data(self, v_ego, d_poly, angle_steers):
+    with open('/data/curv_learner_data', 'a') as f:
+      f.write('{}\n'.format({'v_ego': v_ego, 'd_poly': d_poly, 'angle_steers': angle_steers}))
 
   def _load_curvature(self):
     self._last_write_time = 0
