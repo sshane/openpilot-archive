@@ -27,7 +27,7 @@ outer_max = 15.
 sharp_max = float('inf')
 data_banded = {'center': [], 'inner': [], 'outer': [], 'sharp': []}
 
-within_percent = 0.08  # only use angles within x% lower than max angle to get higher max average (instead of max())
+within_percent = 0.065  # only use angles within x% lower than max angle to get higher max average (instead of max())
 
 for line in data:
   if line['v_ego'] < 15 * CV.MPH_TO_MS:
@@ -71,7 +71,8 @@ for TR in TRs:
   for band in data_banded:
     for line in data_banded[band]:
       dist = line['v_ego'] * TR
-      lat_pos = np.polyval(line['d_poly'], dist)  # lateral position in meters at 1.8 seconds
+      line['d_poly'][3] = 0  # want curvature of road from start of path not car
+      lat_pos = np.polyval(line['d_poly'], dist)  # lateral position in meters at TR seconds
       curvature_dict[band].append(lat_pos)
 
   avg_curvatures = {band: np.mean(np.abs(curvature_dict[band])) for band in curvature_dict}
@@ -93,8 +94,7 @@ for TR in TRs:
   print('max. calc. curvature for CL: {} (ADJUSTED: {})'.format(round(min_curv_from_angle, round_to), round(min_curv_from_angle * modifiers['center'], round_to)))
   print('TR: {}'.format(TR))
 
-print()
-stds_sorted = sorted(stds, reverse=False, key=stds.get)
-for std in stds_sorted:
-  print('TR: {}, std: {}'.format(std, stds[std]))
-# print(sorted(stds, reverse=True, key=stds.get))
+# print()
+# stds_sorted = sorted(stds, reverse=False, key=stds.get)
+# for std in stds_sorted:
+#   print('TR: {}, std: {}'.format(std, stds[std]))
