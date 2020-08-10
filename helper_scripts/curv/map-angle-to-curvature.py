@@ -1,6 +1,7 @@
 import os
 import json
 import numpy as np
+import seaborn as sns
 from selfdrive.config import Conversions as CV
 
 
@@ -73,10 +74,10 @@ for TR in TRs:
       dist = line['v_ego'] * TR
       line['d_poly'][3] = 0  # want curvature of road from start of path not car
       lat_pos = np.polyval(line['d_poly'], dist)  # lateral position in meters at TR seconds
-      curvature_dict[band].append(lat_pos)
+      curvature_dict[band].append(abs(lat_pos))
 
-  avg_curvatures = {band: np.mean(np.abs(curvature_dict[band])) for band in curvature_dict}
-  std_curvatures = {band: np.std(np.abs(curvature_dict[band])) for band in curvature_dict}
+  avg_curvatures = {band: np.mean(curvature_dict[band]) for band in curvature_dict}
+  std_curvatures = {band: np.std(curvature_dict[band]) for band in curvature_dict}
 
   modifiers = {}
   modifiers['center'] = center_max / avg_angle_bands['center']  # just since average angle doesn't equal the exact max limit
