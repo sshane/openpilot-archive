@@ -13,6 +13,7 @@ FT_TO_M = 0.3048
 # modified by ShaneSmiskol to add speed and curve direction as learning factors
 # version 5 due to json incompatibilities
 
+GATHER_DATA = True
 
 class CurvatureLearner:
   def __init__(self):
@@ -75,8 +76,9 @@ class CurvatureLearner:
     return 'fast'
 
   def _gather_data(self, v_ego, d_poly, angle_steers):
-    with open('/data/curv_learner_data', 'a') as f:
-      f.write('{}\n'.format({'v_ego': v_ego, 'd_poly': d_poly, 'angle_steers': angle_steers}))
+    if GATHER_DATA:
+      with open('/data/curv_learner_data', 'a') as f:
+        f.write('{}\n'.format({'v_ego': v_ego, 'd_poly': list(d_poly), 'angle_steers': angle_steers}))
 
   def _load_curvature(self):
     self._last_write_time = 0
