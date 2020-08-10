@@ -52,8 +52,8 @@ class CurvatureLearner:
   def pick_curvature_band(self, v_ego, d_poly):
     TR = 0.9
     dist = v_ego * TR
-    d_poly[3] = 0  # we want curvature of road from start of path not car
-    lat_pos = eval_poly(d_poly, dist)  # lateral position in meters at TR seconds
+    # we want curvature of road from start of path not car, so subtract d_poly[3]
+    lat_pos = eval_poly(d_poly, dist) - d_poly[3]  # lateral position in meters at TR seconds
 
     curv_band = None
     if abs(lat_pos) >= self.min_curvature:  # todo: WIP, tuning all vals
