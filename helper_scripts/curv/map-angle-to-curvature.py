@@ -2,6 +2,7 @@ import os
 import json
 import numpy as np
 import seaborn as sns
+import matplotlib.pyplot as plt
 from selfdrive.config import Conversions as CV
 
 
@@ -99,3 +100,9 @@ for TR in TRs:
 # stds_sorted = sorted(stds, reverse=False, key=stds.get)
 # for std in stds_sorted:
 #   print('TR: {}, std: {}'.format(std, stds[std]))
+
+for idx, band in enumerate(curvature_dict):
+  plt.figure(idx)
+  sns.distplot(curvature_dict[band])
+  plt.title(band)
+plt.show()
