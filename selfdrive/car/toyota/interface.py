@@ -45,11 +45,7 @@ class CarInterface(CarInterfaceBase):
       ret.longitudinalTuning.kpV = [3.6, 2.4, 1.5]
       ret.longitudinalTuning.kiV = [0.54, 0.36]
 
-    cars_not_pid = [CAR.PRIUS, CAR.RAV4, CAR.RAV4H]
-    if corolla_use_lqr:
-      cars_not_pid.append(CAR.COROLLA)
-
-    if candidate not in cars_not_pid:  # These cars use LQR/INDI
+    if candidate not in [CAR.PRIUS, CAR.RAV4, CAR.RAV4H]:  # These cars use LQR/INDI
       ret.lateralTuning.init('pid')
       ret.lateralTuning.pid.kiBP, ret.lateralTuning.pid.kpBP = [[0.], [0.]]
 
@@ -256,12 +252,11 @@ class CarInterface(CarInterfaceBase):
       ret.steerRatio = 13.9
       tire_stiffness_factor = 0.444  # not optimized yet
       ret.mass = 3060. * CV.LB_TO_KG + STD_CARGO_KG
-      
-      # birdman6450#7399's Corolla 2020 TSS2 Tune
-      if corollaTSS2_use_indi:
+
+      if corollaTSS2_use_indi:  # birdman6450#7399's Corolla 2020 TSS2 Tune (PR thanks to majorwolf)
+        ret.lateralTuning.init('indi')
         ret.steerRatio = 15.33
         tire_stiffness_factor = 0.996
-        ret.lateralTuning.init('indi')
         ret.lateralTuning.indi.innerLoopGain = 6.0
         ret.lateralTuning.indi.outerLoopGain = 15.0
         ret.lateralTuning.indi.timeConstant = 5.5
