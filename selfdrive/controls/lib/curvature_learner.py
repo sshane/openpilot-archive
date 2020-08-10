@@ -79,10 +79,13 @@ class CurvatureLearner:
     try:
       with open(self.curvature_file, 'r') as f:
         self.learned_offsets = json.load(f)
+      print('read file')
       if 'version' in self.learned_offsets and self.learned_offsets['version'] == VERSION:
+        print('file up to date!')
         return
     except:
       pass
+    print('file NOT up to date! resetting')
     # can't read file, doesn't exist, or old version
     self.learned_offsets = {d: {c: 0. for c in self.cluster_coords} for d in self.directions}
     self._write_curvature()  # rewrite/create new file
@@ -93,3 +96,5 @@ class CurvatureLearner:
         f.write(json.dumps(self.learned_offsets, indent=2))
       os.chmod(self.curvature_file, 0o777)
       self._last_write_time = sec_since_boot()
+
+CurvatureLearner()
