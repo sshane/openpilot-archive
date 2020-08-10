@@ -27,7 +27,7 @@ outer_max = 15.
 sharp_max = float('inf')
 data_banded = {'center': [], 'inner': [], 'outer': [], 'sharp': []}
 
-within_percent = 0.065  # only use angles within x% lower than max angle to get higher max average (instead of max())
+within_percent = 0.075  # only use angles within x% lower than max angle to get higher max average (instead of max())
 
 for line in data:
   if line['v_ego'] < 15 * CV.MPH_TO_MS:
