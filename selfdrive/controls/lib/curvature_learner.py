@@ -79,9 +79,13 @@ class CurvatureLearner:
     try:
       with open(self.curvature_file, 'r') as f:
         self.learned_offsets = json.load(f)
-    except:  # can't read file or doesn't exist
-      self.learned_offsets = {d: {c: 0. for c in self.cluster_coords} for d in self.directions}
-      self._write_curvature()  # rewrite/create new file
+      if 'version' in self.learned_offsets and self.learned_offsets['version'] == VERSION:
+        return
+    except:
+      pass
+    # can't read file, doesn't exist, or old version
+    self.learned_offsets = {d: {c: 0. for c in self.cluster_coords} for d in self.directions}
+    self._write_curvature()  # rewrite/create new file
 
   def _write_curvature(self):
     if sec_since_boot() - self._last_write_time >= self.write_frequency:
