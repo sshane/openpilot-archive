@@ -4,7 +4,7 @@ import json
 from common.numpy_fast import clip
 # from common.realtime import sec_since_boot
 from selfdrive.config import Conversions as CV
-from selfdrive.controls.lib.lane_planner import eval_poly
+# from selfdrive.controls.lib.lane_planner import eval_poly
 import time
 sec_since_boot = time.time
 
