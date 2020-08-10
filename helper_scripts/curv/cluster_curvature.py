@@ -115,12 +115,13 @@ cluster_dict = {}
 print('Number of clusters: {}'.format(KMEANS_N_CLUSTERS))
 for idx, cluster_coord in enumerate(sorted(cluster_coords, key=lambda coord: coord[0])):
   cluster_name = 'CLUSTER_' + str(idx)
-  cluster_coord[1] /= y_axis_factor  # scale back down
+  # cluster_coord[1] /= y_axis_factor  # scale back down
   cluster_coord = np.round(cluster_coord, ROUND_TO).tolist()
   print('{}: {}'.format(cluster_name, cluster_coord))
   cluster_dict[cluster_name] = cluster_coord
 
 print('\ncluster_coords = {}'.format(cluster_dict))
-print('Make sure to multiply each cluster y coordinate by the y axis factor below as well as the y position of the sample!')
+# print('Make sure to multiply each cluster y coordinate by the y axis factor below as well as the y position of the sample!')
+print('Make sure to multiply each sample y coordinate by the y axis factor below (y coord of clusters are pre-multiplied)!')
 print('y axis factor: {}'.format(round(y_axis_factor, ROUND_TO)))
 
