@@ -83,7 +83,7 @@ cluster_coords = kmeans.cluster_centers_
 def find_distance(pt1, pt2):
   x1, x2 = pt1[0], pt2[0]
   y1, y2 = pt1[1], pt2[1]
-  return math.hypot((x2 - x1), (y2 - y1))
+  return math.hypot(x2 - x1, y2 - y1)
 
 t = time.time()
 clusters = [[] for _ in range(KMEANS_N_CLUSTERS)]

@@ -16,6 +16,12 @@ FT_TO_M = 0.3048
 GATHER_DATA = True
 VERSION = 5
 
+def find_distance(pt1, pt2):
+  x1, x2 = pt1[0], pt2[0]
+  y1, y2 = pt1[1], pt2[1]
+  return math.hypot(x2 - x1, y2 - y1)
+
+
 class CurvatureLearner:
   def __init__(self):
     self.curvature_file = '/data/curvature_offsets.json'
@@ -26,10 +32,24 @@ class CurvatureLearner:
     self.min_speed = 15 * CV.MPH_TO_MS
 
     self.directions = ['left', 'right']
-    self.speed_bands = {'slow': 35 * CV.MPH_TO_MS, 'medium': 55 * CV.MPH_TO_MS, 'fast': float('inf')}
-    self.curvature_bands = {'center': 0.12705, 'inner': 0.395589, 'outer': 0.82, 'sharp': float('inf')}
+    self.cluster_coords = {'CLUSTER_0': [9.25841481, 0.08629771], 'CLUSTER_1': [12.86597836, 0.56739591], 'CLUSTER_2': [12.89578272, 0.10601015], 'CLUSTER_3': [17.27660487, 0.36905564], 'CLUSTER_4': [17.37257309, 0.08137747], 'CLUSTER_5': [22.67790441, 1.1858886], 'CLUSTER_6': [22.75900523, 0.08544827], 'CLUSTER_7': [23.34395146, 0.2972829], 'CLUSTER_8': [23.42699742, 0.82911176], 'CLUSTER_9': [23.43154885, 0.5181539], 'CLUSTER_10': [26.73458578, 0.12489106], 'CLUSTER_11': [29.3149337, 0.34829016]}
+    self.y_axis_factor = 17.41918337  # weight y/curvature as much as speed
     self.min_curvature = 0.050916
     self._load_curvature()
+
+  def group_into_cluster(self, v_ego, d_poly):
+    TR = 0.9
+    dist = v_ego * TR
+    # we want curvature of road from start of path not car, so subtract d_poly[3]
+    lat_pos = eval_poly(d_poly, dist) - d_poly[3]  # lateral position in meters at TR seconds
+    closest_cluster = None
+
+    if abs(lat_pos) >= self.min_curvature:
+      sample_coord = [v_ego, abs(lat_pos * self.y_axis_factor)]
+
+      dists = {cluster: find_distance(sample_coord, coord) for cluster, coord in self.cluster_coords.items()}
+      closest_cluster = min(dists, key=dists.__getitem__)
+    return closest_cluster, lat_pos
 
   def update(self, v_ego, d_poly, lane_probs, angle_steers):
     self._gather_data(v_ego, d_poly, angle_steers)
@@ -37,44 +57,17 @@ class CurvatureLearner:
     if v_ego < self.min_speed or math.isnan(d_poly[0]) or len(d_poly) != 4:
       return offset
 
-    curvature_band, lat_pos = self.pick_curvature_band(v_ego, d_poly)
-    if curvature_band is not None:  # don't learn/return an offset if not in a band
+    cluster, lat_pos = self.group_into_cluster(v_ego, d_poly)
+    if cluster is not None:  # don't learn/return an offset if below min curvature
       direction = 'left' if lat_pos > 0 else 'right'
-      speed_band = self.pick_speed_band(v_ego)  # will never be none
       lr_prob = lane_probs[0] + lane_probs[1] - lane_probs[0] * lane_probs[1]
       if lr_prob >= self.min_lr_prob:  # only learn when lane lines are present; still use existing offset
         learning_sign = 1 if lat_pos >= 0 else -1
-        self.learned_offsets[direction][speed_band][curvature_band] -= d_poly[3] * self.learning_rate * learning_sign  # the learning
-      offset = self.learned_offsets[direction][speed_band][curvature_band]
+        self.learned_offsets[direction][cluster] -= d_poly[3] * self.learning_rate * learning_sign  # the learning
+      offset = self.learned_offsets[direction][cluster]
 
-    if sec_since_boot() - self._last_write_time >= self.write_frequency:
-      self._write_curvature()
+    self._write_curvature()
     return clip(offset, -0.3, 0.3)
-
-  def pick_curvature_band(self, v_ego, d_poly):
-    TR = 0.9
-    dist = v_ego * TR
-    # we want curvature of road from start of path not car, so subtract d_poly[3]
-    lat_pos = eval_poly(d_poly, dist) - d_poly[3]  # lateral position in meters at TR seconds
-
-    curv_band = None
-    if abs(lat_pos) >= self.min_curvature:  # todo: WIP, tuning all vals
-      if abs(lat_pos) < self.curvature_bands['center']:
-        curv_band = 'center'
-      elif abs(lat_pos) < self.curvature_bands['inner']:
-        curv_band = 'inner'
-      elif abs(lat_pos) < self.curvature_bands['outer']:
-        curv_band = 'outer'
-      else:  # don't need to check against inf
-        curv_band = 'sharp'
-    return curv_band, lat_pos
-
-  def pick_speed_band(self, v_ego):
-    if v_ego <= self.speed_bands['slow']:
-      return 'slow'
-    if v_ego <= self.speed_bands['medium']:
-      return 'medium'
-    return 'fast'
 
   def _gather_data(self, v_ego, d_poly, angle_steers):
     if GATHER_DATA:
@@ -87,11 +80,12 @@ class CurvatureLearner:
       with open(self.curvature_file, 'r') as f:
         self.learned_offsets = json.load(f)
     except:  # can't read file or doesn't exist
-      self.learned_offsets = {d: {s: {a: 0 for a in self.curvature_bands} for s in self.speed_bands} for d in self.directions}
+      self.learned_offsets = {d: {c: 0. for c in self.cluster_coords} for d in self.directions}
       self._write_curvature()  # rewrite/create new file
 
   def _write_curvature(self):
-    with open(self.curvature_file, 'w') as f:
-      f.write(json.dumps(self.learned_offsets, indent=2))
-    os.chmod(self.curvature_file, 0o777)
-    self._last_write_time = sec_since_boot()
+    if sec_since_boot() - self._last_write_time >= self.write_frequency:
+      with open(self.curvature_file, 'w') as f:
+        f.write(json.dumps(self.learned_offsets, indent=2))
+      os.chmod(self.curvature_file, 0o777)
+      self._last_write_time = sec_since_boot()
