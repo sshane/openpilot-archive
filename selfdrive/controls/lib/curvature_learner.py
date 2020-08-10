@@ -90,6 +90,7 @@ class CurvatureLearner:
     print('file NOT up to date! resetting')
     # can't read file, doesn't exist, or old version
     self.learned_offsets = {d: {c: 0. for c in self.cluster_coords} for d in self.directions}
+    self.learned_offsets['version'] = VERSION
     self._write_curvature()  # rewrite/create new file
 
   def _write_curvature(self):
