@@ -14,6 +14,7 @@ FT_TO_M = 0.3048
 # version 5 due to json incompatibilities
 
 GATHER_DATA = True
+VERSION = 5
 
 class CurvatureLearner:
   def __init__(self):
