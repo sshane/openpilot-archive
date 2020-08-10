@@ -73,17 +73,12 @@ y = np.array([line[Y_AXIS_KEY] for line in data])
 kmeans = KMeans(n_clusters=KMEANS_N_CLUSTERS, max_iter=KMEANS_MAX_ITER)
 
 
-y_axis_factor = max(v_egos) / (max(y) - min(y))  # to make y axis as important as x since it's smaller
+y_axis_factor = (max(v_egos) - min(v_egos)) / (max(y) - min(y))  # to make y axis as important as x since it's smaller
 y_axis_factor *= Y_AXIS_WEIGHT  # x more weight to y axis
 
 x = np.array([v_egos, y * y_axis_factor]).T
 kmeans.fit(x)
-
-plt.figure(3)
-
 cluster_coords = kmeans.cluster_centers_
-# cluster_coords[:, 1] /= y_axis_factor  # scale back down
-
 
 def find_distance(pt1, pt2):
   x1, x2 = pt1[0], pt2[0]
@@ -98,6 +93,7 @@ for line in data:
   clusters[closest].append([line['v_ego'], line[Y_AXIS_KEY]])
 print(time.time() - t)
 
+plt.figure(3)
 for cluster in clusters:
   if len(cluster):
     d1, d2 = np.array(cluster).T
@@ -111,7 +107,7 @@ if Y_AXIS_KEY == 'lat_pos':
 else:
   plt.ylabel(Y_AXIS_KEY)
 
-plt.scatter(cluster_coords[:, 0], cluster_coords[:, 1] / y_axis_factor, s=150, c='black')
+plt.scatter(cluster_coords[:, 0], cluster_coords[:, 1] / y_axis_factor, s=100, c='black')
 plt.show()
 
 # now print data to copy into curvature_learner.py
@@ -119,7 +115,8 @@ cluster_dict = {}
 print('Number of clusters: {}'.format(KMEANS_N_CLUSTERS))
 for idx, cluster_coord in enumerate(sorted(cluster_coords, key=lambda coord: coord[0])):
   cluster_name = 'CLUSTER_' + str(idx)
-  cluster_coord = np.round(cluster_coord / y_axis_factor, ROUND_TO).tolist()
+  cluster_coord[1] /= y_axis_factor  # scale back down
+  cluster_coord = np.round(cluster_coord, ROUND_TO).tolist()
   print('{}: {}'.format(cluster_name, cluster_coord))
   cluster_dict[cluster_name] = cluster_coord
 
