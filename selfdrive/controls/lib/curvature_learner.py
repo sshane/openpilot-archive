@@ -8,10 +8,10 @@ from selfdrive.controls.lib.lane_planner import eval_poly
 
 FT_TO_M = 0.3048
 
-# by Zorrobyte
-# version 4
-# modified by ShaneSmiskol to add speed and curve direction as learning factors
-# version 5 due to json incompatibilities
+# CurvatureLearner v4 by Zorrobyte
+# Modified to add direction as a learning factor as well as clusters based on speed x curvature (lateral pos in 0.9 seconds)
+# Clusters found with Scikit KMeans, this assigns more clusters to areas with more data and viceversa
+# Version 5 due to json incompatibilities
 
 GATHER_DATA = True
 VERSION = 5
@@ -31,10 +31,13 @@ class CurvatureLearner:
     self.min_lr_prob = .75
     self.min_speed = 15 * CV.MPH_TO_MS
 
-    self.directions = ['left', 'right']
-    self.cluster_coords = {'CLUSTER_0': [9.50898744, 1.15147653], 'CLUSTER_1': [11.61555388, 6.77329492], 'CLUSTER_2': [13.12260049, 1.41386154], 'CLUSTER_3': [16.87001474, 5.64168796], 'CLUSTER_4': [17.71598068, 1.25741708], 'CLUSTER_5': [21.80838089, 6.11567922], 'CLUSTER_6': [22.6046087, 15.91567986], 'CLUSTER_7': [22.91549021, 1.72555002], 'CLUSTER_8': [23.3612511, 10.85114753], 'CLUSTER_9': [25.07931061, 6.36175232], 'CLUSTER_10': [26.75841484, 2.01383989], 'CLUSTER_11': [30.30274637, 4.88505625]}
     self.y_axis_factor = 17.41918337  # weight y/curvature as much as speed
     self.min_curvature = 0.050916
+
+    self.directions = ['left', 'right']
+    self.cluster_coords = [[9.50898744, 1.15147653], [11.61555388, 6.77329492], [13.12260049, 1.41386154], [16.87001474, 5.64168796], [17.71598068, 1.25741708], [21.80838089, 6.11567922], [22.6046087, 15.91567986], [22.91549021, 1.72555002], [23.3612511, 10.85114753], [25.07931061, 6.36175232], [26.75841484, 2.01383989], [30.30274637, 4.88505625]]
+    self.cluster_names = ['CLUSTER_{}'.format(idx) for idx in range(len(self.cluster_coords))]
+
     self._load_curvature()
 
   def group_into_cluster(self, v_ego, d_poly):
@@ -47,8 +50,8 @@ class CurvatureLearner:
     if abs(lat_pos) >= self.min_curvature:
       sample_coord = [v_ego, abs(lat_pos * self.y_axis_factor)]
 
-      dists = {cluster: find_distance(sample_coord, cluster_coord) for cluster, cluster_coord in self.cluster_coords.items()}
-      closest_cluster = min(dists, key=dists.__getitem__)
+      dists = [find_distance(sample_coord, cluster_coord) for cluster_coord in self.cluster_coords]
+      closest_cluster = self.cluster_names[min(range(len(dists)), key=dists.__getitem__)]
     return closest_cluster, lat_pos
 
   def update(self, v_ego, d_poly, lane_probs, angle_steers):
@@ -84,7 +87,7 @@ class CurvatureLearner:
     except:
       pass
     # can't read file, doesn't exist, or old version
-    self.learned_offsets = {d: {c: 0. for c in self.cluster_coords} for d in self.directions}
+    self.learned_offsets = {d: {c: 0. for c in self.cluster_names} for d in self.directions}
     self.learned_offsets['version'] = VERSION
     self._write_curvature()  # rewrite/create new file
 
