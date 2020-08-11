@@ -4,16 +4,20 @@ import numpy as np
 
 coords = np.random.uniform(0, 1.6, (20, 2))
 
+
 def find_distance(pt1, pt2):
   x1, x2 = pt1[0], pt2[0]
   y1, y2 = pt1[1], pt2[1]
   return math.hypot(x2 - x1, y2 - y1)
 
-cluster_coords = {'CLUSTER_0': [9.50898744, 1.15147653], 'CLUSTER_1': [11.61555388, 6.77329492], 'CLUSTER_2': [13.12260049, 1.41386154], 'CLUSTER_3': [16.87001474, 5.64168796], 'CLUSTER_4': [17.71598068, 1.25741708], 'CLUSTER_5': [21.80838089, 6.11567922], 'CLUSTER_6': [22.6046087, 15.91567986], 'CLUSTER_7': [22.91549021, 1.72555002], 'CLUSTER_8': [23.3612511, 10.85114753], 'CLUSTER_9': [25.07931061, 6.36175232], 'CLUSTER_10': [26.75841484, 2.01383989], 'CLUSTER_11': [30.30274637, 4.88505625]}
+
+cluster_coords = {'CLUSTER_0': [9.50898744, 1.15147653], 'CLUSTER_1': [11.61555388, 6.77329492], 'CLUSTER_2': [13.12260049, 1.41386154], 'CLUSTER_3': [16.87001474, 5.64168796],
+                  'CLUSTER_4': [17.71598068, 1.25741708], 'CLUSTER_5': [21.80838089, 6.11567922], 'CLUSTER_6': [22.6046087, 15.91567986], 'CLUSTER_7': [22.91549021, 1.72555002],
+                  'CLUSTER_8': [23.3612511, 10.85114753], 'CLUSTER_9': [25.07931061, 6.36175232], 'CLUSTER_10': [26.75841484, 2.01383989], 'CLUSTER_11': [30.30274637, 4.88505625]}
 
 y_axis_factor = 17.41918337
 
-seconds = 60*60
+seconds = 60 * 60
 
 start = time.time()
 cs = []
@@ -45,4 +49,3 @@ total = time.time() - start
 print('\ntotal time: {}'.format(total))
 print('time per clustering: {}'.format(total / (seconds * 20)))
 print('clustering rate: {} hz'.format(1 / (total / (seconds * 20))))
-
