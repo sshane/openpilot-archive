@@ -45,10 +45,10 @@ class CurvatureLearner:
     dist = v_ego * TR
     # we want curvature of road from start of path not car, so subtract d_poly[3]
     lat_pos = eval_poly(d_poly, dist) - d_poly[3]  # lateral position in meters at TR seconds
-    closest_cluster = None
 
+    closest_cluster = None
     if abs(lat_pos) >= self.min_curvature:
-      sample_coord = [v_ego, abs(lat_pos * self.y_axis_factor)]
+      sample_coord = [v_ego, abs(lat_pos * self.y_axis_factor)]  # we multiply y so that the dist function weights x and y the same
 
       dists = [find_distance(sample_coord, cluster_coord) for cluster_coord in self.cluster_coords]
       closest_cluster = self.cluster_names[min(range(len(dists)), key=dists.__getitem__)]
@@ -86,9 +86,10 @@ class CurvatureLearner:
         return
     except:
       pass
+
     # can't read file, doesn't exist, or old version
     self.learned_offsets = {d: {c: 0. for c in self.cluster_names} for d in self.directions}
-    self.learned_offsets['version'] = VERSION
+    self.learned_offsets['version'] = VERSION  # update version
     self._write_curvature()  # rewrite/create new file
 
   def _write_curvature(self):
