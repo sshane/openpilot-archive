@@ -9,7 +9,6 @@ import matplotlib.pyplot as plt
 from selfdrive.config import Conversions as CV
 from sklearn.cluster import KMeans
 
-
 os.chdir(os.getcwd())
 
 data = []
@@ -72,7 +71,6 @@ v_egos = [line['v_ego'] for line in data]
 y = np.array([line[Y_AXIS_KEY] for line in data])
 kmeans = KMeans(n_clusters=KMEANS_N_CLUSTERS, max_iter=KMEANS_MAX_ITER)
 
-
 y_axis_factor = (max(v_egos) - min(v_egos)) / (max(y) - min(y))  # to make y axis as important as x since it's smaller
 y_axis_factor *= Y_AXIS_WEIGHT  # x more weight to y axis
 
@@ -80,10 +78,12 @@ x = np.array([v_egos, y * y_axis_factor]).T
 kmeans.fit(x)
 cluster_coords = kmeans.cluster_centers_
 
+
 def find_distance(pt1, pt2):
   x1, x2 = pt1[0], pt2[0]
   y1, y2 = pt1[1], pt2[1]
   return math.hypot(x2 - x1, y2 - y1)
+
 
 t = time.time()
 clusters = [[] for _ in range(KMEANS_N_CLUSTERS)]
@@ -124,4 +124,3 @@ print('\ncluster_coords = {}'.format(cluster_dict))
 # print('Make sure to multiply each cluster y coordinate by the y axis factor below as well as the y position of the sample!')
 print('Make sure to multiply each sample y coordinate by the y axis factor below (y coord of clusters are pre-multiplied)!')
 print('y axis factor: {}'.format(round(y_axis_factor, ROUND_TO)))
-
