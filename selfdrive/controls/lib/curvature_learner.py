@@ -6,8 +6,6 @@ from common.realtime import sec_since_boot
 from selfdrive.config import Conversions as CV
 from selfdrive.controls.lib.lane_planner import eval_poly
 
-FT_TO_M = 0.3048
-
 # CurvatureLearner v4 by Zorrobyte
 # Modified to add direction as a learning factor as well as clusters based on speed x curvature (lateral pos in 0.9 seconds)
 # Clusters found with Scikit KMeans, this assigns more clusters to areas with more data and viceversa
@@ -15,6 +13,9 @@ FT_TO_M = 0.3048
 
 GATHER_DATA = True
 VERSION = 5
+
+FT_TO_M = 0.3048
+
 
 def find_distance(pt1, pt2):
   x1, x2 = pt1[0], pt2[0]
@@ -35,7 +36,8 @@ class CurvatureLearner:
     self.min_curvature = 0.050916
 
     self.directions = ['left', 'right']
-    self.cluster_coords = [[9.50898744, 1.15147653], [11.61555388, 6.77329492], [13.12260049, 1.41386154], [16.87001474, 5.64168796], [17.71598068, 1.25741708], [21.80838089, 6.11567922], [22.6046087, 15.91567986], [22.91549021, 1.72555002], [23.3612511, 10.85114753], [25.07931061, 6.36175232], [26.75841484, 2.01383989], [30.30274637, 4.88505625]]
+    self.cluster_coords = [[9.50898744, 1.15147653], [11.61555388, 6.77329492], [13.12260049, 1.41386154], [16.87001474, 5.64168796], [17.71598068, 1.25741708], [21.80838089, 6.11567922],
+                           [22.6046087, 15.91567986], [22.91549021, 1.72555002], [23.3612511, 10.85114753], [25.07931061, 6.36175232], [26.75841484, 2.01383989], [30.30274637, 4.88505625]]
     self.cluster_names = ['CLUSTER_{}'.format(idx) for idx in range(len(self.cluster_coords))]
 
     self._load_curvature()
