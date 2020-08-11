@@ -2,7 +2,7 @@ import time
 import math
 import numpy as np
 
-coords = np.random.uniform(0, 1.6, (20, 2))
+coords = np.random.uniform(0, 1.6, (1, 2))
 
 def find_distance(pt1, pt2):
   x1, x2 = pt1[0], pt2[0]
