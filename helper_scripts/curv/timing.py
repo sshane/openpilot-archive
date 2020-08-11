@@ -2,7 +2,7 @@ import time
 import math
 import numpy as np
 
-coords = np.random.uniform(0, 1.6, (1, 2))
+coords = np.random.uniform(0, 1.6, (20, 2))
 
 def find_distance(pt1, pt2):
   x1, x2 = pt1[0], pt2[0]
@@ -13,7 +13,7 @@ cluster_coords = {'CLUSTER_0': [9.50898744, 1.15147653], 'CLUSTER_1': [11.615553
 
 y_axis_factor = 17.41918337
 
-seconds = 1
+seconds = 60
 
 start = time.time()
 cs = []
