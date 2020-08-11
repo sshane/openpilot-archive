@@ -13,7 +13,7 @@ cluster_coords = {'CLUSTER_0': [9.50898744, 1.15147653], 'CLUSTER_1': [11.615553
 
 y_axis_factor = 17.41918337
 
-seconds = 60
+seconds = 60*60
 
 start = time.time()
 cs = []
