@@ -131,7 +131,7 @@ class DynamicFollow:
 
   def _change_cost(self, libmpc):
     TRs = [0.9, 1.8, 2.7]
-    costs = [1.25, 0.2, 0.075]
+    costs = [1.15, 0.15, 0.05]
     cost = interp(self.TR, TRs, costs)
 
     change_time = sec_since_boot() - self.profile_change_time
@@ -144,7 +144,7 @@ class DynamicFollow:
       cost *= interp(cost_mod, cost_mod_speeds, cost_mods)
 
     if self.last_cost != cost:
-      libmpc.change_tr(MPC_COST_LONG.TTC, cost, MPC_COST_LONG.ACCELERATION, MPC_COST_LONG.JERK)
+      libmpc.change_costs(MPC_COST_LONG.TTC, cost, MPC_COST_LONG.ACCELERATION, MPC_COST_LONG.JERK)
       self.last_cost = cost
 
   def _store_df_data(self):
@@ -195,13 +195,16 @@ class DynamicFollow:
         a_ego = (self.df_data.v_rels[-1]['v_ego'] - self.df_data.v_rels[0]['v_ego']) / elapsed_time
         a_lead = (self.df_data.v_rels[-1]['v_lead'] - self.df_data.v_rels[0]['v_lead']) / elapsed_time
 
-    mods_x = [0, -.75, -1.5]
-    mods_y = [1.5, 1.25, 1]
+    mods_x = [-1.5, -.75, 0]
+    mods_y = [1, 1.25, 1.3]
     if a_lead < 0:  # more weight to slight lead decel
       a_lead *= interp(a_lead, mods_x, mods_y)
 
+    if a_lead - a_ego > 0:  # return only if adding distance
+      return 0
+
     rel_x = [-2.6822, -1.7882, -0.8941, -0.447, -0.2235, 0.0, 0.2235, 0.447, 0.8941, 1.7882, 2.6822]
-    mod_y = [0.3245 * 1.25, 0.277 * 1.2, 0.11075 * 1.15, 0.08106 * 1.075, 0.06325 * 1.05, 0.0, -0.09, -0.09375, -0.125, -0.3, -0.35]
+    mod_y = [0.3245 * 1.1, 0.277 * 1.08, 0.11075 * 1.06, 0.08106 * 1.045, 0.06325 * 1.035, 0.0, -0.09, -0.09375, -0.125, -0.3, -0.35]
     return interp(a_lead - a_ego, rel_x, mod_y)
 
   def global_profile_mod(self, profile_mod_x, profile_mod_pos, profile_mod_neg, x_vel, y_dist):
@@ -284,7 +287,7 @@ class DynamicFollow:
     y = [0.24, 0.16, 0.092, 0.0515, 0.0305, 0.022, 0.0, -0.0153, -0.042, -0.053, -0.059]  # modification values
     TR_mods.append(interp(self.lead_data.a_lead, x, y))
 
-    # deadzone = 7.5 * CV.MPH_TO_MS
+    # deadzone = self.car_data.v_ego / 3  # 10 mph at 30 mph  # todo: tune pedal to react similarly to without before adding/testing this
     # if self.lead_data.v_lead - deadzone > self.car_data.v_ego:
     #   TR_mods.append(self._relative_accel_mod())
 
