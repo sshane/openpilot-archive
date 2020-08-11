@@ -28,7 +28,7 @@ class CurvatureLearner:
     rate = 1 / 20.  # pathplanner is 20 hz
     self.learning_rate = 3.45e-3 * rate  # equivalent to x/12000
     self.write_frequency = 5  # in seconds
-    self.min_lr_prob = .75
+    self.min_lr_prob = .65
     self.min_speed = 15 * CV.MPH_TO_MS
 
     self.y_axis_factor = 17.41918337  # weight y/curvature as much as speed
