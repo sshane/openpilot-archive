@@ -12,7 +12,7 @@ from selfdrive.controls.lib.lane_planner import eval_poly
 # Version 5 due to json incompatibilities
 
 GATHER_DATA = True
-VERSION = 5.1
+VERSION = 5.2
 
 FT_TO_M = 0.3048
 
