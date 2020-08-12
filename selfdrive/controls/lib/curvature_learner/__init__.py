@@ -72,9 +72,11 @@ class CurvatureLearner:
       direction = 'left' if lat_pos > 0 else 'right'
       lr_prob = lane_probs[0] + lane_probs[1] - lane_probs[0] * lane_probs[1]
       if lr_prob >= self.min_lr_prob:  # only learn when lane lines are present; still use existing offset
-        learning_sign = 1 if lat_pos >= 0 else -1
-        lr = self.get_learning_rate(direction, cluster)
-        self.learned_offsets[direction][cluster]['offset'] -= d_poly[3] * lr * learning_sign  # the learning
+        if lat_pos < 0:
+          d_poly[3] = -d_poly[3]  # switch around since d_poly's sign switches across center
+
+        lr = self.get_learning_rate(direction, cluster)  # faster learning for first ~minute per cluster
+        self.learned_offsets[direction][cluster]['offset'] -= d_poly[3] * lr  # the learning
       offset = self.learned_offsets[direction][cluster]['offset']
 
     self._write_curvature()
@@ -84,10 +86,10 @@ class CurvatureLearner:
     lr = self.learning_rate
     fast_iter_left = self.learned_offsets[direction][cluster]['fast_learn']
     if not isinstance(fast_iter_left, str):
-      if 1 <= fast_iter_left:  # decrement until we reach 0 (self.fast_learning_for has passed)
+      if 1 <= fast_iter_left:  # decrement until we reach 0
         self.learned_offsets[direction][cluster]['fast_learn'] -= 1
-        lr *= self.fast_lr_multiplier  # faster learning
-      else:
+        lr *= self.fast_lr_multiplier
+      else:  # mark done
         self.learned_offsets[direction][cluster]['fast_learn'] = 'done'
     return lr
 
