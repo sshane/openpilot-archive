@@ -17,12 +17,12 @@ Highlight Features
 * **Lane Speed**
   * [**Lane Speed Alerts**](#Lane-Speed-alerts) - alerts for when an adjacent lane is faster
   * [**Dynamic camera offsetting**](#Dynamic-camera-offset-based-on-oncoming-traffic) - automatically moves you over if adjacent lane has oncoming traffic
-* [**NEW❗ Curvature Learner from zorrobyte to fix hugging**](#curvature-learner)
+* [**NEW❗ Curvature Learner v5**](#curvature-learner) - zorrobyte's curvature learner with some additions
 * [**Dynamic gas**](#dynamic-gas) - smoother gas control
-* [**PI > PID for longcontrol**](#Long-control-uses-a-PID-loop) - fix for pedal overshoot
-* [**Customize this fork (opEdit with live tuning)**](#Customize-this-fork-opEdit)
+* [**PI > PID for longcontrol**](#Long-control-uses-a-PID-loop) - fix for overshoot with comma pedal
+* [**Customize this fork**](#Customize-this-fork-opEdit) - easily edit fork parameters with support for live tuning
 * [**Automatic updates**](#Automatic-updates)
-* [**Offline crash logging**](#Offline-crash-logging)
+* [**Offline crash logging**](#Offline-crash-logging) - check out `/data/community/crashes`
 
 Documentation
 =====
