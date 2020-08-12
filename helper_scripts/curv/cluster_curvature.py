@@ -31,9 +31,9 @@ MAX_ANGLE = 45.
 TR = 0.9
 
 Y_AXIS_KEY = 'lat_pos'
-KMEANS_N_CLUSTERS = 12
+KMEANS_N_CLUSTERS = 13
 KMEANS_MAX_ITER = 2000
-Y_AXIS_WEIGHT = 1  # importance of y axis, more clusters for curvature vs. speed
+Y_AXIS_WEIGHT = 1.25  # importance of y axis, more clusters for curvature vs. speed
 
 USE_ABS = True
 
