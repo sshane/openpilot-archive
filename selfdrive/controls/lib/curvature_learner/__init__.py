@@ -8,11 +8,11 @@ from selfdrive.controls.lib.lane_planner import eval_poly
 
 # CurvatureLearner v4 by Zorrobyte
 # Modified to add direction as a learning factor as well as clusters based on speed x curvature (lateral pos in 0.9 seconds)
-# Clusters found with Scikit KMeans, this assigns more clusters to areas with more data and viceversa
+# Clusters found with sklearn KMeans, this assigns more clusters to areas with more data and viceversa
 # Version 5 due to json incompatibilities
 
 GATHER_DATA = True
-VERSION = 5.3
+VERSION = 5.4
 
 FT_TO_M = 0.3048
 
@@ -108,7 +108,6 @@ class CurvatureLearner:
         return
     except:
       pass
-
     # can't read file, doesn't exist, or old version
     self.learned_offsets = {d: {c: {'offset': 0., 'fast_learn': self.fast_learning_for} for c in self.cluster_names} for d in self.directions}
     self.learned_offsets['version'] = VERSION  # update version
