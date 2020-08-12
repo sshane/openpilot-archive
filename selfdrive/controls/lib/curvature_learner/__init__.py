@@ -27,7 +27,7 @@ class CurvatureLearner:
   def __init__(self):
     self.curvature_file = '/data/curvature_offsets.json'
     rate = 1 / 20.  # pathplanner is 20 hz
-    self.learning_rate = 3.85e-3 * rate  # equivalent to x/12000
+    self.learning_rate = 2.5833e-3 * rate  # equivalent to x/12000
     self.write_frequency = 5  # in seconds
     self.min_lr_prob = .65
     self.min_speed = 15 * CV.MPH_TO_MS
@@ -44,7 +44,7 @@ class CurvatureLearner:
 
     self.fast_learning_for = (60 * 60) / (len(self.cluster_names) * len(self.directions))  # speed up learning for ~2.3 minutes per cluster (1 hr / total clusters)
     self.fast_learning_for = round(self.fast_learning_for / rate)  # get iterations equivalent to 20hz for ~2.3 min
-    self.fast_lr_multiplier = 5.  # 5x faster learning until ~2.3 for each cluster
+    self.fast_lr_multiplier = 2.  # 2x faster learning until ~2.3 for each cluster
 
     self._load_curvature()
 
