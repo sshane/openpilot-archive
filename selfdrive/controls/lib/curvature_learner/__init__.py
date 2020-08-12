@@ -47,19 +47,21 @@ class CurvatureLearner:
 
     self._load_curvature()
 
-  def group_into_cluster(self, v_ego, d_poly):
+  def cluster_sample(self, v_ego, d_poly):
     TR = 0.9
     dist = v_ego * TR
     # we want curvature of road from start of path not car, so subtract d_poly[3]
     lat_pos = eval_poly(d_poly, dist) - d_poly[3]  # lateral position in meters at TR seconds
+    direction = 'left' if lat_pos > 0 else 'right'
 
+    lat_pos = abs(lat_pos)
     closest_cluster = None
-    if abs(lat_pos) >= self.min_curvature:
-      sample_coord = [v_ego, abs(lat_pos * self.y_axis_factor)]  # we multiply y so that the dist function weights x and y the same
-
-      dists = [find_distance(sample_coord, cluster_coord) for cluster_coord in self.cluster_coords]
+    if lat_pos >= self.min_curvature:
+      sample_coord = [v_ego, lat_pos * self.y_axis_factor]  # we multiply y so that the dist function weights x and y the same
+      dists = [find_distance(sample_coord, cluster_coord) for cluster_coord in self.cluster_coords]  # todo: remove clusters far away based on v_ego to speed this up
       closest_cluster = self.cluster_names[min(range(len(dists)), key=dists.__getitem__)]
-    return closest_cluster, lat_pos
+
+    return closest_cluster, direction
 
   def update(self, v_ego, d_poly, lane_probs, angle_steers):
     self._gather_data(v_ego, d_poly, angle_steers)
@@ -67,13 +69,13 @@ class CurvatureLearner:
     if v_ego < self.min_speed or math.isnan(d_poly[0]) or len(d_poly) != 4:
       return offset
 
-    cluster, lat_pos = self.group_into_cluster(v_ego, d_poly)
+    cluster, direction = self.cluster_sample(v_ego, d_poly)
     if cluster is not None:  # don't learn/return an offset if below min curvature
-      direction = 'left' if lat_pos > 0 else 'right'
       lr_prob = lane_probs[0] + lane_probs[1] - lane_probs[0] * lane_probs[1]
+
       if lr_prob >= self.min_lr_prob:  # only learn when lane lines are present; still use existing offset
-        if lat_pos < 0:
-          d_poly[3] = -d_poly[3]  # switch around since d_poly's sign switches across center
+        if direction == 'right':
+          d_poly[3] = -d_poly[3]  # d_poly's sign switches for oversteering in different directions
 
         lr = self.get_learning_rate(direction, cluster)  # faster learning for first ~minute per cluster
         self.learned_offsets[direction][cluster]['offset'] -= d_poly[3] * lr  # the learning
