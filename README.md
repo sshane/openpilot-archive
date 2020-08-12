@@ -17,6 +17,7 @@ Highlight Features
 * **Lane Speed**
   * [**Lane Speed Alerts**](#Lane-Speed-alerts) - alerts for when an adjacent lane is faster
   * [**Dynamic camera offsetting**](#Dynamic-camera-offset-based-on-oncoming-traffic) - automatically moves you over if adjacent lane has oncoming traffic
+* [**Curvature Learner from zorrobyte to fix hugging**](#curvature-learner)
 * [**Dynamic gas**](#dynamic-gas) - smoother gas control
 * [**PI > PID for longcontrol**](#Long-control-uses-a-PID-loop) - fix for pedal overshoot
 * [**Customize this fork (opEdit with live tuning)**](#Customize-this-fork-opEdit)
@@ -71,6 +72,19 @@ Dynamic camera offset (based on oncoming traffic)
 This feature automatically adjusts your position in the lane if an adjacent lane has oncoming traffic. For example, if you're on a two-lane highway and the left adjacent lane has oncoming cars, LaneSpeed recognizes those cars and applies an offset to your `CAMERA_OFFSET` to move you over in the lane, keeping you farther from oncoming cars.
 
 **This feature is available from 35 to ~60 mph due to a limitation with the Toyota radar**. It may not recognize oncoming traffic above 60 mph or so. To enable or disable this feature, use `opEdit` and change this parameter: `dynamic_camera_offset`.
+
+Curvature Learner
+-----
+From [zorrobyte](https://github.com/zorrobyte/openpilot), I've added his Curvature Learner to help fix hugging in curves with a few modifications of my own to improve the idea further.
+
+***What's new in Curvature Learner v5:***
+  - Moved to using the curvature from dPoly rather than angle steers for curve measurement and learning. This helps fix oscilation issues with slight curves.
+    - Curvature is (rudimentarily) calculated as the lateral position of the dPoly path at 0.9 seconds into the future.
+  - Added vehicle speed as a learning factor
+  - Added curve direction as a learning factor (left and right curves learn different offsets)
+  - And the biggest difference is the introduction of clustering, I've used sklearn's KMeans algorithm to find the most common clusters of data (speed vs road curvature on a 2D graph). The curvature learner will group the sample into the closest cluster and learn/use that offset from the closest cluster.
+
+Special thanks to [Trae#2379](https://github.com/d412k5t412) for helping me gather data used to calculate the clusters!
 
 Dynamic gas
 -----
