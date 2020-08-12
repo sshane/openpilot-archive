@@ -42,6 +42,10 @@ class CurvatureLearner:
     self.cluster_names = ['21.2MPH-0.1CURV', '29.7MPH-0.3CURV', '30.5MPH-0.1CURV', '31.0MPH-0.7CURV', '40.0MPH-0.1CURV', '45.0MPH-0.4CURV', '50.0MPH-0.1CURV', '50.8MPH-1.2CURV', '53.5MPH-0.5CURV',
                           '54.2MPH-0.8CURV', '55.3MPH-0.3CURV', '60.6MPH-0.1CURV', '66.2MPH-0.3CURV']
 
+    self.fast_learning_for = (60 * 60) / (len(self.cluster_names) * len(self.directions))  # speed up learning for ~2.3 minutes per cluster (1 hr / total clusters)
+    self.fast_learning_for = round(self.fast_learning_for / rate)  # get iterations equivalent to 20hz for ~2.3 min
+    self.fast_lr_multiplier = 5.  # 5x faster learning until ~2.3 for each cluster
+
     self._load_curvature()
 
   def group_into_cluster(self, v_ego, d_poly):
@@ -70,11 +74,23 @@ class CurvatureLearner:
       lr_prob = lane_probs[0] + lane_probs[1] - lane_probs[0] * lane_probs[1]
       if lr_prob >= self.min_lr_prob:  # only learn when lane lines are present; still use existing offset
         learning_sign = 1 if lat_pos >= 0 else -1
-        self.learned_offsets[direction][cluster] -= d_poly[3] * self.learning_rate * learning_sign  # the learning
-      offset = self.learned_offsets[direction][cluster]
+        lr = self.get_learning_rate(direction, cluster)
+        self.learned_offsets[direction][cluster]['offset'] -= d_poly[3] * lr * learning_sign  # the learning
+      offset = self.learned_offsets[direction][cluster]['offset']
 
     self._write_curvature()
     return clip(offset, -0.3, 0.3)
+
+  def get_learning_rate(self, direction, cluster):
+    lr = self.learning_rate
+    fast_iter_left = self.learned_offsets[direction][cluster]['fast_learn']
+    if not isinstance(fast_iter_left, str):
+      if 1 <= fast_iter_left:  # decrement until we reach 0 (self.fast_learning_for has passed)
+        self.learned_offsets[direction][cluster]['fast_learn'] -= 1
+        lr *= self.fast_lr_multiplier  # faster learning
+      else:
+        self.learned_offsets[direction][cluster]['fast_learn'] = 'done'
+    return lr
 
   def _gather_data(self, v_ego, d_poly, angle_steers):
     if GATHER_DATA:
@@ -92,7 +108,7 @@ class CurvatureLearner:
       pass
 
     # can't read file, doesn't exist, or old version
-    self.learned_offsets = {d: {c: 0. for c in self.cluster_names} for d in self.directions}
+    self.learned_offsets = {d: {c: {'offset': 0., 'fast_learn': self.fast_learning_for} for c in self.cluster_names} for d in self.directions}
     self.learned_offsets['version'] = VERSION  # update version
     self._write_curvature()  # rewrite/create new file
 
