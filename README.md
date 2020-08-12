@@ -84,7 +84,7 @@ From [zorrobyte](https://github.com/zorrobyte/openpilot), I've added his Curvatu
   - Added curve direction as a learning factor (left and right curves learn different offsets)
   - And the biggest difference is the introduction of clustering, I've used sklearn's KMeans algorithm to find the most common clusters of data (speed vs road curvature on a 2D graph). The curvature learner will group the sample into the closest cluster and learn/use that offset from the closest cluster.
 
-<img src=".media/curvature-clusters.png">
+<img src=".media/curvature-clusters.png" height="250">
 
 Special thanks to [Trae#2379](https://github.com/d412k5t412) for helping me gather data used to calculate the clusters!
 
