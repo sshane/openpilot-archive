@@ -12,7 +12,7 @@ from selfdrive.controls.lib.lane_planner import eval_poly
 # Version 5 due to json incompatibilities
 
 GATHER_DATA = True
-VERSION = 5.2
+VERSION = 5.3
 
 FT_TO_M = 0.3048
 
@@ -36,15 +36,14 @@ class CurvatureLearner:
     self.min_curvature = 0.050916
 
     self.directions = ['left', 'right']
-    self.cluster_coords = [[9.45621173, 1.50435016], [13.2693701, 5.96614348], [13.65293944, 1.34539057], [13.86556033, 11.91932353], [17.88677666, 1.9553742], [20.12247867, 6.5955202],
-                           [22.36113962, 1.6691], [22.7191736, 20.48649402], [23.92071721, 8.99952259], [24.24342697, 14.23803407], [24.73679439, 4.4804306], [27.11112119, 1.79429335],
-                           [29.58971969, 5.9109405]]
-    self.cluster_names = ['21.2MPH-0.1CURV', '29.7MPH-0.3CURV', '30.5MPH-0.1CURV', '31.0MPH-0.7CURV', '40.0MPH-0.1CURV', '45.0MPH-0.4CURV', '50.0MPH-0.1CURV', '50.8MPH-1.2CURV', '53.5MPH-0.5CURV',
-                          '54.2MPH-0.8CURV', '55.3MPH-0.3CURV', '60.6MPH-0.1CURV', '66.2MPH-0.3CURV']
+    self.cluster_coords = [[10.05191962, 1.20043602], [11.89420311, 13.75759581], [11.99125505, 5.82722866], [14.68832472, 1.4674782], [18.3783435, 5.8264243], [18.65555506, 1.59153737],
+                           [22.03290771, 11.39689355], [22.76205145, 1.87613217], [23.55201934, 6.46182886], [23.79765186, 17.08974372], [26.68562309, 1.9429673], [26.78159669, 10.61987505],
+                           [29.36640861, 4.81450979]]
+    self.cluster_names = ['CLUSTER_{}'.format(idx) for idx in range(len(self.cluster_coords))]
 
-    self.fast_learning_for = (60 * 60) / (len(self.cluster_names) * len(self.directions))  # speed up learning for ~2.3 minutes per cluster (1 hr / total clusters)
-    self.fast_learning_for = round(self.fast_learning_for / rate)  # get iterations equivalent to 20hz for ~2.3 min
-    self.fast_lr_multiplier = 2.  # 2x faster learning until ~2.3 for each cluster
+    self.fast_learning_for = (30 * 60) / (len(self.cluster_names) * len(self.directions))  # speed up learning for ~1 minute per cluster (30 hr / total clusters)
+    self.fast_learning_for = round(self.fast_learning_for / rate)  # get iterations equivalent to 20hz for ~1 min
+    self.fast_lr_multiplier = 2.  # 2x faster learning until ~1 MIN for each cluster
 
     self._load_curvature()
 

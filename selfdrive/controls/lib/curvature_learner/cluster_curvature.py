@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 from selfdrive.config import Conversions as CV
 from sklearn.cluster import KMeans
 
-os.chdir(os.getcwd())
+os.chdir(os.getcwd() + '/cl_data')
 
 data = []
 for fi in os.listdir():
@@ -27,13 +27,13 @@ for fi in os.listdir():
 print('\nSamples before filtering: {}'.format(len(data)))
 ROUND_TO = 8
 MIN_ANGLE = 1.
-MAX_ANGLE = 45.
+MAX_ANGLE = 67.5
 TR = 0.9
 
 Y_AXIS_KEY = 'lat_pos'
 KMEANS_N_CLUSTERS = 13
 KMEANS_MAX_ITER = 2000
-Y_AXIS_WEIGHT = 1.25  # importance of y axis, more clusters for curvature vs. speed
+Y_AXIS_WEIGHT = 1.05  # importance of y axis, more clusters for curvature vs. speed
 
 USE_ABS = True
 
