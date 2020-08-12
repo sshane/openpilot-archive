@@ -44,24 +44,7 @@ class CurvatureLearner:
     self.fast_learning_for = (30 * 60) / (len(self.cluster_names) * len(self.directions))  # speed up learning for ~1 minute per cluster (30 hr / total clusters)
     self.fast_learning_for = round(self.fast_learning_for / rate)  # get iterations equivalent to 20hz for ~1 min
     self.fast_lr_multiplier = 2.  # 2x faster learning until ~1 MIN for each cluster
-
     self._load_curvature()
-
-  def cluster_sample(self, v_ego, d_poly):
-    TR = 0.9
-    dist = v_ego * TR
-    # we want curvature of road from start of path not car, so subtract d_poly[3]
-    lat_pos = eval_poly(d_poly, dist) - d_poly[3]  # lateral position in meters at TR seconds
-    direction = 'left' if lat_pos > 0 else 'right'
-
-    lat_pos = abs(lat_pos)
-    closest_cluster = None
-    if lat_pos >= self.min_curvature:
-      sample_coord = [v_ego, lat_pos * self.y_axis_factor]  # we multiply y so that the dist function weights x and y the same
-      dists = [find_distance(sample_coord, cluster_coord) for cluster_coord in self.cluster_coords]  # todo: remove clusters far away based on v_ego to speed this up
-      closest_cluster = self.cluster_names[min(range(len(dists)), key=dists.__getitem__)]
-
-    return closest_cluster, direction
 
   def update(self, v_ego, d_poly, lane_probs, angle_steers):
     self._gather_data(v_ego, d_poly, angle_steers)
@@ -83,6 +66,22 @@ class CurvatureLearner:
 
     self._write_curvature()
     return clip(offset, -0.3, 0.3)
+
+  def cluster_sample(self, v_ego, d_poly):
+    TR = 0.9
+    dist = v_ego * TR
+    # we want curvature of road from start of path not car, so subtract d_poly[3]
+    lat_pos = eval_poly(d_poly, dist) - d_poly[3]  # lateral position in meters at TR seconds
+    direction = 'left' if lat_pos > 0 else 'right'
+
+    lat_pos = abs(lat_pos)
+    closest_cluster = None
+    if lat_pos >= self.min_curvature:
+      sample_coord = [v_ego, lat_pos * self.y_axis_factor]  # we multiply y so that the dist function weights x and y the same
+      dists = [find_distance(sample_coord, cluster_coord) for cluster_coord in self.cluster_coords]  # todo: remove clusters far away based on v_ego to speed this up
+      closest_cluster = self.cluster_names[min(range(len(dists)), key=dists.__getitem__)]
+
+    return closest_cluster, direction
 
   def get_learning_rate(self, direction, cluster):
     lr = self.learning_rate
