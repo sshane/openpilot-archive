@@ -17,7 +17,7 @@ Highlight Features
 * **Lane Speed**
   * [**Lane Speed Alerts**](#Lane-Speed-alerts) - alerts for when an adjacent lane is faster
   * [**Dynamic camera offsetting**](#Dynamic-camera-offset-based-on-oncoming-traffic) - automatically moves you over if adjacent lane has oncoming traffic
-* [**Curvature Learner from zorrobyte to fix hugging**](#curvature-learner)
+* [**NEW❗ Curvature Learner from zorrobyte to fix hugging**](#curvature-learner)
 * [**Dynamic gas**](#dynamic-gas) - smoother gas control
 * [**PI > PID for longcontrol**](#Long-control-uses-a-PID-loop) - fix for pedal overshoot
 * [**Customize this fork (opEdit with live tuning)**](#Customize-this-fork-opEdit)
