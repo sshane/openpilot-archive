@@ -26,12 +26,12 @@ for fi in os.listdir():
 
 print('\nSamples before filtering: {}'.format(len(data)))
 ROUND_TO = 8
-MIN_ANGLE = 1.
+MIN_ANGLE = 0.5
 MAX_ANGLE = 67.5
 TR = 0.9
 
 Y_AXIS_KEY = 'lat_pos'
-KMEANS_N_CLUSTERS = 13
+KMEANS_N_CLUSTERS = 12
 KMEANS_MAX_ITER = 2000
 Y_AXIS_WEIGHT = 1.05  # importance of y axis, more clusters for curvature vs. speed
 

@@ -33,12 +33,11 @@ class CurvatureLearner:
     self.min_speed = 15 * CV.MPH_TO_MS
 
     self.y_axis_factor = 17.41918337  # weight y/curvature as much as speed
-    self.min_curvature = 0.050916
+    self.min_curvature = 0.029977  # ~0.5 degrees
 
     self.directions = ['left', 'right']
-    self.cluster_coords = [[10.05191962, 1.20043602], [11.89420311, 13.75759581], [11.99125505, 5.82722866], [14.68832472, 1.4674782], [18.3783435, 5.8264243], [18.65555506, 1.59153737],
-                           [22.03290771, 11.39689355], [22.76205145, 1.87613217], [23.55201934, 6.46182886], [23.79765186, 17.08974372], [26.68562309, 1.9429673], [26.78159669, 10.61987505],
-                           [29.36640861, 4.81450979]]
+    self.cluster_coords = [[10.03825549, 1.33876916], [11.53165076, 9.55614134], [14.33208727, 1.20861419], [17.54634697, 5.82056374], [18.41463574, 1.0878415], [22.45461989, 1.19756965],
+                           [23.06887828, 5.9841687], [23.16195355, 16.12019978], [24.82447609, 10.52689157], [25.93130213, 1.38884869], [28.71325636, 1.10535328], [28.81248811, 5.22180951]]
     self.cluster_names = ['CLUSTER_{}'.format(idx) for idx in range(len(self.cluster_coords))]
 
     self.fast_learning_for = (30 * 60) / (len(self.cluster_names) * len(self.directions))  # speed up learning for ~1 minute per cluster (30 hr / total clusters)
