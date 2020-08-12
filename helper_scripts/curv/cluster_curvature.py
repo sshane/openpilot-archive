@@ -117,7 +117,7 @@ for idx, cluster_coord in enumerate(sorted(cluster_coords, key=lambda coord: coo
   print('{}: {}'.format(cluster_names[-1], final_cluster_list[-1]))
 
   plt.scatter(cluster_coord[0], cluster_coord[1] / y_axis_factor, s=100, c='black')
-  plt.text(cluster_coord[0] + .38, cluster_coord[1] / y_axis_factor + .03, cluster_names[-1], fontsize=9)
+  # plt.text(cluster_coord[0] + .38, cluster_coord[1] / y_axis_factor + .03, cluster_names[-1], fontsize=9)
 
 print('\ncluster_coords = {}'.format(final_cluster_list))
 print('cluster_names = {}'.format(cluster_names))
