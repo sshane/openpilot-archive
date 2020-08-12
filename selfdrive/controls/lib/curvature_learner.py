@@ -12,7 +12,7 @@ from selfdrive.controls.lib.lane_planner import eval_poly
 # Version 5 due to json incompatibilities
 
 GATHER_DATA = True
-VERSION = 5
+VERSION = 5.1
 
 FT_TO_M = 0.3048
 
@@ -36,9 +36,11 @@ class CurvatureLearner:
     self.min_curvature = 0.050916
 
     self.directions = ['left', 'right']
-    self.cluster_coords = [[9.50898744, 1.15147653], [11.61555388, 6.77329492], [13.12260049, 1.41386154], [16.87001474, 5.64168796], [17.71598068, 1.25741708], [21.80838089, 6.11567922],
-                           [22.6046087, 15.91567986], [22.91549021, 1.72555002], [23.3612511, 10.85114753], [25.07931061, 6.36175232], [26.75841484, 2.01383989], [30.30274637, 4.88505625]]
-    self.cluster_names = ['CLUSTER_{}'.format(idx) for idx in range(len(self.cluster_coords))]
+    self.cluster_coords = [[9.45621173, 1.50435016], [13.2693701, 5.96614348], [13.65293944, 1.34539057], [13.86556033, 11.91932353], [17.88677666, 1.9553742], [20.12247867, 6.5955202],
+                           [22.36113962, 1.6691], [22.7191736, 20.48649402], [23.92071721, 8.99952259], [24.24342697, 14.23803407], [24.73679439, 4.4804306], [27.11112119, 1.79429335],
+                           [29.58971969, 5.9109405]]
+    self.cluster_names = ['21.2MPH-0.1CURV', '29.7MPH-0.3CURV', '30.5MPH-0.1CURV', '31.0MPH-0.7CURV', '40.0MPH-0.1CURV', '45.0MPH-0.4CURV', '50.0MPH-0.1CURV', '50.8MPH-1.2CURV', '53.5MPH-0.5CURV',
+                          '54.2MPH-0.8CURV', '55.3MPH-0.3CURV', '60.6MPH-0.1CURV', '66.2MPH-0.3CURV']
 
     self._load_curvature()
 
