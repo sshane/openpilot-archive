@@ -78,7 +78,7 @@ Curvature Learner
 From [zorrobyte](https://github.com/zorrobyte/openpilot), I've added his Curvature Learner to help fix hugging in curves with a few modifications of my own to improve the idea further.
 
 ***What's new in Curvature Learner v5:***
-  - Moved to using the curvature from dPoly rather than angle steers for curve measurement and learning. This helps fix oscilation issues with slight curves.
+  - Moved to using the curvature from dPoly rather than steering angle for curve measurement and learning. This helps fix oscilation issues with slight curves.
     - Curvature is (rudimentarily) calculated as the lateral position of the dPoly path at 0.9 seconds into the future.
   - Added vehicle speed as a learning factor
   - Added curve direction as a learning factor (left and right curves learn different offsets)
