@@ -107,20 +107,21 @@ if Y_AXIS_KEY == 'lat_pos':
 else:
   plt.ylabel(Y_AXIS_KEY)
 
-plt.scatter(cluster_coords[:, 0], cluster_coords[:, 1] / y_axis_factor, s=100, c='black')
-plt.show()
-
 # now print data to copy into curvature_learner.py
-cluster_dict = {}
 print('Number of clusters: {}'.format(KMEANS_N_CLUSTERS))
+cluster_names = []
+final_cluster_list = []
 for idx, cluster_coord in enumerate(sorted(cluster_coords, key=lambda coord: coord[0])):
-  cluster_name = 'CLUSTER_' + str(idx)
-  # cluster_coord[1] /= y_axis_factor  # scale back down
-  cluster_coord = np.round(cluster_coord, ROUND_TO).tolist()
-  print('{}: {}'.format(cluster_name, cluster_coord))
-  cluster_dict[cluster_name] = cluster_coord
+  cluster_names.append('{}MPH-{}CURV'.format(round(cluster_coord[0] * CV.MS_TO_MPH, 1), round(cluster_coord[1] / y_axis_factor, 1)))
+  final_cluster_list.append(np.round(cluster_coord, ROUND_TO).tolist())
+  print('{}: {}'.format(cluster_names[-1], final_cluster_list[-1]))
 
-print('\ncluster_coords = {}'.format(cluster_dict))
-# print('Make sure to multiply each cluster y coordinate by the y axis factor below as well as the y position of the sample!')
+  plt.scatter(cluster_coord[0], cluster_coord[1] / y_axis_factor, s=100, c='black')
+  plt.text(cluster_coord[0] + .38, cluster_coord[1] / y_axis_factor + .03, cluster_names[-1], fontsize=9)
+
+print('\ncluster_coords = {}'.format(final_cluster_list))
+print('cluster_names = {}'.format(cluster_names))
 print('Make sure to multiply each sample y coordinate by the y axis factor below (y coord of clusters are pre-multiplied)!')
 print('y axis factor: {}'.format(round(y_axis_factor, ROUND_TO)))
+
+plt.show()
