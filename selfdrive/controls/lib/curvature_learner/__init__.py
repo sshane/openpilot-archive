@@ -32,7 +32,7 @@ class CurvatureLearner:
     self.min_lr_prob = .65
     self.min_speed = 15 * CV.MPH_TO_MS
 
-    self.y_axis_factor = 17.41918337  # weight y/curvature as much as speed
+    self.y_axis_factor = 14.52823993  # weight y/curvature as much as speed
     self.min_curvature = 0.047963  # ~0.8 degrees
 
     self.directions = ['left', 'right']
