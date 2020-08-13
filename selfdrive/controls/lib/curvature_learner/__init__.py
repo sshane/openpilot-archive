@@ -109,6 +109,8 @@ class CurvatureLearner:
     try:
       with open(self.curvature_file, 'r') as f:
         self.learned_offsets = json.load(f)
+      with open(self.fast_learn_file, 'r') as f:
+        self.fast_learn = json.load(f)
       if 'version' in self.learned_offsets and self.learned_offsets['version'] == VERSION:
         return
     except:
