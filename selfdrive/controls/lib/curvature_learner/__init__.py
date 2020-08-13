@@ -12,7 +12,7 @@ from selfdrive.controls.lib.lane_planner import eval_poly
 # Version 5 due to json incompatibilities
 
 GATHER_DATA = True
-VERSION = 5.6
+VERSION = 5.5
 
 FT_TO_M = 0.3048
 
@@ -33,15 +33,16 @@ class CurvatureLearner:
     self.min_speed = 15 * CV.MPH_TO_MS
 
     self.y_axis_factor = 17.41918337  # weight y/curvature as much as speed
-    self.min_curvature = 0.029977  # ~0.5 degrees
+    self.min_curvature = 0.047963  # ~0.8 degrees
 
     self.directions = ['left', 'right']
-    self.cluster_coords = [[10.03825549, 1.33876916], [11.53165076, 9.55614134], [14.33208727, 1.20861419], [17.54634697, 5.82056374], [18.41463574, 1.0878415], [22.45461989, 1.19756965],
-                           [23.06887828, 5.9841687], [23.16195355, 16.12019978], [24.82447609, 10.52689157], [25.93130213, 1.38884869], [28.71325636, 1.10535328], [28.81248811, 5.22180951]]
+    self.cluster_coords = [[9.99910156, 1.43249868], [11.26758224, 13.22648562], [13.86131285, 5.94795438], [14.54245917, 1.24890961], [18.55437456, 1.460235], [19.84035874, 5.58023702],
+                           [22.00972273, 10.78913149], [22.91276622, 1.61455747], [23.64728113, 16.76732302], [24.0490494, 6.10746123], [26.85699436, 10.58068907], [26.98539564, 1.65095748],
+                           [29.37570625, 4.85648755]]
     self.cluster_names = ['CLUSTER_{}'.format(idx) for idx in range(len(self.cluster_coords))]
 
-    self.fast_learning_for = (20 * 60) / (len(self.cluster_names) * len(self.directions))  # speed up learning for ~1 minute per cluster (30 hr / total clusters)
-    self.fast_learning_for = round(self.fast_learning_for / rate)  # get iterations equivalent to 20hz for ~1 min
+    self.fast_learning_for = 90  # seconds per cluster
+    self.fast_learning_for = round(self.fast_learning_for / rate)  # speed up learning first time user uses curvature learner
     self.fast_lr_multiplier = 2.  # 2x faster learning until ~1 MIN for each cluster
     self._load_curvature()
 
