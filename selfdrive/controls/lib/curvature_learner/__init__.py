@@ -13,7 +13,7 @@ from common.op_params import opParams
 # Version 5 due to json incompatibilities
 
 GATHER_DATA = True
-VERSION = 5.5
+VERSION = 5.6
 
 FT_TO_M = 0.3048
 
@@ -36,15 +36,15 @@ class CurvatureLearner:
     self.min_speed = 15 * CV.MPH_TO_MS
 
     self.y_axis_factor = 14.52823993  # weight y/curvature as much as speed
-    self.min_curvature = 0.047963  # ~0.8 degrees
+    self.min_curvature = 0.059954  # ~0.8 degrees
 
     self.directions = ['left', 'right']
-    self.cluster_coords = [[10.08089463, 1.14077195], [11.92443682, 13.72311586], [12.00668782, 5.76182834], [14.69486009, 1.31361394], [18.1817087, 5.62112812], [18.75565424, 1.41016134],
-                           [21.98173854, 10.84622124], [22.96835188, 1.65274428], [23.47335083, 6.07894073], [23.76092757, 16.71622771], [26.74476333, 10.2416992], [26.98587618, 1.67010251],
-                           [29.2826046, 4.8478324]]
+    self.cluster_coords = [[10.02332922, 1.2082594], [11.99819907, 13.79344136], [12.02127065, 5.86476815], [14.61702255, 1.46308569], [18.4381052, 5.74835111], [18.61637118, 1.56647061],
+                           [22.04819156, 10.67969111], [22.79735722, 1.8271313], [23.63347784, 6.11923985], [23.71383645, 16.63300599], [26.80928261, 10.30835547], [26.86438932, 1.95377927],
+                           [29.45564774, 4.92064132]]
     # self.cluster_names = ['CLUSTER_{}'.format(idx) for idx in range(len(self.cluster_coords))]
-    self.cluster_names = ['22.6MPH-.08CURV', '26.7MPH-.94CURV', '26.9MPH-.4CURV', '32.9MPH-.09CURV', '40.7MPH-.39CURV', '42.MPH-.1CURV', '49.2MPH-.75CURV', '51.4MPH-.11CURV', '52.5MPH-.42CURV',
-                          '53.2MPH-1.15CURV', '59.8MPH-.7CURV', '60.4MPH-.11CURV', '65.5MPH-.33CURV']
+    self.cluster_names = ['22.4MPH-.08CURV', '26.8MPH-.95CURV', '26.9MPH-.4CURV', '32.7MPH-.1CURV', '41.2MPH-.4CURV', '41.6MPH-.11CURV', '49.3MPH-.74CURV', '51.MPH-.13CURV', '52.9MPH-.42CURV',
+                          '53.MPH-1.14CURV', '60.MPH-.71CURV', '60.1MPH-.13CURV', '65.9MPH-.34CURV']
 
     self.fast_learning_for = 90  # seconds per cluster
     self.fast_learning_for = round(self.fast_learning_for / rate)  # speed up learning first time user uses curvature learner

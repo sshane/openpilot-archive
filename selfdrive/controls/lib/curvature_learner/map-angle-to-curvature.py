@@ -22,7 +22,7 @@ for fi in os.listdir():
           print('error: {}'.format(line))
 
 round_to = 6
-min_angle = .8
+min_angle = 1
 center_max = 2.5
 inner_max = 7.5
 outer_max = 15.
@@ -93,7 +93,7 @@ for TR in TRs:
                                                                round(avg_curvatures[band] * modifiers[band], round_to)))
 
   min_curv_from_angle = (min_angle * avg_curvatures['center']) / avg_angle_bands['center']  # calcs 0.1 deg min equivelent
-  print('max. calc. curvature for CL: {} (ADJUSTED: {})'.format(round(min_curv_from_angle, round_to), round(min_curv_from_angle * modifiers['center'], round_to)))
+  print('max calc. curvature for CL: {} (ADJUSTED: {})'.format(round(min_curv_from_angle, round_to), round(min_curv_from_angle * modifiers['center'], round_to)))
   print('TR: {}'.format(TR))
 
 # print()

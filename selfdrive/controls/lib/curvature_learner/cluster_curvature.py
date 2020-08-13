@@ -26,7 +26,7 @@ for fi in os.listdir():
 
 print('\nSamples before filtering: {}'.format(len(data)))
 ROUND_TO = 8
-MIN_ANGLE = .8
+MIN_ANGLE = 1
 MAX_ANGLE = 67.5
 TR = 0.9
 
