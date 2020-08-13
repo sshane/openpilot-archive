@@ -128,5 +128,5 @@ class CurvatureLearner:
         f.write(json.dumps(self.fast_learn, indent=2))
 
       os.chmod(self.curvature_file, 0o777)
-      os.chmod(self.fast_learn, 0o777)
+      os.chmod(self.fast_learn_file, 0o777)
       self._last_write_time = sec_since_boot()
