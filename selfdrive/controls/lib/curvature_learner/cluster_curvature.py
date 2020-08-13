@@ -112,12 +112,15 @@ print('Number of clusters: {}'.format(KMEANS_N_CLUSTERS))
 cluster_names = []
 final_cluster_list = []
 for idx, cluster_coord in enumerate(sorted(cluster_coords, key=lambda coord: coord[0])):
-  cluster_names.append('{}MPH-{}CURV'.format(round(cluster_coord[0] * CV.MS_TO_MPH, 1), round(cluster_coord[1] / y_axis_factor, 1)))
-  final_cluster_list.append(np.round(cluster_coord, ROUND_TO).tolist())
-  print('{}: {}'.format(cluster_names[-1], final_cluster_list[-1]))
+  cluster_name_speed = str(round(cluster_coord[0] * CV.MS_TO_MPH, 1))
+  cluster_name_curv = str(round(cluster_coord[1] / y_axis_factor, 2))
+  cluster_name = '{}MPH-{}CURV'.format(cluster_name_speed.strip('0'), cluster_name_curv.strip('0'))
 
+  cluster_names.append(cluster_name)
+  final_cluster_list.append(np.round(cluster_coord, ROUND_TO).tolist())
+  print('{}: {}'.format(cluster_name, final_cluster_list[-1]))
   plt.scatter(cluster_coord[0], cluster_coord[1] / y_axis_factor, s=100, c='black')
-  # plt.text(cluster_coord[0] + .38, cluster_coord[1] / y_axis_factor + .03, cluster_names[-1], fontsize=9)
+  # plt.text(cluster_coord[0] + .38, cluster_coord[1] / y_axis_factor + .03, cluster_name, fontsize=9)
 
 print('\ncluster_coords = {}'.format(final_cluster_list))
 print('cluster_names = {}'.format(cluster_names))
