@@ -40,7 +40,7 @@ class CurvatureLearner:
                            [23.06887828, 5.9841687], [23.16195355, 16.12019978], [24.82447609, 10.52689157], [25.93130213, 1.38884869], [28.71325636, 1.10535328], [28.81248811, 5.22180951]]
     self.cluster_names = ['CLUSTER_{}'.format(idx) for idx in range(len(self.cluster_coords))]
 
-    self.fast_learning_for = (30 * 60) / (len(self.cluster_names) * len(self.directions))  # speed up learning for ~1 minute per cluster (30 hr / total clusters)
+    self.fast_learning_for = (20 * 60) / (len(self.cluster_names) * len(self.directions))  # speed up learning for ~1 minute per cluster (30 hr / total clusters)
     self.fast_learning_for = round(self.fast_learning_for / rate)  # get iterations equivalent to 20hz for ~1 min
     self.fast_lr_multiplier = 2.  # 2x faster learning until ~1 MIN for each cluster
     self._load_curvature()
