@@ -28,6 +28,7 @@ inner_max = 7.5
 outer_max = 15.
 sharp_max = float('inf')
 data_banded = {'center': [], 'inner': [], 'outer': [], 'sharp': []}
+min_angles = []
 
 within_percent = 0.075  # only use angles within x% lower than max angle to get higher max average (instead of max())
 
@@ -35,6 +36,11 @@ for line in data:
   if line['v_ego'] < 15 * CV.MPH_TO_MS:
     continue
   angle_steers = line['angle_steers']
+
+  if abs(angle_steers) < min_angle * (1 + within_percent):
+    if min_angle * (1 - within_percent) < abs(angle_steers):
+      min_angles.append(line)
+
   if abs(angle_steers) >= min_angle:
     if abs(angle_steers) < center_max * (1 + within_percent):
       if center_max * (1 - within_percent) < abs(angle_steers):  # within x%
@@ -52,6 +58,7 @@ for line in data:
 
 for band in data_banded:
   print('{}: {}'.format(band, len(data_banded[band])), end=' ')
+print('min_angles: {}'.format(len(min_angles)))
 print()
 
 avg_angle_bands = {}
@@ -68,6 +75,7 @@ print()
 TRs = np.linspace(0.4, 2.7, 24*2)
 TRs = [0.9]
 stds = {}
+min_curvatures = []
 for TR in TRs:
   curvature_dict = {'center': [], 'inner': [], 'outer': [], 'sharp': []}
   for band in data_banded:
@@ -76,6 +84,12 @@ for TR in TRs:
       line['d_poly'][3] = 0  # want curvature of road from start of path not car
       lat_pos = np.polyval(line['d_poly'], dist)  # lateral position in meters at TR seconds
       curvature_dict[band].append(abs(lat_pos))
+
+  for line in min_angles:
+    dist = line['v_ego'] * TR
+    line['d_poly'][3] = 0  # want curvature of road from start of path not car
+    lat_pos = np.polyval(line['d_poly'], dist)  # lateral position in meters at TR seconds
+    min_curvatures.append(abs(lat_pos))
 
   avg_curvatures = {band: np.mean(curvature_dict[band]) for band in curvature_dict}
   std_curvatures = {band: np.std(curvature_dict[band]) for band in curvature_dict}
@@ -93,7 +107,8 @@ for TR in TRs:
                                                                round(avg_curvatures[band] * modifiers[band], round_to)))
 
   min_curv_from_angle = (min_angle * avg_curvatures['center']) / avg_angle_bands['center']  # calcs 0.1 deg min equivelent
-  print('max calc. curvature for CL: {} (ADJUSTED: {})'.format(round(min_curv_from_angle, round_to), round(min_curv_from_angle * modifiers['center'], round_to)))
+  print('min calc. curvature for CL: {} (ADJUSTED: {})'.format(round(min_curv_from_angle, round_to), round(min_curv_from_angle * modifiers['center'], round_to)))
+  print('min curvature from data: {}'.format(round(np.mean(min_curvatures), round_to)))
   print('TR: {}'.format(TR))
 
 # print()
@@ -105,4 +120,7 @@ for idx, band in enumerate(curvature_dict):
   plt.figure(idx)
   sns.distplot(curvature_dict[band])
   plt.title(band)
+plt.figure(len(curvature_dict))
+sns.distplot(min_curvatures, bins=500)
+plt.title('min_curvatures')
 plt.show()
