@@ -92,19 +92,20 @@ class opParams:
                                                                   'localizer might not work correctly'),
                         'prius_use_lqr': Param(False, bool, 'If you have a newer Prius with a good angle sensor, you can try enabling this to use LQR'),
                         'corolla_use_lqr': Param(False, bool, 'Enable this to use LQR for lat with your Corolla (2017)'),
+                        'curvature_learner': Param(True, bool, 'Curvature Learner v5 includes a few new factors that it learns with, keep enabled if your car hugs in certain curves'),
                         'username': Param(None, [type(None), str, bool], 'Your identifier provided with any crash logs sent to Sentry.\n'
                                                                          'Helps the developer reach out to you if anything goes wrong'),
 
                         'op_edit_live_mode': Param(False, bool, 'This parameter controls which mode opEdit starts in. It should be hidden from the user with the hide key', hidden=True)}
 
     # A list of parameters you want to be live. You STILL need to use the .get function repeatedly in the calling file
-    _live_params = ['camera_offset', 'global_df_mod', 'min_TR', 'steer_ratio']
+    _live_params = ['camera_offset', 'global_df_mod', 'min_TR', 'steer_ratio', 'curvature_learner']
     for p in _live_params:
       self.fork_params[p].live = True
 
     self._params_file = "/data/op_params.json"
     self._last_read_time = sec_since_boot()
-    self.read_frequency = 2.5  # max frequency to read with self.get(...) (sec)
+    self.read_frequency = 3.  # max frequency to read with self.get(...) (sec)
     self._to_delete = ['lane_hug_direction', 'lane_hug_angle_offset']  # a list of params you want to delete (unused)
     self._run_init()  # restores, reads, and updates params
 
