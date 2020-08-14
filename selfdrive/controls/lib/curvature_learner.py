@@ -65,7 +65,8 @@ class CurvatureLearner:
         if direction == 'right':
           d_poly[3] = -d_poly[3]  # d_poly's sign switches for oversteering in different directions
 
-        lr = self.get_learning_rate(direction, cluster)  # faster learning for first ~minute per cluster
+        # lr = self.get_learning_rate(direction, cluster)  # faster learning for first ~minute per cluster
+        lr = self.learning_rate
         self.learned_offsets[direction][cluster] -= d_poly[3] * lr  # the learning
       offset = self.learned_offsets[direction][cluster]
 
