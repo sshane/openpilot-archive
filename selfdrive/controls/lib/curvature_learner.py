@@ -43,9 +43,7 @@ class CurvatureLearner:
     self.cluster_coords = [[9.98897229, 1.30326606], [12.36487118, 7.1045407], [14.35173769, 1.50427335], [18.08427443, 5.39189164], [18.42851434, 1.46511707], [21.89795464, 11.33968945],
                            [22.50821823, 1.62539595], [22.82970169, 6.44595549], [23.77750049, 16.46180124], [25.30928944, 3.7547656], [26.70860693, 9.76775172], [27.18995158, 1.45171491],
                            [29.67353472, 4.68830402]]
-    # self.cluster_names = ['CLUSTER_{}'.format(idx) for idx in range(len(self.cluster_coords))]
-    self.cluster_names = ['22.3MPH-.09CURV', '27.7MPH-.51CURV', '32.1MPH-.11CURV', '40.5MPH-.39CURV', '41.2MPH-.11CURV', '49.MPH-.82CURV', '50.3MPH-.12CURV', '51.1MPH-.47CURV', '53.2MPH-1.19CURV',
-                          '56.6MPH-.27CURV', '59.7MPH-.71CURV', '60.8MPH-.1CURV', '66.4MPH-.34CURV']
+    self.cluster_names = ['CLUSTER_{}'.format(idx) for idx in range(len(self.cluster_coords))]
 
     # self.fast_learning_for = 90  # seconds per cluster
     # self.fast_learning_for = round(self.fast_learning_for / rate)  # speed up learning first time user uses curvature learner
