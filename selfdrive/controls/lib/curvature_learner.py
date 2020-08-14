@@ -30,7 +30,8 @@ class CurvatureLearner:
     self.curvature_file = '/data/curvature_offsets.json'
     self.fast_learn_file = '/data/curvature_fast_learn.json'
     rate = 1 / 20.  # pathplanner is 20 hz
-    self.learning_rate = 2.5833e-3 * rate
+    # self.learning_rate = 2.5833e-3 * rate
+    self.learning_rate = 3.25e-3 * rate
     self.write_frequency = 5  # in seconds
     self.min_lr_prob = .65
     self.min_speed = 15 * CV.MPH_TO_MS
@@ -65,7 +66,7 @@ class CurvatureLearner:
         if direction == 'right':
           d_poly[3] = -d_poly[3]  # d_poly's sign switches for oversteering in different directions
 
-        # lr = self.get_learning_rate(direction, cluster)  # faster learning for first ~minute per cluster
+        # lr = self.get_learning_rate(direction, cluster)  # faster learning for first ~minute per cluster todo: make sure this is correct
         lr = self.learning_rate
         self.learned_offsets[direction][cluster] -= d_poly[3] * lr  # the learning
       offset = self.learned_offsets[direction][cluster]
