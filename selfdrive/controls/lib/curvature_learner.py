@@ -69,7 +69,7 @@ class CurvatureLearner:
         lr = self.learning_rate
         self.learned_offsets[direction][cluster] -= d_poly[3] * lr  # the learning
       offset = self.learned_offsets[direction][cluster]
-      print('CLUSTER: {}, OFFSET: {}'.format(cluster, round(offset, 5)))
+      print('CLUSTER: {}, OFFSET: {}'.format(cluster, round(offset, 6)))
 
     self._write_data()
     return clip(offset, -0.3, 0.3)
