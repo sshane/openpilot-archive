@@ -59,7 +59,6 @@ class CurvatureLearner:
 
     cluster, direction = self.cluster_sample(v_ego, d_poly)
     if cluster is not None:  # don't learn/return an offset if below min curvature
-      print('CLUSTER: {}'.format(cluster))
       lr_prob = lane_probs[0] + lane_probs[1] - lane_probs[0] * lane_probs[1]
 
       if lr_prob >= self.min_lr_prob:  # only learn when lane lines are present; still use existing offset
@@ -70,6 +69,7 @@ class CurvatureLearner:
         lr = self.learning_rate
         self.learned_offsets[direction][cluster] -= d_poly[3] * lr  # the learning
       offset = self.learned_offsets[direction][cluster]
+      print('CLUSTER: {}, OFFSET: {}'.format(cluster, round(offset, 5)))
 
     self._write_data()
     return clip(offset, -0.3, 0.3)
