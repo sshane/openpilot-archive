@@ -28,7 +28,7 @@ class CurvatureLearner:
   def __init__(self):
     self.op_params = opParams()
     self.curvature_file = '/data/curvature_offsets.json'
-    self.fast_learn_file = '/data/curvature_fast_learn.json'
+    # self.fast_learn_file = '/data/curvature_fast_learn.json'
     rate = 1 / 20.  # pathplanner is 20 hz
     # self.learning_rate = 2.5833e-3 * rate
     self.learning_rate = 3.25e-3 * rate
@@ -47,9 +47,9 @@ class CurvatureLearner:
     self.cluster_names = ['22.3MPH-.09CURV', '27.7MPH-.51CURV', '32.1MPH-.11CURV', '40.5MPH-.39CURV', '41.2MPH-.11CURV', '49.MPH-.82CURV', '50.3MPH-.12CURV', '51.1MPH-.47CURV', '53.2MPH-1.19CURV',
                           '56.6MPH-.27CURV', '59.7MPH-.71CURV', '60.8MPH-.1CURV', '66.4MPH-.34CURV']
 
-    self.fast_learning_for = 90  # seconds per cluster
-    self.fast_learning_for = round(self.fast_learning_for / rate)  # speed up learning first time user uses curvature learner
-    self.fast_lr_multiplier = 2.  # 2x faster learning until ~1 MIN for each cluster
+    # self.fast_learning_for = 90  # seconds per cluster
+    # self.fast_learning_for = round(self.fast_learning_for / rate)  # speed up learning first time user uses curvature learner
+    # self.fast_lr_multiplier = 2.  # 2x faster learning until ~1 MIN for each cluster
     self._load_curvature()
 
   def update(self, v_ego, d_poly, lane_probs, angle_steers):
@@ -63,7 +63,7 @@ class CurvatureLearner:
       lr_prob = lane_probs[0] + lane_probs[1] - lane_probs[0] * lane_probs[1]
 
       if lr_prob >= self.min_lr_prob:  # only learn when lane lines are present; still use existing offset
-        if direction == 'right':
+        if direction == 'right':  # todo: just checked, this should be correct
           d_poly[3] = -d_poly[3]  # d_poly's sign switches for oversteering in different directions
 
         # lr = self.get_learning_rate(direction, cluster)  # faster learning for first ~minute per cluster todo: make sure this is correct
@@ -90,16 +90,16 @@ class CurvatureLearner:
 
     return closest_cluster, direction
 
-  def get_learning_rate(self, direction, cluster):
-    lr = self.learning_rate
-    fast_iter_left = self.fast_learn[direction][cluster]
-    if not isinstance(fast_iter_left, str):
-      if 1 <= fast_iter_left:  # decrement until we reach 0
-        self.fast_learn[direction][cluster] -= 1
-        lr *= self.fast_lr_multiplier
-      else:  # mark done
-        self.fast_learn[direction][cluster] = 'done'
-    return lr
+  # def get_learning_rate(self, direction, cluster):
+  #   lr = self.learning_rate
+  #   fast_iter_left = self.fast_learn[direction][cluster]
+  #   if not isinstance(fast_iter_left, str):
+  #     if 1 <= fast_iter_left:  # decrement until we reach 0
+  #       self.fast_learn[direction][cluster] -= 1
+  #       lr *= self.fast_lr_multiplier
+  #     else:  # mark done
+  #       self.fast_learn[direction][cluster] = 'done'
+  #   return lr
 
   def _gather_data(self, v_ego, d_poly, angle_steers):
     if GATHER_DATA:
@@ -111,8 +111,8 @@ class CurvatureLearner:
     try:
       with open(self.curvature_file, 'r') as f:
         self.learned_offsets = json.load(f)
-      with open(self.fast_learn_file, 'r') as f:
-        self.fast_learn = json.load(f)
+      # with open(self.fast_learn_file, 'r') as f:
+      #   self.fast_learn = json.load(f)
       if 'version' in self.learned_offsets and self.learned_offsets['version'] == VERSION:
         return
     except:
@@ -120,7 +120,7 @@ class CurvatureLearner:
     # can't read file, doesn't exist, or old version
     # todo: old: self.learned_offsets = {d: {c: {'offset': 0., 'fast_learn': self.fast_learning_for} for c in self.cluster_names} for d in self.directions}
     self.learned_offsets = {d: {c: 0. for c in self.cluster_names} for d in self.directions}
-    self.fast_learn = {d: {c: self.fast_learning_for for c in self.cluster_names} for d in self.directions}
+    # self.fast_learn = {d: {c: self.fast_learning_for for c in self.cluster_names} for d in self.directions}
     self.learned_offsets['version'] = VERSION  # update version
     self._write_data()  # rewrite/create new file
 
@@ -128,9 +128,9 @@ class CurvatureLearner:
     if sec_since_boot() - self._last_write_time >= self.write_frequency:
       with open(self.curvature_file, 'w') as f:
         f.write(json.dumps(self.learned_offsets, indent=2))
-      with open(self.fast_learn_file, 'w') as f:
-        f.write(json.dumps(self.fast_learn, indent=2))
+      # with open(self.fast_learn_file, 'w') as f:
+      #   f.write(json.dumps(self.fast_learn, indent=2))
 
       os.chmod(self.curvature_file, 0o777)
-      os.chmod(self.fast_learn_file, 0o777)
+      # os.chmod(self.fast_learn_file, 0o777)
       self._last_write_time = sec_since_boot()
