@@ -22,7 +22,7 @@ for fi in os.listdir():
           print('error: {}'.format(line))
 
 round_to = 6
-min_angle = 1
+min_angle = 1.
 center_max = 2.5
 inner_max = 7.5
 outer_max = 15.
