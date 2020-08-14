@@ -13,7 +13,7 @@ from common.op_params import opParams
 # Version 5 due to json incompatibilities
 
 GATHER_DATA = True
-VERSION = 5.71
+VERSION = 5.72
 
 FT_TO_M = 0.3048
 
