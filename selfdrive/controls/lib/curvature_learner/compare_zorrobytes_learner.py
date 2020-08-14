@@ -11,7 +11,7 @@ else:
 
 direction = 'left' if lat_pos > 0 else 'right'
 
-HUGGING_DIRECTION = 'right'
+HUGGING_DIRECTION = 'left'
 if HUGGING_DIRECTION == 'left':
   d_poly = [0, 0, 0, -0.5]
 else:
@@ -27,9 +27,9 @@ elif angle_steers < -0.1:
   learned_offset += d_poly[3] / learning_rate
   offset = learned_offset
 
-print('zorrobyte\'s learned_offset: {}'.format(learned_offset))  # todo: shouldnt't curv factor be negative for oversteering? not positive?
+print('zorrobyte\'s learned_offset: {}'.format(learned_offset))
 
-if direction == 'left':  # fixme: originally right, but left makes curv factor negative when oversteering and positive when understeering
+if direction == 'right':
   d_poly[3] = -d_poly[3]  # d_poly's sign switches for oversteering in different directions
 learned_offset = 0
 learned_offset -= d_poly[3] / learning_rate

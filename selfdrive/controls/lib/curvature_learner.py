@@ -36,15 +36,15 @@ class CurvatureLearner:
     self.min_lr_prob = .65
     self.min_speed = 15 * CV.MPH_TO_MS
 
-    self.y_axis_factor = 20.16263057  # weight y/curvature as much as speed
+    self.y_axis_factor = 17.39521069  # weight y/curvature as much as speed
     self.min_curvature = 0.064598
 
     self.directions = ['left', 'right']
-    self.cluster_coords = [[9.83147298, 2.14201352], [14.94071156, 1.83124722], [15.08185225, 7.53360722], [17.28043497, 14.93212039], [19.78629341, 2.57889381],
-                           [22.70690938, 8.16313202], [25.59544773, 21.55867351], [25.89100173, 2.8450452], [25.9091385, 12.80053633], [29.15030249, 6.58023313]]
+    self.cluster_coords = [[9.75924708, 2.1290749], [14.61775139, 1.94021551], [15.67532696, 8.62399783], [18.95775824, 2.57890112], [23.09025881, 7.89198581],
+                           [23.27869003, 19.33974985], [23.47590326, 2.76911659], [26.51632344, 12.63602802], [27.31750242, 2.47219315], [29.29870227, 6.29605186]]
     # self.cluster_names = ['CLUSTER_{}'.format(idx) for idx in range(len(self.cluster_coords))]
-    self.cluster_names = ['22.MPH-.11CURV', '33.4MPH-.09CURV', '33.7MPH-.37CURV', '38.7MPH-.74CURV', '44.3MPH-.13CURV',
-                          '50.8MPH-.4CURV', '57.3MPH-1.07CURV', '57.9MPH-.14CURV', '58.MPH-.63CURV', '65.2MPH-.33CURV']
+    self.cluster_names = ['21.8MPH-.12CURV', '32.7MPH-.11CURV', '35.1MPH-.5CURV', '42.4MPH-.15CURV', '51.7MPH-.45CURV',
+                          '52.1MPH-1.11CURV', '52.5MPH-.16CURV', '59.3MPH-.73CURV', '61.1MPH-.14CURV', '65.5MPH-.36CURV']
 
     # self.fast_learning_for = 90  # seconds per cluster
     # self.fast_learning_for = round(self.fast_learning_for / rate)  # speed up learning first time user uses curvature learner
@@ -59,6 +59,7 @@ class CurvatureLearner:
 
     cluster, direction = self.cluster_sample(v_ego, d_poly)
     if cluster is not None:  # don't learn/return an offset if below min curvature
+      print('CLUSTER: {}'.format(cluster))
       lr_prob = lane_probs[0] + lane_probs[1] - lane_probs[0] * lane_probs[1]
 
       if lr_prob >= self.min_lr_prob:  # only learn when lane lines are present; still use existing offset
