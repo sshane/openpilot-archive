@@ -13,7 +13,7 @@ from common.op_params import opParams
 # Version 5 due to json incompatibilities
 
 GATHER_DATA = True
-VERSION = 5.7
+VERSION = 5.71
 
 FT_TO_M = 0.3048
 
@@ -36,14 +36,15 @@ class CurvatureLearner:
     self.min_lr_prob = .65
     self.min_speed = 15 * CV.MPH_TO_MS
 
-    self.y_axis_factor = 13.83641898  # weight y/curvature as much as speed
-    self.min_curvature = 0.059988
+    self.y_axis_factor = 20.16263057  # weight y/curvature as much as speed
+    self.min_curvature = 0.064598
 
     self.directions = ['left', 'right']
-    self.cluster_coords = [[9.98897229, 1.30326606], [12.36487118, 7.1045407], [14.35173769, 1.50427335], [18.08427443, 5.39189164], [18.42851434, 1.46511707], [21.89795464, 11.33968945],
-                           [22.50821823, 1.62539595], [22.82970169, 6.44595549], [23.77750049, 16.46180124], [25.30928944, 3.7547656], [26.70860693, 9.76775172], [27.18995158, 1.45171491],
-                           [29.67353472, 4.68830402]]
-    self.cluster_names = ['CLUSTER_{}'.format(idx) for idx in range(len(self.cluster_coords))]
+    self.cluster_coords = [[9.83147298, 2.14201352], [14.94071156, 1.83124722], [15.08185225, 7.53360722], [17.28043497, 14.93212039], [19.78629341, 2.57889381],
+                           [22.70690938, 8.16313202], [25.59544773, 21.55867351], [25.89100173, 2.8450452], [25.9091385, 12.80053633], [29.15030249, 6.58023313]]
+    # self.cluster_names = ['CLUSTER_{}'.format(idx) for idx in range(len(self.cluster_coords))]
+    self.cluster_names = ['22.MPH-.11CURV', '33.4MPH-.09CURV', '33.7MPH-.37CURV', '38.7MPH-.74CURV', '44.3MPH-.13CURV',
+                          '50.8MPH-.4CURV', '57.3MPH-1.07CURV', '57.9MPH-.14CURV', '58.MPH-.63CURV', '65.2MPH-.33CURV']
 
     # self.fast_learning_for = 90  # seconds per cluster
     # self.fast_learning_for = round(self.fast_learning_for / rate)  # speed up learning first time user uses curvature learner

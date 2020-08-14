@@ -10,19 +10,24 @@ from selfdrive.config import Conversions as CV
 from sklearn.cluster import KMeans
 
 os.chdir(os.getcwd() + '/cl_data')
+PRINT_MAX_CURV_PER_FILE = False
 
 data = []
 for fi in os.listdir():
   if not fi.endswith('.py'):
+    data_this_file = []
     print(fi)
     with open(fi) as f:
       for line in f.read().split('\n')[:-1]:
         line = line.replace('array([', '[').replace('])', ']')  # formats dpoly's np array
         line = line.replace("'", '"')  # for json
         try:
-          data.append(json.loads(line))
+          data_this_file.append(json.loads(line))
         except:
           raise Exception('error: {}'.format(line))
+    if PRINT_MAX_CURV_PER_FILE:
+      print('max curvature: {}'.format(max(np.abs([np.polyval(line['d_poly'], line['v_ego'] * 0.9) - line['d_poly'][3] for line in data_this_file if abs(line['angle_steers']) < 45]))))
+    data += data_this_file
 
 print('\nSamples before filtering: {}'.format(len(data)))
 ROUND_TO = 8
@@ -31,9 +36,9 @@ MAX_ANGLE = 45.
 TR = 0.9
 
 Y_AXIS_KEY = 'lat_pos'
-KMEANS_N_CLUSTERS = 13
+KMEANS_N_CLUSTERS = 10
 KMEANS_MAX_ITER = 2000
-Y_AXIS_WEIGHT = 1.  # importance of y axis, more clusters for curvature vs. speed
+Y_AXIS_WEIGHT = 1.275  # importance of y axis, more clusters for curvature vs. speed
 
 USE_ABS = True
 
