@@ -26,8 +26,6 @@ for fi in os.listdir():
 TR = 0.75
 for line in data:
   dist = line['v_ego'] * TR
-  x = np.linspace(0, round(dist), round(dist))  # todo: multiply second dist for more accurate results?
-  y = np.polyval(line['d_poly'], x)
 
   lat_pos = np.polyval(line['d_poly'], dist)  # lateral position in meters at TR seconds
   lat_pos -= line['d_poly'][3]  # want curvature of road from start of path not car
