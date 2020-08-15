@@ -82,6 +82,7 @@ class CurvatureLearner:
     direction = 'left' if lat_pos > 0 else 'right'
 
     lat_pos = abs(lat_pos)
+    print('lat_pos: {}'.format(lat_pos))
     closest_cluster = None
     if lat_pos >= self.min_curvature:
       sample_coord = [v_ego, lat_pos * self.y_axis_factor]  # we multiply y so that the dist function weights x and y the same
