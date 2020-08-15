@@ -86,7 +86,7 @@ class CurvatureLearner:
 
     lat_pos = abs(lat_pos)
     closest_cluster = None
-    min_curvature = 0.0880376 if self.op_params.get('higher_min_curv') else self.min_curvature
+    min_curvature = 0.11 if self.op_params.get('higher_min_curv') else self.min_curvature
     if lat_pos >= min_curvature:
       sample_coord = [v_ego, lat_pos * self.y_axis_factor]  # we multiply y so that the dist function weights x and y the same
       dists = [find_distance(sample_coord, cluster_coord) for cluster_coord in self.cluster_coords]  # todo: remove clusters far away based on v_ego to speed this up
