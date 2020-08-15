@@ -70,6 +70,8 @@ class CurvatureLearner:
         learning_sign = 1 if lat_pos >= 0 else -1
         self.learned_offsets[direction][cluster] -= d_poly[3] * self.learning_rate * learning_sign  # the learning
       offset = self.learned_offsets[direction][cluster]
+      print('CLUSTER: {}'.format(cluster))
+    print('OFFSET: {}  -  LAT_POS: {}'.format(round(offset, 4), round(lat_pos, 4)))
 
     self._write_curvature()
     return clip(offset, -0.3, 0.3)
