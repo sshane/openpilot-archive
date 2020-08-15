@@ -57,7 +57,7 @@ class CurvatureLearner:
     if v_ego < self.min_speed or math.isnan(d_poly[0]) or len(d_poly) != 4 or not self.op_params.get('curvature_learner'):
       return offset
 
-    cluster, direction = self.cluster_sample(v_ego, d_poly)
+    cluster, direction, lat_pos = self.cluster_sample(v_ego, d_poly)
     if cluster is not None:  # don't learn/return an offset if below min curvature
       lr_prob = lane_probs[0] + lane_probs[1] - lane_probs[0] * lane_probs[1]
 
@@ -69,7 +69,8 @@ class CurvatureLearner:
         lr = self.learning_rate
         self.learned_offsets[direction][cluster] -= d_poly[3] * lr  # the learning
       offset = self.learned_offsets[direction][cluster]
-      print('CLUSTER: {}, OFFSET: {}'.format(cluster, round(offset, 6)))
+      print('CLUSTER: {}'.format(cluster))
+    print('OFFSET: {}  -  LAT_POS: {}'.format(round(offset, 4), round(lat_pos, 4)))
 
     self._write_data()
     return clip(offset, -0.3, 0.3)
@@ -78,18 +79,20 @@ class CurvatureLearner:
     TR = 0.9
     dist = v_ego * TR
     # we want curvature of road from start of path not car, so subtract d_poly[3]
-    lat_pos = eval_poly(d_poly, dist) - d_poly[3]  # lateral position in meters at TR seconds
+    lat_pos = eval_poly(d_poly, dist)  # lateral position in meters at TR seconds
+    if self.op_params.get('subtract_d_poly'):
+      lat_pos -= d_poly[3]  # lateral position in meters at TR seconds
     direction = 'left' if lat_pos > 0 else 'right'
 
     lat_pos = abs(lat_pos)
-    print('lat_pos: {}'.format(lat_pos))
     closest_cluster = None
-    if lat_pos >= self.min_curvature:
+    min_curvature = 0.0880376 if self.op_params.get('higher_min_curv') else self.min_curvature
+    if lat_pos >= min_curvature:
       sample_coord = [v_ego, lat_pos * self.y_axis_factor]  # we multiply y so that the dist function weights x and y the same
       dists = [find_distance(sample_coord, cluster_coord) for cluster_coord in self.cluster_coords]  # todo: remove clusters far away based on v_ego to speed this up
       closest_cluster = self.cluster_names[min(range(len(dists)), key=dists.__getitem__)]
 
-    return closest_cluster, direction
+    return closest_cluster, direction, lat_pos
 
   # def get_learning_rate(self, direction, cluster):
   #   lr = self.learning_rate
