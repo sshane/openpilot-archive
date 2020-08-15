@@ -31,14 +31,14 @@ for fi in os.listdir():
 
 print('\nSamples before filtering: {}'.format(len(data)))
 ROUND_TO = 8
-MIN_ANGLE = 1.
+MIN_ANGLE = 1  # todo: add a min curvature check once i find a good value for center cluster/band
 MAX_ANGLE = 45.
-TR = 0.9
+TR = 0.75
 
 Y_AXIS_KEY = 'lat_pos'
-KMEANS_N_CLUSTERS = 10
+KMEANS_N_CLUSTERS = 12
 KMEANS_MAX_ITER = 2000
-Y_AXIS_WEIGHT = 1.1  # importance of y axis, more clusters for curvature vs. speed
+Y_AXIS_WEIGHT = 1.05  # importance of y axis, more clusters for curvature vs. speed
 
 USE_ABS = True
 
