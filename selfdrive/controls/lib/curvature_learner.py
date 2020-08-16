@@ -38,7 +38,7 @@ class CurvatureLearner:
     self.TR = 0.75
 
     self.y_axis_factor = 22.13036275  # weight y/curvature as much as speed
-    # self.min_curvature = 0.064598  # fixme: deprecated, now goes to center cluster
+    self.min_curvature = 0.09231
 
     self.directions = ['left', 'right']
     self.cluster_coords = [[9.7096459, 1.49880538], [12.46788049, 6.77883128], [14.68319912, 1.72736249], [17.93326323, 12.16199009], [18.44112269, 5.57405353], [19.19873998, 1.75578853],
@@ -46,9 +46,6 @@ class CurvatureLearner:
     # self.cluster_names = ['CLUSTER_{}'.format(idx) for idx in range(len(self.cluster_coords))]
     self.cluster_names = ['21.7MPH-.07CURV', '27.9MPH-.31CURV', '32.8MPH-.08CURV', '40.1MPH-.55CURV', '41.3MPH-.25CURV', '42.9MPH-.08CURV', '52.8MPH-.12CURV', '53.3MPH-.32CURV', '55.4MPH-.86CURV',
                           '59.4MPH-.54CURV', '61.2MPH-.1CURV', '65.9MPH-.26CURV']
-
-    self.center_cluster_curvature = 0.09231
-    self.center_cluster_name = 'CENTER'  # todo: at all speeds? or separate by speed?
 
     # self.fast_learning_for = 90  # seconds per cluster  # todo: finish this once curv-learner is working well
     # self.fast_learning_for = round(self.fast_learning_for / rate)  # speed up learning first time user uses curvature learner
@@ -63,30 +60,19 @@ class CurvatureLearner:
     lr_prob = lane_probs[0] + lane_probs[1] - lane_probs[0] * lane_probs[1]
 
     cluster, direction, lat_pos = self.cluster_sample(v_ego, d_poly)
-    if lr_prob >= self.min_lr_prob:  # only learn when lane lines are present; still use existing offset
-      if direction == 'right':
-        d_poly[3] = -d_poly[3]  # d_poly's sign switches for oversteering in different directions
-      # lr = self.get_learning_rate(direction, cluster)  # faster learning for first ~minute per cluster
-      if cluster == self.center_cluster_name:  # the learning
-        self.learned_offsets[cluster] -= d_poly[3] * self.learning_rate
-      else:
-        self.learned_offsets[direction][cluster] -= d_poly[3] * self.learning_rate
+    if cluster is not None:
+      if lr_prob >= self.min_lr_prob:  # only learn when lane lines are present; still use existing offset
+        if direction == 'right':
+          d_poly[3] = -d_poly[3]  # d_poly's sign switches for oversteering in different directions
+        # lr = self.get_learning_rate(direction, cluster)  # todo: faster learning for first ~minute per cluster
+        self.learned_offsets[direction][cluster] -= d_poly[3] * self.learning_rate  # the learning
 
-    if cluster == self.center_cluster_name:  # grab correct offset
-      offset = self.learned_offsets[cluster]
-      offset = 0
-    else:
-      offset = self.learned_offsets[direction][cluster]
+        offset = self.learned_offsets[direction][cluster]
 
-    print('CLUSTER: {} - OFFSET: {}  -  LAT_POS: {}'.format(cluster, round(offset, 4), round(lat_pos, 4)))
+    # print('CLUSTER: {} - OFFSET: {}  -  LAT_POS: {}'.format(cluster, round(offset, 4), round(lat_pos, 4)))
 
     self._write_data()
-
-    if cluster == self.center_cluster_name:  # lower max offset in center cluster
-      return clip(offset, -0.05, 0.05)
-    else:
-      return clip(offset, -0.15, 0.15)
-
+    return clip(offset, -0.05, 0.05)
 
   def cluster_sample(self, v_ego, d_poly):
     dist = v_ego * self.TR
@@ -97,13 +83,12 @@ class CurvatureLearner:
     direction = 'left' if lat_pos > 0 else 'right'
 
     lat_pos = abs(lat_pos)
-    if lat_pos >= self.center_cluster_curvature:
+    closest_cluster = None
+    if lat_pos >= self.min_curvature:
       sample_coord = [v_ego, lat_pos * self.y_axis_factor]  # we multiply y so that the dist function weights x and y the same
       dists = [find_distance(sample_coord, cluster_coord) for cluster_coord in self.cluster_coords]  # todo: remove clusters far away based on v_ego to speed this up
       closest_cluster = self.cluster_names[min(range(len(dists)), key=dists.__getitem__)]
-      return closest_cluster, direction, lat_pos
-    else:
-      return self.center_cluster_name, direction, lat_pos
+    return closest_cluster, direction, lat_pos
 
   # def get_learning_rate(self, direction, cluster):  # todo: make sure this is correct
   #   lr = self.learning_rate
@@ -136,9 +121,7 @@ class CurvatureLearner:
     # todo: old: self.learned_offsets = {d: {c: {'offset': 0., 'fast_learn': self.fast_learning_for} for c in self.cluster_names} for d in self.directions}
     self.learned_offsets = {d: {c: 0. for c in self.cluster_names} for d in self.directions}
     # self.fast_learn = {d: {c: self.fast_learning_for for c in self.cluster_names} for d in self.directions}
-    self.learned_offsets[self.center_cluster_name] = 0.
     self.learned_offsets['version'] = VERSION  # update version
-    print(self.learned_offsets)
     self._write_data()  # rewrite/create new file
 
   def _write_data(self):
