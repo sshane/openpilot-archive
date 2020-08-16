@@ -74,6 +74,7 @@ class CurvatureLearner:
 
     if cluster == self.center_cluster_name:  # grab correct offset
       offset = self.learned_offsets[cluster]
+      offset = 0
     else:
       offset = self.learned_offsets[direction][cluster]
 
