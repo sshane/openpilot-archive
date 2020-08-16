@@ -66,8 +66,7 @@ class CurvatureLearner:
           d_poly[3] = -d_poly[3]  # d_poly's sign switches for oversteering in different directions
         # lr = self.get_learning_rate(direction, cluster)  # todo: faster learning for first ~minute per cluster
         self.learned_offsets[direction][cluster] -= d_poly[3] * self.learning_rate  # the learning
-
-        offset = self.learned_offsets[direction][cluster]
+      offset = self.learned_offsets[direction][cluster]
 
     # print('CLUSTER: {} - OFFSET: {}  -  LAT_POS: {}'.format(cluster, round(offset, 4), round(lat_pos, 4)))
 
