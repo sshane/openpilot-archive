@@ -57,10 +57,10 @@ class CurvatureLearner:
     offset = 0
     if v_ego < self.min_speed or math.isnan(d_poly[0]) or len(d_poly) != 4 or not self.op_params.get('curvature_learner'):
       return offset
-    lr_prob = lane_probs[0] + lane_probs[1] - lane_probs[0] * lane_probs[1]
 
     cluster, direction, lat_pos = self.cluster_sample(v_ego, d_poly)
     if cluster is not None:
+      lr_prob = lane_probs[0] + lane_probs[1] - lane_probs[0] * lane_probs[1]
       if lr_prob >= self.min_lr_prob:  # only learn when lane lines are present; still use existing offset
         if direction == 'right':
           d_poly[3] = -d_poly[3]  # d_poly's sign switches for oversteering in different directions
