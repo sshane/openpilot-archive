@@ -67,13 +67,13 @@ class CurvatureLearner:
 
         # lr = self.get_learning_rate(direction, cluster)  # todo: faster learning for first ~minute per cluster
         lr = self.learning_rate
-        self.learned_offsets[direction][cluster] -= d_poly[3] * lr  # the learning
+        self.learned_offsets[direction][cluster] -= float(d_poly[3] * lr)  # the learning
       offset = self.learned_offsets[direction][cluster]
 
     # print('CLUSTER: {} - OFFSET: {}  -  LAT_POS: {}'.format(cluster, round(offset, 4), round(lat_pos, 4)))
 
     self._write_data()
-    return clip(offset, -0.05, 0.05)
+    return float(clip(offset, -0.05, 0.05))
 
   def cluster_sample(self, v_ego, d_poly):
     dist = v_ego * self.TR
