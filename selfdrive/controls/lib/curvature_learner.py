@@ -13,7 +13,7 @@ from common.op_params import opParams
 # Version 5 due to json incompatibilities
 
 GATHER_DATA = True
-VERSION = 5.8
+VERSION = 5.81
 
 FT_TO_M = 0.3048
 
@@ -31,7 +31,7 @@ class CurvatureLearner:
     # self.fast_learn_file = '/data/curvature_fast_learn.json'
     rate = 1 / 20.  # pathplanner is 20 hz
     # self.learning_rate = 2.5833e-3 * rate
-    self.learning_rate = (5 / 3) * 1e-3 * rate  # equivelent to x / 12000
+    self.learning_rate = 1.333e-3 * rate  # equivelent to x / 12000
     self.write_frequency = 5  # in seconds
     self.min_lr_prob = .65
     self.min_speed = 15 * CV.MPH_TO_MS
