@@ -5,6 +5,7 @@ Stock Additions 0.7.7
  * Support white panda with experimental parameter. localizer performance may be reduced
  * Fixed silent alerts due to the new alert manager in 0.7.7
  * Make all the UI buttons show their state with unique colors!
+   * Also added more colors to opEdit!
  * Add derivative to lateral PI control for TSS1 Corolla and Prius!
 
 Version 0.7.7 (2020-07-20)
