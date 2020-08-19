@@ -1,16 +1,15 @@
 Stock Additions 0.7.7
-=====
+===
 
-This branch is simply stock openpilot with some additions to help it drive as smooth as possible on my 2017 Toyota Corolla w/ comma pedal.
+Stock Additions is a fork of openpilot designed to be minimal in UI design while boasting various feature additions and behavior improvements over stock. I have a 2017 Toyota Corolla with comma pedal, so most of my changes are designed to improve the longitudinal performance.
 
 Want to request a feature or create a bug report? [Open an issue here!](https://github.com/ShaneSmiskol/openpilot/issues/new/choose)
 
 If you'd like to support my development of Stock Additions with a [dollar for a RaceTrac ICEE](https://paypal.me/ssmiskol) (my PayPal link). Thanks! 🥰
 
------
-
+---
 Highlight Features
-=====
+===
 
 * [**Dynamic follow (now with profiles!)**](#dynamic-follow-3-profiles) - 3 + auto profiles to control distance
   * [**`auto-df` model for automatic distance profile switching**](#Automatic-DF-profile-switching)
@@ -18,21 +17,21 @@ Highlight Features
   * [**Lane Speed Alerts**](#Lane-Speed-alerts) - alerts for when an adjacent lane is faster
   * [**Dynamic camera offsetting**](#Dynamic-camera-offset-based-on-oncoming-traffic) - automatically moves you over if adjacent lane has oncoming traffic
 * [**Dynamic gas**](#dynamic-gas) - smoother gas control
-* [**PI > PID for longcontrol**](#Long-control-uses-a-PID-loop) - fix for pedal overshoot
-* [**Customize this fork (opEdit with live tuning)**](#Customize-this-fork-opEdit)
+* [**NEW❗ Adding derivative to PI for better control**](#pi---pid-controller-for-long-and-lat) - lat: smoother control in turns; long: fix for comma pedal overshoot
+* [**Customize this fork**](#Customize-this-fork-opEdit) - easily edit fork parameters with support for live tuning
 * [**Automatic updates**](#Automatic-updates)
-* [**Offline crash logging**](#Offline-crash-logging)
+* [**Offline crash logging**](#Offline-crash-logging) - check out `/data/community/crashes`
 
 Documentation
-=====
+===
 * [**Quick Installation**](#Quick-installation)
 * [**Branches**](#Branches)
 * [**Videos**](#Videos)
 
------
+---
 
 Dynamic follow (3 profiles)
------
+---
 Dynamic follow aims to provide the stock (Toyota) experience of having three different distance settings. Dynamic follow works by dynamically changing the distance in seconds which is sent to the long MPC to predict a speed to travel at. Basically, if the lead is decelerating or might soon, increase distance to prepare. And if the lead is accelerating, reduce distance to get up to speed quicker.
 
 Dynamic follow works if openpilot can control your vehicle's gas and brakes (longitudinal). [Check if openpilot can control your vehicle's longitudinal from this list.](https://github.com/commaai/openpilot#supported-cars)
@@ -43,10 +42,12 @@ Just use the button on the button right of the screen while driving to change be
   * `roadtrip` - This profile is for road trips where you're mainly on two lane highways and don't want to be following particularly closely; at night for example.
   * [`auto`](#Automatic-DF-profile-switching) - The auto dynamic follow model was trained on about an hour of me manually cycling through the different profiles based on driving conditions, this profile tries to replicate those decisions entirely on its own.
 
-<img src=".media/df_profiles.jpg?raw=true" height="350">
+<p align="center">
+  <img src=".media/df_profiles.jpg?raw=true">
+</p>
 
 Automatic DF profile switching
------
+---
 I've trained a custom model with Keras that takes in the past 35 seconds of your speed, the lead's speed and the lead's distance. With these inputs, it tries to correctly predict which profile is the best for your current situation.
 
 It's only been trained on about an hour of data, so it's not perfect yet, but it's great for users who just want to set it and forget it. **To enable the `auto` profile, simply tap the profile changing button for dynamic follow until it reaches the `auto` profile!**
@@ -58,22 +59,25 @@ Resources:
 - [The model file.](https://github.com/ShaneSmiskol/openpilot/blob/stock_additions/selfdrive/controls/lib/dynamic_follow/auto_df.py)
 - I converted the Keras model to be able to run with pure NumPy using [Konverter](https://github.com/ShaneSmiskol/Konverter).
 
+---
 Lane Speed alerts
------
+---
 This feature alerts you of faster-travelling adjacent lanes and can be configured using the on-screen *LS* button on the bottom right to either be disabled, audible, or silent.
 
 The idea behind this feature is since we often become very relaxed behind the wheel when being driven by openpilot, we don't always notice when we've become stuck behind a slower-moving vehicle. When either the left or right adjacent lane is moving faster than your current lane, LaneSpeed alerts the user that a faster lane is available so that they can make a lane change, overtaking the slower current lane. Thus saving time in the long run on long roadtrips or in general highway driving!
 
 The original idea is thanks to [Greengree#5537](https://github.com/greengree) on Discord. This feature is available at 35 mph and up.
 
+---
 Dynamic camera offset (based on oncoming traffic)
------
+---
 This feature automatically adjusts your position in the lane if an adjacent lane has oncoming traffic. For example, if you're on a two-lane highway and the left adjacent lane has oncoming cars, LaneSpeed recognizes those cars and applies an offset to your `CAMERA_OFFSET` to move you over in the lane, keeping you farther from oncoming cars.
 
 **This feature is available from 35 to ~60 mph due to a limitation with the Toyota radar**. It may not recognize oncoming traffic above 60 mph or so. To enable or disable this feature, use `opEdit` and change this parameter: `dynamic_camera_offset`.
 
+---
 Dynamic gas
------
+---
 Dynamic gas aims to provide a smoother driving experience in stop and go traffic (under 20 mph) by reducing the maximum gas that can be applied based on your current velocity, the relative velocity of the lead, the acceleration of the lead, and the distance of the lead. This usually results in quicker and smoother acceleration from a standstill without the jerking you get in stock openpilot with comma pedal (ex. taking off from a traffic light). It tries to coast if the lead is just inching up, it doesn’t use maximum gas as soon as the lead inches forward. When you are above 20 mph, relative velocity and the current following distance in seconds is taken into consideration.
 
 All cars that have a comma pedal are supported! However to get the smoothest acceleration, I've custom tuned gas curve profiles for the following cars:
@@ -89,14 +93,26 @@ non-pedal cars:
 
 If you have a car without a pedal, or you do have one but I haven't created a profile for you yet, please let me know and we can develop one for your car to test.
 
-Long control uses a PID loop
------
-I've added a custom implementation of derivative to the PI loop controlling the gas and brake output sent to your car. Derivative (change in error) is calculated based on the current and last error and added to the class's integral variable. It's essentially winding down integral according to derivative. It helps fix overshoot on some cars with the comma pedal and increases responsiveness (like when going up and down hills) on all other cars! Still need to figure out the tuning, right now it's using the same derivative gain for all cars. Test it out and let me know what you think!
+---
+PI -> PID Controller for Long and Lat
+---
+(long: longitudinal, speed control. lat: latitudinal, steering control)
 
-Derivative is disabled by default due to only one tune for all cars, but can be enabled by using [opEdit](#Customize-this-fork-opEdit) and setting the `enable_long_derivative` parameter to `True`. It works well on my '17 Corolla with pedal.
+**Changes for lat control: (NEW❗)**
+- Adding the derivative componenet to lat control greatly improves the turning performance of openpilot, I've found it loses control much less frequently in both slight and sharp curves. Basically it ramps down torque as your wheel approaches the desired angle, and ramps up torque quicky when your wheel is moving away from desired.
 
+  ***Currently Supported Cars:***
+  - 2017 Toyota Corolla (when param `corolla_use_lqr` is False)
+  - All Prius years (when param `prius_use_pid` is True). *Note that it will use the 2020 Corolla's PID tune*
+
+**Changes for long control:**
+- I've added a custom implementation of derivative to the PI loop controlling the gas and brake output sent to your car. Derivative (change in error) is calculated based on the current and last error and added to the class's integral variable. It's essentially winding down integral according to derivative. It helps fix overshoot on some cars with the comma pedal and increases responsiveness (like when going up and down hills) on all other cars! Still need to figure out the tuning, right now it's using the same derivative gain for all cars. Test it out and let me know what you think!
+
+  Long derivative is disabled by default due to only one tune for all cars, but can be enabled by using [opEdit](#Customize-this-fork-opEdit) and setting the `enable_long_derivative` parameter to `True`. It works well on my '17 Corolla with pedal.
+
+---
 Customize this fork (opEdit)
------
+---
 This is a handy tool to change your `opParams` parameters without diving into any json files or code. You can specify parameters to be used in any fork's operation that supports `opParams`. First, ssh in to your EON and make sure you're in `/data/openpilot`, then start `opEdit`:
 ```python
 cd /data/openpilot
@@ -126,9 +142,9 @@ Here are the main parameters you can change with this fork:
   - `dynamic_follow`: *Deprecated, use the on-screen button to change profiles*
 - **Experimental params**:
   - `support_white_panda`: This allows users with the original white panda to use openpilot above 0.7.7. The high precision localizer's performance may be reduced due to a lack of GPS
-  - `prius_use_lqr`: If you have a newer Prius with a good angle sensor, you can try enabling this to use LQR
-  - `corolla_use_lqr`: Enable this to use LQR for lat with your Corolla (2017) *(can be enabled for all years by request)*
-  - `corollaTSS2_use_indi`: Enable this to use INDI for lat with your Corolla equipped with TSS2 *(can be enabled for all years by request)*
+  - [`prius_use_pid`](#pi---pid-controller-for-long-and-lat): This enables the PID lateral controller with new a experimental derivative tune
+  - [`corolla_use_lqr`](#pi---pid-controller-for-long-and-lat): Enable this to use LQR for lateral control with your TSS1 Corolla *(can be enabled for all years by request)*
+  - `corollaTSS2_use_indi`: Enable this to use INDI for lat with your TSS2 Corolla *(can be enabled for all years by request)*
 
 A full list of parameters that you can modify are [located here](common/op_params.py#L40).
 
@@ -139,22 +155,25 @@ Parameters are stored at `/data/op_params.json`
 ## opEdit Demo
 <img src=".media/op_edit.gif?raw=true" width="1000">
 
+---
 Automatic updates
------
+---
 When a new update is available on GitHub for Stock Additions, your EON/C2 will pull and reset your local branch to the remote. It then queues a reboot to occur when the following is true:
 - your EON has been inactive or offroad for more than 5 minutes.
 
 Therefore, if your device sees an update while you're driving it will reboot approximately 5 to 10 minutes after you finish your drive, it resets the timer if you start driving again before the time is up.
 
+---
 Offline crash logging
------
+---
 If you experience a crash or exception while driving with this fork and you're not on internet for the error to be uploaded to Sentry, you should be able to check out the directory `/data/community/crashes` to see any and all logs of exceptions caught in `manager.py`. Simply `cat` the log file you wish to view. This does not catch all errors, for example scons compilation errors or Python syntax errors will not be caught, `tmux a` is usually best to view these (if openpilot didn't start).
 
+---
 Documentation
-=====
+===
 
 Quick Installation
------
+---
 To install Stock Additions, just run the following on your EON/C2 (make sure to press enter after each line):
 
 ```
@@ -169,7 +188,7 @@ The `--depth 1` flag shallow clones the fork, it ends up being about 90 Mb so yo
 **NEW❗** Or use the [emu CLI](https://github.com/emu-sh/.oh-my-comma) to easily switch to this fork's default branch: `emu fork switch ShaneSmiskol`. This should get you up and running even quicker.
 
 Branches
------
+---
 Most of the branches on this fork are development branches I use as various openpilot tests. The few that more permanent are the following:
   * [`stock_additions`](https://github.com/ShaneSmiskol/openpilot/tree/stock_additions): This is similar to stock openpilot's release branch. Will receive occasional and tested updates to Stock Additions.
   * [`stock_additions-devel`](https://github.com/ShaneSmiskol/openpilot/tree/stock_additions-devel): My development branch of Stock Additions I use to test new features or changes; similar to the master branch. Not recommendeded as a daily driver.
@@ -181,8 +200,9 @@ Most of the branches on this fork are development branches I use as various open
 * [Stock Additions 0.7.4](https://github.com/ShaneSmiskol/openpilot/tree/stock_additions-074)
 * [Stock Additions 0.7.5](https://github.com/ShaneSmiskol/openpilot/tree/stock_additions-075)
 
+---
 Videos
------
+---
 Here's a short video showing how close the traffic profile was in `0.7.4`. In `0.7.5`, the traffic profile is an average of 7.371 feet closer from 18 mph to 90 mph. Video thanks to [@rolo01](https://github.com/rolo01)!
 
 [![](https://img.youtube.com/vi/sGsODeP_G_c/0.jpg)](https://www.youtube.com/watch?v=sGsODeP_G_c)
