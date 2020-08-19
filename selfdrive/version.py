@@ -62,7 +62,7 @@ try:
     comma_remote = origin.lower().startswith('git@github.com:commaai') or origin.lower().startswith('https://github.com/commaai')
     smiskol_remote = origin.lower().startswith('git@github.com:shanesmiskol') or origin.lower().startswith('https://github.com/shanesmiskol')
     tested_branches = ['devel', 'release2-staging', 'dashcam-staging', 'release2', 'dashcam']
-    tested_SA_branches = ['stock_additions', 'sa-trip']
+    tested_SA_branches = ['stock_additions']
     tested_SA_branches += ['shanesmiskol_' + _b for _b in tested_SA_branches]
 
     tested_branches += tested_SA_branches
