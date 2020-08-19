@@ -19,14 +19,14 @@ class ValueTypes:
 
 
 class Param:
-  def __init__(self, default=None, allowed_types=[], description=None, hidden=False):
+  def __init__(self, default=None, allowed_types=[], description=None, live=False, hidden=False):
     self.default = default
     if not isinstance(allowed_types, list):
       allowed_types = [allowed_types]
     self.allowed_types = allowed_types
     self.description = description
     self.hidden = hidden
-    self.live, self.is_list = False, False
+    self.live = live
     self._create_attrs()
 
   def is_valid(self, value):
@@ -37,9 +37,9 @@ class Param:
   def _create_attrs(self):  # Create attributes and check Param is valid
     self.has_allowed_types = isinstance(self.allowed_types, list) and len(self.allowed_types) > 0
     self.has_description = self.description is not None
+    self.is_list = list in self.allowed_types
     if self.has_allowed_types:
       assert type(self.default) in self.allowed_types, 'Default value type must be in specified allowed_types!'
-    self.is_list = list in self.allowed_types
     if self.is_list:
       self.allowed_types.remove(list)
 
@@ -61,20 +61,20 @@ class opParams:
     """
 
     VT = ValueTypes()
-    self.fork_params = {'camera_offset': Param(0.06, VT.number, 'Your camera offset to use in lane_planner.py'),
+    self.fork_params = {'camera_offset': Param(0.06, VT.number, 'Your camera offset to use in lane_planner.py', live=True),
                         'dynamic_follow': Param('auto', str, 'Can be: (\'traffic\', \'relaxed\', \'roadtrip\'): Left to right increases in following distance.\n'
                                                              'All profiles support dynamic follow so you\'ll get your preferred distance while\n'
                                                              'retaining the smoothness and safety of dynamic follow!'),
                         'global_df_mod': Param(1.0, VT.number, 'The multiplier for the current distance used by dynamic follow. The range is limited from 0.85 to 1.2\n'
                                                                'Smaller values will get you closer, larger will get you farther\n'
-                                                               'This is multiplied by any profile that\'s active. Set to 1. to disable'),
+                                                               'This is multiplied by any profile that\'s active. Set to 1. to disable', live=True),
                         'min_TR': Param(0.9, VT.number, 'The minimum allowed following distance in seconds. Default is 0.9 seconds.\n'
-                                                        'The range is limited from 0.85 to 1.6.'),
+                                                        'The range is limited from 0.85 to 1.6.', live=True),
                         'alca_nudge_required': Param(True, bool, 'Whether to wait for applied torque to the wheel (nudge) before making lane changes. '
                                                                  'If False, lane change will occur IMMEDIATELY after signaling'),
                         'alca_min_speed': Param(25.0, VT.number, 'The minimum speed allowed for an automatic lane change (in MPH)'),
                         'steer_ratio': Param(None, VT.none_or_number, '(Can be: None, or a float) If you enter None, openpilot will use the learned sR.\n'
-                                                                      'If you use a float/int, openpilot will use that steer ratio instead'),
+                                                                      'If you use a float/int, openpilot will use that steer ratio instead', live=True),
                         'lane_speed_alerts': Param('silent', str, 'Can be: (\'off\', \'silent\', \'audible\')\n'
                                                                   'Whether you want openpilot to alert you of faster-traveling adjacent lanes'),
                         'upload_on_hotspot': Param(False, bool, 'If False, openpilot will not upload driving data while connected to your phone\'s hotspot'),
@@ -97,11 +97,6 @@ class opParams:
                                                                          'Helps the developer reach out to you if anything goes wrong'),
 
                         'op_edit_live_mode': Param(False, bool, 'This parameter controls which mode opEdit starts in. It should be hidden from the user with the hide key', hidden=True)}
-
-    # A list of parameters you want to be live. You STILL need to use the .get function repeatedly in the calling file
-    _live_params = ['camera_offset', 'global_df_mod', 'min_TR', 'steer_ratio']
-    for p in _live_params:
-      self.fork_params[p].live = True
 
     self._params_file = "/data/op_params.json"
     self._last_read_time = sec_since_boot()
