@@ -92,19 +92,19 @@ class opParams:
                                                                   'localizer might not work correctly'),
                         'prius_use_pid': Param(False, bool, 'This enables the PID lateral controller with new a experimental derivative tune\nFalse: stock INDI, True: TSS2-tuned PID'),
                         'corolla_use_lqr': Param(False, bool, 'Enable this to use LQR for lateral control with your TSS1 Corolla\nFalse: PID, True: RAV4-tuned LQR'),
-                        'corollaTSS2_use_indi': Param(False, bool, 'Enable this to use INDI for lat with your Corolla with TSS2'),
-                        'username': Param(None, [type(None), str, bool], 'Your identifier provided with any crash logs sent to Sentry.\n'
-                                                                         'Helps the developer reach out to you if anything goes wrong'),
+                        'corollaTSS2_use_indi': Param(False, bool, 'Enable this to use INDI for lat with your Corolla with TSS2')}
 
-                        'op_edit_live_mode': Param(False, bool, 'This parameter controls which mode opEdit starts in. It should be hidden from the user with the hide key', hidden=True)}
-
-    self._params_file = "/data/op_params.json"
+    self._params_file = '/data/op_params.json'
+    self._backup_file = '/data/op_params_corrupt.json'
     self._last_read_time = sec_since_boot()
     self.read_frequency = 2.5  # max frequency to read with self.get(...) (sec)
-    self._to_delete = ['lane_hug_direction', 'lane_hug_angle_offset']  # a list of params you want to delete (unused)
+    self._to_delete = ['lane_hug_direction', 'lane_hug_angle_offset', 'prius_use_lqr']  # a list of params you want to delete (unused)
     self._run_init()  # restores, reads, and updates params
 
   def _run_init(self):  # does first time initializing of default params
+    # Two required parameters for opEdit
+    self.fork_params['username'] = Param(None, [type(None), str, bool], 'Your identifier provided with any crash logs sent to Sentry.\nHelps the developer reach out to you if anything goes wrong')
+    self.fork_params['op_edit_live_mode'] = Param(False, bool, 'This parameter controls which mode opEdit starts in', hidden=True)
     self.params = self._get_all_params(default=True)  # in case file is corrupted
     if travis:
       return
@@ -114,8 +114,12 @@ class opParams:
       if self._read():
         to_write = self._add_default_params()  # if new default data has been added
         to_write |= self._delete_old()  # or if old params have been deleted
-      else:  # don't overwrite corrupted params, just print
-        error("Can't read op_params.json file")
+      else:  # backup and re-create params file
+        error("Can't read op_params.json file, backing up to /data/op_params_corrupt.json and re-creating file!")
+        to_write = True
+        if os.path.isfile(self._backup_file):
+          os.remove(self._backup_file)
+        os.rename(self._params_file, self._backup_file)
     else:
       to_write = True  # user's first time running a fork with op_params, write default params
 
@@ -157,7 +161,7 @@ class opParams:
 
   def _check_key_exists(self, key, met):
     if key not in self.fork_params or key not in self.params:
-      raise Exception('opParams: Tried to {} an unknown parameter! Key not in fork_params'.format(met))
+      raise Exception('opParams: Tried to {} an unknown parameter! Key not in fork_params: {}'.format(met, key))
 
   def _add_default_params(self):
     added = False
