@@ -10,7 +10,7 @@ except ImportError:
   sec_since_boot = time.time
   warning("Using python time.time() instead of faster sec_since_boot")
 
-travis = False
+travis = False  # replace with travis_checker if you use travis or GitHub Actions
 
 
 class ValueTypes:
