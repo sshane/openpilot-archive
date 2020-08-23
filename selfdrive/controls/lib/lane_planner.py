@@ -68,7 +68,7 @@ class DynamicCameraOffset:
     self._enabled = self.op_params.get('dynamic_camera_offset')
     self._min_enable_speed = 35 * CV.MPH_TO_MS
     self._min_lane_width_certainty = 0.4
-    hug = 0.075  # how much to hug
+    hug = 0.1  # how much to hug
     self._center_ratio = 0.5
     self._hug_left_ratio = self._center_ratio - hug
     self._hug_right_ratio = self._center_ratio + hug
@@ -77,7 +77,7 @@ class DynamicCameraOffset:
     self._ramp_angles = [0, 12.5, 25]
     self._ramp_angle_mods = [1, 0.85, 0.1]  # multiply offset by this based on angle
 
-    self._ramp_down_times = [self._keep_offset_for, self._keep_offset_for + 1.5]
+    self._ramp_down_times = [self._keep_offset_for, self._keep_offset_for + 2.]
     self._ramp_down_multipliers = [1, 0]  # ramp down 1.5s after time has passed
 
     self._poly_prob_speeds = [0, 25 * CV.MPH_TO_MS, 35 * CV.MPH_TO_MS, 60 * CV.MPH_TO_MS]
