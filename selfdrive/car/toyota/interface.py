@@ -67,7 +67,8 @@ class CarInterface(CarInterfaceBase):
 
       if prius_use_pid:
         ret.lateralTuning.pid.kpV, ret.lateralTuning.pid.kiV = [[0.32], [0.03]]
-        ret.lateralTuning.pid.kdV = [0.6, 0.9, 1.45, 1.7]
+        ret.lateralTuning.pid.kdBP = [0.]
+        ret.lateralTuning.pid.kdV = [0.85]
         ret.lateralTuning.pid.kf = 0.000069  # full torque for 20 deg at 80mph means 0.00007818594
       else:
         ret.lateralTuning.init('indi')
