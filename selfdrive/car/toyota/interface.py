@@ -21,6 +21,13 @@ class CarInterface(CarInterfaceBase):
   @staticmethod
   def get_params(candidate, fingerprint=gen_empty_fingerprint(), has_relay=False, car_fw=[]):  # pylint: disable=dangerous-default-value
     ret = CarInterfaceBase.get_std_params(candidate, fingerprint, has_relay)
+    ret.hasZSS = 35 in fingerprint and fingerprint[35] == 8
+    if ret.hasZSS:
+      with open('/data/hasZSS.txt', 'a') as f:
+        f.write('has ZSS!\n')
+    else:
+      with open('/data/hasZSS.txt', 'a') as f:
+        f.write('does NOT have ZSS!\n')
 
     ret.carName = "toyota"
     ret.safetyModel = car.CarParams.SafetyModel.toyota
