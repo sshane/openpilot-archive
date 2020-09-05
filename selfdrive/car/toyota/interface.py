@@ -21,13 +21,6 @@ class CarInterface(CarInterfaceBase):
   @staticmethod
   def get_params(candidate, fingerprint=gen_empty_fingerprint(), has_relay=False, car_fw=[]):  # pylint: disable=dangerous-default-value
     ret = CarInterfaceBase.get_std_params(candidate, fingerprint, has_relay)
-    ret.hasZSS = 35 in fingerprint and fingerprint[0][35] == 8
-    if ret.hasZSS:
-      with open('/data/hasZSS.txt', 'a') as f:
-        f.write('has ZSS!\n')
-    else:
-      with open('/data/hasZSS.txt', 'a') as f:
-        f.write('does NOT have ZSS!\n')
 
     ret.carName = "toyota"
     ret.safetyModel = car.CarParams.SafetyModel.toyota
@@ -350,6 +343,14 @@ class CarInterface(CarInterfaceBase):
     ret.enableDsu = is_ecu_disconnected(fingerprint[0], FINGERPRINTS, ECU_FINGERPRINT, candidate, Ecu.dsu) and candidate not in TSS2_CAR
     # if the smartDSU is detected, openpilot can send ACC_CMD (and the smartDSU will block it from the DSU) or not (the DSU is "connected")
     ret.openpilotLongitudinalControl = ret.enableCamera and (smartDsu or ret.enableDsu or candidate in TSS2_CAR)
+    # Detect whether car has accurate ZSS
+    ret.hasZSS = 35 in fingerprint and fingerprint[0][35] == 8
+    if ret.hasZSS:
+      with open('/data/hasZSS.txt', 'a') as f:
+        f.write('has ZSS!\n')
+    else:
+      with open('/data/hasZSS.txt', 'a') as f:
+        f.write('does NOT have ZSS!\n')
     cloudlog.warning("ECU Camera Simulated: %r", ret.enableCamera)
     cloudlog.warning("ECU DSU Simulated: %r", ret.enableDsu)
     cloudlog.warning("ECU Gas Interceptor: %r", ret.enableGasInterceptor)
