@@ -46,7 +46,6 @@ class CarState(CarStateBase):
     ret.vEgo, ret.aEgo = self.update_speed_kf(ret.vEgoRaw)
 
     ret.standstill = ret.vEgoRaw < 0.001
-
     if not self.CP.hasZSS:
       # Some newer models have a more accurate angle measurement in the TORQUE_SENSOR message. Use if non-zero
       if abs(cp.vl["STEER_TORQUE_SENSOR"]['STEER_ANGLE']) > 1e-3:
