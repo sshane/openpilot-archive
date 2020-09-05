@@ -267,6 +267,8 @@ class CarInterface(CarInterfaceBase):
         ret.steerActuatorDelay = 0.57
       else:
         ret.lateralTuning.pid.kpV, ret.lateralTuning.pid.kiV = [[0.6], [0.1]]
+        ret.lateralTuning.pid.kdBP = [0.]
+        ret.lateralTuning.pid.kdV = [1.123]
         ret.lateralTuning.pid.kf = 0.00007818594
 
     elif candidate in [CAR.LEXUS_ES_TSS2, CAR.LEXUS_ESH_TSS2]:
