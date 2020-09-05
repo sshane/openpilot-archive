@@ -21,7 +21,6 @@ class CarState(CarStateBase):
     # Need to apply an offset as soon as the steering angle measurements are both received
     self.needs_angle_offset = CP.carFingerprint not in TSS2_CAR
     self.angle_offset = 0.
-    self.init_angle_offset = False
 
   def update(self, cp, cp_cam):
     ret = car.CarState.new_message()
@@ -51,8 +50,8 @@ class CarState(CarStateBase):
     if self.CP.hasZSS:
       ret.steeringAngle = cp.vl["SECONDARY_STEER_ANGLE"]['ZORRO_STEER'] - self.angle_offset
       angle_wheel = cp.vl["STEER_ANGLE_SENSOR"]['STEER_ANGLE'] + cp.vl["STEER_ANGLE_SENSOR"]['STEER_FRACTION']
-      if not self.init_angle_offset:
-        self.init_angle_offset = True
+      if self.needs_angle_offset:
+        self.needs_angle_offset = False
         self.angle_offset = ret.steeringAngle - angle_wheel
     else:
       # Some newer models have a more accurate angle measurement in the TORQUE_SENSOR message. Use if non-zero
