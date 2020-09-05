@@ -159,7 +159,6 @@ def fingerprint(logcan, sendcan, has_relay):
     source = car.CarParams.FingerprintSource.fixed
 
   cloudlog.warning("fingerprinted %s", car_fingerprint)
-  cloudlog.warning("fingerprint: {}".format(finger))
   return car_fingerprint, finger, vin, car_fw, source
 
 
