@@ -9,7 +9,7 @@ Stock Additions 0.7.7
  * Add derivative to lateral PI control for TSS1 & TSS2 Corolla and Prius!
  * Add a Reset to origin button to TextWindow when an error occurs
  * Color coded model lane lines and path
- * Adds ZSS support
+ * Add ZSS support
 
 Stock Additions 0.7.5
 ========================
