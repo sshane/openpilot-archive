@@ -60,12 +60,12 @@ class CarState(CarStateBase):
       if self.needs_angle_offset:
         angle_wheel = cp.vl["STEER_ANGLE_SENSOR"]['STEER_ANGLE'] + cp.vl["STEER_ANGLE_SENSOR"]['STEER_FRACTION']
         if abs(angle_wheel) > 1e-3 and abs(ret.steeringAngle) > 1e-3:
-          with open('/data/zss_offset', 'a') as f:
+          with open('/data/zss_offset.txt', 'a') as f:
             f.write('offset ZSS with {} ({}, {})'.format(ret.steeringAngle - angle_wheel, ret.steeringAngle, angle_wheel))
           self.needs_angle_offset = False
           self.angle_offset = ret.steeringAngle - angle_wheel
         else:
-          with open('/data/zss_offset', 'a') as f:
+          with open('/data/zss_offset.txt', 'a') as f:
             f.write('did NOT offset ZSS with {} ({}, {})'.format(ret.steeringAngle - angle_wheel, ret.steeringAngle, angle_wheel))
     else:
       ret.steeringAngle = cp.vl["STEER_ANGLE_SENSOR"]['STEER_ANGLE'] + cp.vl["STEER_ANGLE_SENSOR"]['STEER_FRACTION']
