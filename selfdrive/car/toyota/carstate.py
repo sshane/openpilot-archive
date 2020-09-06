@@ -53,9 +53,10 @@ class CarState(CarStateBase):
 
     if self.accurate_steer_angle_seen or self.CP.hasZSS:
       if self.CP.hasZSS:
-        ret.steeringAngle = cp.vl["SECONDARY_STEER_ANGLE"]['ZORRO_STEER'] - self.angle_offset
+        steer_signals = 'SECONDARY_STEER_ANGLE', 'ZORRO_STEER'
       else:
-        ret.steeringAngle = cp.vl["STEER_TORQUE_SENSOR"]['STEER_ANGLE'] - self.angle_offset
+        steer_signals = 'STEER_TORQUE_SENSOR', 'STEER_ANGLE'
+      ret.steeringAngle = cp.vl[steer_signals[0]][steer_signals[1]] - self.angle_offset
 
       if self.needs_angle_offset:
         angle_wheel = cp.vl["STEER_ANGLE_SENSOR"]['STEER_ANGLE'] + cp.vl["STEER_ANGLE_SENSOR"]['STEER_FRACTION']
