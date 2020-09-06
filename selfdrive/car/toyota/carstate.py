@@ -59,7 +59,7 @@ class CarState(CarStateBase):
 
       if self.needs_angle_offset:
         angle_wheel = cp.vl["STEER_ANGLE_SENSOR"]['STEER_ANGLE'] + cp.vl["STEER_ANGLE_SENSOR"]['STEER_FRACTION']
-        if (abs(angle_wheel) > 1e-3 and abs(ret.steeringAngle) > 1e-3) or self.CP.hasZss:
+        if (abs(angle_wheel) > 1e-3 or self.CP.hasZss) and abs(ret.steeringAngle) > 1e-3:
           self.needs_angle_offset = False
           self.angle_offset = ret.steeringAngle - angle_wheel
     else:
