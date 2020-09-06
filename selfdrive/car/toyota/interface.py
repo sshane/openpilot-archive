@@ -28,7 +28,7 @@ class CarInterface(CarInterfaceBase):
     ret.steerActuatorDelay = 0.12  # Default delay, Prius has larger delay
     ret.steerLimitTimer = 0.4
     # Detect whether car has accurate ZSS
-    ret.hasZSS = 0x23 in fingerprint[0]
+    ret.hasZss = 0x23 in fingerprint[0]
 
     ret.longitudinalTuning.deadzoneBP = [0., 9.]
     ret.longitudinalTuning.deadzoneV = [0., .15]
@@ -76,7 +76,7 @@ class CarInterface(CarInterfaceBase):
         ret.lateralTuning.init('indi')
         ret.lateralTuning.indi.innerLoopGain = 4.0
         ret.lateralTuning.indi.outerLoopGain = 3.0
-        if ret.hasZSS:
+        if ret.hasZss:
           ret.lateralTuning.indi.timeConstant = 0.1
         else:
           ret.lateralTuning.indi.timeConstant = 1.0
@@ -329,7 +329,7 @@ class CarInterface(CarInterfaceBase):
       ret.lateralTuning.pid.kpV, ret.lateralTuning.pid.kiV = [[0.6], [0.1]]
       ret.lateralTuning.pid.kf = 0.00006
 
-    if ret.hasZSS:
+    if ret.hasZss:
       ret.steerRateCost = 0.5
     else:
       ret.steerRateCost = 1.
