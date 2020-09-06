@@ -272,8 +272,9 @@ class CarInterface(CarInterfaceBase):
       else:
         ret.lateralTuning.pid.kpV, ret.lateralTuning.pid.kiV = [[0.6], [0.1]]
         ret.lateralTuning.pid.kdBP = [0.]
-        ret.lateralTuning.pid.kdV = [1.123]
+        ret.lateralTuning.pid.kdV = [9.0]  # from birdman6450
         ret.lateralTuning.pid.kf = 0.00007818594
+        ret.steerActuatorDelay = 0.4  # from birdman6450
 
     elif candidate in [CAR.LEXUS_ES_TSS2, CAR.LEXUS_ESH_TSS2]:
       stop_and_go = True
