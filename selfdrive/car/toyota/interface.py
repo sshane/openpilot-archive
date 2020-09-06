@@ -27,8 +27,7 @@ class CarInterface(CarInterfaceBase):
 
     ret.steerActuatorDelay = 0.12  # Default delay, Prius has larger delay
     ret.steerLimitTimer = 0.4
-    # Detect whether car has accurate ZSS
-    ret.hasZss = 0x23 in fingerprint[0]
+    ret.hasZss = 0x23 in fingerprint[0]  # Detect whether car has accurate ZSS
 
     ret.longitudinalTuning.deadzoneBP = [0., 9.]
     ret.longitudinalTuning.deadzoneV = [0., .15]
