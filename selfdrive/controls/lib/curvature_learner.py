@@ -62,18 +62,19 @@ class CurvatureLearner:
       return offset
 
     cluster, direction, curvature = self.cluster_sample(v_ego, d_poly)
+    d_poly_offset = float(d_poly[3])
     if cluster is not None:
       lr_prob = lane_probs[0] + lane_probs[1] - lane_probs[0] * lane_probs[1]
       if lr_prob >= self.min_lr_prob:  # only learn when lane lines are present; still use existing offset
         if direction == 'right':
-          d_poly[3] = -d_poly[3]  # d_poly's sign switches for oversteering in different directions
+          d_poly_offset = -d_poly_offset  # d_poly's sign switches for oversteering in different directions
 
         # lr = self.get_learning_rate(direction, cluster)  # todo: faster learning for first ~minute per cluster
         lr = self.learning_rate
-        self.learned_offsets[direction][cluster] -= float(d_poly[3] * lr)  # the learning
-      offset = self.learned_offsets[direction][cluster]
+        self.learned_offsets[direction][cluster] -= d_poly_offset * lr  # the learning
+        print('CLUSTER: {}\nOFFSET: {}\nCURV: {}\nDIR: {}\n-----'.format(cluster, round(offset, 6), round(curvature, 6), direction))
 
-    print('CLUSTER: {}\nOFFSET: {}\nCURV: {}\n-----'.format(cluster, round(offset, 6), round(curvature, 6)))
+      offset = self.learned_offsets[direction][cluster]
 
     self._write_data()
     return float(clip(offset, -0.05, 0.05))
