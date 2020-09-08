@@ -1,10 +1,10 @@
 import os
 import math
 import json
+from numpy import np
 from common.numpy_fast import clip
 from common.realtime import sec_since_boot
 from selfdrive.config import Conversions as CV
-from selfdrive.controls.lib.lane_planner import eval_poly
 from common.op_params import opParams
 
 # CurvatureLearner v4 by Zorrobyte
@@ -13,7 +13,7 @@ from common.op_params import opParams
 # Version 5 due to json incompatibilities
 
 GATHER_DATA = True
-VERSION = 5.81
+VERSION = 5.82
 
 FT_TO_M = 0.3048
 
@@ -24,6 +24,10 @@ def find_distance(pt1, pt2):
   return math.hypot(x2 - x1, y2 - y1)
 
 
+def eval_poly(poly, x):
+  return poly[2]*x + poly[1]*x**2 + poly[0]*x**3
+
+
 class CurvatureLearner:
   def __init__(self):
     self.op_params = opParams()
@@ -31,21 +35,20 @@ class CurvatureLearner:
     # self.fast_learn_file = '/data/curvature_fast_learn.json'
     rate = 1 / 20.  # pathplanner is 20 hz
     # self.learning_rate = 2.5833e-3 * rate
-    self.learning_rate = 1.333e-3 * rate  # equivelent to x / 12000
+    self.learning_rate = 1.666e-3 * rate  # equivelent to x / 12000
     self.write_frequency = 5  # in seconds
-    self.min_lr_prob = .65
+    self.min_lr_prob = .5
     self.min_speed = 15 * CV.MPH_TO_MS
-    self.TR = 0.75
+    self.TR = 1.2
 
-    self.y_axis_factor = 22.13036275  # weight y/curvature as much as speed
-    self.min_curvature = 0.09231
+    self.y_axis_factor = 177.32840012  # weight y/curvature as much as speed
+    self.min_curvature = 0.00453  # from map-angle-to-curvature
 
     self.directions = ['left', 'right']
-    self.cluster_coords = [[9.7096459, 1.49880538], [12.46788049, 6.77883128], [14.68319912, 1.72736249], [17.93326323, 12.16199009], [18.44112269, 5.57405353], [19.19873998, 1.75578853],
-                           [23.6038175, 2.59984835], [23.80767759, 7.17517484], [24.77788145, 19.06035759], [26.542156, 11.93785523], [27.37704368, 2.23912583], [29.48215029, 5.80828739]]
+    self.cluster_coords = [[10.05319434, 22.75010184], [11.56311835, 4.66648626], [13.57491646, 11.64505509], [18.36658232, 2.41488393],
+                           [18.98342402, 7.59894138], [24.24826343, 7.03329587], [25.79352542, 2.00537934], [28.80542914, 5.36122992]]
     # self.cluster_names = ['CLUSTER_{}'.format(idx) for idx in range(len(self.cluster_coords))]
-    self.cluster_names = ['21.7MPH-.07CURV', '27.9MPH-.31CURV', '32.8MPH-.08CURV', '40.1MPH-.55CURV', '41.3MPH-.25CURV', '42.9MPH-.08CURV', '52.8MPH-.12CURV', '53.3MPH-.32CURV', '55.4MPH-.86CURV',
-                          '59.4MPH-.54CURV', '61.2MPH-.1CURV', '65.9MPH-.26CURV']
+    self.cluster_names = ['22.5MPH-.13CURV', '25.9MPH-.03CURV', '30.4MPH-.07CURV', '41.1MPH-.01CURV', '42.5MPH-.04CURV', '54.2MPH-.04CURV', '57.7MPH-.01CURV', '64.4MPH-.03CURV']
 
     # self.fast_learning_for = 90  # seconds per cluster  # todo: finish this once curv-learner is working well
     # self.fast_learning_for = round(self.fast_learning_for / rate)  # speed up learning first time user uses curvature learner
@@ -58,7 +61,7 @@ class CurvatureLearner:
     if v_ego < self.min_speed or math.isnan(d_poly[0]) or len(d_poly) != 4 or not self.op_params.get('curvature_learner'):
       return offset
 
-    cluster, direction, lat_pos = self.cluster_sample(v_ego, d_poly)
+    cluster, direction, curvature = self.cluster_sample(v_ego, d_poly)
     if cluster is not None:
       lr_prob = lane_probs[0] + lane_probs[1] - lane_probs[0] * lane_probs[1]
       if lr_prob >= self.min_lr_prob:  # only learn when lane lines are present; still use existing offset
@@ -78,18 +81,22 @@ class CurvatureLearner:
   def cluster_sample(self, v_ego, d_poly):
     dist = v_ego * self.TR
     # we want curvature of road from start of path not car, so subtract d_poly[3]
-    lat_pos = eval_poly(d_poly, dist)  # lateral position in meters at TR seconds
-    if self.op_params.get('subtract_d_poly'):
-      lat_pos -= d_poly[3]  # lateral position in meters at TR seconds
-    direction = 'left' if lat_pos > 0 else 'right'
+    direction = 'left' if eval_poly(d_poly, dist) > 0 else 'right'  # todo: compute this without eval_poly. before sqrting maybe?
 
-    lat_pos = abs(lat_pos)
+    path_x = np.arange(int(round(dist)))  # eval curvature 0.9 seconds out (doesn't include path offset, just curvature)
+    y_p = 3 * d_poly[0] * path_x ** 2 + 2 * d_poly[1] * path_x + d_poly[2]
+    y_pp = 6 * d_poly[0] * path_x + 2 * d_poly[1]
+    curv = y_pp / (1. + y_p ** 2) ** 1.5
+
+    curv = np.sqrt(np.abs(curv))
+    curv = np.max(curv)  # todo: takes maximum curvature, but could experiment with averaging. edit: mean doesn't decrease std that much, except with sharp band
+
     closest_cluster = None
-    if lat_pos >= self.min_curvature:
-      sample_coord = [v_ego, lat_pos * self.y_axis_factor]  # we multiply y so that the dist function weights x and y the same
+    if curv >= self.min_curvature:
+      sample_coord = [v_ego, curv * self.y_axis_factor]  # we multiply y so that the dist function weights x and y the same
       dists = [find_distance(sample_coord, cluster_coord) for cluster_coord in self.cluster_coords]  # todo: remove clusters far away based on v_ego to speed this up
       closest_cluster = self.cluster_names[min(range(len(dists)), key=dists.__getitem__)]
-    return closest_cluster, direction, lat_pos
+    return closest_cluster, direction, curv
 
   # def get_learning_rate(self, direction, cluster):  # todo: make sure this is correct
   #   lr = self.learning_rate

@@ -93,7 +93,6 @@ class opParams:
                         'prius_use_lqr': Param(False, bool, 'If you have a newer Prius with a good angle sensor, you can try enabling this to use LQR'),
                         'corolla_use_lqr': Param(False, bool, 'Enable this to use LQR for lat with your Corolla (2017)'),
                         'curvature_learner': Param(True, bool, 'Curvature Learner v5 includes a few new factors that it learns with, keep enabled if your car hugs in certain curves'),
-                        'subtract_d_poly': Param(False, bool),
                         'username': Param(None, [type(None), str, bool], 'Your identifier provided with any crash logs sent to Sentry.\n'
                                                                          'Helps the developer reach out to you if anything goes wrong'),
 

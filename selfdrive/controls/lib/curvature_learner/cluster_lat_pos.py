@@ -32,13 +32,13 @@ for fi in os.listdir():
 print('\nSamples before filtering: {}'.format(len(data)))
 ROUND_TO = 8
 MIN_ANGLE = 1  # todo: add a min curvature check once i find a good value for center cluster/band
-MAX_ANGLE = (45+90)/2
-TR = 1.2
+MAX_ANGLE = 45.
+TR = 0.75
 
-Y_AXIS_KEY = 'true_curvature'
-KMEANS_N_CLUSTERS = 8
+Y_AXIS_KEY = 'lat_pos'
+KMEANS_N_CLUSTERS = 12
 KMEANS_MAX_ITER = 2000
-Y_AXIS_WEIGHT = 1.5  # importance of y axis, more clusters for curvature vs. speed
+Y_AXIS_WEIGHT = 1.05  # importance of y axis, more clusters for curvature vs. speed
 
 USE_ABS = True
 
@@ -47,29 +47,20 @@ for line in data:
   if line['v_ego'] < 15 * CV.MPH_TO_MS:
     continue
   if MIN_ANGLE <= abs(line['angle_steers']) <= MAX_ANGLE:
-    path_x = np.arange(int(round(line['v_ego'] * TR)))
-    y_p = 3 * line['d_poly'][0] * path_x ** 2 + 2 * line['d_poly'][1] * path_x + line['d_poly'][2]
-    y_pp = 6 * line['d_poly'][0] * path_x + 2 * line['d_poly'][1]
-    curv = y_pp / (1. + y_p ** 2) ** 1.5
+    dist = line['v_ego'] * TR
 
-    # curv = np.sqrt(np.clip(np.abs(curv), 1e-8, None))
-    curv = np.sqrt(np.abs(curv))
-    curv = np.max(curv)  # * 7.5 todo: should we multiply?
-
-    # dist = line['v_ego'] * TR
-
-    # lat_pos = np.polyval(line['d_poly'], dist)  # lateral position in meters at TR seconds
-    # lat_pos -= line['d_poly'][3]  # want curvature of road from start of path not car
-    line[Y_AXIS_KEY] = curv
+    lat_pos = np.polyval(line['d_poly'], dist)  # lateral position in meters at TR seconds
+    lat_pos -= line['d_poly'][3]  # want curvature of road from start of path not car
+    line['lat_pos'] = lat_pos
 
     if USE_ABS:
-      line[Y_AXIS_KEY] = abs(line[Y_AXIS_KEY])
+      line['lat_pos'] = abs(line['lat_pos'])
     data_filtered.append(line)
 
 print('Samples after filtering: {}'.format(len(data_filtered)))
 data = data_filtered
 
-PLOT_DIST_PLOTS = False
+PLOT_DIST_PLOTS = True
 if PLOT_DIST_PLOTS:
   plt.figure(0)
   sns.distplot([line['v_ego'] for line in data], bins=75)
