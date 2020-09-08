@@ -174,10 +174,10 @@ class PathPlanner():
     self.LP.update_d_poly(v_ego, angle_steers, active)
 
     if active:
-      print('old: {}'.format(curvature_factor))
+      # print('old: {}'.format(curvature_factor))
       curvature_factor += self.curvature_learner.update(v_ego, self.LP.d_poly, [self.LP.l_prob, self.LP.r_prob], angle_steers - angle_offset)
-      print('new: {}'.format(curvature_factor))
-      print('---')
+      # print('new: {}'.format(curvature_factor))
+      # print('---')
 
     # account for actuation delay
     self.cur_state = calc_states_after_delay(self.cur_state, v_ego, angle_steers - angle_offset, curvature_factor, VM.sR, CP.steerActuatorDelay)
