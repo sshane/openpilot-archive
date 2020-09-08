@@ -24,8 +24,8 @@ def find_distance(pt1, pt2):
   return math.hypot(x2 - x1, y2 - y1)
 
 
-def eval_poly(poly, x):
-  return poly[2]*x + poly[1]*x**2 + poly[0]*x**3
+# def eval_poly(poly, x):
+#   return poly[2]*x + poly[1]*x**2 + poly[0]*x**3
 
 
 class CurvatureLearner:
@@ -73,20 +73,18 @@ class CurvatureLearner:
         self.learned_offsets[direction][cluster] -= float(d_poly[3] * lr)  # the learning
       offset = self.learned_offsets[direction][cluster]
 
-    # print('CLUSTER: {} - OFFSET: {}  -  LAT_POS: {}'.format(cluster, round(offset, 4), round(lat_pos, 4)))
+    print('CLUSTER: {}\nOFFSET: {}\nCURV: {}\n-----'.format(cluster, round(offset, 4), round(curvature, 4)))
 
     self._write_data()
     return float(clip(offset, -0.05, 0.05))
 
   def cluster_sample(self, v_ego, d_poly):
     dist = v_ego * self.TR
-    # we want curvature of road from start of path not car, so subtract d_poly[3]
-    direction = 'left' if eval_poly(d_poly, dist) > 0 else 'right'  # todo: compute this without eval_poly. before sqrting maybe?
-
     path_x = np.arange(int(round(dist)))  # eval curvature 0.9 seconds out (doesn't include path offset, just curvature)
     y_p = 3 * d_poly[0] * path_x ** 2 + 2 * d_poly[1] * path_x + d_poly[2]
     y_pp = 6 * d_poly[0] * path_x + 2 * d_poly[1]
     curv = y_pp / (1. + y_p ** 2) ** 1.5
+    direction = 'left' if curv[0] > 0 else 'right'  # todo: [0] might be fastest, but explore mean if wrong often
 
     curv = np.sqrt(np.abs(curv))
     curv = np.max(curv)  # todo: takes maximum curvature, but could experiment with averaging. edit: mean doesn't decrease std that much, except with sharp band
