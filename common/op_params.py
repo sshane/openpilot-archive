@@ -99,7 +99,7 @@ class opParams:
                         'op_edit_live_mode': Param(False, bool, 'This parameter controls which mode opEdit starts in. It should be hidden from the user with the hide key', hidden=True)}
 
     # A list of parameters you want to be live. You STILL need to use the .get function repeatedly in the calling file
-    _live_params = ['camera_offset', 'global_df_mod', 'min_TR', 'steer_ratio', 'curvature_learner', 'subtract_d_poly']
+    _live_params = ['camera_offset', 'global_df_mod', 'min_TR', 'steer_ratio', 'curvature_learner']
     for p in _live_params:
       self.fork_params[p].live = True
 
