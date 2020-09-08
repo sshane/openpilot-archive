@@ -35,14 +35,14 @@ class CurvatureLearner:
     # self.fast_learn_file = '/data/curvature_fast_learn.json'
     rate = 1 / 20.  # pathplanner is 20 hz
     # self.learning_rate = 2.5833e-3 * rate
-    self.learning_rate = 1.666e-3 * rate  # equivelent to x / 12000
+    self.learning_rate = .8e-3 * rate  # equivelent to x / 12000
     self.write_frequency = 5  # in seconds
     self.min_lr_prob = .5
     self.min_speed = 15 * CV.MPH_TO_MS
     self.TR = 1.2
 
     self.y_axis_factor = 177.32840012  # weight y/curvature as much as speed
-    self.min_curvature = 0.00453  # from map-angle-to-curvature
+    self.min_curvature = 0.02  # from map-angle-to-curvature
 
     self.directions = ['left', 'right']
     self.cluster_coords = [[10.05319434, 22.75010184], [11.56311835, 4.66648626], [13.57491646, 11.64505509], [18.36658232, 2.41488393],
