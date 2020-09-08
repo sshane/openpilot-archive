@@ -1,7 +1,7 @@
 import os
 import math
 import json
-from numpy import np
+import numpy as np
 from common.numpy_fast import clip
 from common.realtime import sec_since_boot
 from selfdrive.config import Conversions as CV
