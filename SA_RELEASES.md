@@ -1,6 +1,6 @@
 Stock Additions v0.5.1 - 2020-9-10 (0.7.7)
 ===
- * Disable automatic updates by default and show changelog to users in apk
+ * Disable automatic updates by default and show changelog in apk (you can enable the param auto_update to revert this)
 
 Stock Additions v0.5 - 2020-9-10 (0.7.7)
 ===
