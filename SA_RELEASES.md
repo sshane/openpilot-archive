@@ -1,8 +1,8 @@
-Stock Additions v0.1.1 - 2020-9-10 (0.7.7)
+Stock Additions v0.5.1 - 2020-9-10 (0.7.7)
 ===
  * Disable automatic updates by default and show changelog to users in apk
 
-Stock Additions v0.1 (0.7.7)
+Stock Additions v0.5 - 2020-9-10 (0.7.7)
 ===
  * LaneSpeed process is much more efficient, CPU usage down from 6% (causing lag alerts) to ~1%
    * Use numpy_fast.interp instead of np.interp for slight boost in performance
@@ -15,7 +15,7 @@ Stock Additions v0.1 (0.7.7)
  * Color coded model lane lines and path
  * Add ZSS support
 
-Stock Additions 0.7.5
+Stock Additions v0.4 - 2020-7-18 (0.7.5)
 ===
  * Various opEdit improvements, colors, highlighting of last explored param, quicker messages
  * New Dynamic Follow modification to help slow and accelerate sooner
@@ -23,12 +23,12 @@ Stock Additions 0.7.5
  * dfManager reliability improvements
  * New LaneSpeed and Dynamic Camera Offset features added
 
-Stock Additions 0.7.4 (version 0.2)
+Stock Additions v0.3 - 2020-5-13 (0.7.4)
 ===
  * Sidebar will not pop out when you tap the Dynamic Follow profile change button when driving
  * Add derivative to longcontrol. Improves responsiveness and helps overshoot
 
-Stock Additions 0.7.1
+Stock Additions v0.2 - 2020-3-15 (0.7.1)
 ===
  * Recover faster when lead leaves path, or when braking or acceleration is required immediately. Also should speed up the acceleration with auto lane change.
  * Add 3 different dynamic follow profiles: `roadtrip`, `relaxed`, and `traffic`. `relaxed` is the current dynamic follow profile. You can also swap profiles without rebooting live by using opEdit. SSH in and: `cd /data/openpilot;python op_edit.py` The parameter to change is `dynamic_follow`
@@ -38,7 +38,7 @@ Stock Additions 0.7.1
  * Higher acceleration, and higher limits for turns
  * Automatic updates, EON will reboot by itself as long as it is inactive
 
-Stock Additions 0.7
+Stock Additions v0.1 - 2020-1-14 (0.7)
 ===
  * Dynamic lane speed is a new feature that reduces your cruising speed if many vehicles around you are significantly slower than you. This works with and without an openpilot-identified lead.
  * Dynamic gas tuning. Above 20 mph we take lead velocity and the following distance into account. Possibility of different tuning for different cars in the future. (DYNAMIC GAS NOW ONLY WORKS ON TOYOTA COROLLA AND RAV4 PEDAL)
