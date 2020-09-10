@@ -135,7 +135,7 @@ Here are the main parameters you can change with this fork:
   - `alca_nudge_required`: Whether to wait for applied torque to the wheel (nudge) before making lane changes
   - `alca_min_speed`: The minimum speed allowed for an automatic lane change
   - `upload_on_hotspot`: Controls whether your EON will upload driving data on your phone's hotspot
-  - [`no_ota_updates`](#Automatic-updates): Set this to True to disable all automatic updates. Reboot to take effect
+  - [`auto_update`](#Automatic-updates): Toggles whether your device will update and reboot automatically on this fork
   - `disengage_on_gas`: Whether you want openpilot to disengage on gas input or not
 - **Dynamic params**:
   - `dynamic_gas`: Whether to use [dynamic gas](#dynamic-gas) if your car is supported
@@ -163,7 +163,7 @@ Parameters are stored at `/data/op_params.json`
 ---
 ### Automatic updates
 When a new update is available on GitHub for Stock Additions, your EON/C2 will pull and reset your local branch to the remote. It then queues a reboot to occur when the following is true:
-- your EON has been inactive or offroad for more than 5 minutes.
+- your EON has been inactive or offroad for more than 5 minutes
 
 Therefore, if your device sees an update while you're driving it will reboot approximately 5 to 10 minutes after you finish your drive, it resets the timer if you start driving again before the time is up.
 
