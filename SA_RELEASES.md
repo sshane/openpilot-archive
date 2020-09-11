@@ -1,3 +1,7 @@
+Stock Additions v0.5.2 - 2020-9-11 (0.7.7)
+===
+ * Fix jerking after dynamic camera offset is complete, it now smoothly ramps back to center
+
 Stock Additions v0.5.1 - 2020-9-10 (0.7.7)
 ===
  * Disable automatic updates by default and show changelog in apk (you can enable the param auto_update to revert this)
