@@ -175,7 +175,7 @@ class PathPlanner():
 
     if active:
       # print('old: {}'.format(curvature_factor))
-      curvature_factor += self.curvature_learner.update(v_ego, self.LP.d_poly, [self.LP.l_prob, self.LP.r_prob], angle_steers - angle_offset)
+      curvature_factor -= self.curvature_learner.update(v_ego, self.LP.d_poly, [self.LP.l_prob, self.LP.r_prob], angle_steers - angle_offset)
       # print('new: {}'.format(curvature_factor))
       # print('---')
 

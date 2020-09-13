@@ -13,7 +13,7 @@ from common.op_params import opParams
 # Version 5 due to json incompatibilities
 
 GATHER_DATA = True
-VERSION = 5.82
+VERSION = 5.83
 
 FT_TO_M = 0.3048
 
@@ -74,7 +74,7 @@ class CurvatureLearner:
       self.learned_offsets[direction][cluster] -= d_poly_offset * self.learning_rate  # the learning
       print('CLUSTER: {}\nOFFSET: {}\nCURV: {}\nDIR: {}\n-----'.format(cluster, round(offset, 6), round(curvature, 6), direction))
 
-      offset = self.learned_offsets[direction][cluster]
+      offset = -self.learned_offsets[direction][cluster]
 
     self._write_data()
     return float(clip(offset, -0.05, 0.05))
