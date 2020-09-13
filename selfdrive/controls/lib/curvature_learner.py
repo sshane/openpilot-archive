@@ -72,9 +72,9 @@ class CurvatureLearner:
       # lr = self.get_learning_rate(direction, cluster)  # todo: faster learning for first ~minute per cluster
       lr = self.learning_rate
       self.learned_offsets[direction][cluster] -= d_poly_offset * self.learning_rate  # the learning
+      offset = -self.learned_offsets[direction][cluster]
       print('CLUSTER: {}\nOFFSET: {}\nCURV: {}\nDIR: {}\n-----'.format(cluster, round(offset, 6), round(curvature, 6), direction))
 
-      offset = -self.learned_offsets[direction][cluster]
 
     self._write_data()
     return float(clip(offset, -0.05, 0.05))
