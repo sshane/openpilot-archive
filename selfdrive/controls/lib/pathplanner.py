@@ -100,7 +100,7 @@ class PathPlanner():
     sr = max(sm['liveParameters'].steerRatio, 0.1)
     VM.update_params(x, sr)
 
-    curvature_factor = VM.curvature_factor(v_ego)
+    curvature_factor = float(VM.curvature_factor(v_ego))
 
     self.LP.parse_model(sm['model'])
 
