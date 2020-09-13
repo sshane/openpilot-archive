@@ -61,7 +61,7 @@ class CurvatureLearner:
     if v_ego < self.min_speed or math.isnan(d_poly[0]) or len(d_poly) != 4 or not self.op_params.get('curvature_learner'):
       return offset
 
-    cluster, direction, curvature = self.cluster_sample(v_ego, d_poly)
+    cluster, direction, curvature = self.cluster_sample(v_ego, d_poly, angle_steers)
     d_poly_offset = float(d_poly[3])
     if cluster is not None:
       lr_prob = lane_probs[0] + lane_probs[1] - lane_probs[0] * lane_probs[1]
@@ -79,13 +79,14 @@ class CurvatureLearner:
     self._write_data()
     return float(clip(offset, -0.05, 0.05))
 
-  def cluster_sample(self, v_ego, d_poly):
+  def cluster_sample(self, v_ego, d_poly, angle_steers):
     dist = v_ego * self.TR
     path_x = np.arange(int(round(dist)))  # eval curvature 0.9 seconds out (doesn't include path offset, just curvature)
     y_p = 3 * d_poly[0] * path_x ** 2 + 2 * d_poly[1] * path_x + d_poly[2]
     y_pp = 6 * d_poly[0] * path_x + 2 * d_poly[1]
     curv = y_pp / (1. + y_p ** 2) ** 1.5
-    direction = 'left' if curv[0] > 0 else 'right'  # todo: [0] might be fastest, but explore mean if wrong often
+    # direction = 'left' if curv[0] > 0 else 'right'  # todo: [0] might be fastest, but explore mean if wrong often
+    direction = 'left' if angle_steers > 0 else 'right'
 
     curv = np.sqrt(np.abs(curv))
     curv = np.max(curv)  # todo: takes maximum curvature, but could experiment with averaging. edit: mean doesn't decrease std that much, except with sharp band
