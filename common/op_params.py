@@ -92,7 +92,8 @@ class opParams:
                                                                   'localizer might not work correctly'),
                         'prius_use_pid': Param(False, bool, 'This enables the PID lateral controller with new a experimental derivative tune\nFalse: stock INDI, True: TSS2-tuned PID'),
                         'corolla_use_lqr': Param(False, bool, 'Enable this to use LQR for lateral control with your TSS1 Corolla\nFalse: PID, True: RAV4-tuned LQR'),
-                        'corollaTSS2_use_indi': Param(False, bool, 'Enable this to use INDI for lat with your Corolla with TSS2')}
+                        'corollaTSS2_use_indi': Param(False, bool, 'Enable this to use INDI for lat with your Corolla with TSS2'),
+                        'curvature_learner': Param(True, bool, 'Curvature Learner v5 includes a few new factors that it learns with, keep enabled if your car hugs in certain curves', live=True),}
 
     self._params_file = '/data/op_params.json'
     self._backup_file = '/data/op_params_corrupt.json'
