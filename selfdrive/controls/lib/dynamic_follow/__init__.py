@@ -51,7 +51,7 @@ class DynamicFollow:
     self.log_auto_df = self.op_params.get('log_auto_df')
     if not isinstance(self.log_auto_df, bool):
       self.log_auto_df = False
-    self.data_collector = DataCollector(file_path='/data/tr_df_data', keys=['v_ego', 'a_ego', 'a_lead', 'v_lead', 'x_lead', 'live_tracks', 'time'], log_data=self.log_auto_df)
+    self.data_collector = DataCollector(file_path='/data/df_data', keys=['v_ego', 'a_ego', 'a_lead', 'v_lead', 'x_lead', 'live_tracks', 'time'], log_data=self.log_auto_df)
 
   def _setup_changing_variables(self):
     self.TR = self.default_TR
