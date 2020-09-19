@@ -100,22 +100,24 @@ class DynamicFollow:
 
   def _gather_data(self):
     self.sm_collector.update(0)
-    # live_tracks = [[i.dRel, i.vRel, i.aRel, i.yRel] for i in self.sm_collector['liveTracks']]
+    live_tracks = [[i.dRel, i.vRel, i.aRel, i.yRel] for i in self.sm_collector['liveTracks']]
     if self.car_data.cruise_enabled:
-      self.data_collector.update([self.car_data.v_ego,
-                                  self.car_data.a_ego,
-                                  self.lead_data.a_lead,
-                                  self.lead_data.v_lead,
-                                  self.lead_data.x_lead,
-                                  list(self.sm_collector['laneSpeed'].leftLaneSpeeds),
-                                  list(self.sm_collector['laneSpeed'].middleLaneSpeeds),
-                                  list(self.sm_collector['laneSpeed'].rightLaneSpeeds),
-
-                                  list(self.sm_collector['laneSpeed'].leftLaneDistances),
-                                  list(self.sm_collector['laneSpeed'].middleLaneDistances),
-                                  list(self.sm_collector['laneSpeed'].rightLaneDistances),
-                                  self.user_profile,
-                                  sec_since_boot()])
+      data_to_gather = [self.car_data.v_ego,
+                        self.car_data.a_ego,
+                        self.lead_data.a_lead,
+                        self.lead_data.v_lead,
+                        self.lead_data.x_lead,
+                        live_tracks,
+                        # list(self.sm_collector['laneSpeed'].leftLaneSpeeds),
+                        # list(self.sm_collector['laneSpeed'].middleLaneSpeeds),
+                        # list(self.sm_collector['laneSpeed'].rightLaneSpeeds),
+                        #
+                        # list(self.sm_collector['laneSpeed'].leftLaneDistances),
+                        # list(self.sm_collector['laneSpeed'].middleLaneDistances),
+                        # list(self.sm_collector['laneSpeed'].rightLaneDistances),
+                        # self.user_profile,
+                        sec_since_boot()]
+      self.data_collector.update(data_to_gather)
 
   def _norm(self, x, name):
     self.x = x
