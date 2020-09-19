@@ -101,7 +101,7 @@ class DynamicFollow:
   def _gather_data(self):
     self.sm_collector.update(0)
     live_tracks = [[i.dRel, i.vRel, i.aRel, i.yRel] for i in self.sm_collector['liveTracks']]
-    if self.car_data.cruise_enabled:
+    if not self.car_data.cruise_enabled:
       data_to_gather = [self.car_data.v_ego,
                         self.car_data.a_ego,
                         self.lead_data.a_lead,
