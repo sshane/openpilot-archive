@@ -9,7 +9,7 @@ from selfdrive.controls.lib.longitudinal_mpc import libmpc_py
 from selfdrive.controls.lib.drive_helpers import MPC_COST_LONG
 from selfdrive.controls.lib.dynamic_follow import DynamicFollow
 from selfdrive.controls.lib.dynamic_follow.auto_df_v2.auto_df_v2 import predict
-from common.numpy_fast import interp
+from common.numpy_fast import interp, clip
 import numpy as np
 
 LOG_MPC = os.environ.get('LOG_MPC', False)
@@ -104,6 +104,7 @@ class LongitudinalMpc():
     if lead is not None and lead.status:
       model_input_data = np.array([interp(v_lead, scales['v_lead'], [0, 1]), interp(a_lead, scales['a_lead'], [0, 1]), interp(v_ego, scales['v_ego'], [0, 1]), interp(a_ego, scales['a_ego'], [0, 1])], dtype=np.float32)
       TR = float(predict(model_input_data)[0])
+      TR = clip(TR, 0.9, 2.7)
     else:
       TR = 1.8
     n_its = self.libmpc.run_mpc(self.cur_state, self.mpc_solution, self.a_lead_tau, a_lead, TR)
