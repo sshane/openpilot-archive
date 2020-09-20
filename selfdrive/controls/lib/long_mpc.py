@@ -8,7 +8,7 @@ from selfdrive.controls.lib.radar_helpers import _LEAD_ACCEL_TAU
 from selfdrive.controls.lib.longitudinal_mpc import libmpc_py
 from selfdrive.controls.lib.drive_helpers import MPC_COST_LONG
 from selfdrive.controls.lib.dynamic_follow import DynamicFollow
-from selfdrive.controls.lib.dynamic_follow.auto_df.df_model_v2 import predict
+from selfdrive.controls.lib.dynamic_follow.auto_df_v2.auto_df_v2 import predict
 from common.numpy_fast import interp
 import numpy as np
 
