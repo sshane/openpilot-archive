@@ -4,7 +4,7 @@
 
 import numpy as np
 
-wb = np.load('/data/openpilot/selfdrive/controls/lib/dynamic_follow/auto_df/df_model_v2_weights.npz', allow_pickle=True)
+wb = np.load('/data/openpilot/selfdrive/controls/lib/dynamic_follow/auto_df_v2/df_model_v2_weights.npz', allow_pickle=True)
 w, b = wb['wb']
 
 def predict(x):
