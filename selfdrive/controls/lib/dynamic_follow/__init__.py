@@ -51,7 +51,12 @@ class DynamicFollow:
     self.log_auto_df = self.op_params.get('log_auto_df')
     if not isinstance(self.log_auto_df, bool):
       self.log_auto_df = False
-    self.data_collector = DataCollector(data_dir='/data/df_data', file_name='df_data', keys=['v_ego', 'a_ego', 'a_lead', 'v_lead', 'x_lead', 'live_tracks', 'time'], log_data=self.log_auto_df)
+    self.data_collector = DataCollector('/data/df_data', 'df_data',
+                                        keys=['v_ego', 'a_ego', 'a_lead', 'v_lead', 'x_lead', 'lead_status',
+                                              'new_lead', 'left_blinker', 'right_blinker', 'left_lane_speeds',
+                                              'middle_lane_speeds', 'right_lane_speeds', 'left_lane_distances',
+                                              'middle_lane_distances', 'right_lane_distances', 'time'],
+                                        log_data=self.log_auto_df)
 
   def _setup_changing_variables(self):
     self.TR = self.default_TR
@@ -107,15 +112,18 @@ class DynamicFollow:
                         self.lead_data.a_lead,
                         self.lead_data.v_lead,
                         self.lead_data.x_lead,
-                        live_tracks,
-                        # list(self.sm_collector['laneSpeed'].leftLaneSpeeds),
-                        # list(self.sm_collector['laneSpeed'].middleLaneSpeeds),
-                        # list(self.sm_collector['laneSpeed'].rightLaneSpeeds),
-                        #
-                        # list(self.sm_collector['laneSpeed'].leftLaneDistances),
-                        # list(self.sm_collector['laneSpeed'].middleLaneDistances),
-                        # list(self.sm_collector['laneSpeed'].rightLaneDistances),
-                        # self.user_profile,
+                        self.lead_data.status,
+                        self.lead_data.new_lead,
+                        self.car_data.left_blinker,
+                        self.car_data.right_blinker,
+
+                        list(self.sm_collector['laneSpeed'].leftLaneSpeeds),
+                        list(self.sm_collector['laneSpeed'].middleLaneSpeeds),
+                        list(self.sm_collector['laneSpeed'].rightLaneSpeeds),
+
+                        list(self.sm_collector['laneSpeed'].leftLaneDistances),
+                        list(self.sm_collector['laneSpeed'].middleLaneDistances),
+                        list(self.sm_collector['laneSpeed'].rightLaneDistances),
                         sec_since_boot()]
       self.data_collector.update(data_to_gather)
 
