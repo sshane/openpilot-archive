@@ -116,7 +116,7 @@ class DynamicFollow:
     TR = interp(TR, scale_to, scales['TR'])  # un-norm to true TR value
 
     TR = clip(TR, 0.6, 5.)
-    print('PREDICTED TR: {}'.format(round(TR, 3)))
+    # print('PREDICTED TR: {}'.format(round(TR, 3)))
     return float(TR)
 
   def _get_profiles(self):
