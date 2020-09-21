@@ -38,7 +38,7 @@ class DataCollector:
     i = 0  # find next available file name
     while os.path.exists(os.path.join(data_dir, file_name + str(i))):
       i += 1
-    self.file_path = os.path.exists(os.path.join(data_dir, file_name + str(i)))
+    self.file_path = os.path.join(data_dir, file_name + str(i))
 
     if not os.path.exists(self.file_path) and not travis:
       with open(self.file_path, "w") as f:
