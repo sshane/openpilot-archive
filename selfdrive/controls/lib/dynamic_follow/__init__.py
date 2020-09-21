@@ -9,6 +9,8 @@ from selfdrive.config import Conversions as CV
 from cereal.messaging import SubMaster
 
 from selfdrive.controls.lib.dynamic_follow.auto_df import predict
+from selfdrive.controls.lib.dynamic_follow.auto_df_v2.auto_df_v2 import predict as predict_v2
+
 from selfdrive.controls.lib.dynamic_follow.df_manager import dfManager
 from selfdrive.controls.lib.dynamic_follow.support import LeadData, CarData, dfData, dfProfiles
 from common.data_collector import DataCollector
@@ -108,7 +110,7 @@ class DynamicFollow:
                                  interp(self.car_data.v_ego, scales['v_ego'], scale_to),
                                  interp(self.car_data.a_ego, scales['a_ego'], scale_to)],
                                 dtype=np.float32)
-    TR = float(predict(model_input_data)[0])
+    TR = float(predict_v2(model_input_data)[0])
     TR = clip(TR, 0.9, 5)
     print('PREDICTED TR: {}'.format(round(TR, 3)))
     return TR
