@@ -9,7 +9,7 @@ op_params = opParams()
 
 
 class DataCollector:
-  def __init__(self, file_path, keys, write_frequency=60, write_threshold=2, log_data=True):
+  def __init__(self, data_dir, file_name, keys, write_frequency=60, write_threshold=2, log_data=True):
     """
     This class provides an easy way to set up your own custom data collector to gather custom data.
     Parameters:
@@ -23,16 +23,23 @@ class DataCollector:
     """
 
     self.log_data = log_data
-    self.file_path = file_path
     self.keys = keys
     self.write_frequency = write_frequency
     self.write_threshold = write_threshold
     self.data = []
     self.last_write_time = sec_since_boot()
     self.thread_running = False
-    self._initialize()
+    self._initialize(data_dir, file_name)
 
-  def _initialize(self):  # add keys to top of data file
+  def _initialize(self, data_dir, file_name):  # add keys to top of data file
+    if not os.path.exists(data_dir):  # create dir if doesn't exist
+      os.mkdir(data_dir)
+
+    i = 0  # find next available file name
+    while os.path.exists(os.path.join(data_dir, file_name + str(i))):
+      i += 1
+    self.file_path = os.path.exists(os.path.join(data_dir, file_name + str(i)))
+
     if not os.path.exists(self.file_path) and not travis:
       with open(self.file_path, "w") as f:
         f.write('{}\n'.format(self.keys))
