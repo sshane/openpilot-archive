@@ -1,8 +1,3 @@
-Stock Additions v0.5.4 - 2020-9-XX (0.7.7)
-===
- * Dynamic follow tuning, slightly quicker braking
- * Separate 2020 Prius into its own CAR with a PID tune from Trae
-
 Stock Additions v0.5.3 - 2020-9-15 (0.7.7)
 ===
  * Properly set unsafe_mode in boardd. This might fix panda flashing issues for new users, since it won't be required
