@@ -34,6 +34,9 @@ class DynamicFollow:
     self.skip_every = round(0.25 / mpc_rate)
     self.model_input_len = round(45 / mpc_rate)
 
+    self.model_scales_v2 = {'v_lead': (0.0, 35.03822708129883), 'a_lead': (-2.8897337913513184, 2.4308879375457764), 'v_ego': (2.261355400085449, 34.28609085083008), 'a_ego': (-3.5994794368743896, 2.247296094894409)}
+
+
     # Dynamic follow variables
     self.default_TR = 1.8
     self.TR = 1.8
@@ -88,13 +91,27 @@ class DynamicFollow:
       self.TR = self.default_TR
     else:
       self._store_df_data()
-      self.TR = self._get_TR()
+      self.TR = self.predict_TR()  # model df
+      # self.TR = self._get_TR()  # logic df
 
     if not travis:
       self._change_cost(libmpc)
       self._send_cur_state()
 
     return self.TR
+
+  def predict_TR(self):
+    scales = self.model_scales_v2
+    scale_to = [0, 1]
+    model_input_data = np.array([interp(self.lead_data.v_lead, scales['v_lead'], scale_to),
+                                 interp(self.lead_data.a_lead, scales['a_lead'], scale_to),
+                                 interp(self.car_data.v_ego, scales['v_ego'], scale_to),
+                                 interp(self.car_data.a_ego, scales['a_ego'], scale_to)],
+                                dtype=np.float32)
+    TR = float(predict(model_input_data)[0])
+    TR = clip(TR, 0.9, 5)
+    print('PREDICTED TR: {}'.format(round(TR, 3)))
+    return TR
 
   def _get_profiles(self):
     """This receives profile change updates from dfManager and runs the auto-df prediction if auto mode"""

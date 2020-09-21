@@ -99,15 +99,8 @@ class LongitudinalMpc():
 
     # Calculate mpc
     t = sec_since_boot()
-    # TR = self.dynamic_follow.update(CS, self.libmpc)  # update dynamic follow
-    scales = {'v_lead': (0.0, 35.03822708129883), 'a_lead': (-2.8897337913513184, 2.4308879375457764), 'v_ego': (2.261355400085449, 34.28609085083008), 'a_ego': (-3.5994794368743896, 2.247296094894409)}
-    if lead is not None and lead.status:
-      model_input_data = np.array([interp(v_lead, scales['v_lead'], [0, 1]), interp(a_lead, scales['a_lead'], [0, 1]), interp(v_ego, scales['v_ego'], [0, 1]), interp(a_ego, scales['a_ego'], [0, 1])], dtype=np.float32)
-      TR = float(predict(model_input_data)[0])
-      TR = clip(TR, 0.9, 2.7)
-      print('PREDICTED TR: {}'.format(round(TR, 3)))
-    else:
-      TR = 1.8
+    TR = self.dynamic_follow.update(CS, self.libmpc)  # update dynamic follow
+
     n_its = self.libmpc.run_mpc(self.cur_state, self.mpc_solution, self.a_lead_tau, a_lead, TR)
     duration = int((sec_since_boot() - t) * 1e9)
 
