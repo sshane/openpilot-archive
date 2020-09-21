@@ -36,8 +36,7 @@ class DynamicFollow:
     self.skip_every = round(0.25 / mpc_rate)
     self.model_input_len = round(45 / mpc_rate)
 
-    self.model_scales_v2 = {'v_lead': (0.0, 35.03822708129883), 'a_lead': (-2.8897337913513184, 2.4308879375457764), 'v_ego': (2.261355400085449, 34.28609085083008), 'a_ego': (-3.5994794368743896, 2.247296094894409)}
-
+    self.model_scales_v2 = {'v_lead': (0.0, 32.33141326904297), 'a_lead': (-2.8897337913513184, 2.4308879375457764), 'x_lead': (4.199999809265137, 129.63999938964844), 'v_ego': (2.248662233352661, 34.28609085083008), 'a_ego': (-3.5994794368743896, 2.247296094894409), 'TR': (0.42720009281182686, 4.9993992001964305)}
 
     # Dynamic follow variables
     self.default_TR = 1.8
@@ -103,17 +102,22 @@ class DynamicFollow:
     return self.TR
 
   def predict_TR(self):
+    prediction_time_steps = [0.5, 1, 1.5, 2.0]
     scales = self.model_scales_v2
     scale_to = [0, 1]
     model_input_data = np.array([interp(self.lead_data.v_lead, scales['v_lead'], scale_to),
                                  interp(self.lead_data.a_lead, scales['a_lead'], scale_to),
+                                 interp(self.lead_data.x_lead, scales['x_lead'], scale_to),
                                  interp(self.car_data.v_ego, scales['v_ego'], scale_to),
                                  interp(self.car_data.a_ego, scales['a_ego'], scale_to)],
                                 dtype=np.float32)
-    TR = float(predict_v2(model_input_data)[0])
-    TR = clip(TR, 0.9, 5)
+    TRs = predict_v2(model_input_data)
+    TR = interp(self.op_params.get('auto-df-timestep'), prediction_time_steps, TRs)
+    TR = interp(TR, scale_to, scales['TR'])  # un-norm to true TR value
+
+    TR = clip(TR, 0.6, 5.)
     print('PREDICTED TR: {}'.format(round(TR, 3)))
-    return TR
+    return float(TR)
 
   def _get_profiles(self):
     """This receives profile change updates from dfManager and runs the auto-df prediction if auto mode"""
