@@ -102,7 +102,7 @@ class DynamicFollow:
     return self.TR
 
   def predict_TR(self):
-    prediction_time_steps = [0.5, 1, 1.5, 2.0]
+    prediction_time_steps = [0, 0.5, 1, 1.5, 2.0]
     scales = self.model_scales_v2
     scale_to = [0, 1]
     model_input_data = np.array([interp(self.lead_data.v_lead, scales['v_lead'], scale_to),
@@ -111,7 +111,7 @@ class DynamicFollow:
                                  interp(self.car_data.a_ego, scales['a_ego'], scale_to)],
                                 dtype=np.float32)
     TRs = predict_v2(model_input_data)
-    TR = interp(self.op_params.get('auto-df-timestep'), prediction_time_steps, TRs)
+    TR = interp(self.op_params.get('auto_df_timestep'), prediction_time_steps, TRs)
     TR = interp(TR, scale_to, scales['TR'])  # un-norm to true TR value
 
     TR = clip(TR, 0.9, 2.7)
