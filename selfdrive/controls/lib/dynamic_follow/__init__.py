@@ -36,7 +36,7 @@ class DynamicFollow:
     self.skip_every = round(0.25 / mpc_rate)
     self.model_input_len = round(45 / mpc_rate)
 
-    self.model_scales_v2 = {'v_lead': (0.0, 32.33141326904297), 'a_lead': (-2.8897337913513184, 2.4308879375457764), 'v_ego': (2.7867987155914307, 34.28609085083008), 'a_ego': (-2.1653943061828613, 2.056363582611084), 'TR': (0.42720009281182686, 2.6999486039432026)}
+    self.model_scales_v2 = {'v_lead': (1.6135530471801758, 29.819814682006836), 'a_lead': (-2.7595551013946533, 2.9305784702301025), 'v_ego': (2.236767053604126, 32.26605987548828), 'a_ego': (-2.2007219791412354, 2.9745032787323), 'x_lead': (4.960000038146973, 86.76000213623047)}
 
     # Dynamic follow variables
     self.default_TR = 1.8
@@ -102,7 +102,7 @@ class DynamicFollow:
     return self.TR
 
   def predict_TR(self):
-    prediction_time_steps = [0, 0.5, 1, 1.5, 2.0]
+    prediction_time_steps = [0, 1, 2, 3]
     scales = self.model_scales_v2
     scale_to = [0, 1]
     model_input_data = np.array([interp(self.lead_data.v_lead, scales['v_lead'], scale_to),
@@ -112,7 +112,9 @@ class DynamicFollow:
                                 dtype=np.float32)
     TRs = predict_v2(model_input_data)
     TR = interp(self.op_params.get('auto_df_timestep'), prediction_time_steps, TRs)
-    TR = interp(TR, scale_to, scales['TR'])  # un-norm to true TR value
+    TR = interp(TR, scale_to, scales['x_lead'])  # un-norm to true TR value
+    v_ego = min(self.car_data.v_ego, 1)  # model output is distance in m not TR this time around
+    TR = TR / v_ego
 
     TR = clip(TR, 0.9, 2.7)
     print('PREDICTED TR: {}'.format(round(TR, 3)))
