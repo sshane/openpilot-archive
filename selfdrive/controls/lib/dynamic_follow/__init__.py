@@ -113,11 +113,12 @@ class DynamicFollow:
     TRs = predict_v2(model_input_data)
     TR = interp(self.op_params.get('auto_df_timestep'), prediction_time_steps, TRs)
     TR = interp(TR, scale_to, scales['x_lead'])  # un-norm to true TR value
-    v_ego = min(self.car_data.v_ego, 1)  # model output is distance in m not TR this time around
+    v_ego = max(self.car_data.v_ego, 1)  # model output is distance in m not TR this time around
     TR = TR / v_ego
-
-    TR = clip(TR, 0.9, 2.7)
+    
     print('PREDICTED TR: {}'.format(round(TR, 3)))
+    TR = clip(TR, 0.9, 2.7)
+    
     return float(TR)
 
   def _get_profiles(self):
