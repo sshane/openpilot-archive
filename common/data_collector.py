@@ -32,6 +32,8 @@ class DataCollector:
     self._initialize(data_dir, file_name)
 
   def _initialize(self, data_dir, file_name):  # add keys to top of data file
+    if os.path.exists(data_dir) and not os.path.isdir(data_dir):
+      os.remove(data_dir)
     if not os.path.exists(data_dir):  # create dir if doesn't exist
       os.mkdir(data_dir)
 
