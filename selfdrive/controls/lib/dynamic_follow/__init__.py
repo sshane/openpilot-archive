@@ -96,7 +96,7 @@ class DynamicFollow:
       # self.TR = self._get_TR()  # logic df
 
     if not travis:
-      # self._change_cost(libmpc)
+      self._change_cost(libmpc)
       self._send_cur_state()
 
     return self.TR
@@ -166,17 +166,17 @@ class DynamicFollow:
 
   def _change_cost(self, libmpc):
     TRs = [0.9, 1.8, 2.7]
-    costs = [1.15, 0.15, 0.05]
+    costs = [1., 0.1, 0.05]
     cost = interp(self.TR, TRs, costs)
 
-    change_time = sec_since_boot() - self.profile_change_time
-    change_time_x = [0, 0.5, 4]  # for three seconds after effective profile has changed
-    change_mod_y = [3, 6, 1]  # multiply cost by multiplier to quickly change distance
-    if change_time < change_time_x[-1]:  # if profile changed in last 3 seconds
-      cost_mod = interp(change_time, change_time_x, change_mod_y)
-      cost_mod_speeds = [0, 20 * CV.MPH_TO_MS]  # don't change cost too much under 20 mph
-      cost_mods = [cost_mod * 0.01, cost_mod]
-      cost *= interp(cost_mod, cost_mod_speeds, cost_mods)
+    # change_time = sec_since_boot() - self.profile_change_time
+    # change_time_x = [0, 0.5, 4]  # for three seconds after effective profile has changed
+    # change_mod_y = [3, 6, 1]  # multiply cost by multiplier to quickly change distance
+    # if change_time < change_time_x[-1]:  # if profile changed in last 3 seconds
+    #   cost_mod = interp(change_time, change_time_x, change_mod_y)
+    #   cost_mod_speeds = [0, 20 * CV.MPH_TO_MS]  # don't change cost too much under 20 mph
+    #   cost_mods = [cost_mod * 0.01, cost_mod]
+    #   cost *= interp(cost_mod, cost_mod_speeds, cost_mods)
 
     if self.last_cost != cost:
       libmpc.change_costs(MPC_COST_LONG.TTC, cost, MPC_COST_LONG.ACCELERATION, MPC_COST_LONG.JERK)  # todo: jerk is the derivative of acceleration, could tune that
