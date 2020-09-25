@@ -96,7 +96,7 @@ class opParams:
                         'corolla_use_lqr': Param(False, bool, 'Enable this to use LQR for lateral control with your TSS1 Corolla\nFalse: PID, True: RAV4-tuned LQR'),
                         'corollaTSS2_use_indi': Param(False, bool, 'Enable this to use INDI for lat with your Corolla with TSS2'),
                         'standstill_hack': Param(False, bool, 'Some cars support stop and go, you just need to enable this'),
-                        'auto_df_timestep': Param(.35, VT.number, 'How far into future to use v2 model\'s TR prediction\nCan be from 0 to 3 seconds, will be clipped', live=True)}
+                        'auto_df_timestep': Param(.5, VT.number, 'How far into future to use v2 model\'s TR prediction\nCan be from 0 to 2 seconds, will be clipped', live=True)}
 
     self._params_file = '/data/op_params.json'
     self._backup_file = '/data/op_params_corrupt.json'
