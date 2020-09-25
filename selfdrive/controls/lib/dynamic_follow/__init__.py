@@ -36,7 +36,7 @@ class DynamicFollow:
     self.skip_every = round(0.25 / mpc_rate)
     self.model_input_len = round(45 / mpc_rate)
 
-    self.model_scales_v2 = {'v_lead': (1.6135530471801758, 29.819814682006836), 'a_lead': (-2.7595551013946533, 2.9305784702301025), 'v_ego': (2.236767053604126, 32.26605987548828), 'a_ego': (-2.2007219791412354, 2.9745032787323), 'x_lead': (4.960000038146973, 86.76000213623047)}
+    self.model_scales_v2 = {'lane_speeds': (2.2582778930664062, 41.681434631347656), 'lane_distances': (6.28000020980835, 195.44000244140625), 'l_lane_max': 9, 'm_lane_max': 8, 'r_lane_max': 7, 'v_lead': (0.0, 33.5369987487793), 'a_lead': (-3.1766207218170166, 2.9305784702301025), 'v_ego': (1.592956781387329, 37.00764083862305), 'a_ego': (-2.9496374130249023, 2.9745032787323), 'x_lead': (1.1200000047683716, 99.76000213623047)}
 
     # Dynamic follow variables
     self.default_TR = 1.8
@@ -102,20 +102,65 @@ class DynamicFollow:
     return self.TR
 
   def predict_TR(self):
-    prediction_time_steps = [0, 1, 2, 3]
     scales = self.model_scales_v2
+    prediction_time_steps = [0.0, 0.5, 1.0, 1.5, 2.0]
     scale_to = [0, 1]
-    model_input_data = np.array([interp(self.lead_data.v_lead, scales['v_lead'], scale_to),
-                                 interp(self.lead_data.a_lead, scales['a_lead'], scale_to),
-                                 interp(self.car_data.v_ego, scales['v_ego'], scale_to),
-                                 interp(self.car_data.a_ego, scales['a_ego'], scale_to)],
-                                dtype=np.float32)
-    TRs = predict_v2(model_input_data)
-    TR = interp(self.op_params.get('auto_df_timestep'), prediction_time_steps, TRs)
-    TR = interp(TR, scale_to, scales['x_lead'])  # un-norm to true TR value
+    model_input_data = [interp(self.lead_data.v_lead, scales['v_lead'], scale_to),
+                        interp(self.lead_data.a_lead, scales['a_lead'], scale_to),
+                        interp(self.car_data.v_ego, scales['v_ego'], scale_to),
+                        interp(self.car_data.a_ego, scales['a_ego'], scale_to)]
+
+
+    left_lane_speeds = list(self.sm_collector['laneSpeed'].leftLaneSpeeds)
+    middle_lane_speeds = list(self.sm_collector['laneSpeed'].middleLaneSpeeds)
+    right_lane_speeds = list(self.sm_collector['laneSpeed'].rightLaneSpeeds)
+
+    left_lane_distances = list(self.sm_collector['laneSpeed'].leftLaneDistances)
+    middle_lane_distances = list(self.sm_collector['laneSpeed'].middleLaneDistances)
+    right_lane_distances = list(self.sm_collector['laneSpeed'].rightLaneDistances)
+
+    # remove lead tracks from middle lane. # todo: do this in lanespeedd
+    distance_epsilon = 2.5  # if diff of track dist and x_lead is larger than this, keep track
+    if len(middle_lane_speeds) == 0 or not self.lead_data.status:
+      pass  # nothing to filter
+    else:
+      middle_lane = [(spd, dst) for spd, dst in zip(middle_lane_speeds, middle_lane_distances) if abs(self.lead_data.x_lead - dst) > distance_epsilon]
+      if len(middle_lane) == 0:  # map/zip doesn't like empty lists, so fill them manually
+        middle_lane_speeds, middle_lane_distances = [], []
+      else:
+        middle_lane_speeds, middle_lane_distances = map(list, zip(*middle_lane))
+
+    l_distances = np.interp(left_lane_distances, scales['lane_distances'], scale_to)  # now normalize
+    m_distances = np.interp(middle_lane_distances, scales['lane_distances'], scale_to)
+    r_distances = np.interp(right_lane_distances, scales['lane_distances'], scale_to)
+    l_speeds = np.interp(left_lane_speeds, scales['lane_speeds'], scale_to)
+    m_speeds = np.interp(middle_lane_speeds, scales['lane_speeds'], scale_to)
+    r_speeds = np.interp(right_lane_speeds, scales['lane_speeds'], scale_to)
+
+    left_data = [[0, 0] for _ in range(scales['l_lane_max'])]  # now pad
+    middle_data = [[0, 0] for _ in range(scales['m_lane_max'])]
+    right_data = [[0, 0] for _ in range(scales['r_lane_max'])]
+
+    for idx, car in enumerate(zip(l_distances, l_speeds)):
+      left_data[idx] = list(car)
+    for idx, car in enumerate(zip(m_distances, m_speeds)):
+      middle_data[idx] = list(car)
+    for idx, car in enumerate(zip(r_distances, r_speeds)):
+      right_data[idx] = list(car)
+
+    lane_data = left_data + middle_data + right_data  # combine
+    lane_data = [item for sublist in lane_data for item in sublist]  # flatten
+
+    model_input_data += lane_data  # add padded and normalized lane speed data
+    model_input_data = np.array(model_input_data, dtype=np.float32)
+    assert model_input_data.shape == (52,), 'Incorrect model shape! Received {}, supposed to be {}. Data: {}'.format(model_input_data.shape, (52,), model_input_data)  # assert correct shape
+
+    pred_dists = predict_v2(model_input_data)
+    pred_dist = interp(self.op_params.get('auto_df_timestep'), prediction_time_steps, pred_dists)
+    pred_dist = interp(pred_dist, scale_to, scales['x_lead'])  # un-norm to true dist value
     v_ego = max(self.car_data.v_ego, 1)  # model output is distance in m not TR this time around
-    TR = TR / v_ego
-    
+    TR = pred_dist / v_ego  # now convert from meters to seconds
+
     print('PREDICTED TR: {}'.format(round(TR, 3)))
     TR = clip(TR, 0.9, 2.7)
     
