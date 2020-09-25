@@ -144,6 +144,8 @@ class DynamicFollow:
     for idx, car in enumerate(zip(l_distances, l_speeds)):
       left_data[idx] = list(car)
     for idx, car in enumerate(zip(m_distances, m_speeds)):
+      if idx > 7:
+        break
       middle_data[idx] = list(car)
     for idx, car in enumerate(zip(r_distances, r_speeds)):
       right_data[idx] = list(car)
