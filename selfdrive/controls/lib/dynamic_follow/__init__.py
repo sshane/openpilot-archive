@@ -48,8 +48,8 @@ class DynamicFollow:
     self.model_data_v2 = []
     self.model_scales_v2 = {'v_ego': [1.592956781387329, 37.12398910522461], 'a_ego': [-3.2634291648864746, 2.9745032787323], 'a_lead': [-3.1766207218170166, 2.9305784702301025], 'v_lead': [0.0, 41.66620635986328], 'x_lead': [1.1200000047683716, 99.76000213623047]}
     self.RATE = 20
-    self.input_time_steps = [int(t * self.RATE) for t in linspace(0, 4, step=0.5)]  # linspace numbers are seconds
-    self.output_time_steps = [int(t * self.RATE) for t in linspace(4.5, 8.5, step=1.0)]
+    self.input_time_steps = [int(t * self.RATE) for t in linspace(0, 8, step=0.5)]  # linspace numbers are seconds
+    self.output_time_steps = [int(t * self.RATE) for t in linspace(8.5, 10.5, step=0.5)]
 
     # Dynamic follow variables
     self.default_TR = 1.8
@@ -119,15 +119,12 @@ class DynamicFollow:
     prediction_time_steps = [(ts - self.output_time_steps[0]) / self.RATE for ts in self.output_time_steps]
     scale_to = [0, 1]
     self.model_data_v2.append([interp(self.lead_data.v_lead, scales['v_lead'], scale_to),
-                               interp(self.lead_data.x_lead, scales['x_lead'], scale_to),
                                interp(self.lead_data.a_lead, scales['a_lead'], scale_to),
                                interp(self.car_data.v_ego, scales['v_ego'], scale_to),
                                interp(self.car_data.a_ego, scales['a_ego'], scale_to)])
 
     while len(self.model_data_v2) > 81:  # list needs to be exactly 81 in length
       self.model_data_v2.pop(0)
-
-    print('model_data_length: {}'.format(len(self.model_data_v2)))
 
     if len(self.model_data_v2) != max(self.input_time_steps) + 1:  # not enough data yet
       return 1.8
@@ -179,7 +176,7 @@ class DynamicFollow:
     # model_input_data += lane_data  # add padded and normalized lane speed data
 
     model_input_data = np.array(model_input_data, dtype=np.float32)
-    assert model_input_data.shape == (9, 5), 'Incorrect model shape! Received {}, supposed to be {}. Data: {}'.format(model_input_data.shape, (9, 5), model_input_data)  # assert correct shape
+    assert model_input_data.shape == (17, 4), 'Incorrect model shape! Received {}, supposed to be {}. Data: {}'.format(model_input_data.shape, (17, 4), model_input_data)  # assert correct shape
 
     pred_dists = predict_v2(model_input_data)
     pred_dist = interp(self.op_params.get('auto_df_timestep'), prediction_time_steps, pred_dists)
