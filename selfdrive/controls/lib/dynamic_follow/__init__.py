@@ -123,7 +123,7 @@ class DynamicFollow:
                                interp(self.car_data.v_ego, scales['v_ego'], scale_to),
                                interp(self.car_data.a_ego, scales['a_ego'], scale_to)])
 
-    while len(self.model_data_v2) > 81:  # list needs to be exactly 81 in length
+    while len(self.model_data_v2) > 161:  # list needs to be exactly 81 in length
       self.model_data_v2.pop(0)
 
     if len(self.model_data_v2) != max(self.input_time_steps) + 1:  # not enough data yet
