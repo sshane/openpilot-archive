@@ -182,7 +182,9 @@ class DynamicFollow:
     pred_dist = interp(self.op_params.get('auto_df_timestep'), prediction_time_steps, pred_dists)
     pred_dist = interp(pred_dist, scale_to, scales['x_lead'])  # un-norm to true dist value
     v_ego = max(self.car_data.v_ego, 1)  # model output is distance in m not TR this time around
-    TR = pred_dist / v_ego  # now convert from meters to seconds
+    model_TR = pred_dist / v_ego  # now convert from meters to seconds
+    current_TR = self.lead_data.x_lead / v_ego
+    TR = ((current_TR - model_TR) / 2) + current_TR  # add half of difference between current and predicted to current
 
     print('PREDICTED TR: {}\n'.format(round(TR, 3)))
     TR = clip(TR, 0.9, 2.7)
