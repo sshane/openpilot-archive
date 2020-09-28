@@ -184,7 +184,7 @@ class DynamicFollow:
     v_ego = max(self.car_data.v_ego, 1)  # model output is distance in m not TR this time around
     model_TR = pred_dist / v_ego  # now convert from meters to seconds
     current_TR = self.lead_data.x_lead / v_ego
-    TR = ((current_TR - model_TR) / 2) + current_TR  # add half of difference between current and predicted to current
+    TR = ((current_TR - model_TR) / 1) + current_TR  # add half of difference between current and predicted to current
 
     print('PREDICTED TR: {}\n'.format(round(TR, 3)))
     TR = clip(TR, 0.9, 2.7)
