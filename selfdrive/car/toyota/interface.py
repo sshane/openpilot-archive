@@ -91,7 +91,7 @@ class CarInterface(CarInterfaceBase):
       if prius_use_pid:
         ret.lateralTuning.pid.kpV, ret.lateralTuning.pid.kiV = [[0.36], [0.1]]
         ret.lateralTuning.pid.kdV = [2.]  # corolla D times gain in PI values
-        ret.lateralTuning.pid.kf = 0.00002
+        ret.lateralTuning.pid.kf = 0.00007818594
       else:
         ret.lateralTuning.init('indi')
         ret.lateralTuning.indi.innerLoopGain = 4.0
