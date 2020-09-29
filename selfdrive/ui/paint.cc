@@ -650,7 +650,7 @@ static void SA_ui_draw_ls_button(UIState *s) {
   nvgText(s->vg, btn_x - 34, btn_y + 50 + 15, "mode", NULL);
 }
 
-static void ui_draw_df_button(UIState *s) {
+static void SA_ui_draw_df_button(UIState *s) {
   int btn_status = s->scene.dfButtonStatus;
   int btn_w = 150;
   int btn_h = 150;
@@ -677,10 +677,10 @@ static void ui_draw_df_button(UIState *s) {
 static void SA_ui_draw_driving_options(UIState *s) {
   int btn_w = 138;
   int btn_h = 500;
-  int x = 1920;
-  int y = 1080 / 2;
-  int btn_x = x - btn_w / 2;
-  int btn_y = y - btn_h / 2;
+  int btn_x = 1920;  // coordinates for center of item
+  int btn_y = 1080 / 2;
+  btn_x = x - btn_w / 2;
+  btn_y = y - btn_h / 2;
 
   nvgBeginPath(s->vg);
   nvgRoundedRect(s->vg, btn_x, btn_y, btn_w, btn_h, 25);
