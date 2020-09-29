@@ -1,3 +1,4 @@
+#pragma GCC diagnostic ignored "-Wunused-parameter"
 #include <stdio.h>
 #include <iostream>
 #include <stdlib.h>
