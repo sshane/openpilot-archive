@@ -694,12 +694,14 @@ static void SA_ui_draw_driving_options(UIState *s) {
   nvgFillColor(s->vg, nvgRGBA(75, 75, 75, 75));
   nvgFill(s->vg);
 
+  float lineh;
+  nvgTextMetrics(s->vg, NULL, NULL, &lineh)
+
   nvgFillColor(s->vg, nvgRGBA(255, 255, 255, 255));
   nvgFontSize(s->vg, 65);
-  nvgText(s->vg, btn_x + btn_w / 2, btn_y + btn_h * .25, "M\nE\nN\nU", NULL);
-//  nvgText(s->vg, x, y + btn_h / 8, "E", NULL);
-//  nvgText(s->vg, x, y + btn_h / 8, "N", NULL);
-//  nvgText(s->vg, x, y + btn_h / 8, "U", NULL);
+  nvgText(s->vg, btn_x + btn_w / 2, btn_y + btn_h * .25, "M", NULL);
+  nvgText(s->vg, btn_x + btn_w / 2, btn_y + btn_h * .25 + lineh, "E", NULL);
+  nvgText(s->vg, btn_x + btn_w / 2, btn_y + btn_h * .25 + lineh + lineh, "N", NULL);
 }
 
 static void SA_ui_draw_ml_button(UIState *s) {
