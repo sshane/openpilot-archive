@@ -677,7 +677,7 @@ static void SA_ui_draw_df_button(UIState *s) {
 static void SA_ui_draw_driving_options(UIState *s) {
   int btn_w = 138;
   int btn_h = 500;
-  int btn_x = 1920;  // coordinates for center of item
+  int btn_x = 1920 - 50;  // coordinates for center of item
   int btn_y = 1080 / 2;
   btn_x = btn_x - btn_w / 2;
   btn_y = btn_y - btn_h / 2;
