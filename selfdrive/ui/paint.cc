@@ -696,7 +696,7 @@ static void SA_ui_draw_driving_options(UIState *s) {
 
   nvgFillColor(s->vg, nvgRGBA(255, 255, 255, 255));
   nvgFontSize(s->vg, 65);
-  nvgText(s->vg, btn_x + btn_w / 2, btn_y + btn_h / 2, "M", NULL);
+  nvgText(s->vg, btn_x + btn_w / 2, btn_y + 125, "M\nE\nN\nU", NULL);
 //  nvgText(s->vg, x, y + btn_h / 8, "E", NULL);
 //  nvgText(s->vg, x, y + btn_h / 8, "N", NULL);
 //  nvgText(s->vg, x, y + btn_h / 8, "U", NULL);
