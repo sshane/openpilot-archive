@@ -677,7 +677,7 @@ static void SA_ui_draw_df_button(UIState *s) {
 static void SA_ui_draw_driving_options(UIState *s) {
   int btn_w = 207;
   int btn_h = 500;
-  int btn_x = 1920 - (138+30);  // coordinates for center of item
+  int btn_x = 1920 - (138+30);
   int btn_y = 1080 / 2;
 //  btn_x = btn_x - btn_w / 2;
   btn_y = btn_y - btn_h / 2;
@@ -696,7 +696,7 @@ static void SA_ui_draw_driving_options(UIState *s) {
 
   nvgFillColor(s->vg, nvgRGBA(255, 255, 255, 255));
   nvgFontSize(s->vg, 65);
-  nvgText(s->vg, btn_x, btn_y, "M", NULL);
+  nvgText(s->vg, btn_x + btn_h / 2, btn_y, "M", NULL);
 //  nvgText(s->vg, x, y + btn_h / 8, "E", NULL);
 //  nvgText(s->vg, x, y + btn_h / 8, "N", NULL);
 //  nvgText(s->vg, x, y + btn_h / 8, "U", NULL);
