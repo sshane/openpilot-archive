@@ -679,7 +679,7 @@ static void SA_ui_draw_driving_options(UIState *s) {
   int btn_h = 500;
   int btn_x = 1920 - (138+30);  // coordinates for center of item
   int btn_y = 1080 / 2;
-//  btn_x = btn_x - btn_w / 2;
+  int x = btn_x - btn_w / 2;
   btn_y = btn_y - btn_h / 2;
 
   nvgBeginPath(s->vg);
@@ -694,9 +694,12 @@ static void SA_ui_draw_driving_options(UIState *s) {
   nvgFillColor(s->vg, nvgRGBA(75, 75, 75, 75));
   nvgFill(s->vg);
 
-//  nvgFillColor(s->vg, nvgRGBA(255, 255, 255, 255));
-//  nvgFontSize(s->vg, 65);
-//  nvgText(s->vg, x, y + btn_h / 8, "Toggle Model Long", NULL);
+  nvgFillColor(s->vg, nvgRGBA(255, 255, 255, 255));
+  nvgFontSize(s->vg, 65);
+  nvgText(s->vg, x, y + btn_h / 8, "M", NULL);
+//  nvgText(s->vg, x, y + btn_h / 8, "E", NULL);
+//  nvgText(s->vg, x, y + btn_h / 8, "N", NULL);
+//  nvgText(s->vg, x, y + btn_h / 8, "U", NULL);
 }
 
 static void SA_ui_draw_ml_button(UIState *s) {
