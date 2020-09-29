@@ -684,7 +684,7 @@ static void SA_ui_draw_driving_options(UIState *s) {
 
   nvgBeginPath(s->vg);
   nvgRoundedRect(s->vg, btn_x, btn_y, btn_w, btn_h, 25);
-  nvgStrokeColor(s->vg, nvgRGBA(0, 72, 59, 255));
+  nvgStrokeColor(s->vg, nvgRGBA(87, 74, 226, 255));
 
   nvgStrokeWidth(s->vg, 12);
   nvgStroke(s->vg);
@@ -696,7 +696,7 @@ static void SA_ui_draw_driving_options(UIState *s) {
 
   nvgFillColor(s->vg, nvgRGBA(255, 255, 255, 255));
   nvgFontSize(s->vg, 65);
-  nvgText(s->vg, btn_x + btn_h / 2, btn_y, "M", NULL);
+  nvgText(s->vg, btn_x, btn_y + btn_h / 2, "M", NULL);
 //  nvgText(s->vg, x, y + btn_h / 8, "E", NULL);
 //  nvgText(s->vg, x, y + btn_h / 8, "N", NULL);
 //  nvgText(s->vg, x, y + btn_h / 8, "U", NULL);
