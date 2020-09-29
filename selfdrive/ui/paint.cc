@@ -684,7 +684,7 @@ static void SA_ui_draw_driving_options(UIState *s) {
 
   nvgBeginPath(s->vg);
   nvgRoundedRect(s->vg, btn_x, btn_y, btn_w, btn_h, 25);
-  nvgStrokeColor(s->vg, nvgRGBA(245, 72, 59, 255));
+  nvgStrokeColor(s->vg, nvgRGBA(0, 72, 59, 255));
 
   nvgStrokeWidth(s->vg, 12);
   nvgStroke(s->vg);
