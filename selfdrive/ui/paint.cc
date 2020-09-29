@@ -750,15 +750,18 @@ static void ui_draw_vision_header(UIState *s) {
   ui_draw_vision_event(s);
 }
 
+static void ui_draw_SA(UIState *s) {
+  SA_ui_draw_df_button(s);
+  SA_ui_draw_ls_button(s);
+  SA_ui_draw_ml_button(s);
+  SA_ui_draw_driving_options(s);
+}
+
 static void ui_draw_vision_footer(UIState *s) {
   nvgBeginPath(s->vg);
   nvgRect(s->vg, s->scene.ui_viz_rx, footer_y, s->scene.ui_viz_rw, footer_h);
 
   ui_draw_vision_face(s);
-  SA_ui_draw_df_button(s);
-  SA_ui_draw_ls_button(s);
-  SA_ui_draw_ml_button(s);
-  SA_ui_draw_driving_options(s);
 
 #ifdef SHOW_SPEEDLIMIT
   // ui_draw_vision_map(s);
@@ -819,6 +822,7 @@ static void ui_draw_vision(UIState *s) {
   glEnable(GL_SCISSOR_TEST);
   glViewport(scene->ui_viz_rx+scene->ui_viz_ro, s->fb_h-(box_y+box_h), viz_w, box_h);
   glScissor(scene->ui_viz_rx, s->fb_h-(box_y+box_h), scene->ui_viz_rw, box_h);
+  ui_draw_SA(s);
   draw_frame(s);
   glDisable(GL_SCISSOR_TEST);
 
