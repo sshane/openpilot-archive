@@ -677,7 +677,7 @@ static void SA_ui_draw_df_button(UIState *s) {
 static void SA_ui_draw_driving_options(UIState *s) {
   int btn_w = 138;
   int btn_h = 500;
-  int btn_x = 1920 - 50;  // coordinates for center of item
+  int btn_x = 1920 - 138;  // coordinates for center of item
   int btn_y = 1080 / 2;
   btn_x = btn_x - btn_w / 2;
   btn_y = btn_y - btn_h / 2;
@@ -750,18 +750,15 @@ static void ui_draw_vision_header(UIState *s) {
   ui_draw_vision_event(s);
 }
 
-static void ui_draw_SA(UIState *s) {
-  SA_ui_draw_df_button(s);
-  SA_ui_draw_ls_button(s);
-  SA_ui_draw_ml_button(s);
-  SA_ui_draw_driving_options(s);
-}
-
 static void ui_draw_vision_footer(UIState *s) {
   nvgBeginPath(s->vg);
   nvgRect(s->vg, s->scene.ui_viz_rx, footer_y, s->scene.ui_viz_rw, footer_h);
 
   ui_draw_vision_face(s);
+  SA_ui_draw_df_button(s);
+  SA_ui_draw_ls_button(s);
+  SA_ui_draw_ml_button(s);
+  SA_ui_draw_driving_options(s);
 
 #ifdef SHOW_SPEEDLIMIT
   // ui_draw_vision_map(s);
@@ -826,8 +823,6 @@ static void ui_draw_vision(UIState *s) {
   glDisable(GL_SCISSOR_TEST);
 
   glViewport(0, 0, s->fb_w, s->fb_h);
-  ui_draw_SA(s);
-
 
   // Draw augmented elements
   if (!scene->frontview && !scene->fullview) {
