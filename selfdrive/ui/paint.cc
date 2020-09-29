@@ -684,15 +684,12 @@ static void SA_ui_draw_driving_options(UIState *s) {
 
   nvgBeginPath(s->vg);
   nvgRoundedRect(s->vg, btn_x, btn_y, btn_w, btn_h, 25);
-  if (s->scene.mlButtonEnabled) {  // change outline color based on status of button
-    nvgStrokeColor(s->vg, nvgRGBA(55, 184, 104, 255));
-  } else {
-    nvgStrokeColor(s->vg, nvgRGBA(184, 55, 55, 255));
-  }
+  nvgStrokeColor(s->vg, nvgRGBA(245, 72, 59, 255));
+
   nvgStrokeWidth(s->vg, 12);
   nvgStroke(s->vg);
 
-  nvgBeginPath(s->vg);  // dark background for readability
+  nvgBeginPath(s->vg);  // dark background
   nvgRoundedRect(s->vg, btn_x, btn_y, btn_w, btn_h, 25);
   nvgFillColor(s->vg, nvgRGBA(75, 75, 75, 75));
   nvgFill(s->vg);
