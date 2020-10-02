@@ -57,7 +57,7 @@ class opParams:
         - Finally, the live arg tells both opParams and opEdit that it's a live parameter that will change. Therefore, you must place the `op_params.get()` call in the update function so that it can update.
 
       Here's an example of a good fork_param entry:
-      self.fork_params = {'camera_offset': Param(default=0.06, allowed_types=VT.number)}  # VT.number allows both floats and ints
+      self.fork_params = {'camera_offset': Param(default=0.06, allowed_types=VT.number), live=True}  # VT.number allows both floats and ints
     """
 
     VT = ValueTypes()
@@ -151,6 +151,9 @@ class opParams:
       raise Exception('opParams: Tried to put a value of invalid type!')
     self.params.update({key: value})
     self._write()
+
+  def __getitem__(self, s):  # can also do op_params['param_name']
+    return self.get(s)
 
   def delete(self, key):  # todo: might be obsolete. remove?
     if key in self.params:
