@@ -68,7 +68,7 @@ def mean(l):
   return sum(l) / len(l)
 
 
-class DynamicSpeed:
+class DynamicSpeed:  # todo: include DynamicLaneSpeed for adjacent lane slowing, or just merge the two together
   def __init__(self):
     self.PER_SECOND = 1 / 20.
     self.MIN_SPEED = 10 * CV.MPH_TO_MS
