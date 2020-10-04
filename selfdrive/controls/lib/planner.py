@@ -64,6 +64,55 @@ def limit_accel_in_turns(v_ego, angle_steers, a_target, CP):
   return [a_target[0], min(a_target[1], a_x_allowed)]
 
 
+def mean(l):
+  return sum(l) / len(l)
+
+
+class DynamicSpeed:
+  def __init__(self):
+    self.PER_SECOND = 1 / 20.
+    self.MIN_SPEED = 10 * CV.MPH_TO_MS
+
+    self.reset()
+
+  def reset(self):
+    self.v_mpc = 0
+    self.a_mpc = 0  # todo: this
+    self.valid = False
+
+  def update(self, v_ego, a_ego, v_lead, a_lead, x_lead):
+    self.v_ego = v_ego
+    self.a_ego = a_ego
+    self.v_lead = v_lead
+    self.a_lead = a_lead
+    self.x_lead = x_lead
+
+    if self.v_ego >= self.MIN_SPEED:
+      self._calculate_speed()  # also sets valid
+    else:
+      self.reset()
+
+  def _calculate_speed(self):
+    """This will calculate the immediate speed of ego based on lead"""
+    v_rel = self.v_lead - self.v_ego
+    mods = []
+    if v_rel <= -1 * CV.MPH_TO_MS:
+      v_rels = [i * CV.MPH_TO_MS for i in [-5, -2.5, -1]]
+      multipliers = [1.5, 1, .5]  # the slower the lead is, the quicker we get to half of the immediate v_rel
+      mods.append(abs(v_rel / 2) * interp(v_rel, v_rels, multipliers))
+
+    if self.a_lead < 0.5 * CV.MPH_TO_MS:  # todo: factor in distance
+      pass
+
+    if len(mods):
+      # mod = mean(mods)
+      mod = mods[0]  # todo: this is temp
+      self.v_mpc = self.v_ego - (mod * self.PER_SECOND)
+      self.valid = True
+    else:
+      self.valid = False
+
+
 class Planner():
   def __init__(self, CP):
     self.CP = CP
@@ -71,6 +120,7 @@ class Planner():
     self.mpc1 = LongitudinalMpc(1)
     self.mpc2 = LongitudinalMpc(2)
     self.mpc_model = LongitudinalMpcModel()
+    self.dynamic_speed = DynamicSpeed()
 
     self.v_acc_start = 0.0
     self.a_acc_start = 0.0
@@ -97,6 +147,8 @@ class Planner():
         solutions['mpc2'] = self.mpc2.v_mpc
       if self.mpc_model.valid and model_enabled:
         solutions['model'] = self.mpc_model.v_mpc
+      if self.dynamic_speed.valid:
+        solutions['dynamic_speed'] = self.dynamic_speed.v_mpc
 
       slowest = min(solutions, key=solutions.get)
 
@@ -114,6 +166,9 @@ class Planner():
       elif slowest == 'model':
         self.v_acc = self.mpc_model.v_mpc
         self.a_acc = self.mpc_model.a_mpc
+      elif slowest == 'dynamic_speed':
+        self.v_acc = self.dynamic_speed.v_mpc
+        self.a_acc = self.a_cruise  # todo: doesn't calculate acceleration yet
 
     self.v_acc_future = min([self.mpc1.v_mpc_future, self.mpc2.v_mpc_future, self.mpc_model.v_mpc_future, v_cruise_setpoint])
 
@@ -131,6 +186,8 @@ class Planner():
 
     lead_1 = sm['radarState'].leadOne
     lead_2 = sm['radarState'].leadTwo
+
+    self.dynamic_speed.update(v_ego, sm['carState'].aEgo, lead_1.vLead, lead_1.aLeadK, lead_1.dRel)
 
     enabled = (long_control_state == LongCtrlState.pid) or (long_control_state == LongCtrlState.stopping)
     following = lead_1.status and lead_1.dRel < 45.0 and lead_1.vLeadK > v_ego and lead_1.aLeadK > 0.0
