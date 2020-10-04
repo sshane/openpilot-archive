@@ -130,18 +130,19 @@ class DynamicFollow:
       self.pm.send('dynamicFollowData', dat)
 
   def _change_cost(self, libmpc):
-    TRs = [0.9, 1.8, 2.7]
-    costs = [1.15, 0.15, 0.05]
-    cost = interp(self.TR, TRs, costs)
-
-    change_time = sec_since_boot() - self.profile_change_time
-    change_time_x = [0, 0.5, 4]  # for three seconds after effective profile has changed
-    change_mod_y = [3, 6, 1]  # multiply cost by multiplier to quickly change distance
-    if change_time < change_time_x[-1]:  # if profile changed in last 3 seconds
-      cost_mod = interp(change_time, change_time_x, change_mod_y)
-      cost_mod_speeds = [0, 20 * CV.MPH_TO_MS]  # don't change cost too much under 20 mph
-      cost_mods = [cost_mod * 0.01, cost_mod]
-      cost *= interp(cost_mod, cost_mod_speeds, cost_mods)
+    # TRs = [0.9, 1.8, 2.7]
+    # costs = [1.15, 0.15, 0.05]
+    # cost = interp(self.TR, TRs, costs)
+    #
+    # change_time = sec_since_boot() - self.profile_change_time
+    # change_time_x = [0, 0.5, 4]  # for three seconds after effective profile has changed
+    # change_mod_y = [3, 6, 1]  # multiply cost by multiplier to quickly change distance
+    # if change_time < change_time_x[-1]:  # if profile changed in last 3 seconds
+    #   cost_mod = interp(change_time, change_time_x, change_mod_y)
+    #   cost_mod_speeds = [0, 20 * CV.MPH_TO_MS]  # don't change cost too much under 20 mph
+    #   cost_mods = [cost_mod * 0.01, cost_mod]
+    #   cost *= interp(cost_mod, cost_mod_speeds, cost_mods)
+    cost = self.op_params.get('long_cost')
 
     if self.last_cost != cost:
       libmpc.change_costs(MPC_COST_LONG.TTC, cost, MPC_COST_LONG.ACCELERATION, MPC_COST_LONG.JERK)  # todo: jerk is the derivative of acceleration, could tune that
@@ -243,15 +244,18 @@ class DynamicFollow:
     self.last_effective_profile = df_profile
 
     if df_profile == self.df_profiles.roadtrip:
+      return 1.85
       y_dist = [1.5486, 1.556, 1.5655, 1.5773, 1.5964, 1.6246, 1.6715, 1.7057, 1.7859, 1.8542, 1.8697, 1.8833, 1.8961]  # TRs
       profile_mod_pos = [0.5, 0.35, 0.1, 0.03]
       profile_mod_neg = [1.3, 1.4, 1.8, 2.0]
     elif df_profile == self.df_profiles.traffic:  # for in congested traffic
+      return 1.2
       x_vel = [0.0, 1.892, 3.7432, 5.8632, 8.0727, 10.7301, 14.343, 17.6275, 22.4049, 28.6752, 34.8858, 40.35]
       y_dist = [1.3781, 1.3791, 1.3457, 1.3134, 1.3145, 1.318, 1.3485, 1.257, 1.144, 0.979, 0.9461, 0.9156]
       profile_mod_pos = [1.075, 1.55, 2.6, 3.75]
       profile_mod_neg = [0.95, .275, 0.1, 0.05]
     elif df_profile == self.df_profiles.relaxed:  # default to relaxed/stock
+      return 1.55
       y_dist = [1.385, 1.394, 1.406, 1.421, 1.444, 1.474, 1.521, 1.544, 1.568, 1.588, 1.599, 1.613, 1.634]
       profile_mod_pos = [1.0, 0.955, 0.898, 0.905]
       profile_mod_neg = [1.0, 1.0825, 1.1877, 1.174]
