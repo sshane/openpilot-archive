@@ -80,14 +80,14 @@ class DynamicSpeed:  # todo: include DynamicLaneSpeed for adjacent lane slowing,
     self.a_mpc = 0  # todo: this
     self.valid = False
 
-  def update(self, v_ego, a_ego, v_lead, a_lead, x_lead):
+  def update(self, v_ego, a_ego, lead, following):
     self.v_ego = v_ego
     self.a_ego = a_ego
-    self.v_lead = v_lead
-    self.a_lead = a_lead
-    self.x_lead = x_lead
+    self.v_lead = lead.vLead
+    self.a_lead = lead.aLeadK
+    self.x_lead = lead.dRel
 
-    if self.v_ego >= self.MIN_SPEED:
+    if self.v_ego >= self.MIN_SPEED and following:  # todo: use lead.status if it's reliable
       self._calculate_speed()  # also sets valid
     else:
       self.reset()
@@ -99,7 +99,7 @@ class DynamicSpeed:  # todo: include DynamicLaneSpeed for adjacent lane slowing,
     if v_rel <= -1 * CV.MPH_TO_MS:
       v_rels = [i * CV.MPH_TO_MS for i in [-5, -2.5, -1]]
       multipliers = [1.5, 1, .5]  # the slower the lead is, the quicker we get to half of the immediate v_rel
-      mods.append(abs(v_rel / 2) * interp(v_rel, v_rels, multipliers))
+      mods.append(abs(v_rel / 2) * interp(v_rel, v_rels, multipliers))  # todo: actually we could just use weighted average instead of multipliers. w. avg. v_ego and v_lead (maybe?)
 
     if self.a_lead < 0.5 * CV.MPH_TO_MS:  # todo: factor in distance
       pass
@@ -148,7 +148,7 @@ class Planner():
       if self.mpc_model.valid and model_enabled:
         solutions['model'] = self.mpc_model.v_mpc
       if self.dynamic_speed.valid:
-        solutions['dynamic_speed'] = self.dynamic_speed.v_mpc
+        solutions['dynamicSpeed'] = self.dynamic_speed.v_mpc
 
       slowest = min(solutions, key=solutions.get)
 
@@ -166,7 +166,7 @@ class Planner():
       elif slowest == 'model':
         self.v_acc = self.mpc_model.v_mpc
         self.a_acc = self.mpc_model.a_mpc
-      elif slowest == 'dynamic_speed':
+      elif slowest == 'dynamicSpeed':
         self.v_acc = self.dynamic_speed.v_mpc
         self.a_acc = self.a_cruise  # todo: doesn't calculate acceleration yet
 
@@ -187,10 +187,9 @@ class Planner():
     lead_1 = sm['radarState'].leadOne
     lead_2 = sm['radarState'].leadTwo
 
-    self.dynamic_speed.update(v_ego, sm['carState'].aEgo, lead_1.vLead, lead_1.aLeadK, lead_1.dRel)
-
     enabled = (long_control_state == LongCtrlState.pid) or (long_control_state == LongCtrlState.stopping)
     following = lead_1.status and lead_1.dRel < 45.0 and lead_1.vLeadK > v_ego and lead_1.aLeadK > 0.0
+    self.dynamic_speed.update(v_ego, sm['carState'].aEgo, lead_1, following)
 
     # Calculate speed for normal cruise control
     if enabled and not self.first_loop and not sm['carState'].gasPressed:  # gasPress is to avoid hard decel after user accelerates with gas while engaged
