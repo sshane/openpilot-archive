@@ -68,9 +68,32 @@ def mean(l):
   return sum(l) / len(l)
 
 
+def calc_ttc(v_ego, a_ego, x_lead, v_lead, a_lead):
+  max_ttc = 5.0
+
+  v_rel = v_ego - v_lead
+  a_rel = a_ego - a_lead
+
+  # assuming that closing gap ARel comes from lead vehicle decel,
+  # then limit ARel so that v_lead will get to zero in no sooner than t_decel.
+  # This helps underweighting ARel when v_lead is close to zero.
+  t_decel = 2.
+  a_rel = np.minimum(a_rel, v_lead / t_decel)
+
+  # delta of the quadratic equation to solve for ttc
+  delta = v_rel**2 + 2 * x_lead * a_rel
+
+  # assign an arbitrary high ttc value if there is no solution to ttc
+  if delta < 0.1 or (np.sqrt(delta) + v_rel < 0.1):
+    ttc = max_ttc
+  else:
+    ttc = np.minimum(2 * x_lead / (np.sqrt(delta) + v_rel), max_ttc)
+  return ttc
+
+
 class DynamicSpeed:  # todo: include DynamicLaneSpeed for adjacent lane slowing, or just merge the two together
   def __init__(self):
-    self.PER_SECOND = 1 / 20.
+    self.RATE = 1 / 20.
     self.MIN_SPEED = 10 * CV.MPH_TO_MS
 
     self.reset()
@@ -95,22 +118,34 @@ class DynamicSpeed:  # todo: include DynamicLaneSpeed for adjacent lane slowing,
   def _calculate_speed(self):
     """This will calculate the immediate speed of ego based on lead"""
     v_rel = self.v_lead - self.v_ego
-    mods = []
+    # mods = []
+    # if v_rel <= -1 * CV.MPH_TO_MS:
+    #   v_rels = [i * CV.MPH_TO_MS for i in [-20, -10, -5, -2.5, -1]]
+    #   multipliers = [3.25, 2, 1.5, 1, .5]  # the slower the lead is, the quicker we get to half of the immediate v_rel
+    #   # mods.append(abs(v_rel / 2) * interp(v_rel, v_rels, multipliers))  # todo: actually we could just use weighted average instead of multipliers. w. avg. v_ego and v_lead (maybe?)
+    #   mods.append(interp(v_rel, v_rels, multipliers))
+    #
+    # if self.a_lead < 0.5 * CV.MPH_TO_MS:  # todo: factor in distance
+    #   pass
+
     if v_rel <= -1 * CV.MPH_TO_MS:
-      v_rels = [i * CV.MPH_TO_MS for i in [-5, -2.5, -1]]
-      multipliers = [1.8, 1.4, 1]  # the slower the lead is, the quicker we get to half of the immediate v_rel
-      mods.append(abs(v_rel / 2) * interp(v_rel, v_rels, multipliers))  # todo: actually we could just use weighted average instead of multipliers. w. avg. v_ego and v_lead (maybe?)
+      ttc = calc_ttc(self.v_ego, self.a_ego, self.x_lead, self.v_lead, self.a_lead)
+      if ttc < 5:
+        change = (abs(v_rel) / ttc) * self.RATE
+        self.v_mpc = self.v_ego - change
+        self.a_mpc = -abs(change / self.RATE)  # fixme: verify 20 is correct
+        self.valid = True
+        return
+    self.valid = False
 
-    if self.a_lead < 0.5 * CV.MPH_TO_MS:  # todo: factor in distance
-      pass
 
-    if len(mods):
-      # mod = mean(mods)
-      mod = mods[0]  # todo: this is temp
-      self.v_mpc = self.v_ego - (mod * self.PER_SECOND)
-      self.valid = True
-    else:
-      self.valid = False
+    # if len(mods):
+    #   # mod = mean(mods)
+    #   mod = mods[0]  # todo: this is temp
+    #   self.v_mpc = self.v_ego - (mod * self.PER_SECOND)
+    #   self.valid = True
+    # else:
+    #   self.valid = False
 
 
 class Planner():
@@ -168,7 +203,7 @@ class Planner():
         self.a_acc = self.mpc_model.a_mpc
       elif slowest == 'dynamicSpeed':
         self.v_acc = self.dynamic_speed.v_mpc
-        self.a_acc = self.a_cruise  # todo: doesn't calculate acceleration yet
+        self.a_acc = self.dynamic_speed.a_mpc
 
     self.v_acc_future = min([self.mpc1.v_mpc_future, self.mpc2.v_mpc_future, self.mpc_model.v_mpc_future, v_cruise_setpoint])
 
