@@ -98,7 +98,7 @@ class DynamicSpeed:  # todo: include DynamicLaneSpeed for adjacent lane slowing,
     mods = []
     if v_rel <= -1 * CV.MPH_TO_MS:
       v_rels = [i * CV.MPH_TO_MS for i in [-5, -2.5, -1]]
-      multipliers = [1.5, 1, .5]  # the slower the lead is, the quicker we get to half of the immediate v_rel
+      multipliers = [1.8, 1.4, 1]  # the slower the lead is, the quicker we get to half of the immediate v_rel
       mods.append(abs(v_rel / 2) * interp(v_rel, v_rels, multipliers))  # todo: actually we could just use weighted average instead of multipliers. w. avg. v_ego and v_lead (maybe?)
 
     if self.a_lead < 0.5 * CV.MPH_TO_MS:  # todo: factor in distance
