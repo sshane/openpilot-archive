@@ -71,7 +71,7 @@ def mean(l):
 
 
 def calc_ttc(v_ego, a_ego, x_lead, v_lead, a_lead):
-  max_ttc = 6
+  max_ttc = 10
 
   v_rel = v_ego - v_lead
   a_rel = a_ego - a_lead
@@ -132,7 +132,7 @@ class DynamicSpeed:  # todo: include DynamicLaneSpeed for adjacent lane slowing,
 
     if v_rel <= -1 * CV.MPH_TO_MS:
       ttc = calc_ttc(self.v_ego, self.a_ego, self.x_lead, self.v_lead, self.a_lead)
-      if not np.isinf(ttc) and not np.isnan(ttc) and ttc < 6:
+      if not np.isinf(ttc) and not np.isnan(ttc) and ttc < 10:
         change = (abs(v_rel) / ttc) * self.RATE
         print('TTC: {}, CHNG (1s): {} mph'.format(round(ttc, 3), round(-change / self.RATE * CV.MS_TO_MPH, 4)))
         self.v_mpc = self.v_ego - change
