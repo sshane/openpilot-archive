@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 import math
 import numpy as np
+
+from common.op_params import opParams
 from common.params import Params
 from common.numpy_fast import interp
 
@@ -69,7 +71,7 @@ def mean(l):
 
 
 def calc_ttc(v_ego, a_ego, x_lead, v_lead, a_lead):
-  max_ttc = 5.0
+  max_ttc = 6
 
   v_rel = v_ego - v_lead
   a_rel = a_ego - a_lead
@@ -100,7 +102,7 @@ class DynamicSpeed:  # todo: include DynamicLaneSpeed for adjacent lane slowing,
 
   def reset(self):
     self.v_mpc = 0
-    self.a_mpc = 0  # todo: this
+    self.a_mpc = 0
     self.valid = False
 
   def update(self, v_ego, a_ego, lead, following):
@@ -130,14 +132,14 @@ class DynamicSpeed:  # todo: include DynamicLaneSpeed for adjacent lane slowing,
 
     if v_rel <= -1 * CV.MPH_TO_MS:
       ttc = calc_ttc(self.v_ego, self.a_ego, self.x_lead, self.v_lead, self.a_lead)
-      if ttc < 5:
+      if not np.isinf(ttc) and not np.isnan(ttc) and ttc < 6:
         change = (abs(v_rel) / ttc) * self.RATE
+        print('TTC: {}, CHNG (1s): {} mph'.format(round(ttc, 3), round(-change / self.RATE * CV.MS_TO_MPH, 4)))
         self.v_mpc = self.v_ego - change
-        self.a_mpc = -abs(change / self.RATE)  # fixme: verify 20 is correct
+        self.a_mpc = -change / self.RATE  # fixme: verify 20 is correct
         self.valid = True
         return
     self.valid = False
-
 
     # if len(mods):
     #   # mod = mean(mods)
@@ -151,6 +153,7 @@ class DynamicSpeed:  # todo: include DynamicLaneSpeed for adjacent lane slowing,
 class Planner():
   def __init__(self, CP):
     self.CP = CP
+    self.op_params = opParams()
 
     self.mpc1 = LongitudinalMpc(1)
     self.mpc2 = LongitudinalMpc(2)
@@ -176,9 +179,9 @@ class Planner():
   def choose_solution(self, v_cruise_setpoint, enabled, model_enabled):
     if enabled:
       solutions = {'cruise': self.v_cruise}
-      if self.mpc1.prev_lead_status:
+      if self.mpc1.prev_lead_status and self.op_params.get('use_mpc'):
         solutions['mpc1'] = self.mpc1.v_mpc
-      if self.mpc2.prev_lead_status:
+      if self.mpc2.prev_lead_status and self.op_params.get('use_mpc'):
         solutions['mpc2'] = self.mpc2.v_mpc
       if self.mpc_model.valid and model_enabled:
         solutions['model'] = self.mpc_model.v_mpc
