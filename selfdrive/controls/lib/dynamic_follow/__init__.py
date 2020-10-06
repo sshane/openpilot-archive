@@ -130,12 +130,10 @@ class DynamicFollow:
       self.pm.send('dynamicFollowData', dat)
 
   def _change_cost(self, libmpc):
-    # TRs = [0.9, 1.8, 2.7]
-    # costs = [1.15, 0.15, 0.05]
-    TRs = [1.1, 1.6, 2.2]
-    costs = [0.8, 0.08, 0.06]  # need to tune and convert to equiv. 0.9-1.8-2.7
+    TRs = [0.9, 1.8, 2.7]
+    costs = [1.0, 0.1, 0.01]
     cost = interp(self.TR, TRs, costs)
-    #
+
     # change_time = sec_since_boot() - self.profile_change_time
     # change_time_x = [0, 0.5, 4]  # for three seconds after effective profile has changed
     # change_mod_y = [3, 6, 1]  # multiply cost by multiplier to quickly change distance
@@ -144,7 +142,6 @@ class DynamicFollow:
     #   cost_mod_speeds = [0, 20 * CV.MPH_TO_MS]  # don't change cost too much under 20 mph
     #   cost_mods = [cost_mod * 0.01, cost_mod]
     #   cost *= interp(cost_mod, cost_mod_speeds, cost_mods)
-    cost = self.op_params.get('long_cost')
 
     if self.last_cost != cost:
       libmpc.change_costs(MPC_COST_LONG.TTC, cost, MPC_COST_LONG.ACCELERATION, MPC_COST_LONG.JERK)  # todo: jerk is the derivative of acceleration, could tune that

@@ -71,8 +71,6 @@ def mean(l):
 
 
 def calc_ttc(v_ego, a_ego, x_lead, v_lead, a_lead):
-  max_ttc = 10
-
   v_rel = v_ego - v_lead
   a_rel = a_ego - a_lead
 
@@ -87,16 +85,16 @@ def calc_ttc(v_ego, a_ego, x_lead, v_lead, a_lead):
 
   # assign an arbitrary high ttc value if there is no solution to ttc
   if delta < 0.1 or (np.sqrt(delta) + v_rel < 0.1):
-    ttc = max_ttc
+    return False
   else:
-    ttc = np.minimum(2 * x_lead / (np.sqrt(delta) + v_rel), max_ttc)
-  return ttc
+    return 2 * x_lead / (np.sqrt(delta) + v_rel)
 
 
 class DynamicSpeed:  # todo: include DynamicLaneSpeed for adjacent lane slowing, or just merge the two together
   def __init__(self):
     self.RATE = 1 / 20.
     self.MIN_SPEED = 10 * CV.MPH_TO_MS
+    self.MAX_TTC = 12
 
     self.reset()
 
@@ -130,13 +128,13 @@ class DynamicSpeed:  # todo: include DynamicLaneSpeed for adjacent lane slowing,
     # if self.a_lead < 0.5 * CV.MPH_TO_MS:  # todo: factor in distance
     #   pass
 
-    if v_rel <= 0 * CV.MPH_TO_MS:
+    if v_rel <= -1 * CV.MPH_TO_MS:
       ttc = calc_ttc(self.v_ego, self.a_ego, self.x_lead, self.v_lead, self.a_lead)
-      if not np.isinf(ttc) and not np.isnan(ttc) and ttc < 10:
-        change = (abs(v_rel) / ttc) * self.RATE
-        print('TTC: {}, CHNG (1s): {} mph'.format(round(ttc, 3), round(-change / self.RATE * CV.MS_TO_MPH, 4)))
-        self.v_mpc = self.v_ego - change * 10
-        self.a_mpc = -change / self.RATE  # fixme: verify 20 is correct
+      if ttc is not False and ttc < self.MAX_TTC:  # ttc available and below threshold
+        change = abs(v_rel) ** 1.3 / ttc
+        # print('TTC: {}, CHNG (1s): {} mph'.format(round(ttc, 3), round(-change / self.RATE * CV.MS_TO_MPH, 4)))
+        self.v_mpc = self.v_ego - change * self.RATE
+        self.a_mpc = -change
         self.valid = True
         return
     self.valid = False
