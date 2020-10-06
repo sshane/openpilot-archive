@@ -97,6 +97,8 @@ class opParams:
                         'corollaTSS2_use_indi': Param(False, bool, 'Enable this to use INDI for lat with your Corolla with TSS2'),
                         'long_cost': Param(0.1, VT.number, live=True),
                         'use_mpc': Param(True, bool, live=True),
+                        'v_rel_exp': Param(1.3, VT.number, live=True),
+                        'ttc_multiplier': Param(1, VT.number, live=True),
                         'standstill_hack': Param(False, bool, 'Some cars support stop and go, you just need to enable this')}
 
     self._params_file = '/data/op_params.json'

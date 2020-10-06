@@ -95,12 +95,14 @@ class DynamicSpeed:  # todo: include DynamicLaneSpeed for adjacent lane slowing,
     self.RATE = 1 / 20.
     self.MIN_SPEED = 10 * CV.MPH_TO_MS
     self.MAX_TTC = 12
+    self.op_params = opParams()
 
     self.reset()
 
   def reset(self):
     self.v_mpc = 0
     self.a_mpc = 0
+    self.slowest = False
     self.valid = False
 
   def update(self, v_ego, a_ego, lead, following):
@@ -131,8 +133,12 @@ class DynamicSpeed:  # todo: include DynamicLaneSpeed for adjacent lane slowing,
     if v_rel <= -1 * CV.MPH_TO_MS:
       ttc = calc_ttc(self.v_ego, self.a_ego, self.x_lead, self.v_lead, self.a_lead)
       if ttc is not False and ttc < self.MAX_TTC:  # ttc available and below threshold
-        change = abs(v_rel) ** 1.3 / ttc
-        # print('TTC: {}, CHNG (1s): {} mph'.format(round(ttc, 3), round(-change / self.RATE * CV.MS_TO_MPH, 4)))
+        change = abs(v_rel) ** (self.op_params['v_rel_exp']) / (ttc * self.op_params['ttc_multiplier'])
+        if self.slowest:
+          print('SLOWEST: ', end='')
+        else:
+          print('NOT SLOWEST: ', end='')
+        print('TTC: {}, CHNG: {} mph'.format(round(ttc, 3), round(change * CV.MS_TO_MPH, 3)))
         self.v_mpc = self.v_ego - change * self.RATE
         self.a_mpc = -change
         self.valid = True
@@ -205,6 +211,8 @@ class Planner():
       elif slowest == 'dynamicSpeed':
         self.v_acc = self.dynamic_speed.v_mpc
         self.a_acc = self.dynamic_speed.a_mpc
+
+      self.dynamic_speed.slowest = slowest == 'dynamicSpeed'  # for printing/debugging
 
     self.v_acc_future = min([self.mpc1.v_mpc_future, self.mpc2.v_mpc_future, self.mpc_model.v_mpc_future, v_cruise_setpoint])
 
