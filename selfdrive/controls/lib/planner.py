@@ -112,7 +112,7 @@ class DynamicSpeed:  # todo: include DynamicLaneSpeed for adjacent lane slowing,
     self.a_lead = lead.aLeadK
     self.x_lead = lead.dRel
 
-    if self.v_ego >= self.MIN_SPEED and following:  # todo: use lead.status if it's reliable
+    if self.v_ego >= self.MIN_SPEED and lead.status:  # todo: use lead.status if it's reliable
       self._calculate_speed()  # also sets valid
     else:
       self.reset()
@@ -130,8 +130,9 @@ class DynamicSpeed:  # todo: include DynamicLaneSpeed for adjacent lane slowing,
     # if self.a_lead < 0.5 * CV.MPH_TO_MS:  # todo: factor in distance
     #   pass
 
-    if v_rel <= -1 * CV.MPH_TO_MS:
+    if v_rel <= 0 * CV.MPH_TO_MS:
       ttc = calc_ttc(self.v_ego, self.a_ego, self.x_lead, self.v_lead, self.a_lead)
+      print(ttc)
       if not np.isinf(ttc) and not np.isnan(ttc) and ttc < 10:
         change = (abs(v_rel) / ttc) * self.RATE
         print('TTC: {}, CHNG (1s): {} mph'.format(round(ttc, 3), round(-change / self.RATE * CV.MS_TO_MPH, 4)))
