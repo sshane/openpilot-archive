@@ -132,11 +132,10 @@ class DynamicSpeed:  # todo: include DynamicLaneSpeed for adjacent lane slowing,
 
     if v_rel <= 0 * CV.MPH_TO_MS:
       ttc = calc_ttc(self.v_ego, self.a_ego, self.x_lead, self.v_lead, self.a_lead)
-      print(ttc)
       if not np.isinf(ttc) and not np.isnan(ttc) and ttc < 10:
         change = (abs(v_rel) / ttc) * self.RATE
         print('TTC: {}, CHNG (1s): {} mph'.format(round(ttc, 3), round(-change / self.RATE * CV.MS_TO_MPH, 4)))
-        self.v_mpc = self.v_ego - change
+        self.v_mpc = self.v_ego - change * 10
         self.a_mpc = -change / self.RATE  # fixme: verify 20 is correct
         self.valid = True
         return
