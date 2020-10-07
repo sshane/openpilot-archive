@@ -171,7 +171,7 @@ class opEdit:  # use by running `python /data/openpilot/op_edit.py`
         if isinstance(old_value, bool):
           v_color = v_color[old_value]
 
-      self.info('Current value: {}{} (type: {})'.format(v_color, old_value, type(old_value).__name__), sleep_time=0)
+      self.info('Current value: {}{}{} (type: {})'.format(v_color, old_value, COLORS.INFO, type(old_value).__name__), sleep_time=0)
 
       while True:
         self.prompt('\nEnter your new value:')
