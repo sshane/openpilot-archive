@@ -269,7 +269,7 @@ class DynamicFollow:
     x = [-26, -15.6464, -9.8422, -6.0, -4.0, -2.68, -2.3, -1.8, -1.26, -0.61, 0, 0.61, 1.26, 2.1, 2.68, 4.4704]  # relative velocity values
     y = [1.76, 1.504, 1.34, 1.29, 1.25, 1.22, 1.19, 1.13, 1.053, 1.017, 1.0, 0.985, 0.958, 0.87, 0.81, 0.685]  # multiplier values
     y = np.array(y) - 1  # converts back to original abs mod
-    y *= 1.  # multiplier for how much to mod
+    y *= 1.1  # multiplier for how much to mod
     y = y / TR + 1  # converts back to multipliers
     TR_mods.append(interp(self.lead_data.v_lead - self.car_data.v_ego, x, y))
 
@@ -277,7 +277,7 @@ class DynamicFollow:
     y = [1.16, 1.1067, 1.0613, 1.0343, 1.0203, 1.0147, 1.0, 0.9898, 0.972, 0.9647, 0.9607]  # multiplier values
     converted_with_TR = 1.5  # todo: do without numpy and simplify by converting with TR of 1, so only subtract
     absolute_y_TR_mod = np.array(y) * converted_with_TR - converted_with_TR  # converts back to original abs mod
-    absolute_y_TR_mod *= 1.35  # multiplier for how much to mod
+    absolute_y_TR_mod *= 1.2  # multiplier for how much to mod
     y = absolute_y_TR_mod / TR + 1  # converts back to multipliers with accel mod of 1.4 taking current TR into account
     TR_mods.append(interp(self.lead_data.a_lead, x, y))  # todo: make this over more than 1 sec
 
