@@ -98,7 +98,8 @@ class opParams:
                         'long_cost': Param(0.1, VT.number, live=True),
                         'use_mpc': Param(True, bool, live=True),
                         'v_rel_exp': Param(1.3, VT.number, live=True),
-                        'ttc_multiplier': Param(1, VT.number, live=True),
+                        'ttc_multiplier': Param(0.75, VT.number, live=True),
+                        'v_lead_multiplier': Param(0.9, VT.number, live=True),
                         'standstill_hack': Param(False, bool, 'Some cars support stop and go, you just need to enable this')}
 
     self._params_file = '/data/op_params.json'

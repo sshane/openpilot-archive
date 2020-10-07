@@ -131,7 +131,7 @@ class DynamicSpeed:  # todo: include DynamicLaneSpeed for adjacent lane slowing,
     #   pass
 
     if v_rel <= -1 * CV.MPH_TO_MS:
-      ttc = calc_ttc(self.v_ego, self.a_ego, self.x_lead, self.v_lead, self.a_lead)
+      ttc = calc_ttc(self.v_ego, self.a_ego, self.x_lead, self.v_lead * self.op_params['v_lead_multiplier'], self.a_lead)
       if ttc is not False and ttc < self.MAX_TTC:  # ttc available and below threshold
         change = abs(v_rel) ** (self.op_params['v_rel_exp']) / (ttc * self.op_params['ttc_multiplier'])
         if self.slowest:
