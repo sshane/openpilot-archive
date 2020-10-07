@@ -266,7 +266,8 @@ class Controls:
     # alert priority is defined by code location, keeping is highest, then lane speed alert, then auto-df alert
     if self.sm_smiskol['modelLongButton'].enabled != self.last_model_long:
       extra_text_1 = 'disabled!' if self.last_model_long else 'enabled!'
-      self.AM.SA_add('modelLongAlert', extra_text_1=extra_text_1)
+      extra_text_2 = '' if self.last_model_long else ', model may slow unexpectedly'
+      self.AM.SA_add('modelLongAlert', extra_text_1=extra_text_1, extra_text_2=extra_text_2)
       return
 
     if self.sm_smiskol['dynamicCameraOffset'].keepingLeft:
