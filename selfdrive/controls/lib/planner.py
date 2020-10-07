@@ -78,16 +78,16 @@ def calc_ttc(v_ego, a_ego, x_lead, v_lead, a_lead):
   # then limit ARel so that v_lead will get to zero in no sooner than t_decel.
   # This helps underweighting ARel when v_lead is close to zero.
   t_decel = 2.
-  a_rel = np.minimum(a_rel, v_lead / t_decel)
+  a_rel = min(a_rel, v_lead / t_decel)
 
   # delta of the quadratic equation to solve for ttc
   delta = v_rel**2 + 2 * x_lead * a_rel
 
   # assign an arbitrary high ttc value if there is no solution to ttc
-  if delta < 0.1 or (np.sqrt(delta) + v_rel < 0.1):
+  if delta < 0.1 or (math.sqrt(delta) + v_rel < 0.1):
     return False
   else:
-    return 2 * x_lead / (np.sqrt(delta) + v_rel)
+    return 2 * x_lead / (math.sqrt(delta) + v_rel)
 
 
 class DynamicSpeed:  # todo: include DynamicLaneSpeed for adjacent lane slowing, or just merge the two together
