@@ -208,32 +208,21 @@ class DynamicFollow:
   #   mod_y = [0.3245 * 1.1, 0.277 * 1.08, 0.11075 * 1.06, 0.08106 * 1.045, 0.06325 * 1.035, 0.0, -0.09, -0.09375, -0.125, -0.3, -0.35]
   #   return interp(a_lead - a_ego, rel_x, mod_y)
 
-  def global_profile_mod(self, profile_mod_x, profile_mod_pos, profile_mod_neg, x_vel, y_dist):
+  def global_profile_mod(self, x_vel, y_dist):
     """
     This function modifies the y_dist list used by dynamic follow in accordance with global_df_mod
-    It also intelligently adjusts the profile mods at each breakpoint based on the change in TR
     """
     if self.global_df_mod == 1.:
-      return profile_mod_pos, profile_mod_neg, y_dist
+      return y_dist
     global_df_mod = 1 - self.global_df_mod
 
     # Calculate new TRs
     speeds = [0, self.sng_speed, 18, x_vel[-1]]  # [0, 18 mph, ~40 mph, highest profile mod speed (~78 mph)]
     mods = [0, 0.1, 0.7, 1]  # how much to limit global_df_mod at each speed, 1 is full effect
-    y_dist_new = [y - (y * global_df_mod * interp(x, speeds, mods)) for x, y in zip(x_vel, y_dist)]
-
-    # Calculate how to change profile mods based on change in TR
-    # eg. if df mod is 0.7, then increase positive mod and decrease negative mod
-    calc_profile_mods = [(interp(mod_x, x_vel, y_dist) - interp(mod_x, x_vel, y_dist_new) + 1) for mod_x in profile_mod_x]
-    profile_mod_pos = [mod_pos * mod for mod_pos, mod in zip(profile_mod_pos, calc_profile_mods)]
-    profile_mod_neg = [mod_neg * ((1 - mod) + 1) for mod_neg, mod in zip(profile_mod_neg, calc_profile_mods)]
-
-    return profile_mod_pos, profile_mod_neg, y_dist_new
+    return [y - (y * global_df_mod * interp(x, speeds, mods)) for x, y in zip(x_vel, y_dist)]
 
   def _get_TR(self):
     x_vel = [0.0, 1.8627, 3.7253, 5.588, 7.4507, 9.3133, 11.5598, 13.645, 22.352, 31.2928, 33.528, 35.7632, 40.2336]  # velocities
-    profile_mod_x = [5 * CV.MPH_TO_MS, 30 * CV.MPH_TO_MS, 55 * CV.MPH_TO_MS, 80 * CV.MPH_TO_MS]  # profile mod speeds
-
     if self.df_manager.is_auto:  # decide which profile to use, model profile will be updated before this
       df_profile = self.model_profile
     else:
@@ -245,27 +234,16 @@ class DynamicFollow:
 
     if df_profile == self.df_profiles.roadtrip:
       y_dist = [1.5486, 1.556, 1.5655, 1.5773, 1.5964, 1.6246, 1.6715, 1.7057, 1.7859, 1.8542, 1.8697, 1.8833, 1.8961]  # TRs
-      profile_mod_pos = [0.5, 0.35, 0.1, 0.03]
-      profile_mod_neg = [1.3, 1.4, 1.8, 2.0]
     elif df_profile == self.df_profiles.traffic:  # for in congested traffic
       x_vel = [0.0, 1.892, 3.7432, 5.8632, 8.0727, 10.7301, 14.343, 17.6275, 22.4049, 28.6752, 34.8858, 40.35]
       y_dist = [1.3781, 1.3791, 1.3457, 1.3134, 1.3145, 1.318, 1.3485, 1.257, 1.144, 0.979, 0.9461, 0.9156]
-      profile_mod_pos = [1.075, 1.55, 2.6, 3.75]
-      profile_mod_neg = [0.95, .275, 0.1, 0.05]
     elif df_profile == self.df_profiles.relaxed:  # default to relaxed/stock
       y_dist = [1.385, 1.394, 1.406, 1.421, 1.444, 1.474, 1.521, 1.544, 1.568, 1.588, 1.599, 1.613, 1.634]
-      profile_mod_pos = [1.0, 0.955, 0.898, 0.905]
-      profile_mod_neg = [1.0, 1.0825, 1.1877, 1.174]
     else:
       raise Exception('Unknown profile type: {}'.format(df_profile))
 
     # Global df mod
-    profile_mod_pos, profile_mod_neg, y_dist = self.global_profile_mod(profile_mod_x, profile_mod_pos, profile_mod_neg, x_vel, y_dist)
-    del profile_mod_pos, profile_mod_neg  # todo: don't use profile mods, but too lazy to get rid of the code right now
-
-    # Profile modifications - Designed so that each profile reacts similarly to changing lead dynamics
-    # profile_mod_pos = interp(self.car_data.v_ego, profile_mod_x, profile_mod_pos)
-    # profile_mod_neg = interp(self.car_data.v_ego, profile_mod_x, profile_mod_neg)
+    y_dist = self.global_profile_mod(x_vel, y_dist)
 
     if self.car_data.v_ego > self.sng_speed:  # todo: TEMP: always use 1.8 at low speeds
       TR = interp(self.car_data.v_ego, x_vel, y_dist)
@@ -293,9 +271,11 @@ class DynamicFollow:
     # TR_mods.append(interp(self.lead_data.v_lead - self.car_data.v_ego, x, y))
 
     x = [-4.4795, -2.8122, -1.5727, -1.1129, -0.6611, -0.2692, 0.0, 0.1466, 0.5144, 0.6903, 0.9302]  # lead acceleration values
-    y = [1.1578, 1.1052, 1.0605, 1.0339, 1.0201, 1.0145, 1.0, 0.9899, 0.9724, 0.9652, 0.9612]  # multipliers
-    acceleration_mod = 1.25  # todo: this is just temporary to tune acceleration. if it's 1, no change. if it's 1.5, 50% more mod from 0 m/s/s
-    y = [(i - 1) * acceleration_mod + 1 for i in y]
+    y = [1.16, 1.1067, 1.0613, 1.0343, 1.0203, 1.0147, 1.0, 0.9898, 0.972, 0.9647, 0.9607]  # multipliers
+    converted_with_TR = 1.5  # todo: do without numpy and simplify by converting with TR of 1, so only subtract
+    absolute_y_TR_mod = np.array(y) * converted_with_TR - converted_with_TR  # converts back to original abs mod
+    absolute_y_TR_mod *= 1.35  # multiplier for how much to mod
+    y = absolute_y_TR_mod / TR + 1  # converts back to multipliers with accel mod of 1.4 taking current TR into account (elliminates profile mods)
     TR_mods.append(interp(self.lead_data.a_lead, x, y))  # todo: make this over more than 1 sec
 
     # deadzone = self.car_data.v_ego / 3  # 10 mph at 30 mph  # todo: tune pedal to react similarly to without before adding/testing this
@@ -304,11 +284,8 @@ class DynamicFollow:
 
     # x = [self.sng_speed, self.sng_speed / 5.0]  # as we approach 0, apply x% more distance
     # y = [1.0, 1.05]
-    # profile_mod_pos *= interp(self.car_data.v_ego, x, y)  # but only for currently positive mods
 
-    # TR_mod = sum([mod * profile_mod_neg if mod < 0 else mod * profile_mod_pos for mod in TR_mods])  # alter TR modification according to profile
-    # TR += TR_mod
-    TR *= mean(TR_mods)  # todo: with mods as multipliers, profile mods shouldn't be needed
+    TR *= mean(TR_mods)  # with mods as multipliers, profile mods shouldn't be needed
 
     # if (self.car_data.left_blinker or self.car_data.right_blinker) and df_profile != self.df_profiles.traffic:
     #   x = [8.9408, 22.352, 31.2928]  # 20, 50, 70 mph
