@@ -165,7 +165,13 @@ class opEdit:  # use by running `python /data/openpilot/op_edit.py`
         self.change_param_list(old_value, param_info, chosen_key)  # TODO: need to merge the code in this function with the below to reduce redundant code
         return
 
-      self.info('Current value: {} (type: {})'.format(old_value, type(old_value).__name__), sleep_time=0)
+      v_color = ''
+      if type(old_value) in self.type_colors:
+        v_color = self.type_colors[type(old_value)]
+        if isinstance(old_value, bool):
+          v_color = v_color[old_value]
+
+      self.info('Current value: {}{} (type: {})'.format(v_color, old_value, type(old_value).__name__), sleep_time=0)
 
       while True:
         self.prompt('\nEnter your new value:')
