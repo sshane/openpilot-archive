@@ -147,7 +147,7 @@ class opEdit:  # use by running `python /data/openpilot/op_edit.py`
       param_info = self.op_params.param_info(chosen_key)
 
       old_value = self.params[chosen_key]
-      if not param_info.live:
+      if param_info.live:
         self.info2('Chosen parameter: {}{} (live!)'.format(chosen_key, COLORS.BASE(207)), sleep_time=0)
       else:
         self.info2('Chosen parameter: {}'.format(chosen_key), sleep_time=0)
