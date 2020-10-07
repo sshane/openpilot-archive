@@ -112,14 +112,13 @@ class DynamicSpeed:  # todo: include DynamicLaneSpeed for adjacent lane slowing,
     self.a_lead = lead.aLeadK
     self.x_lead = lead.dRel
 
-    if self.v_ego >= self.MIN_SPEED and lead.status:  # todo: use lead.status if it's reliable
+    if self.v_ego >= self.MIN_SPEED and lead.status:
       self._calculate_speed()  # also sets valid
     else:
       self.reset()
 
   def _calculate_speed(self):
     """This will calculate the immediate speed of ego based on lead"""
-    v_rel = self.v_lead - self.v_ego
     # mods = []
     # if v_rel <= -1 * CV.MPH_TO_MS:
     #   v_rels = [i * CV.MPH_TO_MS for i in [-20, -10, -5, -2.5, -1]]
@@ -130,7 +129,8 @@ class DynamicSpeed:  # todo: include DynamicLaneSpeed for adjacent lane slowing,
     # if self.a_lead < 0.5 * CV.MPH_TO_MS:  # todo: factor in distance
     #   pass
 
-    if v_rel <= -1 * CV.MPH_TO_MS:
+    v_rel = self.v_lead - self.v_ego
+    if v_rel <= 2 * CV.MPH_TO_MS:
       ttc = calc_ttc(self.v_ego, self.a_ego, self.x_lead, self.v_lead * self.op_params['v_lead_multiplier'], self.a_lead)
       if ttc is not False and ttc < self.MAX_TTC:  # ttc available and below threshold
         change = abs(v_rel) ** (self.op_params['v_rel_exp']) / (ttc * self.op_params['ttc_multiplier'])
@@ -139,8 +139,8 @@ class DynamicSpeed:  # todo: include DynamicLaneSpeed for adjacent lane slowing,
         else:
           print('NOT SLOWEST: ', end='')
         print('TTC: {}, CHNG: {} mph'.format(round(ttc, 3), round(change * CV.MS_TO_MPH, 3)))
-        self.v_mpc = self.v_ego - change * self.RATE
-        self.a_mpc = -change
+        self.v_mpc = self.v_ego - (change * self.op_params['rate_out_to'])
+        self.a_mpc = -change  # this is for 1 second, should it be interpped to 0.05?
         self.valid = True
         return
     self.valid = False
