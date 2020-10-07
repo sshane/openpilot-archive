@@ -147,7 +147,7 @@ class opEdit:  # use by running `python /data/openpilot/op_edit.py`
       param_info = self.op_params.param_info(chosen_key)
 
       old_value = self.params[chosen_key]
-      self.info('Chosen parameter: {}'.format(chosen_key), sleep_time=0)
+      self.info2('Chosen parameter: {}'.format(chosen_key), sleep_time=0)
 
       to_print = []
       if param_info.has_description:
@@ -248,6 +248,14 @@ class opEdit:  # use by running `python /data/openpilot/op_edit.py`
     print(msg, flush=True, end='\n' + end)
     time.sleep(sleep_time)
 
+  def info2(self, msg, sleep_time=None, end=''):
+    if sleep_time is None:
+      sleep_time = self.sleep_time
+    msg = self.str_color(msg, style=86)
+
+    print(msg, flush=True, end='\n' + end)
+    time.sleep(sleep_time)
+
   def error(self, msg, sleep_time=None, end='', surround=True):
     if sleep_time is None:
       sleep_time = self.sleep_time
@@ -264,7 +272,8 @@ class opEdit:  # use by running `python /data/openpilot/op_edit.py`
     print(msg, flush=True, end='\n' + end)
     time.sleep(sleep_time)
 
-  def str_color(self, msg, style, surround=False):
+  @staticmethod
+  def str_color(msg, style, surround=False):
     if style == 'success':
       style = COLORS.SUCCESS
     elif style == 'fail':
@@ -275,6 +284,8 @@ class opEdit:  # use by running `python /data/openpilot/op_edit.py`
       style = COLORS.INFO
     elif style == 'cyan':
       style = COLORS.CYAN
+    elif isinstance(style, int):
+      style = COLORS.BASE(86)
 
     if surround:
       msg = '{}--------\n{}\n{}--------{}'.format(style, msg, COLORS.ENDC + style, COLORS.ENDC)
