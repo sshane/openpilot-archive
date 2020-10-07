@@ -147,18 +147,16 @@ class opEdit:  # use by running `python /data/openpilot/op_edit.py`
       param_info = self.op_params.param_info(chosen_key)
 
       old_value = self.params[chosen_key]
-      self.info2('Chosen parameter: {}'.format(chosen_key), sleep_time=0)
+      if not param_info.live:
+        self.info2('Chosen parameter: {}{} (live!)'.format(chosen_key, COLORS.BASE(207)), sleep_time=0)
+      else:
+        self.info2('Chosen parameter: {})'.format(chosen_key), sleep_time=0)
 
       to_print = []
       if param_info.has_description:
         to_print.append(COLORS.OKGREEN + '>>  Description: {}'.format(param_info.description.replace('\n', '\n  > ')) + COLORS.ENDC)
       if param_info.has_allowed_types:
         to_print.append(COLORS.RED + '>>  Allowed types: {}'.format(', '.join([at.__name__ for at in param_info.allowed_types])) + COLORS.ENDC)
-      if param_info.live:
-        live_msg = '>>  This parameter supports live tuning!'
-        if not self.live_tuning:
-          live_msg += ' Updates should take effect within {} seconds'.format(self.op_params.read_frequency)
-        to_print.append(COLORS.YELLOW + live_msg + COLORS.ENDC)
 
       if to_print:
         print('\n{}\n'.format('\n'.join(to_print)))
@@ -170,10 +168,7 @@ class opEdit:  # use by running `python /data/openpilot/op_edit.py`
       self.info('Current value: {} (type: {})'.format(old_value, type(old_value).__name__), sleep_time=0)
 
       while True:
-        if param_info.live:
-          self.prompt('\nEnter your new value or [Enter] to exit:')
-        else:
-          self.prompt('\nEnter your new value:')
+        self.prompt('\nEnter your new value:')
         new_value = input('>> ').strip()
         if new_value == '':
           self.info('Exiting this parameter...', 0.5)
