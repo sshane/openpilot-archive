@@ -168,10 +168,10 @@ class opEdit:  # use by running `python /data/openpilot/op_edit.py`
       self.info('Current value: {} (type: {})'.format(old_value, type(old_value).__name__), sleep_time=0)
 
       while True:
-        self.prompt('\nEnter your new value:')
+        self.prompt('Enter your new value:')
         new_value = input('>> ').strip()
         if new_value == '':
-          self.info('Exiting this parameter...', 0.5)
+          self.info('Exiting this parameter...\n', 0.5)
           return
 
         new_value = self.str_eval(new_value)
