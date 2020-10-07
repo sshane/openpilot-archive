@@ -266,16 +266,19 @@ class DynamicFollow:
 
     TR_mods = []
     # Dynamic follow modifications (the secret sauce)
-    # x = [-26.8224, -20.0288, -15.6871, -11.1965, -7.8645, -4.9472, -3.0541, -2.2244, -1.5045, -0.7908, -0.3196, 0.0, 0.5588, 1.3682, 1.898, 2.7316, 4.4704]  # relative velocity values
-    # y = [.76, 0.62323, 0.49488, 0.40656, 0.32227, 0.23914*1.025, 0.12269*1.05, 0.10483*1.075, 0.08074*1.15, 0.04886*1.25, 0.0072*1.075, 0.0, -0.05648, -0.0792, -0.15675, -0.23289, -0.315]  # modification values
-    # TR_mods.append(interp(self.lead_data.v_lead - self.car_data.v_ego, x, y))
+    x = [-26, -15.6464, -9.8422, -6.0, -4.0, -2.68, -2.3, -1.8, -1.26, -0.61, 0, 0.61, 1.26, 2.1, 2.68, 4.4704]  # relative velocity values
+    y = [1.76, 1.504, 1.34, 1.29, 1.25, 1.22, 1.19, 1.13, 1.053, 1.017, 1.0, 0.985, 0.958, 0.87, 0.81, 0.685]  # multiplier values
+    y = np.array(y) - 1  # converts back to original abs mod
+    y *= 1.  # multiplier for how much to mod
+    y = y / TR + 1  # converts back to multipliers
+    TR_mods.append(interp(self.lead_data.v_lead - self.car_data.v_ego, x, y))
 
     x = [-4.4795, -2.8122, -1.5727, -1.1129, -0.6611, -0.2692, 0.0, 0.1466, 0.5144, 0.6903, 0.9302]  # lead acceleration values
-    y = [1.16, 1.1067, 1.0613, 1.0343, 1.0203, 1.0147, 1.0, 0.9898, 0.972, 0.9647, 0.9607]  # multipliers
+    y = [1.16, 1.1067, 1.0613, 1.0343, 1.0203, 1.0147, 1.0, 0.9898, 0.972, 0.9647, 0.9607]  # multiplier values
     converted_with_TR = 1.5  # todo: do without numpy and simplify by converting with TR of 1, so only subtract
     absolute_y_TR_mod = np.array(y) * converted_with_TR - converted_with_TR  # converts back to original abs mod
     absolute_y_TR_mod *= 1.35  # multiplier for how much to mod
-    y = absolute_y_TR_mod / TR + 1  # converts back to multipliers with accel mod of 1.4 taking current TR into account (elliminates profile mods)
+    y = absolute_y_TR_mod / TR + 1  # converts back to multipliers with accel mod of 1.4 taking current TR into account
     TR_mods.append(interp(self.lead_data.a_lead, x, y))  # todo: make this over more than 1 sec
 
     # deadzone = self.car_data.v_ego / 3  # 10 mph at 30 mph  # todo: tune pedal to react similarly to without before adding/testing this
