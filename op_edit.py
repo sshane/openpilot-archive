@@ -147,16 +147,18 @@ class opEdit:  # use by running `python /data/openpilot/op_edit.py`
       param_info = self.op_params.param_info(chosen_key)
 
       old_value = self.params[chosen_key]
-      if param_info.live:
-        self.info2('Chosen parameter: {}{} (live!)'.format(chosen_key, COLORS.BASE(207)), sleep_time=0)
-      else:
-        self.info2('Chosen parameter: {}'.format(chosen_key), sleep_time=0)
+      self.info('Chosen parameter: {}'.format(chosen_key), sleep_time=0)
 
       to_print = []
       if param_info.has_description:
         to_print.append(COLORS.OKGREEN + '>>  Description: {}'.format(param_info.description.replace('\n', '\n  > ')) + COLORS.ENDC)
       if param_info.has_allowed_types:
         to_print.append(COLORS.RED + '>>  Allowed types: {}'.format(', '.join([at.__name__ for at in param_info.allowed_types])) + COLORS.ENDC)
+      if param_info.live:
+        live_msg = '>>  This parameter supports live tuning!'
+        if not self.live_tuning:
+          live_msg += ' Updates should take effect within {} seconds'.format(self.op_params.read_frequency)
+        to_print.append(COLORS.YELLOW + live_msg + COLORS.ENDC)
 
       if to_print:
         print('\n{}\n'.format('\n'.join(to_print)))
@@ -165,19 +167,16 @@ class opEdit:  # use by running `python /data/openpilot/op_edit.py`
         self.change_param_list(old_value, param_info, chosen_key)  # TODO: need to merge the code in this function with the below to reduce redundant code
         return
 
-      v_color = ''
-      if type(old_value) in self.type_colors:
-        v_color = self.type_colors[type(old_value)]
-        if isinstance(old_value, bool):
-          v_color = v_color[old_value]
-
-      self.info('Current value: {}{}{} (type: {})'.format(v_color, old_value, COLORS.INFO, type(old_value).__name__), sleep_time=0)
+      self.info('Current value: {} (type: {})'.format(old_value, type(old_value).__name__), sleep_time=0)
 
       while True:
-        self.prompt('\nEnter your new value:')
+        if param_info.live:
+          self.prompt('\nEnter your new value or [Enter] to exit:')
+        else:
+          self.prompt('\nEnter your new value:')
         new_value = input('>> ').strip()
         if new_value == '':
-          self.info('Exiting this parameter...\n', 0.5)
+          self.info('Exiting this parameter...', 0.5)
           return
 
         new_value = self.str_eval(new_value)
@@ -249,14 +248,6 @@ class opEdit:  # use by running `python /data/openpilot/op_edit.py`
     print(msg, flush=True, end='\n' + end)
     time.sleep(sleep_time)
 
-  def info2(self, msg, sleep_time=None, end=''):
-    if sleep_time is None:
-      sleep_time = self.sleep_time
-    msg = self.str_color(msg, style=86)
-
-    print(msg, flush=True, end='\n' + end)
-    time.sleep(sleep_time)
-
   def error(self, msg, sleep_time=None, end='', surround=True):
     if sleep_time is None:
       sleep_time = self.sleep_time
@@ -273,8 +264,7 @@ class opEdit:  # use by running `python /data/openpilot/op_edit.py`
     print(msg, flush=True, end='\n' + end)
     time.sleep(sleep_time)
 
-  @staticmethod
-  def str_color(msg, style, surround=False):
+  def str_color(self, msg, style, surround=False):
     if style == 'success':
       style = COLORS.SUCCESS
     elif style == 'fail':
@@ -285,8 +275,6 @@ class opEdit:  # use by running `python /data/openpilot/op_edit.py`
       style = COLORS.INFO
     elif style == 'cyan':
       style = COLORS.CYAN
-    elif isinstance(style, int):
-      style = COLORS.BASE(86)
 
     if surround:
       msg = '{}--------\n{}\n{}--------{}'.format(style, msg, COLORS.ENDC + style, COLORS.ENDC)
