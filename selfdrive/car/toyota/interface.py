@@ -144,7 +144,7 @@ class CarInterface(CarInterfaceBase):
       else:
         ret.lateralTuning.pid.kpV, ret.lateralTuning.pid.kiV = [[0.15], [0.035]]
         ret.lateralTuning.pid.kdV = [0.68]
-        ret.lateralTuning.pid.kf = 0.0000225   # full torque for 20 deg at 80mph means 0.00007818594
+        ret.lateralTuning.pid.kf = 0.0000195   # full torque for 20 deg at 80mph means 0.00007818594
 
     elif candidate == CAR.LEXUS_RX:
       stop_and_go = True
