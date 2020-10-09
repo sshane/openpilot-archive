@@ -233,11 +233,14 @@ class DynamicFollow:
     self.last_effective_profile = df_profile
 
     if df_profile == self.df_profiles.roadtrip:
+      return 1.8
       y_dist = [1.5486, 1.556, 1.5655, 1.5773, 1.5964, 1.6246, 1.6715, 1.7057, 1.7859, 1.8542, 1.8697, 1.8833, 1.8961]  # TRs
     elif df_profile == self.df_profiles.traffic:  # for in congested traffic
+      return 0.9
       x_vel = [0.0, 1.892, 3.7432, 5.8632, 8.0727, 10.7301, 14.343, 17.6275, 22.4049, 28.6752, 34.8858, 40.35]
       y_dist = [1.3781, 1.3791, 1.3457, 1.3134, 1.3145, 1.318, 1.3485, 1.257, 1.144, 0.979, 0.9461, 0.9156]
     elif df_profile == self.df_profiles.relaxed:  # default to relaxed/stock
+      return 1.4
       y_dist = [1.385, 1.394, 1.406, 1.421, 1.444, 1.474, 1.521, 1.544, 1.568, 1.588, 1.599, 1.613, 1.634]
     else:
       raise Exception('Unknown profile type: {}'.format(df_profile))
