@@ -189,7 +189,7 @@ class Planner():
         solutions['mpc2'] = self.mpc2.v_mpc
       if self.mpc_model.valid and model_enabled:
         solutions['model'] = self.mpc_model.v_mpc
-      if self.dynamic_speed.valid:
+      if self.dynamic_speed.valid and self.op_params.get('use_dynamic_speed'):
         solutions['dynamicSpeed'] = self.dynamic_speed.v_mpc
 
       slowest = min(solutions, key=solutions.get)

@@ -96,6 +96,7 @@ class opParams:
                         'corolla_use_lqr': Param(False, bool, 'Enable this to use LQR for lateral control with your TSS1 Corolla\nFalse: PID, True: RAV4-tuned LQR'),
                         'corollaTSS2_use_indi': Param(False, bool, 'Enable this to use INDI for lat with your Corolla with TSS2'),
                         'use_mpc': Param(True, bool, live=True),
+                        'use_dynamic_speed': Param(False, bool, live=True),
                         'v_rel_exp': Param(1.25, VT.number, live=True),
                         'ttc_multiplier': Param(0.75, VT.number, live=True),
                         'rate_out_to': Param(1 / 20, VT.number, live=True),
