@@ -112,7 +112,7 @@ class DynamicSpeed:  # todo: include DynamicLaneSpeed for adjacent lane slowing,
     self.a_lead = lead.aLeadK
     self.x_lead = lead.dRel
 
-    if self.v_ego >= self.MIN_SPEED and lead.status:
+    if self.v_ego >= self.MIN_SPEED and lead.status and self.op_params.get('use_dynamic_speed'):
       self._calculate_speed()  # also sets valid
     else:
       self.reset()
@@ -134,12 +134,11 @@ class DynamicSpeed:  # todo: include DynamicLaneSpeed for adjacent lane slowing,
       ttc = calc_ttc(self.v_ego, self.a_ego, self.x_lead, self.v_lead, self.a_lead)
       if ttc is not False and ttc < self.MAX_TTC:  # ttc available and below threshold
         change = abs(v_rel) ** (self.op_params['v_rel_exp']) / (ttc * self.op_params['ttc_multiplier'])
-        if self.op_params.get('use_dynamic_speed'):  # only print when active
-          if self.slowest:
-            print('SLOWEST: ', end='')
-          else:
-            print('NOT SLOWEST: ', end='')
-          print('TTC: {}, CHNG: {} mph'.format(round(ttc, 3), round(change * CV.MS_TO_MPH, 3)))
+        if self.slowest:
+          print('SLOWEST: ', end='')
+        else:
+          print('NOT SLOWEST: ', end='')
+        print('TTC: {}, CHNG: {} mph'.format(round(ttc, 3), round(change * CV.MS_TO_MPH, 3)))
         self.v_mpc = self.v_ego - (change * self.op_params['rate_out_to'])
         self.a_mpc = -change  # this is for 1 second, should it be interpped to 0.05?
         self.valid = True
@@ -190,7 +189,7 @@ class Planner():
         solutions['mpc2'] = self.mpc2.v_mpc
       if self.mpc_model.valid and model_enabled:
         solutions['model'] = self.mpc_model.v_mpc
-      if self.dynamic_speed.valid and self.op_params.get('use_dynamic_speed'):
+      if self.dynamic_speed.valid:
         solutions['dynamicSpeed'] = self.dynamic_speed.v_mpc
 
       slowest = min(solutions, key=solutions.get)
