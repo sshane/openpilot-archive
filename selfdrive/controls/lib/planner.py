@@ -134,11 +134,12 @@ class DynamicSpeed:  # todo: include DynamicLaneSpeed for adjacent lane slowing,
       ttc = calc_ttc(self.v_ego, self.a_ego, self.x_lead, self.v_lead, self.a_lead)
       if ttc is not False and ttc < self.MAX_TTC:  # ttc available and below threshold
         change = abs(v_rel) ** (self.op_params['v_rel_exp']) / (ttc * self.op_params['ttc_multiplier'])
-        if self.slowest:
-          print('SLOWEST: ', end='')
-        else:
-          print('NOT SLOWEST: ', end='')
-        print('TTC: {}, CHNG: {} mph'.format(round(ttc, 3), round(change * CV.MS_TO_MPH, 3)))
+        if self.op_params.get('use_dynamic_speed'):  # only print when active
+          if self.slowest:
+            print('SLOWEST: ', end='')
+          else:
+            print('NOT SLOWEST: ', end='')
+          print('TTC: {}, CHNG: {} mph'.format(round(ttc, 3), round(change * CV.MS_TO_MPH, 3)))
         self.v_mpc = self.v_ego - (change * self.op_params['rate_out_to'])
         self.a_mpc = -change  # this is for 1 second, should it be interpped to 0.05?
         self.valid = True

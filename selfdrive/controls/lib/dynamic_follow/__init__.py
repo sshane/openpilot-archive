@@ -15,12 +15,46 @@ from common.data_collector import DataCollector
 travis = False
 
 
+class IntegralDistanceFactor:
+  """
+  Basically an integral controller. Acts like a human, remembers the past; keeps a large distance even AFTER lead slows down, not only just when the lead is braking.
+  Anxiety simulator! Will the lead keep braking? Will the lead brake again soon? This keeps larger distances in situations you might want them.
+  """
+  def __init__(self):
+    self._rate = 1 / 20.
+
+    self._k_i = 1.2
+    self._to_clip = [-10, 0, 10]  # reaches this with v_rel=3.5 mph for 4 seconds
+    self._mods = [1.3, 1., 0.85]
+
+    self.i = 0  # never resets, even when new lead
+
+  def integrate(self, v_rel):
+    """
+    Integrates relative velocity, could also integrate on a_lead or a_rel, not sure
+    Relative velocity is a good starting point
+
+    Returns: Multiplier for final y_dist output
+    """
+    self.i += v_rel * self._rate * self._k_i
+    self.i = clip(self.i, self._to_clip[0], self._to_clip[-1])  # clip to reasonable range
+    self._slow_reset()  # slowly reset from max to 0
+    return interp(self.i, self._to_clip, self._mods)
+
+  def _slow_reset(self):
+    if abs(self.i) > 0.5:  # oscillation starts around 0.06
+      reset_time = 15  # in x seconds i goes from max to 0
+      sign = 1 if self.i > 0 else -1
+      self.i -= sign * max(self._to_clip) / (reset_time / self._rate)
+
+
 class DynamicFollow:
   def __init__(self, mpc_id):
     self.mpc_id = mpc_id
     self.op_params = opParams()
     self.df_profiles = dfProfiles()
     self.df_manager = dfManager(self.op_params)
+    self.idf = IntegralDistanceFactor()
 
     if not travis and mpc_id == 1:
       self.pm = messaging.PubMaster(['dynamicFollowData'])
@@ -252,6 +286,9 @@ class DynamicFollow:
       y_dist = [1.385, 1.394, 1.406, 1.421, 1.444, 1.474, 1.521, 1.544, 1.568, 1.588, 1.599, 1.613, 1.634]
     else:
       raise Exception('Unknown profile type: {}'.format(df_profile))
+
+    dist_factor = self.idf.integrate(self.lead_data.v_lead - self.car_data.v_ego)
+    return interp(self.car_data.v_ego, x_vel, y_dist) * dist_factor
 
     # Global df mod
     y_dist = self.global_profile_mod(x_vel, y_dist)
