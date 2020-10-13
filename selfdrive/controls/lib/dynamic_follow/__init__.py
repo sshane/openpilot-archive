@@ -23,9 +23,9 @@ class IntegralDistanceFactor:
   def __init__(self):
     self._rate = 1 / 20.
 
-    self._k_i = 1.2
+    self._k_i = 0.42
     self._to_clip = [-10, 0, 10]  # reaches this with v_rel=3.5 mph for 4 seconds
-    self._mods = [1.3, 1., 0.85]
+    self._mods = [1.175, 1., 0.85]
 
     self.i = 0  # never resets, even when new lead
 
@@ -44,8 +44,8 @@ class IntegralDistanceFactor:
     return fact
 
   def _slow_reset(self):
-    if abs(self.i) > 0.5:  # oscillation starts around 0.06
-      reset_time = 15  # in x seconds i goes from max to 0
+    if abs(self.i) > 0.1:  # oscillation starts around 0.06
+      reset_time = 25  # in x seconds i goes from max to 0
       sign = 1 if self.i > 0 else -1
       self.i -= sign * max(self._to_clip) / (reset_time / self._rate)
 
