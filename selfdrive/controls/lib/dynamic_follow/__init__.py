@@ -290,6 +290,7 @@ class DynamicFollow:
       raise Exception('Unknown profile type: {}'.format(df_profile))
 
     dist_factor = self.idf.integrate(self.lead_data.v_lead - self.car_data.v_ego)
+    # dist_factor = self.idf.integrate(self.lead_data.a_lead - self.car_data.a_ego)  # this is now over acceleration
     return interp(self.car_data.v_ego, x_vel, y_dist) * dist_factor
 
     # Global df mod
