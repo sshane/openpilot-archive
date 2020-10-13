@@ -39,7 +39,9 @@ class IntegralDistanceFactor:
     self.i += v_rel * self._rate * self._k_i
     self.i = clip(self.i, self._to_clip[0], self._to_clip[-1])  # clip to reasonable range
     self._slow_reset()  # slowly reset from max to 0
-    return interp(self.i, self._to_clip, self._mods)
+    fact = interp(self.i, self._to_clip, self._mods)
+    print("I: {}, FACT: {}".format(round(self.i, 4), round(fact, 3)))
+    return fact
 
   def _slow_reset(self):
     if abs(self.i) > 0.5:  # oscillation starts around 0.06
