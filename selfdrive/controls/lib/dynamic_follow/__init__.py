@@ -38,7 +38,7 @@ class DynamicFollow:
     self.default_TR = 1.8
     self.TR = 1.8
     self.v_ego_retention = 2.5
-    self.v_rel_retention = 1.75
+    self.v_rel_retention = 3
 
     self.sng_TR = 1.8  # reacceleration stop and go TR
     self.sng_speed = 18.0 * CV.MPH_TO_MS
@@ -182,6 +182,17 @@ class DynamicFollow:
   def _remove_old_entries(lst, cur_time, retention):
     return [sample for sample in lst if cur_time - sample['time'] <= retention]
 
+  def get_rel_accel(self):  # over time
+    a_ego = self.car_data.a_ego
+    a_lead = self.lead_data.a_lead
+    min_consider_time = 0.75  # minimum amount of time required to consider calculation
+    if len(self.df_data.v_rels) > 0:  # if not empty
+      elapsed_time = self.df_data.v_rels[-1]['time'] - self.df_data.v_rels[0]['time']
+      if elapsed_time > min_consider_time:
+        a_ego = (self.df_data.v_rels[-1]['v_ego'] - self.df_data.v_rels[0]['v_ego']) / (elapsed_time / 2)
+        a_lead = (self.df_data.v_rels[-1]['v_lead'] - self.df_data.v_rels[0]['v_lead']) / (elapsed_time / 2)
+    return a_lead - a_ego
+
   # def _relative_accel_mod(self):
   #   """
   #   Returns relative acceleration mod calculated from list of lead and ego velocities over time (longer than 1s)
@@ -242,8 +253,6 @@ class DynamicFollow:
     else:
       raise Exception('Unknown profile type: {}'.format(df_profile))
 
-    return interp(self.car_data.v_ego, x_vel, y_dist)
-
     # Global df mod
     y_dist = self.global_profile_mod(x_vel, y_dist)
 
@@ -281,7 +290,7 @@ class DynamicFollow:
     absolute_y_TR_mod = np.array(y) * converted_with_TR - converted_with_TR  # converts back to original abs mod
     absolute_y_TR_mod *= 1.2  # multiplier for how much to mod
     y = absolute_y_TR_mod / TR + 1  # converts back to multipliers with accel mod of 1.4 taking current TR into account
-    TR_mods.append(interp(self.lead_data.a_lead, x, y))  # todo: make this over more than 1 sec
+    TR_mods.append(interp(self.get_rel_accel(), x, y))  # todo: make this over more than 1 sec
 
     # deadzone = self.car_data.v_ego / 3  # 10 mph at 30 mph  # todo: tune pedal to react similarly to without before adding/testing this
     # if self.lead_data.v_lead - deadzone > self.car_data.v_ego:
