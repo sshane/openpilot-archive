@@ -20,12 +20,12 @@ class IntegralDistanceFactor:
   Basically an integral controller. Acts like a human, remembers the past; keeps a large distance even AFTER lead slows down, not only just when the lead is braking.
   Anxiety simulator! Will the lead keep braking? Will the lead brake again soon? This keeps larger distances in situations you might want them.
   """
-  def __init__(self):
+  def __init__(self):  # todo: add derivative, but only for distance-gaining output (negative i)
     self._rate = 1 / 20.
 
     self._k_i = 0.42
     self._to_clip = [-10, 0, 10]  # reaches this with v_rel=3.5 mph for 4 seconds
-    self._mods = [1.175, 1., 0.85]
+    self._mods = [1.18, 1., 0.95]
 
     self.i = 0  # never resets, even when new lead
 
