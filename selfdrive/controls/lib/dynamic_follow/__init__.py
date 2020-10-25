@@ -20,23 +20,23 @@ class IntegralDistanceFactor:
   Basically an integral controller. Acts like a human, remembers the past; keeps a large distance even AFTER lead slows down, not only just when the lead is braking.
   Anxiety simulator! Will the lead keep braking? Will the lead brake again soon? This keeps larger distances in situations you might want them.
   """
-  def __init__(self):  # todo: add derivative, but only for distance-gaining output (negative i)
+  def __init__(self, k_i, mods):  # todo: add derivative, but only for distance-gaining output (negative i)
     self._rate = 1 / 20.
 
-    self._k_i = 0.42
-    self._to_clip = [-10, 0, 10]  # reaches this with v_rel=3.5 mph for 4 seconds
-    self._mods = [1.15, 1., 0.95]
+    self._k_i = k_i
+    self._to_clip = [-1, 0, 1]  # reaches this with v_rel=3.5 mph for 4 seconds
+    self._mods = mods
 
     self.i = 0  # never resets, even when new lead
 
-  def integrate(self, v_rel):
+  def integrate(self, error):
     """
     Integrates relative velocity, could also integrate on a_lead or a_rel, not sure
     Relative velocity is a good starting point
 
     Returns: Multiplier for final y_dist output
     """
-    self.i += v_rel * self._rate * self._k_i
+    self.i += error * self._rate * self._k_i
     self.i = clip(self.i, self._to_clip[0], self._to_clip[-1])  # clip to reasonable range
     self._slow_reset()  # slowly reset from max to 0
     fact = interp(self.i, self._to_clip, self._mods)
@@ -44,7 +44,7 @@ class IntegralDistanceFactor:
     return fact
 
   def _slow_reset(self):
-    if abs(self.i) > 0.1:  # oscillation starts around 0.06
+    if abs(self.i) > 0.01:  # oscillation starts around 0.006
       reset_time = 25  # in x seconds i goes from max to 0
       sign = 1 if self.i > 0 else -1
       self.i -= sign * max(self._to_clip) / (reset_time / self._rate)
@@ -56,7 +56,8 @@ class DynamicFollow:
     self.op_params = opParams()
     self.df_profiles = dfProfiles()
     self.df_manager = dfManager(self.op_params)
-    self.idf = IntegralDistanceFactor()
+    self.idf_v_rel = IntegralDistanceFactor(k_i=0.042, mods=[1.1, 1., 0.95])
+    self.idf_a_lead = IntegralDistanceFactor(k_i=0.042 * 1.05, mods=[1.1, 1., 1.])  # a_lead loop is 5% faster
 
     if not travis and mpc_id == 1:
       self.pm = messaging.PubMaster(['dynamicFollowData'])
@@ -289,9 +290,13 @@ class DynamicFollow:
     else:
       raise Exception('Unknown profile type: {}'.format(df_profile))
 
-    dist_factor = self.idf.integrate(self.lead_data.v_lead - self.car_data.v_ego)
-    # dist_factor = self.idf.integrate(self.lead_data.a_lead - self.car_data.a_ego)  # this is now over acceleration
-    return interp(self.car_data.v_ego, x_vel, y_dist) * dist_factor
+    v_rel_dist_factor = self.idf_v_rel.integrate(self.lead_data.v_lead - self.car_data.v_ego)
+    a_lead_dist_factor = self.idf_a_lead.integrate(self.lead_data.a_lead)  # TODO: should this be relative accel or just a_lead?
+
+    TR = interp(self.car_data.v_ego, x_vel, y_dist)
+    TR *= v_rel_dist_factor
+    TR *= a_lead_dist_factor
+    return TR
 
     # Global df mod
     y_dist = self.global_profile_mod(x_vel, y_dist)
