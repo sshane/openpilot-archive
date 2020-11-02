@@ -1,6 +1,14 @@
 import matplotlib.pyplot as plt
 import numpy as np
+import itertools
+from matplotlib import cm
 from sklearn.linear_model import LinearRegression
+from sklearn.preprocessing import PolynomialFeatures
+from sklearn.pipeline import make_pipeline
+import scipy
+from tensorflow.keras.layers import Dense
+from tensorflow.keras.models import Sequential
+from mpl_toolkits.mplot3d import Axes3D
 
 MS_TO_MPH = 2.23694
 MPH_TO_MS = 1 / MS_TO_MPH
@@ -14,15 +22,18 @@ MAX_TORQUE = 1500
 
 def get_feedforward(angle_steers_des, v_ego):
   # steer_feedforward = v_ego ** 2 * angle_steers_des * CV.DEG_TO_RAD / (CP.steerRatio * CP.wheelbase)
-  steer_feedforward = angle_steers_des * v_ego**2  # proportional to realigning tire momentum (~ lateral accel)
+  steer_feedforward = angle_steers_des * v_ego ** 2  # proportional to realigning tire momentum (~ lateral accel)
   return steer_feedforward
 
 
-speeds = [20 * MPH_TO_MS, 40 * MPH_TO_MS, 60 * MPH_TO_MS, 80 * MPH_TO_MS]
-angles = [40, 45, 5, -5]
-torque = [1200, 1350, 200, -250]
+speeds = [20, 40, 60, 15, 45, 32]
+speeds = [spd * MPH_TO_MS for spd in speeds]
+angles = [40, 45, 5, 32.45, 1, 50]
+torque = [1200, 1350, 200, 800, 50, 1400]
 torque = [torq / MAX_TORQUE for torq in torque]
 feedfs = [torq / get_feedforward(ang, spd) for ang, spd, torq in zip(angles, speeds, torque)]
+
+assert all([i > 0 for i in feedfs]), 'A feedforward sample is negative?'
 
 print(f"{speeds=}")
 print(f"{angles=}")
@@ -36,32 +47,35 @@ print(f"{feedfs=}")
 # X = np.array(speeds).reshape(-1, 1)  # for just speeds
 X = np.array((speeds, angles)).T
 
-lr = LinearRegression()
-lr.fit(X, feedfs)
-
-print(f'\nregression score: {lr.score(X, feedfs)}')
 fig = plt.figure()
 ax = plt.axes(projection='3d')
 
-speeds = np.linspace(0, 35, 200)
-angles = np.linspace(0, 45, 200)
+use_polyfit = True
+if use_polyfit:
+  degree = 3
+  polyreg = make_pipeline(PolynomialFeatures(degree), LinearRegression())
+  polyreg.fit(X, feedfs)
 
-Y = np.zeros((len(speeds), len(angles)))
-for i in range(len(speeds)):
-  for j in range(len(angles)):
-    Y[i][j] = lr.predict([[speeds[i], angles[j]]])[0]
+  print(f'\nregression score: {polyreg.score(X, feedfs)}')
 
-ax.contour3D(np.array(speeds) * MS_TO_MPH, angles, Y)
+  X = np.linspace(0, max(speeds), 40)
+  Y = np.linspace(0, max(angles), 40)
 
-ax.set_xlabel('speed')
-ax.set_ylabel('angle')
-ax.set_zlabel('feedforward')
+  Z = np.zeros((len(X), len(Y)))
+  for i in range(len(X)):
+    for j in range(len(Y)):
+      Z[i][j] = polyreg.predict([[X[i], Y[j]]])[0]
 
-# print(f'f(x) = {lr.coef_[0]}x + {lr.intercept_}')
+  X, Y = np.meshgrid(X, Y)
 
-x = np.linspace(0, max(speeds), 50)
-y = [lr.predict([[spd, 5]])[0] for spd in x]
+  # ax.contour3D(X, Y, Z)
+  surf = ax.plot_surface(X, Y, Z, cmap=cm.magma,
+                         linewidth=0, antialiased=False)
 
-plt.plot(x, y, label='fitted')
-plt.legend()
+  ax.set_xlabel('speed')
+  ax.set_ylabel('angle')
+  ax.set_zlabel('feedforward')
+  fig.colorbar(surf, shrink=0.5, aspect=5)
+  plt.title(f'Feedforward model ({degree} deg. poly)')
+
 plt.show()
