@@ -6,6 +6,7 @@ from cereal import log
 
 class LatControlPID():
   def __init__(self, CP):
+    self.file_path = '/data/ff_data'
     self.pid = LatPIDController((CP.lateralTuning.pid.kpBP, CP.lateralTuning.pid.kpV),
                                 (CP.lateralTuning.pid.kiBP, CP.lateralTuning.pid.kiV),
                                 (CP.lateralTuning.pid.kdBP, CP.lateralTuning.pid.kdV),
@@ -40,6 +41,10 @@ class LatControlPID():
       check_saturation = (CS.vEgo > 10) and not CS.steeringRateLimited and not CS.steeringPressed
       output_steer = self.pid.update(self.angle_steers_des, CS.steeringAngle, check_saturation=check_saturation, override=CS.steeringPressed,
                                      feedforward=steer_feedforward, speed=CS.vEgo, deadzone=deadzone)
+
+      with open(self.file_path, 'a') as f:
+        f.write('{}\n'.format([CS.vEgo, self.angle_steers_des, CS.steeringAngle, path_plan.angleOffset, steer_feedforward, output_steer]))
+
       pid_log.active = True
       pid_log.p = self.pid.p
       pid_log.i = self.pid.i
