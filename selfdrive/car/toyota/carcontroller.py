@@ -93,8 +93,9 @@ class CarController():
     self.sm.update(0)
 
     file_path = '/data/ff_data'
-    with open(file_path, 'a') as f:
-      f.write('{}\n'.format([CS.out.vEgo, self.sm['pathPlan'].angleSteers, CS.out.steeringAngle, self.sm['pathPlan'].angleOffset, apply_steer, sec_since_boot()]))
+    if not CS.out.steeringPressed:
+      with open(file_path, 'a') as f:
+        f.write('{}\n'.format([CS.out.vEgo, self.sm['pathPlan'].angleSteers, CS.out.steeringAngle, self.sm['pathPlan'].angleOffset, apply_steer, sec_since_boot()]))
 
     if not enabled and CS.pcm_acc_status:
       # send pcm acc cancel cmd if drive is disabled but pcm is still on, or if the system can't be activated
