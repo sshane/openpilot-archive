@@ -65,12 +65,11 @@ class LatPIDController():
     self.control = 0
     self.last_error = 0
 
-  def get_ff(self, speed, setpoint):
+  def get_ff(self, speed, setpoint):  # setpoint is desired angle
     sign = 1 if setpoint >= 0 else -1
-    pred = predict([speed, abs(setpoint)])[0] * sign
-    x = [0, 2]  # model predicts some torque at 0 to 2 degrees, not ideal
-    y = [0, 1]
-    return pred * interp(abs(setpoint), x, y)
+    pred = abs(predict([speed, abs(setpoint)])[0]) * sign
+    pred *= interp(abs(setpoint), [0, 2], [0, 1])  # model predicts some torque at 0 to 2 degrees, not ideal
+    return clip(pred, -1, 1)
 
 
   def update(self, setpoint, measurement, speed=0.0, check_saturation=True, override=False, feedforward=0., deadzone=0., freeze_integrator=False):
