@@ -2,6 +2,7 @@ import numpy as np
 from common.numpy_fast import clip, interp
 from common.op_params import opParams
 from selfdrive.config import Conversions as CV
+from auto_feedforward.ff_model import predict
 
 
 def apply_deadzone(error, deadzone):
@@ -64,13 +65,21 @@ class LatPIDController():
     self.control = 0
     self.last_error = 0
 
+  def get_ff(self, speed, setpoint):
+    sign = 1 if setpoint >= 0 else -1
+    pred = predict([speed, abs(setpoint)])[0] * sign
+    x = [0, 2]  # model predicts some torque at 0 to 2 degrees, not ideal
+    y = [0, 1]
+    return pred * interp(abs(setpoint), x, y)
+
+
   def update(self, setpoint, measurement, speed=0.0, check_saturation=True, override=False, feedforward=0., deadzone=0., freeze_integrator=False):
     self.speed = speed
 
     error = float(apply_deadzone(setpoint - measurement, deadzone))
     self.p = error * self.k_p
     d = self.k_d * (error - self.last_error)
-    self.f = feedforward * self.k_f
+    self.f = self.get_ff(speed, setpoint)
 
     if override:
       self.i -= self.i_unwind_rate * float(np.sign(self.i))
