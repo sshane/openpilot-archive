@@ -41,7 +41,8 @@ class CarController():
     self.alert_active = False
     self.last_standstill = False
     self.standstill_req = False
-    self.standstill_hack = opParams().get('standstill_hack')
+    self.op_params = opParams()
+    self.standstill_hack = self.op_params.get('standstill_hack')
 
     self.last_fault_frame = -200
     self.steer_rate_limited = False
@@ -93,7 +94,7 @@ class CarController():
     self.sm.update(0)
 
     file_path = '/data/ff_data'
-    if not CS.out.steeringPressed:
+    if not CS.out.steeringPressed and enabled and self.op_params.get('gather'):
       with open(file_path, 'a') as f:
         f.write('{}\n'.format([CS.out.vEgo, self.sm['pathPlan'].angleSteers, CS.out.steeringAngle, self.sm['pathPlan'].angleOffset, apply_steer, sec_since_boot()]))
 
