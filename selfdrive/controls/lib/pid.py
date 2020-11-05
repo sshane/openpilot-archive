@@ -79,6 +79,7 @@ class LatPIDController():
     self.p = error * self.k_p
     d = self.k_d * (error - self.last_error)
     self.f = self.get_ff(speed, setpoint)
+    print(speed, setpoint, self.f)
 
     if override:
       self.i -= self.i_unwind_rate * float(np.sign(self.i))
