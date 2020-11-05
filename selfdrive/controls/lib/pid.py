@@ -69,8 +69,7 @@ class LatPIDController():
     sign = 1 if setpoint >= 0 else -1
     pred = abs(predict([speed, abs(setpoint)])[0]) * sign
     pred *= interp(abs(setpoint), [0, 2], [0, 1])  # model predicts some torque at 0 to 2 degrees, not ideal
-    return clip(pred, -1, 1)
-
+    return float(clip(pred, -1, 1))
 
   def update(self, setpoint, measurement, speed=0.0, check_saturation=True, override=False, feedforward=0., deadzone=0., freeze_integrator=False):
     self.speed = speed
