@@ -36,10 +36,10 @@ print(f'Samples: {len(data)}')
 print('Max angle: {}'.format(max([abs(i['angle_steers']) for i in data])))
 print('Top speed: {} mph'.format(max([i['v_ego'] for i in data]) * MS_TO_MPH))
 
-data = [line for line in data if .01 <= abs(line['angle_steers']) <= 90]
+data = [line for line in data if .001 <= abs(line['angle_steers']) <= 45]
 data = [line for line in data if abs(line['v_ego']) > 1 * MPH_TO_MS]
 data = [line for line in data if np.sign(line['angle_steers']) == np.sign(line['torque'])]
-data = [line for line in data if abs(line['angle_steers'] - line['angle_steers_des']) < 2]
+data = [line for line in data if abs(line['angle_steers'] - line['angle_steers_des']) < 3]
 
 print(f'Samples: {len(data)}')
 
@@ -93,19 +93,20 @@ feedfs = np.array(feedfs)
 fig = plt.figure()
 ax = plt.axes(projection='3d')
 
-feedf_scale = [min(feedfs), max(feedfs)]
-scale_to = [0, 1]
-feedfs = np.interp(feedfs, feedf_scale, scale_to)
+NORMALIZED = False
+if NORMALIZED:
+  feedf_scale = [min(feedfs), max(feedfs)]
+  scale_to = [0, 1]
+  feedfs = np.interp(feedfs, feedf_scale, scale_to)
 
 use_polyfit = False
-NORMALIZED = True
 if use_polyfit:
   degree = 3
   polyreg = make_pipeline(PolynomialFeatures(degree), LinearRegression(normalize=False))
   polyreg.fit(X, feedfs)
   print(f'\nregression score: {polyreg.score(X, feedfs)}')
 else:
-  LOAD_MODEL = True
+  LOAD_MODEL = False
   if LOAD_MODEL:
     model = load_model('ff_model.h5')
   else:
@@ -161,7 +162,8 @@ plt.show()
 
 PLOT_MODEL_2D = True
 if PLOT_MODEL_2D:
-  plt.clf()
+  # plt.clf()
+  plt.figure()
   for spd in [5, 25, 45]:
     x = np.linspace(0, 75, 100)
     y = model.predict([[spd * 0.4470392589877243, i] for i in x])

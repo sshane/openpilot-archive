@@ -17,7 +17,7 @@ def get_data(file_path):
 
   DISENGAGE_NOT_FILTERED = True
   if DISENGAGE_NOT_FILTERED:  # todo: fix this while gathering data
-    dat = [line for idx, line in enumerate(dat) if dat[idx - 1]['torque'] != 0 and line['torque'] != 0 and dat[idx + 1]['torque'] != 0]
+    dat = [line for idx, line in enumerate(dat) if line['torque'] != 0]
 
   split = [[]]
   for idx, line in enumerate(dat):  # split samples by time
