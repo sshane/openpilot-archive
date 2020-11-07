@@ -23,9 +23,9 @@ wheelbase = 2.70
 MAX_TORQUE = 1500
 
 
-def get_feedforward(v_ego, angle_steers_des):
-  # steer_feedforward = v_ego ** 2 * angle_steers_des * CV.DEG_TO_RAD / (CP.steerRatio * CP.wheelbase)
-  steer_feedforward = angle_steers_des * v_ego ** 2  # proportional to realigning tire momentum (~ lateral accel)
+def get_feedforward(v_ego, angle_steers, angle_offset=0):
+  steer_feedforward = (angle_steers - angle_offset)
+  steer_feedforward *= v_ego ** 2
   return steer_feedforward
 
 
@@ -36,25 +36,121 @@ print(f'Samples: {len(data)}')
 print('Max angle: {}'.format(max([abs(i['angle_steers']) for i in data])))
 print('Top speed: {} mph'.format(max([i['v_ego'] for i in data]) * MS_TO_MPH))
 
-data = [line for line in data if .001 <= abs(line['angle_steers']) <= 45]
+# Data filtering
+data = [line for line in data if 1 <= abs(line['angle_steers']) <= 60]
+data = [line for line in data if abs(line['torque']) >= 25]
 data = [line for line in data if abs(line['v_ego']) > 1 * MPH_TO_MS]
 data = [line for line in data if np.sign(line['angle_steers']) == np.sign(line['torque'])]
-data = [line for line in data if abs(line['angle_steers'] - line['angle_steers_des']) < 3]
+data = [line for line in data if abs(line['angle_steers'] - line['angle_steers_des']) < 5]
 
+# Data preprocessing
+for line in data:
+  line['angle_steers'] = abs(line['angle_steers'])
+  line['angle_steers_des'] = abs(line['angle_steers_des'])
+  line['torque'] = abs(line['torque'])
+  line['feedforward'] = (line['torque'] / MAX_TORQUE) / get_feedforward(line['v_ego'], line['angle_steers'])
+  # line['feedforward'] = (line['torque'] / MAX_TORQUE) / get_feedforward(line['v_ego'], line['angle_steers'], line['angle_offset'])
+  # line['feedforward'] = (line['torque'] / MAX_TORQUE) / get_feedforward(line['v_ego'], line['angle_steers'], -line['angle_offset'])
+
+data = [line for line in data if line['feedforward'] < .001]
 print(f'Samples: {len(data)}')
-
 speeds = [line['v_ego'] for line in data]
-angles = [abs(line['angle_steers']) for line in data]
-torque = [abs(line['torque']) / MAX_TORQUE for line in data]
 
-feedfs = [torq / get_feedforward(spd, ang) for ang, spd, torq in zip(angles, speeds, torque)]
 
-USE_TORQUE_AS_FF = True
+DATA_ANALYSIS = True
+if DATA_ANALYSIS:
+  ffs = []
+  mae = []
+  for line in data:
+    ffs.append(line['feedforward'])
+    mae.append(abs(line['feedforward'] - k_f))
+
+  print('\nmae: {}'.format(np.mean(mae)))
+  print('avg. kf: {}'.format(np.mean(ffs)))
+  print('std. kf: {}'.format(np.std(ffs)))
+  # sns.distplot([line['v_ego'] * MS_TO_MPH for line in data])
+  # raise
+
+  data_10mph = [line for line in data if 8 * MPH_TO_MS <= line['v_ego'] <= 25 * MPH_TO_MS]
+  print(f'{len(data_10mph)=}')
+  data_35mph = [line for line in data if 32 * MPH_TO_MS <= line['v_ego'] <= 37 * MPH_TO_MS]
+  print(f'{len(data_35mph)=}')
+  data_55mph = [line for line in data if 55 * MPH_TO_MS <= line['v_ego'] <= 65 * MPH_TO_MS]
+  print(f'{len(data_55mph)=}')
+  # data_60mph = [line for line in data if 58 * MPH_TO_MS <= line['v_ego'] <= 62 * MPH_TO_MS]
+  # print(f'{len(data_60mph)=}')
+
+  slopes = []
+
+  plt.figure(0)
+  angles_35mph, torque_35mph = zip(*[[line['angle_steers'], line['torque']] for line in data_35mph])
+  plt.scatter(angles_35mph, torque_35mph, label='35 mph', s=0.5)
+  poly_35mph = np.polyfit(angles_35mph, torque_35mph, 1)
+  plt.plot(np.linspace(0, max(angles_35mph), 50), np.polyval(poly_35mph, np.linspace(0, max(angles_35mph), 50)), color='orange')
+  slopes.append(poly_35mph[0] * ((max(angles_35mph) - min(angles_35mph)) / (max(torque_35mph) - min(torque_35mph))))
+  plt.plot(np.linspace(0, max(angles_35mph), len(data_35mph)), get_feedforward(np.mean([line['v_ego'] for line in data_35mph]), np.linspace(0, max(angles_35mph), len(data_35mph))) * k_f * 1500, color='red')
+  plt.plot(np.linspace(0, max(angles_35mph), len(data_35mph)), get_feedforward(np.mean([line['v_ego'] for line in data_35mph]), np.linspace(0, max(angles_35mph), len(data_35mph))) * k_f * 0.7744 * 1500, color='green')
+  print('\nSLOPE OF 35 MPH is {}'.format(slopes[-1]))
+
+  plt.figure(1)
+  angles_55mph, torque_55mph = zip(*[[line['angle_steers'], line['torque']] for line in data_55mph])
+  plt.scatter(angles_55mph, torque_55mph, label='55 mph', s=0.5)
+  poly_55mph = np.polyfit(angles_55mph, torque_55mph, 1)
+  plt.plot(np.linspace(0, max(angles_55mph), 50), np.polyval(poly_55mph, np.linspace(0, max(angles_55mph), 50)), color='orange')
+  slopes.append(poly_55mph[0] * ((max(angles_55mph) - min(angles_55mph)) / (max(torque_55mph) - min(torque_55mph))))
+  print('\nSLOPE OF 55 MPH is {}'.format(slopes[-1]))
+
+  plt.figure(2)
+  angles_10mph, torque_10mph = zip(*[[line['angle_steers'], line['torque']] for line in data_10mph])
+  plt.scatter(angles_10mph, torque_10mph, label='10 mph (low speed)', s=0.5)
+  poly_10mph = np.polyfit(angles_10mph, torque_10mph, 1)
+  plt.plot(np.linspace(0, max(angles_10mph), 50), np.polyval(poly_10mph, np.linspace(0, max(angles_10mph), 50)), color='orange')
+  slopes.append(poly_10mph[0] * ((max(angles_10mph) - min(angles_10mph)) / (max(torque_10mph) - min(torque_10mph))))
+  print('\nSLOPE OF 10 MPH is {}'.format(slopes[-1]))
+
+  for i in range(3):
+    plt.figure(i)
+    plt.legend()
+    plt.xlabel('angle')
+    plt.ylabel('torque')
+  print('avg. of {} slopes: {}'.format(len(slopes), np.round(np.mean(slopes), 4)))
+
+  # plt.scatter(speeds, feedfs, s=0.1)
+
+  # sns.distplot(ffs)
+  raise Exception
+
+_2D_MODEL = True
+if _2D_MODEL:
+  # feedf_scale = [min(feedfs), max(feedfs)]  # todo: the following is a 2d model (speed in, ff out)
+  # scale_to = [0, 1]
+  # feedfs = np.interp(feedfs, feedf_scale, scale_to)
+
+  poly = np.polyfit(speeds, feedfs, 3)
+
+  X = np.linspace(0, max(speeds), 50)
+
+  # plt.plot(X, reg.coef_ * X + reg.intercept_, label='fitted')
+  plt.scatter(speeds, feedfs, s=.1)
+  plt.plot(X, np.polyval(poly, X), color='orange', label='fitted')
+  plt.legend()
+  raise Exception
+
+
+angles = [line['angle_steers'] for line in data]
+torque = [line['torque'] for line in data]
+
+feedfs = [line['feedforward'] for line in data]
+
+USE_TORQUE_AS_FF = False
 if USE_TORQUE_AS_FF:
   feedfs = torque
-else:
-  speeds, angles, feedfs = zip(*[[spd, ang, ff] for spd, ang, ff in zip(speeds, angles, feedfs) if ff < .0001])  # or .0008
 del torque
+
+# Tests
+assert all([i > 0 for i in feedfs]), 'A feedforward sample is zero or negative'
+assert all([i >= 0 for i in angles]), 'An angle sample is negative'
+
 
 print(f'Samples: {len(speeds)}')
 
@@ -63,27 +159,8 @@ if PLOT_FF_DIST:
   plt.figure()
   sns.distplot(feedfs)
 
-assert all([i > 0 for i in feedfs]), 'A feedforward sample is negative?'
 
 
-
-# feedf_scale = [min(feedfs), max(feedfs)]  # todo: the following is a 2d model (speed in, ff out)
-# scale_to = [0, 1]
-# feedfs = np.interp(feedfs, feedf_scale, scale_to)
-#
-# # speeds = np.array(speeds).reshape(-1, 1)
-# # reg = LinearRegression()
-# # reg.fit(speeds, feedfs)
-# # print(f'\nregression score: {reg.score(speeds, feedfs)}')
-# poly = np.polyfit(speeds, feedfs, 3)
-#
-# X = np.linspace(0, max(speeds), 50)
-#
-# # plt.plot(X, reg.coef_ * X + reg.intercept_, label='fitted')
-# plt.plot(X, np.polyval(poly, X), label='fitted')
-# plt.scatter(speeds, feedfs, s=.5)
-# plt.legend()
-# raise Exception
 
 
 
