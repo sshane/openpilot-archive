@@ -280,6 +280,9 @@ class DynamicFollow:
     else:
       raise Exception('Unknown profile type: {}'.format(df_profile))
 
+    # Global df mod
+    y_dist = self.global_profile_mod(x_vel, y_dist)
+
     v_rel_dist_factor = self.idf_v_rel.integrate(self.lead_data.v_lead - self.car_data.v_ego)
     a_lead_dist_factor = self.idf_a_lead.integrate(self.lead_data.a_lead)  # TODO: should this be relative accel or just a_lead?
 
@@ -287,9 +290,6 @@ class DynamicFollow:
     TR *= v_rel_dist_factor
     TR *= a_lead_dist_factor
     return TR
-
-    # Global df mod
-    y_dist = self.global_profile_mod(x_vel, y_dist)
 
     if self.car_data.v_ego > self.sng_speed:  # keep sng distance until we're above sng speed again
       self.sng = False
