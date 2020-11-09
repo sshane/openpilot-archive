@@ -28,7 +28,7 @@ def get_feedforward(v_ego, angle_steers, angle_offset=0):
   return steer_feedforward
 
 
-def _custom_feedforward(_X, _k_f, _c1, _c2, _c3):  # power is to be fit, X is v_ego, then angle_steers
+def _custom_feedforward(_X, _k_f, _c1, _c2, _c3):  # automatically determines all params after input _X
   v_ego, angle_steers = _X.copy()
   steer_feedforward = angle_steers * (_c3 * v_ego ** 2 + _c2 * v_ego + _c1)
   return steer_feedforward * _k_f
@@ -47,11 +47,11 @@ print('Max angle: {}'.format(max([abs(i['angle_steers']) for i in data])))
 print('Top speed: {} mph'.format(max([i['v_ego'] for i in data]) * MS_TO_MPH))
 
 # Data filtering
-data = [line for line in data if .0001 <= abs(line['angle_steers']) <= 60]
+data = [line for line in data if 1e-4 <= abs(line['angle_steers']) <= 60]
 # data = [line for line in data if abs(line['torque']) >= 25]
 data = [line for line in data if abs(line['v_ego']) > 1 * MPH_TO_MS]
 # data = [line for line in data if np.sign(line['angle_steers']) == np.sign(line['torque'])]
-data = [line for line in data if abs(line['angle_steers'] - line['angle_steers_des']) < .5]
+data = [line for line in data if abs(line['angle_steers'] - line['angle_steers_des']) < .75]
 
 # Data preprocessing
 for line in data:
@@ -59,14 +59,16 @@ for line in data:
   line['angle_steers_des'] = abs(line['angle_steers_des'])
   line['torque'] = abs(line['torque'])
   line['feedforward'] = (line['torque'] / MAX_TORQUE) / get_feedforward(line['v_ego'], line['angle_steers'])
-  # line['feedforward'] = (line['torque'] / MAX_TORQUE) / get_feedforward(line['v_ego'], line['angle_steers'], line['angle_offset'])
-  # line['feedforward'] = (line['torque'] / MAX_TORQUE) / get_feedforward(line['v_ego'], line['angle_steers'], -line['angle_offset'])
 
 # data = [line for line in data if line['feedforward'] < .001]  # todo: uncomment
 print(f'Samples: {len(data)}')
 speeds = np.array([line['v_ego'] for line in data])
 angles = np.array([line['angle_steers'] for line in data])
 torque = np.array([line['torque'] for line in data])
+
+# Tests
+# assert all([i > 0 for i in feedfs]), 'A feedforward sample is zero or negative'
+assert all([i >= 0 for i in angles]), 'An angle sample is negative'
 
 params, covs = curve_fit(_custom_feedforward, np.array([speeds, angles]), np.array(torque) / MAX_TORQUE, maxfev=1000)
 print('FOUND PARAMS: {}'.format(params))
