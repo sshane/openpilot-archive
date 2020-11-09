@@ -51,7 +51,7 @@ data = [line for line in data if 1e-4 <= abs(line['angle_steers']) <= 60]
 # data = [line for line in data if abs(line['torque']) >= 25]
 data = [line for line in data if abs(line['v_ego']) > 1 * MPH_TO_MS]
 # data = [line for line in data if np.sign(line['angle_steers']) == np.sign(line['torque'])]
-data = [line for line in data if abs(line['angle_steers'] - line['angle_steers_des']) < .75]
+data = [line for line in data if abs(line['angle_steers'] - line['angle_steers_des']) < .5]
 
 # Data preprocessing
 for line in data:
@@ -62,15 +62,15 @@ for line in data:
 
 # data = [line for line in data if line['feedforward'] < .001]  # todo: uncomment
 print(f'Samples: {len(data)}')
-speeds = np.array([line['v_ego'] for line in data])
-angles = np.array([line['angle_steers'] for line in data])
-torque = np.array([line['torque'] for line in data])
+data_speeds = np.array([line['v_ego'] for line in data])
+data_angles = np.array([line['angle_steers'] for line in data])
+data_torque = np.array([line['torque'] for line in data])
 
 # Tests
 # assert all([i > 0 for i in feedfs]), 'A feedforward sample is zero or negative'
-assert all([i >= 0 for i in angles]), 'An angle sample is negative'
+assert all([i >= 0 for i in data_angles]), 'An angle sample is negative'
 
-params, covs = curve_fit(_custom_feedforward, np.array([speeds, angles]), np.array(torque) / MAX_TORQUE, maxfev=1000)
+params, covs = curve_fit(_custom_feedforward, np.array([data_speeds, data_angles]), np.array(data_torque) / MAX_TORQUE, maxfev=1000)
 print('FOUND PARAMS: {}'.format(params))
 
 std_func = []
@@ -82,7 +82,7 @@ for line in data:
 print('Torque MAE: {} (standard) - {} (fitted)'.format(np.mean(std_func), np.mean(fitted_func)))
 
 
-if SPEED_DATA_ANALYSIS := True:  # analyzes how torque needed changes based on speed
+if SPEED_DATA_ANALYSIS := False:  # analyzes how torque needed changes based on speed
   if PLOT_ANGLE_DIST := False:
     sns.distplot([line['angle_steers'] for line in data if abs(line['angle_steers']) < 30], bins=200)
     raise Exception
@@ -118,7 +118,6 @@ if SPEED_DATA_ANALYSIS := True:  # analyzes how torque needed changes based on s
     plt.ylabel('torque')
 
   # plt.scatter(speeds, feedfs, s=0.1)
-
   # sns.distplot(ffs)
 
 
@@ -136,7 +135,6 @@ if ANGLE_DATA_ANALYSIS := False:  # analyzes how angle changes need of torque (R
     [30, 40],
     [40, 50],
     [50, 60],
-    # [60, 70],
   ]] * MPH_TO_MS
   color = 'blue'
 
@@ -159,5 +157,28 @@ if ANGLE_DATA_ANALYSIS := False:  # analyzes how angle changes need of torque (R
     plt.ylabel('torque')
 
   # plt.scatter(speeds, feedfs, s=0.1)
-
   # sns.distplot(ffs)
+
+
+if PLOT_3D := False:
+  X_test = np.linspace(0, max(data_speeds), 20)
+  Y_test = np.linspace(0, max(data_angles), 20)
+
+  Z_test = np.zeros((len(X_test), len(Y_test)))
+  for i in range(len(X_test)):
+    for j in range(len(Y_test)):
+      Z_test[i][j] = custom_feedforward(X_test[i], Y_test[j], *params)
+
+  X_test, Y_test = np.meshgrid(X_test, Y_test)
+
+  fig = plt.figure()
+  ax = plt.axes(projection='3d')
+
+  surf = ax.plot_surface(X_test * MS_TO_MPH, Y_test, Z_test, cmap=cm.magma,
+                         linewidth=0, antialiased=False)
+  fig.colorbar(surf, shrink=0.5, aspect=5)
+
+  ax.set_xlabel('speed (mph)')
+  ax.set_ylabel('angle')
+  ax.set_zlabel('feedforward')
+  plt.title('New fitted polynomial feedforward function')
