@@ -1,5 +1,6 @@
 from cereal import car
 from cereal.messaging import SubMaster
+from common.data_collector import DataCollector
 from common.realtime import sec_since_boot
 from common.numpy_fast import clip
 from selfdrive.car import apply_toyota_steer_torque_limits, create_gas_command, make_can_msg
@@ -43,6 +44,7 @@ class CarController():
     self.standstill_req = False
     self.op_params = opParams()
     self.standstill_hack = self.op_params.get('standstill_hack')
+    self.data_collector = DataCollector(file_path='/data/ff_data', keys=['v_ego', 'angle_steers_des', 'angle_steers', 'steer_rate' 'angle_offset', 'torque', 'time'])
 
     self.last_fault_frame = -200
     self.steer_rate_limited = False
@@ -92,11 +94,8 @@ class CarController():
       apply_steer_req = 1
 
     self.sm.update(0)
-
-    file_path = '/data/ff_data'
-    if not CS.out.steeringPressed and enabled and self.op_params.get('gather'):
-      with open(file_path, 'a') as f:
-        f.write('{}\n'.format([CS.out.vEgo, self.sm['pathPlan'].angleSteers, CS.out.steeringAngle, self.sm['pathPlan'].angleOffset, apply_steer, sec_since_boot()]))
+    if not CS.out.steeringPressed and enabled and self.op_params.get('gather_ff'):
+      self.data_collector.update([CS.out.vEgo, self.sm['pathPlan'].angleSteers, CS.out.steeringAngle, CS.out.steeringRate, self.sm['pathPlan'].angleOffset, apply_steer, sec_since_boot()])
 
     if not enabled and CS.pcm_acc_status:
       # send pcm acc cancel cmd if drive is disabled but pcm is still on, or if the system can't be activated
