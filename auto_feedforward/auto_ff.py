@@ -71,7 +71,7 @@ data_torque = np.array([line['torque'] for line in data])
 assert all([i >= 0 for i in data_angles]), 'An angle sample is negative'
 
 params, covs = curve_fit(_custom_feedforward, np.array([data_speeds, data_angles]), np.array(data_torque) / MAX_TORQUE, maxfev=1000)
-print('FOUND PARAMS: {}'.format(params))
+print('FOUND PARAMS: {}'.format(params.tolist()))
 
 std_func = []
 fitted_func = []
@@ -82,7 +82,7 @@ for line in data:
 print('Torque MAE: {} (standard) - {} (fitted)'.format(np.mean(std_func), np.mean(fitted_func)))
 
 
-if SPEED_DATA_ANALYSIS := False:  # analyzes how torque needed changes based on speed
+if SPEED_DATA_ANALYSIS := True:  # analyzes how torque needed changes based on speed
   if PLOT_ANGLE_DIST := False:
     sns.distplot([line['angle_steers'] for line in data if abs(line['angle_steers']) < 30], bins=200)
     raise Exception

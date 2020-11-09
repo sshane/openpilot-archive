@@ -34,7 +34,8 @@ class LatControlPID():
       if CP.steerControlType == car.CarParams.SteerControlType.torque:
         # TODO: feedforward something based on path_plan.rateSteers
         steer_feedforward -= path_plan.angleOffset   # subtract the offset, since it does not contribute to resistive torque
-        steer_feedforward *= CS.vEgo**2  # proportional to realigning tire momentum (~ lateral accel)
+        _c1, _c2, _c3 = [44.82667638105129, 2.9801178505715757, 0.23989854104739505]
+        steer_feedforward *= _c3 * CS.vEgo ** 2 + _c2 * CS.vEgo + _c1
       deadzone = 0.0
 
       check_saturation = (CS.vEgo > 10) and not CS.steeringRateLimited and not CS.steeringPressed
