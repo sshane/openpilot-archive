@@ -44,7 +44,7 @@ class CarController():
     self.standstill_req = False
     self.op_params = opParams()
     self.standstill_hack = self.op_params.get('standstill_hack')
-    self.data_collector = DataCollector(file_path='/data/ff_data', keys=['v_ego', 'angle_steers_des', 'angle_steers', 'steer_rate' 'angle_offset', 'torque', 'time'])
+    self.data_collector = DataCollector(file_path='/data/ff_data', keys=['v_ego', 'angle_steers_des', 'angle_steers', 'steer_rate', 'angle_offset', 'torque', 'time'])
 
     self.last_fault_frame = -200
     self.steer_rate_limited = False
