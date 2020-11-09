@@ -1,8 +1,9 @@
-Stock Additions v0.6 - 2020-10-XX (0.7.10)
+Stock Additions v0.6 - 2020-11-09 (0.7.10)
 ===
  * Update Stock Additions to openpilot v0.7.10
  * Smoother dynamic follow with less complexity (experimental)
  * Raise max limit of global_df_mod to 1.5x
+ * Continued white panda support (untested, grey gives no warning)
 
 Stock Additions v0.5.4 - 2020-10-15 (0.7.7)
 ===
