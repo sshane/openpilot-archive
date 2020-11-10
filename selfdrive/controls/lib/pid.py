@@ -70,7 +70,7 @@ class LatPIDController():
     error = float(apply_deadzone(setpoint - measurement, deadzone))
     self.p = error * self.k_p
     d = self.k_d * (error - self.last_error)
-    self.f = feedforward * self.k_f * 1.9019468208337453  # this is a multiplier from my old k_f to new k_f. it might extrapololate for other cars, not sure yet
+    self.f = feedforward * self.k_f * 0.8682071289707523  # this is a multiplier from my old k_f to new k_f. it might extrapololate for other cars, not sure yet
 
     if override:
       self.i -= self.i_unwind_rate * float(np.sign(self.i))

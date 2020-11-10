@@ -1,16 +1,10 @@
 import os
 import matplotlib.pyplot as plt
 import numpy as np
-import itertools
-from matplotlib import cm
-from sklearn.linear_model import LinearRegression
-from sklearn.preprocessing import PolynomialFeatures
-from sklearn.pipeline import make_pipeline
-from scipy.optimize import curve_fit
-from tensorflow.keras.layers import Dense, LeakyReLU, Dropout
-from tensorflow.keras.models import Sequential, load_model
-from auto_feedforward.load_data import get_data
 import seaborn as sns
+from matplotlib import cm
+from scipy.optimize import curve_fit
+from auto_feedforward.load_data import get_data
 
 MS_TO_MPH = 2.23694
 MPH_TO_MS = 1 / MS_TO_MPH
@@ -30,7 +24,7 @@ def get_feedforward(v_ego, angle_steers, angle_offset=0):
 
 def _custom_feedforward(_X, _k_f, _c1, _c2, _c3):  # automatically determines all params after input _X
   v_ego, angle_steers = _X.copy()
-  steer_feedforward = angle_steers * (_c3 * v_ego ** 2 + _c2 * v_ego + _c1)
+  steer_feedforward = angle_steers * (_c1 * v_ego ** 2 + _c2 * v_ego + _c3)
   return steer_feedforward * _k_f
 
 
@@ -39,7 +33,6 @@ def custom_feedforward(v_ego, angle_steers, *args):  # helper function to easily
   return _custom_feedforward(_X, *args)
 
 
-# speeds, angles, torque = get_data(os.getcwd() + '/ff_data')
 data = get_data(os.getcwd() + '/ff_data')
 print(f'Samples: {len(data)}')
 
@@ -60,6 +53,8 @@ for line in data:
   line['torque'] = abs(line['torque'])
   line['feedforward'] = (line['torque'] / MAX_TORQUE) / get_feedforward(line['v_ego'], line['angle_steers'])
 
+  del line['time']
+
 # data = [line for line in data if line['feedforward'] < .001]  # todo: uncomment
 print(f'Samples: {len(data)}')
 data_speeds = np.array([line['v_ego'] for line in data])
@@ -79,7 +74,7 @@ for line in data:
   std_func.append(abs(get_feedforward(line['v_ego'], line['angle_steers']) * k_f * MAX_TORQUE - line['torque']))
   fitted_func.append(abs(custom_feedforward(line['v_ego'], line['angle_steers'], *params) * MAX_TORQUE - line['torque']))
 
-print('Torque MAE: {} (standard) - {} (fitted)'.format(np.mean(std_func), np.mean(fitted_func)))
+print('Torque MAE: {} (standard) - {} (fitted)\n'.format(np.mean(std_func), np.mean(fitted_func)))
 
 
 if SPEED_DATA_ANALYSIS := True:  # analyzes how torque needed changes based on speed
@@ -100,7 +95,7 @@ if SPEED_DATA_ANALYSIS := True:  # analyzes how torque needed changes based on s
   ]
 
   for idx, angle_range in enumerate(_angles):
-    temp_data = [line for line in data if angle_range[0] <= abs(line['angle_steers'] - line['angle_offset']) <= angle_range[1]]
+    temp_data = [line for line in data if angle_range[0] <= abs(line['angle_steers']) <= angle_range[1]]
     print(f'{angle_range} samples: {len(temp_data)}')
     plt.figure(idx)
     speeds, torque = zip(*[[line['v_ego'], line['torque']] for line in temp_data])
@@ -135,12 +130,13 @@ if ANGLE_DATA_ANALYSIS := False:  # analyzes how angle changes need of torque (R
     [30, 40],
     [40, 50],
     [50, 60],
+    [60, 70],
   ]] * MPH_TO_MS
   color = 'blue'
 
   for idx, speed_range in enumerate(_speeds):
     temp_data = [line for line in data if speed_range[0] <= line['v_ego'] <= speed_range[1]]
-    # print(f'{speed_range} samples: {len(temp_data)}')
+    print(f'{speed_range} samples: {len(temp_data)}')
     plt.figure(idx)
     angles, torque, speeds = zip(*[[line['angle_steers'], line['torque'], line['v_ego']] for line in temp_data])
     plt.scatter(angles, torque, label='{} mph'.format('-'.join([str(round(i * MS_TO_MPH, 1)) for i in speed_range])), color=color, s=0.05)
