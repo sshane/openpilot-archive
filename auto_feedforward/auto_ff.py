@@ -74,10 +74,11 @@ for line in data:
   std_func.append(abs(get_feedforward(line['v_ego'], line['angle_steers']) * k_f * MAX_TORQUE - line['torque']))
   fitted_func.append(abs(custom_feedforward(line['v_ego'], line['angle_steers'], *params) * MAX_TORQUE - line['torque']))
 
-print('Torque MAE: {} (standard) - {} (fitted)\n'.format(np.mean(std_func), np.mean(fitted_func)))
+print('Torque MAE: {} (standard) - {} (fitted)'.format(np.mean(std_func), np.mean(fitted_func)))
+print('Torque STD: {} (standard) - {} (fitted)\n'.format(np.std(std_func), np.std(fitted_func)))
 
 
-if SPEED_DATA_ANALYSIS := True:  # analyzes how torque needed changes based on speed
+if SPEED_DATA_ANALYSIS := False:  # analyzes how torque needed changes based on speed
   if PLOT_ANGLE_DIST := False:
     sns.distplot([line['angle_steers'] for line in data if abs(line['angle_steers']) < 30], bins=200)
     raise Exception
@@ -116,7 +117,7 @@ if SPEED_DATA_ANALYSIS := True:  # analyzes how torque needed changes based on s
   # sns.distplot(ffs)
 
 
-if ANGLE_DATA_ANALYSIS := False:  # analyzes how angle changes need of torque (RESULT: seems to be relatively linear, can be tuned by k_f)
+if ANGLE_DATA_ANALYSIS := True:  # analyzes how angle changes need of torque (RESULT: seems to be relatively linear, can be tuned by k_f)
   if PLOT_ANGLE_DIST := False:
     sns.distplot([line['angle_steers'] for line in data if abs(line['angle_steers']) < 30], bins=200)
     raise Exception
