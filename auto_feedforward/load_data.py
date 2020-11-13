@@ -2,6 +2,7 @@ import copy
 import os
 import matplotlib.pyplot as plt
 import ast
+import pickle
 
 # os.chdir(os.getcwd())
 
@@ -17,6 +18,10 @@ def get_data(file_path):
 
   dat = [ast.literal_eval(line) for line in dat.split('\n')[:-1]]
   dat = [dict(zip(keys_6 if len(line) == 6 else keys_7, line)) for line in dat]
+
+  if LOAD_FROM_FILE := False:
+    with open(os.path.join(os.getcwd(), 'data'), 'rb') as f:
+      dat = pickle.load(f)
 
   DISENGAGE_NOT_FILTERED = True
   if DISENGAGE_NOT_FILTERED:  # todo: fix this while gathering data

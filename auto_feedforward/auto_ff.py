@@ -18,11 +18,12 @@ MAX_TORQUE = 1500
 
 def get_feedforward(v_ego, angle_steers, angle_offset=0):
   steer_feedforward = (angle_steers - angle_offset)
-  steer_feedforward *= v_ego ** 2  # + np.interp(v_ego, [0, 70 * MPH_TO_MS], [75, 0])
+  steer_feedforward *= v_ego ** 2
   return steer_feedforward
 
 
-def _custom_feedforward(_X, _k_f, _c1, _c2, _c3):  # automatically determines all params after input _X
+def _custom_feedforward(_X, _k_f):  # automatically determines all params after input _X
+  _c1, _c2, _c3 = 0.34365576041121065, 12.845373070976711, 51.63304088261174
   v_ego, angle_steers = _X.copy()
   steer_feedforward = angle_steers * (_c1 * v_ego ** 2 + _c2 * v_ego + _c3)
   return steer_feedforward * _k_f
