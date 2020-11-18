@@ -3,6 +3,7 @@ import os
 import json
 from common.colors import opParams_error as error
 from common.colors import opParams_warning as warning
+from common.params import Params
 try:
   from common.realtime import sec_since_boot
 except ImportError:
@@ -114,10 +115,11 @@ class opParams:
     self.fork_params['username'] = Param(None, [type(None), str, bool], 'Your identifier provided with any crash logs sent to Sentry.\nHelps the developer reach out to you if anything goes wrong')
     self.fork_params['op_edit_live_mode'] = Param(False, bool, 'This parameter controls which mode opEdit starts in', hidden=True)
     self.params = self._get_all_params(default=True)  # in case file is corrupted
+
+    self.is_shane = Params().get("DongleId").decode('utf8') in ['14431dbeedbf3558', 'e010b634f3d65cdb']  # my two eons
     if travis:
       return
 
-    to_write = False
     if os.path.isfile(self._params_file):
       if self._read():
         to_write = self._add_default_params()  # if new default data has been added
