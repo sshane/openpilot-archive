@@ -3,7 +3,6 @@ import os
 import json
 from common.colors import opParams_error as error
 from common.colors import opParams_warning as warning
-# from common.params import Params
 try:
   from common.realtime import sec_since_boot
 except ImportError:
@@ -116,7 +115,6 @@ class opParams:
     self.fork_params['op_edit_live_mode'] = Param(False, bool, 'This parameter controls which mode opEdit starts in', hidden=True)
     self.params = self._get_all_params(default=True)  # in case file is corrupted
 
-    self.is_shane = False  # Params().get("DongleId").decode('utf8') in ['14431dbeedbf3558', 'e010b634f3d65cdb']  # my two eons
     if travis:
       return
 
