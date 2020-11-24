@@ -36,6 +36,7 @@ def get_data(file_path):
   del dat
 
   split = [sec for sec in split if len(sec) > int(1 * DT_CTRL)]  # long enough section
+
   for i in range(len(split)):  # accounts for steer actuator delay (moves torque up by 12 samples)
     torque = [line['torque'] for line in split[i]]
     for j in range(len(split[i])):

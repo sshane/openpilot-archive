@@ -94,7 +94,7 @@ class CarController():
       apply_steer_req = 1
 
     self.sm.update(0)
-    if not CS.out.steeringPressed and enabled and self.op_params.get('gather_ff'):
+    if not CS.out.steeringPressed and apply_steer_req == 1 and self.op_params.get('gather_ff'):
       self.data_collector.update([CS.out.vEgo, self.sm['pathPlan'].angleSteers, CS.out.steeringAngle, CS.out.steeringRate, self.sm['pathPlan'].angleOffset, apply_steer, sec_since_boot()])
 
     if not enabled and CS.pcm_acc_status:
