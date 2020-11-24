@@ -70,7 +70,7 @@ class CarInterface(CarInterfaceBase):
       ret.mass = 3115. * CV.LB_TO_KG + STD_CARGO_KG
 
       if prius_use_pid:
-        ret.lateralTuning.pid.kpV, ret.lateralTuning.pid.kiV = [[0.16], [0.021]]
+        ret.lateralTuning.pid.kpV, ret.lateralTuning.pid.kiV = [[0.21], [0.008]]
         ret.lateralTuning.pid.kdV = [1.]  # corolla D times gain in PI values
         ret.lateralTuning.pid.kf = .00009531750004645412
       else:
