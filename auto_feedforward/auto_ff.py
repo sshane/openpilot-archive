@@ -81,26 +81,6 @@ if FILTER_DATA := True:
   # data = [line for line in data if abs(line['torque']) >= 25]
   # data = [line for line in data if np.sign(line['angle_steers']) == np.sign(line['torque'])]
 
-
-# plt.clf()
-# angle_0_no_offset = [line for line in data if abs(line['angle_steers']) < 0.25]
-# print(f'{len(angle_0_no_offset)} samples at 0 degrees!')
-# torque_no_offset = [abs(line['torque']) for line in angle_0_no_offset]
-# sns.distplot(torque_no_offset, bins=100, kde=False, label='no offset')
-# print('sum of abs torque: {}'.format(np.mean(np.abs(torque_no_offset))))
-#
-#
-# angle_0_offset = [line for line in data if abs(line['angle_steers'] - line['angle_offset']) < 0.25]
-# print(f'{len(angle_0_offset)} samples at 0 degrees!')
-# torque_offset = [abs(line['torque']) for line in angle_0_offset]
-# sns.distplot(torque_offset, bins=100, kde=False, label='offset-')
-# print('sum of abs torque-: {}'.format(np.mean(np.abs(torque_offset))))
-# plt.legend()
-#
-# raise Exception
-
-
-
 # Data preprocessing
 for line in data:
   line['angle_steers'] = abs(line['angle_steers'])
