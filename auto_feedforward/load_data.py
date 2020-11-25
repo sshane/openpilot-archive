@@ -7,7 +7,7 @@ import pickle
 # os.chdir(os.getcwd())
 
 
-def get_data(file_path):
+def get_data(file_path, disengage_not_filtered):
   DT_CTRL = 100
   steer_delay = round(0.12 * DT_CTRL)
 
@@ -23,8 +23,7 @@ def get_data(file_path):
     with open(os.path.join(os.getcwd(), 'data'), 'rb') as f:
       dat = pickle.load(f)
 
-  DISENGAGE_NOT_FILTERED = True
-  if DISENGAGE_NOT_FILTERED:  # todo: fix this while gathering data
+  if disengage_not_filtered:  # todo: fix this while gathering data
     dat = [line for idx, line in enumerate(dat) if line['torque'] != 0]
 
   split = [[]]
