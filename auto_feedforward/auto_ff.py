@@ -29,10 +29,11 @@ class CustomFeedforward:
                if False, then it only fits kf using speed poly found from prior fitting and data
     """
     if not fit_all:
-      self.c1, self.c2, self.c3 = 0.34365576041121065, 12.845373070976711, 51.63304088261174
+      self.c1, self.c2, self.c3 = 0.35189607550172824, 7.506201251644202, 69.226826411091
       self.fit_func = self._fit_just_kf
     else:
       self.fit_func = self._fit_all
+      # self.fit_func = self._fit_just_poly
 
   def get(self, v_ego, angle_steers, *args):  # helper function to easily use fitting ff function):
     x_input = np.array((v_ego, angle_steers)).T
@@ -48,7 +49,7 @@ class CustomFeedforward:
     """
     v_ego, angle_steers = x_input.copy()
     steer_feedforward = angle_steers * np.polyval([_c1, _c2, _c3], v_ego) * _kf
-    return steer_feedforward * _kf
+    return steer_feedforward
 
   def _fit_just_kf(self, x_input, _kf):
     """
@@ -58,8 +59,14 @@ class CustomFeedforward:
     steer_feedforward = angle_steers * np.polyval([self.c1, self.c2, self.c3], v_ego)
     return steer_feedforward * _kf
 
+  @staticmethod
+  def _fit_just_poly(x_input, _c1, _c2, _c3):
+    v_ego, angle_steers = x_input.copy()
+    steer_feedforward = angle_steers * np.polyval([_c1, _c2, _c3], v_ego) * old_k_f
+    return steer_feedforward
 
-CF = CustomFeedforward(fit_all=True)
+
+CF = CustomFeedforward(fit_all=False)
 
 
 data = get_data(os.getcwd() + '/ff_data')
@@ -98,11 +105,15 @@ assert all([i >= 0 for i in data_angles]), 'An angle sample is negative'
 assert all([i >= 0 for i in data_torque]), 'A torque sample is negative'
 
 params, covs = curve_fit(CF.fit_func, np.array([data_speeds, data_angles]), np.array(data_torque) / MAX_TORQUE, maxfev=1000)
-print('FOUND KF: {}'.format(params[0]))
 
 if len(params) == 4:
+  print('FOUND KF: {}'.format(params[0]))
   print('FOUND POLY: {}'.format(params[1:].tolist()))
-elif len(params) != 1:
+elif len(params) == 3:
+  print('FOUND POLY: {}'.format(params.tolist()))
+elif len(params) == 1:
+  print('FOUND KF: {}'.format(params[0]))
+else:
   print('Unsupported number of params')
   raise Exception('Unsupported number of params: {}'.format(len(params)))
 
@@ -116,7 +127,7 @@ print('Torque MAE: {} (standard) - {} (fitted)'.format(np.mean(std_func), np.mea
 print('Torque STD: {} (standard) - {} (fitted)\n'.format(np.std(std_func), np.std(fitted_func)))
 
 
-if SPEED_DATA_ANALYSIS := False:  # analyzes how torque needed changes based on speed
+if SPEED_DATA_ANALYSIS := True:  # analyzes how torque needed changes based on speed
   if PLOT_ANGLE_DIST := False:
     sns.distplot([line['angle_steers'] for line in data if abs(line['angle_steers']) < 30], bins=200)
     raise Exception
@@ -176,7 +187,7 @@ if ANGLE_DATA_ANALYSIS := True:  # analyzes how angle changes need of torque (RE
   for idx, speed_range in enumerate(_speeds):
     temp_data = [line for line in data if speed_range[0] <= line['v_ego'] <= speed_range[1]]
     print(f'{speed_range} samples: {len(temp_data)}')
-    plt.figure(idx)
+    plt.figure(idx + 7)
     angles, torque, speeds = zip(*[[line['angle_steers'], line['torque'], line['v_ego']] for line in temp_data])
     plt.scatter(angles, torque, label='{} mph'.format('-'.join([str(round(i * MS_TO_MPH, 1)) for i in speed_range])), color=color, s=0.05)
 

@@ -34,7 +34,7 @@ class LatControlPID():
       if CP.steerControlType == car.CarParams.SteerControlType.torque:
         # TODO: feedforward something based on path_plan.rateSteers
         steer_feedforward -= path_plan.angleOffset   # subtract the offset, since it does not contribute to resistive torque
-        _c1, _c2, _c3 = [0.34365576041121065, 12.845373070976711, 51.63304088261174]
+        _c1, _c2, _c3 = [0.35189607550172824, 7.506201251644202, 69.226826411091]
         steer_feedforward *= _c1 * CS.vEgo ** 2 + _c2 * CS.vEgo + _c3
       deadzone = 0.0
 
