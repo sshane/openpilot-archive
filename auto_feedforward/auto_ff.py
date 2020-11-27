@@ -162,6 +162,7 @@ if SPEED_DATA_ANALYSIS := True:  # analyzes how torque needed changes based on s
     plt.legend()
     plt.xlabel('speed (mph)')
     plt.ylabel('torque')
+    plt.savefig('plots/speed_fig{}.png'.format(idx))
 
   # plt.scatter(speeds, feedfs, s=0.1)
   # sns.distplot(ffs)
@@ -202,6 +203,8 @@ if ANGLE_DATA_ANALYSIS := True:  # analyzes how angle changes need of torque (RE
     plt.legend()
     plt.xlabel('angle (deg)')
     plt.ylabel('torque')
+    plt.savefig('plots/angle_fig{}.png'.format(idx))
+
 
   # plt.scatter(speeds, feedfs, s=0.1)
   # sns.distplot(ffs)
