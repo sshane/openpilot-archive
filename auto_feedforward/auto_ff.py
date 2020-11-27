@@ -9,7 +9,8 @@ from auto_feedforward.load_data import get_data
 MS_TO_MPH = 2.23694
 MPH_TO_MS = 1 / MS_TO_MPH
 
-old_k_f = 0.0000795769068
+# old_k_f = 0.0000795769068
+old_k_f = 0.00003
 steerRatio = 17.8
 wheelbase = 2.70
 
@@ -32,8 +33,8 @@ class CustomFeedforward:
       self.c1, self.c2, self.c3 = 0.35189607550172824, 7.506201251644202, 69.226826411091
       self.fit_func = self._fit_just_kf
     else:
-      self.fit_func = self._fit_all
-      # self.fit_func = self._fit_just_poly
+      # self.fit_func = self._fit_all
+      self.fit_func = self._fit_just_poly
 
   def get(self, v_ego, angle_steers, *args):  # helper function to easily use fitting ff function):
     x_input = np.array((v_ego, angle_steers)).T
@@ -66,7 +67,7 @@ class CustomFeedforward:
     return steer_feedforward
 
 
-CF = CustomFeedforward(fit_all=False)
+CF = CustomFeedforward(fit_all=True)
 
 
 data = get_data(os.getcwd() + '/ff_data')
