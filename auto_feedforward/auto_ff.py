@@ -62,17 +62,13 @@ class CustomFeedforward:
 CF = CustomFeedforward(fit_all=True)
 
 
-data = get_data(os.getcwd() + '/ff_data', True)
-trae_data = get_data(os.getcwd() + '/ff_data-trae', False)
+data = get_data(os.getcwd() + '/ff_data')
 print(f'Samples: {len(data)}')
 
 print('Max angle: {}'.format(max([abs(i['angle_steers']) for i in data])))
 print('Top speed: {} mph'.format(max([i['v_ego'] for i in data]) * MS_TO_MPH))
 
 for line in data:  # need to apply average angle offset for feedforward calculations
-  line['angle_steers'] -= line['angle_offset']
-
-for line in trae_data:  # need to apply average angle offset for feedforward calculations
   line['angle_steers'] -= line['angle_offset']
 
 # Data filtering
@@ -82,21 +78,11 @@ if FILTER_DATA := True:
   data = [line for line in data if abs(line['v_ego']) > 1 * MPH_TO_MS]
   data = [line for line in data if abs(line['angle_steers'] - line['angle_steers_des']) < max_angle_error]
 
-  trae_data = [line for line in trae_data if 1e-4 <= abs(line['angle_steers']) <= 60]
-  trae_data = [line for line in trae_data if abs(line['v_ego']) > 1 * MPH_TO_MS]
-  trae_data = [line for line in trae_data if abs(line['angle_steers'] - line['angle_steers_des']) < max_angle_error]
-
   # data = [line for line in data if abs(line['torque']) >= 25]
   # data = [line for line in data if np.sign(line['angle_steers']) == np.sign(line['torque'])]
 
 # Data preprocessing
 for line in data:
-  line['angle_steers'] = abs(line['angle_steers'])
-  line['angle_steers_des'] = abs(line['angle_steers_des'])
-  line['torque'] = abs(line['torque'])
-  del line['time']
-
-for line in trae_data:
   line['angle_steers'] = abs(line['angle_steers'])
   line['angle_steers_des'] = abs(line['angle_steers_des'])
   line['torque'] = abs(line['torque'])
@@ -130,7 +116,7 @@ print('Torque MAE: {} (standard) - {} (fitted)'.format(np.mean(std_func), np.mea
 print('Torque STD: {} (standard) - {} (fitted)\n'.format(np.std(std_func), np.std(fitted_func)))
 
 
-if SPEED_DATA_ANALYSIS := True:  # analyzes how torque needed changes based on speed
+if SPEED_DATA_ANALYSIS := False:  # analyzes how torque needed changes based on speed
   if PLOT_ANGLE_DIST := False:
     sns.distplot([line['angle_steers'] for line in data if abs(line['angle_steers']) < 30], bins=200)
     raise Exception
@@ -165,19 +151,6 @@ if SPEED_DATA_ANALYSIS := True:  # analyzes how torque needed changes based on s
     plt.xlabel('speed (mph)')
     plt.ylabel('torque')
 
-  for idx, angle_range in enumerate(_angles):
-    temp_data = [line for line in trae_data if angle_range[0] <= abs(line['angle_steers']) <= angle_range[1]]
-    if len(temp_data)==0:
-      continue
-    print(f'{angle_range} samples: {len(temp_data)}')
-    plt.figure(idx)
-    speeds, torque = zip(*[[line['v_ego'], line['torque']] for line in temp_data])
-    plt.scatter(np.array(speeds) * MS_TO_MPH, torque, label='{} deg trae'.format('-'.join(map(str, angle_range))), color='red', s=0.05)
-
-    plt.legend()
-    plt.xlabel('speed (mph)')
-    plt.ylabel('torque')
-
   # plt.scatter(speeds, feedfs, s=0.1)
   # sns.distplot(ffs)
 
@@ -203,7 +176,7 @@ if ANGLE_DATA_ANALYSIS := True:  # analyzes how angle changes need of torque (RE
   for idx, speed_range in enumerate(_speeds):
     temp_data = [line for line in data if speed_range[0] <= line['v_ego'] <= speed_range[1]]
     print(f'{speed_range} samples: {len(temp_data)}')
-    plt.figure(idx+10)
+    plt.figure(idx)
     angles, torque, speeds = zip(*[[line['angle_steers'], line['torque'], line['v_ego']] for line in temp_data])
     plt.scatter(angles, torque, label='{} mph'.format('-'.join([str(round(i * MS_TO_MPH, 1)) for i in speed_range])), color=color, s=0.05)
 
@@ -213,17 +186,6 @@ if ANGLE_DATA_ANALYSIS := True:  # analyzes how angle changes need of torque (RE
 
     _y_ff = [CF.get(np.mean(speed_range), _i, *params) * MAX_TORQUE for _i in _x_ff]
     plt.plot(_x_ff, _y_ff, color='purple', label='new fitted ff function')
-
-    plt.legend()
-    plt.xlabel('angle (deg)')
-    plt.ylabel('torque')
-
-  for idx, speed_range in enumerate(_speeds):
-    temp_data = [line for line in trae_data if speed_range[0] <= line['v_ego'] <= speed_range[1]]
-    print(f'{speed_range} samples: {len(temp_data)}')
-    plt.figure(idx+10)
-    angles, torque, speeds = zip(*[[line['angle_steers'], line['torque'], line['v_ego']] for line in temp_data])
-    plt.scatter(angles, torque, label='{} mph (trae)'.format('-'.join([str(round(i * MS_TO_MPH, 1)) for i in speed_range])), color='red', s=0.05)
 
     plt.legend()
     plt.xlabel('angle (deg)')
