@@ -11,6 +11,7 @@ import datetime
 import textwrap
 from typing import Dict, List
 from selfdrive.swaglog import cloudlog, add_logentries_handler
+from common.op_params import opParams
 
 
 from common.basedir import BASEDIR
@@ -21,6 +22,7 @@ os.environ['BASEDIR'] = BASEDIR
 
 TOTAL_SCONS_NODES = 1040
 prebuilt = os.path.exists(os.path.join(BASEDIR, 'prebuilt'))
+kill_updated = opParams().get('update_behavior').lower().strip() == 'off' or os.path.exists('/data/no_ota_updates')
 
 # Create folders needed for msgq
 try:
@@ -191,6 +193,7 @@ managed_processes = {
   "dmonitoringmodeld": ("selfdrive/modeld", ["./dmonitoringmodeld"]),
   "modeld": ("selfdrive/modeld", ["./modeld"]),
   "rtshield": "selfdrive.rtshield",
+  "lanespeedd": "selfdrive.controls.lib.lane_speed",
 }
 
 daemon_processes = {
@@ -220,11 +223,13 @@ persistent_processes = [
 
 if not PC:
   persistent_processes += [
-    'updated',
+    # 'updated',
     'logcatd',
     'tombstoned',
     'sensord',
   ]
+  if not kill_updated:
+    persistent_processes.append('updated')
 
 car_started_processes = [
   'controlsd',
@@ -237,6 +242,7 @@ car_started_processes = [
   'proclogd',
   'locationd',
   'clocksd',
+  'lanespeedd',
 ]
 
 driver_view_processes = [
@@ -482,7 +488,8 @@ def manager_thread():
     if msg.thermal.freeSpace < 0.05:
       logger_dead = True
 
-    if msg.thermal.started:
+    run_all = False
+    if msg.thermal.started or run_all:
       for p in car_started_processes:
         if p == "loggerd" and logger_dead:
           kill_managed_process(p)
