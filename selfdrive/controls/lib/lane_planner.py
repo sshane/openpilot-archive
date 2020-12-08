@@ -1,8 +1,9 @@
 from common.numpy_fast import interp
 import numpy as np
 from cereal import log
+from selfdrive.controls.lib.dynamic_camera_offset import DynamicCameraOffset
 
-CAMERA_OFFSET = 0.06  # m from center car to camera
+STANDARD_CAMERA_OFFSET = 0.06  # m from center car to camera (DO NOT CHANGE THIS)
 
 
 def compute_path_pinv(length=50):
@@ -43,6 +44,7 @@ class LanePlanner:
 
     self._path_pinv = compute_path_pinv()
     self.x_points = np.arange(50)
+    self.dynamic_camera_offset = DynamicCameraOffset()
 
   def parse_model(self, md):
     if len(md.leftLane.poly):
@@ -62,10 +64,13 @@ class LanePlanner:
       self.l_lane_change_prob = md.meta.desireState[log.PathPlan.Desire.laneChangeLeft]
       self.r_lane_change_prob = md.meta.desireState[log.PathPlan.Desire.laneChangeRight]
 
-  def update_d_poly(self, v_ego):
+  def update_d_poly(self, v_ego, angle_steers, active):
     # only offset left and right lane lines; offsetting p_poly does not make sense
+    CAMERA_OFFSET = self.dynamic_camera_offset.update(v_ego, active, angle_steers, self.lane_width, self.lane_width_certainty, [self.l_poly, self.r_poly], [self.l_prob, self.r_prob])
     self.l_poly[3] += CAMERA_OFFSET
     self.r_poly[3] += CAMERA_OFFSET
+    if CAMERA_OFFSET != STANDARD_CAMERA_OFFSET:
+      self.p_poly[3] += CAMERA_OFFSET - STANDARD_CAMERA_OFFSET  # only offst path based on difference of new offset and standard
 
     # Reduce reliance on lanelines that are too far apart or
     # will be in a few seconds
