@@ -104,7 +104,7 @@ class LanePlanner:
     path_from_right_lane = self.r_poly.copy()
     path_from_right_lane[3] += clipped_lane_width / 2.0
 
-    lr_prob = l_prob + r_prob - l_prob * r_prob
+    lr_prob = 0.0  # l_prob + r_prob - l_prob * r_prob
 
     d_poly_lane = (l_prob * path_from_left_lane + r_prob * path_from_right_lane) / (l_prob + r_prob + 0.0001)
     self.d_poly = lr_prob * d_poly_lane + (1.0 - lr_prob) * self.p_poly.copy()
