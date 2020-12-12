@@ -37,7 +37,7 @@ class DynamicGas:
         gas_mod *= interp(self.lead_data['a_lead'], x, y)
 
         x = [6.1, 9.15, 15.24]  # as lead gets further from car, lessen gas mod/reduction
-        y = [1.0, 0.75, 0.0]
+        y = [1.0, 0.8, 0.0]
         gas_mod *= interp(self.lead_data['x_lead'], x, y)
 
         if not self.CP.enableGasInterceptor:  # this will hopefuly let TSS2 use dynamic gas, need to tune
@@ -73,8 +73,7 @@ class DynamicGas:
     if self.CP.enableGasInterceptor:
       if self.candidate == CAR_TOYOTA.COROLLA:
         x = [0.0, 1.4082, 2.8031, 4.2266, 5.3827, 6.1656, 7.2478, 8.2831, 10.2447, 12.964, 15.423, 18.119, 20.117, 24.4661, 29.0581, 32.7101, 35.7633]
-        y = [0.218, 0.222, 0.233, 0.25, 0.273, 0.294, 0.337, 0.362, 0.38, 0.389, 0.398, 0.41, 0.421, 0.459, 0.512, 0.564, 0.621]
-        y = [interp(i, [0.218, (0.218 + 0.398) / 2, 0.398], [1.075 * i, i * 1.05, i]) for i in y]  # more gas at lower speeds up until ~40 mph
+        y = [0.1969, 0.2045, 0.2183, 0.238, 0.2625, 0.2841, 0.3242, 0.3476, 0.3651, 0.3772, 0.3889, 0.4061, 0.421, 0.459, 0.5144, 0.5756, 0.6421]
         self.supported_car = True
       elif self.candidate == CAR_TOYOTA.PRIUS:
         x = [0.0, 1.4082, 2.8031, 4.2266, 5.3827, 6.1656, 7.2478, 8.2831, 10.2447, 12.964, 15.423, 18.119, 20.117, 24.4661, 29.0581, 32.7101, 35.7633]
