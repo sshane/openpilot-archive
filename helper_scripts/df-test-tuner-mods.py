@@ -15,10 +15,10 @@ plt.plot(x, roadtrip, 'o-', label='roadtrip')
 plt.plot(x, relaxed, 'o-', label='relaxed')
 relaxed = np.array(roadtrip) - 0.1678*1.05
 relaxed[8] = 1.6476
-plt.plot(x, relaxed, 'o-', label='relaxed new')
+# plt.plot(x, relaxed, 'o-', label='relaxed new')
 
 relaxed = [i * np.interp(_x, [13.51, 41], [1, 0.9740044537214158]) for i, _x in zip(relaxed, x)]
-plt.plot(x, relaxed, 'o-', label='relaxed new new')
+# plt.plot(x, relaxed, 'o-', label='relaxed new new')
 relaxed = np.array(relaxed_old) * 0.2 + np.array(relaxed) * 0.8
 plt.plot(x, relaxed, 'o-', label='relaxed new new new')
 # plt.plot(x_traffic, traffic, 'o-', label='traffic')
