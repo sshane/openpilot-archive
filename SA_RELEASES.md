@@ -1,6 +1,9 @@
 Stock Additions v0.6.5 - 2020-12-07 (0.8)
 ===
- * Grey panda support
+ * Continued grey panda support (white panda not guaranteed)
+ * Raise max limit of global_df_mod to 2.5x
+ * Dynamic follow uses an ID controller for distance mods
+ * Smoother lat derivative (over 0.05 second interval instead of 0.01)
 
 Stock Additions v0.6 - 2020-11-09 (0.7.10)
 ===
