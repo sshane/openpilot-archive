@@ -6,19 +6,23 @@ x = [0.0, 1.8627, 3.7253, 5.588, 7.4507, 9.3133, 11.5598, 13.645, 22.352, 31.292
 x_traffic = [0.0, 1.892, 3.7432, 5.8632, 8.0727, 10.7301, 14.343, 17.6275, 22.4049, 28.6752, 34.8858, 40.35]
 
 relaxed = [1.385, 1.394, 1.406, 1.421, 1.444, 1.474, 1.521, 1.544, 1.568, 1.588, 1.599, 1.613, 1.634]
-roadtrip = [1.5486, 1.556, 1.5655, 1.5773, 1.5964, 1.6246, 1.6715, 1.7057, 1.7859, 1.8542, 1.8697, 1.8833, 1.8961]
+relaxed_old = relaxed.copy()
+roadtrip = [1.6428, 1.646, 1.6514, 1.6591, 1.6744, 1.6992, 1.7422, 1.7739, 1.8335, 1.8687, 1.8755, 1.8833, 1.8961]
 
 traffic = [1.3781, 1.3791, 1.3457, 1.3134, 1.3145, 1.318, 1.3485, 1.257, 1.144, 0.979, 0.9461, 0.9156]
 
 plt.plot(x, roadtrip, 'o-', label='roadtrip')
 plt.plot(x, relaxed, 'o-', label='relaxed')
+relaxed = np.array(roadtrip) - 0.1678*1.05
+relaxed[8] = 1.6476
+plt.plot(x, relaxed, 'o-', label='relaxed new')
+
+relaxed = [i * np.interp(_x, [13.51, 41], [1, 0.9740044537214158]) for i, _x in zip(relaxed, x)]
+plt.plot(x, relaxed, 'o-', label='relaxed new new')
+relaxed = np.array(relaxed_old) * 0.2 + np.array(relaxed) * 0.8
+plt.plot(x, relaxed, 'o-', label='relaxed new new new')
 # plt.plot(x_traffic, traffic, 'o-', label='traffic')
 
-roadtrip = [i * np.interp(_x, [16, 35], [1.04, 1.0]) for _x, i in zip(x, roadtrip)]
-
-plt.plot(x, roadtrip, 'o-', label='roadtrip new')
-roadtrip = [i * np.interp(_x, [0, 13], [1.02, 1.0]) for _x, i in zip(x, roadtrip)]
-plt.plot(x, roadtrip, 'o-', label='roadtrip new')
 
 
 
