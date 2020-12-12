@@ -289,7 +289,6 @@ class DynamicFollow:
     TR = interp(self.car_data.v_ego, x_vel, y_dist)
     TR *= v_rel_dist_factor
     TR *= a_lead_dist_factor
-    return TR
 
     if self.car_data.v_ego > self.sng_speed:  # keep sng distance until we're above sng speed again
       self.sng = False
@@ -302,6 +301,8 @@ class DynamicFollow:
       x = [self.sng_speed * 0.7, self.sng_speed]  # decrease TR between 12.6 and 18 mph from 1.8s to defined TR above at 18mph while accelerating
       y = [self.sng_TR, interp(self.sng_speed, x_vel, y_dist)]
       TR = interp(self.car_data.v_ego, x, y)
+
+    return float(clip(TR, self.min_TR, 2.7))
 
     TR_mods = []
     # Dynamic follow modifications (the secret sauce)
@@ -355,7 +356,7 @@ class DynamicFollow:
   def _get_live_params(self):
     self.global_df_mod = self.op_params.get('global_df_mod')
     if self.global_df_mod != 1.:
-      self.global_df_mod = clip(self.global_df_mod, 0.85, 1.5)
+      self.global_df_mod = clip(self.global_df_mod, 0.85, 2.5)
 
     self.min_TR = self.op_params.get('min_TR')
     if self.min_TR != 1.:
