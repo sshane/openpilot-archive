@@ -38,7 +38,8 @@ class CarController():
     self.alert_active = False
     self.last_standstill = False
     self.standstill_req = False
-    self.standstill_hack = opParams().get('standstill_hack')
+    self.op_params = opParams()
+    self.standstill_hack = self.op_params.get('standstill_hack')
 
     self.last_fault_frame = -200
     self.steer_rate_limited = False
@@ -80,8 +81,11 @@ class CarController():
       self.last_fault_frame = frame
 
     # Cut steering for 2s after fault
-    # if not enabled or (frame - self.last_fault_frame < 200) or ((CS.out.steeringAngle < 0 < CS.out.steeringRate or CS.out.steeringAngle > 0 > CS.out.steeringRate) and abs(CS.out.steeringRate) > 150):
-    if not enabled or (frame - self.last_fault_frame < 200):
+    # if not enabled or (frame - self.last_fault_frame < 200):
+    # if not enabled or (frame - self.last_fault_frame < 200) or \
+    #         ((CS.out.steeringAngle < 0 < CS.out.steeringRate or CS.out.steeringAngle > 0 > CS.out.steeringRate) and
+    #          abs(CS.out.steeringRate) > 150):
+    if not enabled or (frame - self.last_fault_frame < 200) or ((apply_steer < 0 < CS.out.steeringRate or apply_steer > 0 > CS.out.steeringRate) and abs(CS.out.steeringRate) > self.op_params.get('steer_rate_fix')):
       apply_steer = 0
       apply_steer_req = 0
     else:
