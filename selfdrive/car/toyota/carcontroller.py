@@ -41,7 +41,6 @@ class CarController():
     self.op_params = opParams()
     self.standstill_hack = self.op_params.get('standstill_hack')
 
-    self.last_fault_frame = -200
     self.steer_rate_limited = False
 
     self.fake_ecus = set()
@@ -76,16 +75,8 @@ class CarController():
     apply_steer = apply_toyota_steer_torque_limits(new_steer, self.last_steer, CS.out.steeringTorqueEps, SteerLimitParams)
     self.steer_rate_limited = new_steer != apply_steer
 
-    # only cut torque when steer state is a known fault
-    if CS.steer_state in [9, 25]:
-      self.last_fault_frame = frame
-
-    # Cut steering for 2s after fault
-    if not enabled or (frame - self.last_fault_frame < 200):
-    # if not enabled or (frame - self.last_fault_frame < 200) or \
-    #         ((CS.out.steeringAngle < 0 < CS.out.steeringRate or CS.out.steeringAngle > 0 > CS.out.steeringRate) and
-    #          abs(CS.out.steeringRate) > 150):
-    # if not enabled or (frame - self.last_fault_frame < 200) or ((apply_steer < 0 < CS.out.steeringRate or apply_steer > 0 > CS.out.steeringRate) and abs(CS.out.steeringRate) > self.op_params.get('steer_rate_fix')):
+    # Cut steering for duration of known fault
+    if not enabled or CS.steer_state in [9, 25]:
       apply_steer = 0
       apply_steer_req = 0
     else:
