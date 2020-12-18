@@ -55,7 +55,7 @@ class opEdit:  # use by running `python /data/openpilot/op_edit.py`
         self.info('(changes take effect within {} seconds)'.format(self.op_params.read_frequency), end='\n', sleep_time=0)
       self.params = self.op_params.get(force_live=True)
       if self.live_tuning:  # only display live tunable params
-        self.params = {k: v for k, v in self.params.items() if self.op_params.param_info(k).live}
+        self.params = {k: v for k, v in self.params.items() if self.op_params.fork_params[k].live}
 
       values_list = []
       for k, v in self.params.items():
@@ -70,7 +70,7 @@ class opEdit:  # use by running `python /data/openpilot/op_edit.py`
           v = '{} ... {}'.format(str(v)[:30], str(v)[-15:])
         values_list.append(v)
 
-      live = [COLORS.INFO + '(live!)' + COLORS.ENDC if self.op_params.param_info(k).live else '' for k in self.params]
+      live = [COLORS.INFO + '(live!)' + COLORS.ENDC if self.op_params.fork_params[k].live else '' for k in self.params]
 
       to_print = []
       blue_gradient = [33, 39, 45, 51, 87]
@@ -144,7 +144,7 @@ class opEdit:  # use by running `python /data/openpilot/op_edit.py`
   def change_parameter(self, choice):
     while True:
       chosen_key = list(self.params)[choice]
-      param_info = self.op_params.param_info(chosen_key)
+      param_info = self.op_params.fork_params[chosen_key]
 
       old_value = self.params[chosen_key]
       if param_info.live:
