@@ -76,7 +76,7 @@ class CarController():
     self.steer_rate_limited = new_steer != apply_steer
 
     # Cut steering for duration of known fault
-    if not enabled or CS.steer_state in [9, 25] or abs(CS.out.steeringRate) >= 100:
+    if not enabled or CS.steer_state in [9, 25] or (abs(CS.out.steeringRate) >= 100 and self.op_params.get('steer_fault_fix')):
       apply_steer = 0
       apply_steer_req = 0
     else:
