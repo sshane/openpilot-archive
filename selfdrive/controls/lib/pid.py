@@ -92,7 +92,7 @@ class LatPIDController():
          not freeze_integrator:
         self.i = i
 
-    control = self.p + self.f + self.i + d
+    control = self.p + self.f + d
     if self.convert is not None:
       control = self.convert(control, speed=self.speed)
 
