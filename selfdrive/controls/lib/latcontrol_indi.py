@@ -13,6 +13,7 @@ class LatControlINDI():
   def __init__(self, CP):
     self.CP = CP
     self.angle_steers_des = 0.
+    self.v_ego = 0.
 
     A = np.array([[1.0, DT_CTRL, 0.0],
                   [0.0, 1.0, DT_CTRL],
@@ -35,9 +36,6 @@ class LatControlINDI():
 
     self.enforce_rate_limit = CP.carName == "toyota"
 
-    self.RC = CP.lateralTuning.indi.timeConstant
-    self.G = CP.lateralTuning.indi.actuatorEffectiveness
-    self.inner_loop_gain = CP.lateralTuning.indi.innerLoopGain
     self.alpha = 1. - DT_CTRL / (self.RC + DT_CTRL)
 
     self.sat_count_rate = 1.0 * DT_CTRL
@@ -55,6 +53,18 @@ class LatControlINDI():
   def outer_loop_gain(self):
     return interp(self.v_ego, self.CP.lateralTuning.indi.outerLoopGainBP, self.CP.lateralTuning.indi.outerLoopGainV)
 
+  @property
+  def inner_loop_gain(self):
+    return interp(self.v_ego, self.CP.lateralTuning.indi.innerLoopGainBP, self.CP.lateralTuning.indi.innerLoopGainV)
+
+  @property
+  def RC(self):
+    return interp(self.v_ego, self.CP.lateralTuning.indi.timeConstantBP, self.CP.lateralTuning.indi.timeConstantV)
+
+  @property
+  def G(self):
+    return interp(self.v_ego, self.CP.lateralTuning.indi.actuatorEffectivenessBP, self.CP.lateralTuning.indi.actuatorEffectivenessV)
+
   def _check_saturation(self, control, check_saturation, limit):
     saturated = abs(control) == limit
 
@@ -69,6 +79,7 @@ class LatControlINDI():
 
   def update(self, active, CS, CP, path_plan):
     self.v_ego = CS.vEgo
+
     # Update Kalman filter
     y = np.array([[math.radians(CS.steeringAngle)], [math.radians(CS.steeringRate)]])
     self.x = np.dot(self.A_K, self.x) + np.dot(self.K, y)
