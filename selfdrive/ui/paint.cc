@@ -496,10 +496,10 @@ static void ui_draw_df_button(UIState *s) {
 }
 
 static void ui_draw_ml_button(UIState *s) {
-  int btn_w = 500;
-  int btn_h = 138;
+  int btn_w = 475;
+  int btn_h = 130;
   int x = 1920 / 2;
-  int y = 915;
+  int y = 940;
   int btn_x = x - btn_w / 2;
   int btn_y = y - btn_h / 2;
 
@@ -519,7 +519,7 @@ static void ui_draw_ml_button(UIState *s) {
   nvgFill(s->vg);
 
   nvgFillColor(s->vg, nvgRGBA(255, 255, 255, 255));
-  nvgFontSize(s->vg, 65);
+  nvgFontSize(s->vg, 60);
   nvgText(s->vg, x, y + btn_h / 8, "Toggle Model Long", NULL);
 }
 
