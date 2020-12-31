@@ -7,6 +7,7 @@ Stock Additions v0.6.5 - 2020-12-07 (0.8)
  * Tune 17 Corolla gas curve
  * TSS2 gas tuning for RAV4 and Prius
  * Param `disengage_on_gas` is False by default
+ * Detect if on OneUI 3.0 hotspot (different IP addresses) 
 
 Stock Additions v0.6 - 2020-11-09 (0.7.10)
 ===
