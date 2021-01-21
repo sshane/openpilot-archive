@@ -83,7 +83,7 @@ class DynamicGas:
       elif self.candidate in [CAR_TOYOTA.RAV4_TSS2, CAR_TOYOTA.RAV4H_TSS2]:
         y = [0.35587, 0.46747, 0.41816, 0.33261, 0.27844, 0.2718, 0.28396, 0.29537, 0.30647, 0.31161, 0.3168, 0.3272, 0.34, 0.3824, 0.44, 0.4968, 0.56]
       else:
-        self.supported_car = False  # make this true to use default pedalless gas max tune for your car without a profile
+        self.supported_car = False  # make this true to use default pedalless gasMax tune for your car without a profile
 
     self.gasMaxBP, self.gasMaxV = x, y
 
