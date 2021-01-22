@@ -621,7 +621,7 @@ static void ui_draw_driver_view(UIState *s) {
   ui_draw_circle_image(s->vg, x, y, face_size, s->img_face, scene->driver_state.getFaceProb() > 0.4);
 }
 
-static void ui_draw_ls_button(UIState *s) {
+static void SA_ui_draw_ls_button(UIState *s) {
   int btn_status = s->scene.lsButtonStatus;
   int btn_w = 150;
   int btn_h = 150;
@@ -646,7 +646,7 @@ static void ui_draw_ls_button(UIState *s) {
   nvgText(s->vg, btn_x - 34, btn_y + 50 + 15, "mode", NULL);
 }
 
-static void ui_draw_df_button(UIState *s) {
+static void SA_ui_draw_df_button(UIState *s) {
   int btn_status = s->scene.dfButtonStatus;
   int btn_w = 150;
   int btn_h = 150;
@@ -670,7 +670,40 @@ static void ui_draw_df_button(UIState *s) {
   nvgText(s->vg, btn_x - 34, btn_y + 50 + 15, "profile", NULL);
 }
 
-static void ui_draw_ml_button(UIState *s) {
+static void SA_ui_draw_driving_options(UIState *s) {
+  if (!s->scene.drivingOptionsEnabled) {
+    int btn_w = 207;
+    int btn_h = 500;
+    int btn_x = 1920 - (138+30);
+    int btn_y = 1080 / 2;
+  //  btn_x = btn_x - btn_w / 2;
+    btn_y = btn_y - btn_h / 2;
+
+    nvgBeginPath(s->vg);
+    nvgRoundedRect(s->vg, btn_x, btn_y, btn_w, btn_h, 25);
+    nvgStrokeColor(s->vg, nvgRGBA(87, 74, 226, 255));
+
+    nvgStrokeWidth(s->vg, 12);
+    nvgStroke(s->vg);
+
+    nvgBeginPath(s->vg);  // dark background
+    nvgRoundedRect(s->vg, btn_x, btn_y, btn_w, btn_h, 25);
+    nvgFillColor(s->vg, nvgRGBA(75, 75, 75, 75));
+    nvgFill(s->vg);
+
+    float lineh;
+    nvgTextMetrics(s->vg, NULL, NULL, &lineh);
+
+    nvgFillColor(s->vg, nvgRGBA(255, 255, 255, 255));
+    nvgFontSize(s->vg, 75);
+    nvgText(s->vg, btn_x + btn_w / 3, btn_y + (btn_h * .35), "M", NULL);
+    nvgText(s->vg, btn_x + btn_w / 3, btn_y + (btn_h * .35) + lineh, "E", NULL);
+    nvgText(s->vg, btn_x + btn_w / 3, btn_y + (btn_h * .35) + lineh * 2, "N", NULL);
+    nvgText(s->vg, btn_x + btn_w / 3, btn_y + (btn_h * .35) + lineh * 3, "U", NULL);
+  }
+}
+
+static void SA_ui_draw_ml_button(UIState *s) {
   int btn_w = 500;
   int btn_h = 138;
   int x = 1920 / 2;
@@ -723,9 +756,10 @@ static void ui_draw_vision_footer(UIState *s) {
   nvgRect(s->vg, s->scene.ui_viz_rx, footer_y, s->scene.ui_viz_rw, footer_h);
 
   ui_draw_vision_face(s);
-  ui_draw_df_button(s);
-  ui_draw_ls_button(s);
-  ui_draw_ml_button(s);
+  SA_ui_draw_df_button(s);
+  SA_ui_draw_ls_button(s);
+  SA_ui_draw_ml_button(s);
+  SA_ui_draw_driving_options(s);
 
 #ifdef SHOW_SPEEDLIMIT
   // ui_draw_vision_map(s);

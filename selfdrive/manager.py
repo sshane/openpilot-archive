@@ -22,7 +22,9 @@ os.environ['BASEDIR'] = BASEDIR
 
 TOTAL_SCONS_NODES = 1020
 prebuilt = os.path.exists(os.path.join(BASEDIR, 'prebuilt'))
-kill_updated = opParams().get('update_behavior').lower().strip() == 'off' or os.path.exists('/data/no_ota_updates')
+op_params = opParams()
+kill_updated = op_params.get('update_behavior').lower().strip() == 'off' or os.path.exists('/data/no_ota_updates')
+clear_scons_cache = op_params.get('clear_scons_cache')
 
 # Create folders needed for msgq
 try:
@@ -126,12 +128,15 @@ if not prebuilt:
 
       if retry:
         if not os.getenv("CI"):
-          print("scons build failed, cleaning in")
-          for i in range(3, -1, -1):
-            print("....%d" % i)
-            time.sleep(1)
-          subprocess.check_call(["scons", "-c"], cwd=BASEDIR, env=env)
-          shutil.rmtree("/tmp/scons_cache")
+          if clear_scons_cache:
+            print("scons build failed, cleaning in")
+            for i in range(3, -1, -1):
+              print("....%d" % i)
+              time.sleep(1)
+            subprocess.check_call(["scons", "-c"], cwd=BASEDIR, env=env)
+            shutil.rmtree("/tmp/scons_cache")
+          else:
+            print("scons build failed, not cleaning")
         else:
           print("scons build failed after retry")
           sys.exit(1)

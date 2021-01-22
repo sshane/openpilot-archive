@@ -1,3 +1,4 @@
+#pragma GCC diagnostic ignored "-Wunused-parameter"
 #include <stdio.h>
 #include <iostream>
 #include <stdlib.h>
@@ -149,6 +150,21 @@ static bool handle_df_touch(UIState *s, int touch_x, int touch_y) {
   return false;
 }
 
+static bool handle_driving_options_touch(UIState *s, int touch_x, int touch_y) {
+  //doButton manager
+  int padding = 40;
+  int btn_w = 500;
+  int btn_h = 138;
+  int xs[2] = {1920 / 2 - btn_w / 2, 1920 / 2 + btn_w / 2};
+  int y_top = 915 - btn_h / 2;
+  if (xs[0] <= touch_x + padding && touch_x - padding <= xs[1] && y_top - padding <= touch_y) {
+    printf("driving options button touched!\n");
+    s->scene.drivingOptionsEnabled = !s->scene.drivingOptionsEnabled;
+    return true;
+  }
+  return false;
+}
+
 static bool handle_ml_touch(UIState *s, int touch_x, int touch_y) {
   //mlButton manager
   int padding = 40;
@@ -267,7 +283,7 @@ static void ui_init(UIState *s) {
   s->scene.satelliteCount = -1;
   s->started = false;
   s->vision_seen = false;
-  s->ui_debug = false;  // change to true while debugging
+  s->ui_debug = true;  // change to true while debugging
 
   // init display
   s->fb = framebuffer_init("ui", 0, true, &s->fb_w, &s->fb_h);
@@ -322,7 +338,8 @@ static void ui_init_vision(UIState *s, const VisionStreamBufs back_bufs,
     s->scene.dfButtonStatus = 0;
     s->scene.lsButtonStatus = 0;
   }
-  s->scene.mlButtonEnabled = false;  // state isn't saved yet
+  s->scene.mlButtonEnabled = false;  // state isn't saved
+  s->scene.drivingOptionsEnabled = false;  // state isn't saved
 
   s->rgb_width = back_bufs.width;
   s->rgb_height = back_bufs.height;
