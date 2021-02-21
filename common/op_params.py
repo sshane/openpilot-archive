@@ -182,7 +182,7 @@ class opParams:
       if param in self._to_delete:
         del self.params[param]
         needs_write = True
-      elif param in self._to_reset:
+      elif param in self._to_reset and param in self.fork_params:
         print('resetting {} to {} from {}'.format(param, self.fork_params[param].default, self.params[param]))
         self.params[param] = self.fork_params[param].default
         needs_write = True
