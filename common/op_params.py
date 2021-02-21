@@ -1,32 +1,31 @@
 #!/usr/bin/env python3
 import os
 import json
-from common.colors import opParams_error as error
-from common.colors import opParams_warning as warning
+from common.colors import COLORS
 try:
   from common.realtime import sec_since_boot
 except ImportError:
   import time
   sec_since_boot = time.time
-  warning("Using python time.time() instead of faster sec_since_boot")
 
 travis = False  # replace with travis_checker if you use travis or GitHub Actions
 
+def warning(msg): print('{}opParams WARNING: {}{}'.format(COLORS.WARNING, msg, COLORS.ENDC))
+def error(msg): print('{}opParams ERROR: {}{}'.format(COLORS.FAIL, msg, COLORS.ENDC))
 
-class ValueTypes:
-  number = [float, int]
-  none_or_number = [type(None), float, int]
+NUMBER = [float, int]  # value types
+NONE_OR_NUMBER = [type(None), float, int]
 
 
 class Param:
   def __init__(self, default=None, allowed_types=[], description=None, live=False, hidden=False):
-    self.default = default
+    self.default = default  # value first saved and returned if actual value isn't a valid type
     if not isinstance(allowed_types, list):
       allowed_types = [allowed_types]
-    self.allowed_types = allowed_types
-    self.description = description
-    self.hidden = hidden
-    self.live = live
+    self.allowed_types = allowed_types  # allowed python value types for opEdit
+    self.description = description  # description to be shown in opEdit
+    self.hidden = hidden  # hide this param to user in opEdit?
+    self.live = live  # whether opParams re-reads json file every time this param is .get
     self._create_attrs()
 
   def is_valid(self, value):
@@ -57,24 +56,23 @@ class opParams:
         - Finally, the live arg tells both opParams and opEdit that it's a live parameter that will change. Therefore, you must place the `op_params.get()` call in the update function so that it can update.
 
       Here's an example of a good fork_param entry:
-      self.fork_params = {'camera_offset': Param(default=0.06, allowed_types=VT.number), live=True}  # VT.number allows both floats and ints
+      self.fork_params = {'camera_offset': Param(default=0.06, allowed_types=NUMBER), live=True}  # NUMBER allows both floats and ints
     """
 
-    VT = ValueTypes()
-    self.fork_params = {'camera_offset': Param(0.06, VT.number, 'Your camera offset to use in lane_planner.py', live=True),
+    self.fork_params = {'camera_offset': Param(0.06, NUMBER, 'Your camera offset to use in lane_planner.py', live=True),
                         'dynamic_follow': Param('auto', str, 'Can be: (\'traffic\', \'relaxed\', \'roadtrip\'): Left to right increases in following distance.\n'
                                                              'All profiles support dynamic follow so you\'ll get your preferred distance while\n'
                                                              'retaining the smoothness and safety of dynamic follow!'),
-                        'global_df_mod': Param(1.0, VT.number, 'The multiplier for the current distance used by dynamic follow. The range is limited from 0.85 to 2.5\n'
-                                                               'Smaller values will get you closer, larger will get you farther\n'
-                                                               'This is multiplied by any profile that\'s active. Set to 1. to disable', live=True),
-                        'min_TR': Param(0.9, VT.number, 'The minimum allowed following distance in seconds. Default is 0.9 seconds.\n'
-                                                        'The range is limited from 0.85 to 1.6.', live=True),
+                        'global_df_mod': Param(1.0, NUMBER, 'The multiplier for the current distance used by dynamic follow. The range is limited from 0.85 to 2.5\n'
+                                                            'Smaller values will get you closer, larger will get you farther\n'
+                                                            'This is multiplied by any profile that\'s active. Set to 1. to disable', live=True),
+                        'min_TR': Param(0.9, NUMBER, 'The minimum allowed following distance in seconds. Default is 0.9 seconds.\n'
+                                                     'The range is limited from 0.85 to 1.6.', live=True),
                         'alca_nudge_required': Param(True, bool, 'Whether to wait for applied torque to the wheel (nudge) before making lane changes. '
                                                                  'If False, lane change will occur IMMEDIATELY after signaling'),
-                        'alca_min_speed': Param(25.0, VT.number, 'The minimum speed allowed for an automatic lane change (in MPH)'),
-                        'steer_ratio': Param(None, VT.none_or_number, '(Can be: None, or a float) If you enter None, openpilot will use the learned sR.\n'
-                                                                      'If you use a float/int, openpilot will use that steer ratio instead', live=True),
+                        'alca_min_speed': Param(25.0, NUMBER, 'The minimum speed allowed for an automatic lane change (in MPH)'),
+                        'steer_ratio': Param(None, NONE_OR_NUMBER, '(Can be: None, or a float) If you enter None, openpilot will use the learned sR.\n'
+                                                                   'If you use a float/int, openpilot will use that steer ratio instead', live=True),
                         'lane_speed_alerts': Param('silent', str, 'Can be: (\'off\', \'silent\', \'audible\')\n'
                                                                   'Whether you want openpilot to alert you of faster-traveling adjacent lanes'),
                         'upload_on_hotspot': Param(False, bool, 'If False, openpilot will not upload driving data while connected to your phone\'s hotspot'),
@@ -89,13 +87,14 @@ class opParams:
                         'log_auto_df': Param(False, bool, 'Logs dynamic follow data for auto-df'),
                         'dynamic_camera_offset': Param(False, bool, 'Whether to automatically keep away from oncoming traffic.\n'
                                                                     'Works from 35 to ~60 mph (requires radar)'),
-                        'dynamic_camera_offset_time': Param(3.5, VT.number, 'How long to keep away from oncoming traffic in seconds after losing lead'),
+                        'dynamic_camera_offset_time': Param(3.5, NUMBER, 'How long to keep away from oncoming traffic in seconds after losing lead'),
                         'support_white_panda': Param(False, bool, 'Enable this to allow engagement with the deprecated white panda.\n'
                                                                   'localizer might not work correctly'),
                         'slowdown_for_curves': Param(True, bool, 'Whether your car will slow down for curves using the old planner code from 0.5/0.6'),
                         'steer_fault_fix': Param(True, bool, live=True),
 
-                        'prius_use_pid': Param(False, bool, 'This enables the PID lateral controller with new a experimental derivative tune\nFalse: stock INDI, True: TSS2-tuned PID'),
+                        'prius_use_pid': Param(False, bool, 'This enables the PID lateral controller with new a experimental derivative tune\n'
+                                                            'False: stock INDI, True: TSS2-tuned PID'),
                         'use_lqr': Param(False, bool, 'Enable this to use LQR as your lateral controller over default with any car'),
                         'corollaTSS2_use_indi': Param(False, bool, 'Enable this to use INDI for lat with your TSS2 Corolla'),
                         'rav4TSS2_use_indi': Param(False, bool, 'Enable this to use INDI for lat with your TSS2 RAV4'),
@@ -105,14 +104,15 @@ class opParams:
     self._backup_file = '/data/op_params_corrupt.json'
     self._last_read_time = sec_since_boot()
     self.read_frequency = 3  # max frequency to read with self.get(...) (sec)
-    self._to_delete = ['steer_rate_fix']  # a list of unused params you want to delete
+    self._to_delete = ['steer_rate_fix']  # a list of unused params you want to delete from users' params file
+    self._to_reset = ['corollaTSS2_use_indi']  # a list of params you want to be reset to the default value
     self._run_init()  # restores, reads, and updates params
 
   def _run_init(self):  # does first time initializing of default params
     # Two required parameters for opEdit
     self.fork_params['username'] = Param(None, [type(None), str, bool], 'Your identifier provided with any crash logs sent to Sentry.\nHelps the developer reach out to you if anything goes wrong')
     self.fork_params['op_edit_live_mode'] = Param(False, bool, 'This parameter controls which mode opEdit starts in', hidden=True)
-    self.params = self._get_all_params(default=True)  # in case file is corrupted
+    self.params = self._get_all_params(default=True)  # start at default values in case file is corrupted
 
     if travis:
       return
@@ -120,7 +120,7 @@ class opParams:
     if os.path.isfile(self._params_file):
       if self._read():
         to_write = self._add_default_params()  # if new default data has been added
-        to_write |= self._delete_old()  # or if old params have been deleted
+        to_write |= self._delete_and_reset()  # or if old params have been deleted
       else:  # backup and re-create params file
         error("Can't read op_params.json file, backing up to /data/op_params_corrupt.json and re-creating file!")
         to_write = True
@@ -176,13 +176,17 @@ class opParams:
         added = True
     return added
 
-  def _delete_old(self):
-    deleted = False
-    for param in self._to_delete:
-      if param in self.params:
+  def _delete_and_reset(self):
+    needs_write = False
+    for param in list(self.params):
+      if param in self._to_delete:
         del self.params[param]
-        deleted = True
-    return deleted
+        needs_write = True
+      elif param in self._to_reset:
+        print('resetting {} to {} from {}'.format(param, self.fork_params[param].default, self.params[param]))
+        self.params[param] = self.fork_params[param].default
+        needs_write = True
+    return needs_write
 
   def _get_all_params(self, default=False, return_hidden=False, to_update=False):
     self._update_params(to_update)
