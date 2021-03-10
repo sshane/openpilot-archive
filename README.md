@@ -185,7 +185,7 @@ To install Stock Additions, just run the following on your EON/C2 (make sure to 
 ```
 cd /data/
 mv openpilot openpilot.old  # or equivalent
-git clone -b stock_additions --single-branch https://github.com/shanesmiskol/openpilot --depth 1
+git clone -b stock_additions-08 --single-branch https://github.com/shanesmiskol/openpilot --depth 1
 reboot
 ```
 
